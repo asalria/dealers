@@ -1,0 +1,42 @@
+<div class="container">
+    <div class="col-sm-8 col-sm-offset-2">
+        
+        <div class="intro">
+                    <img src="<%= dealer.img%>" style="width:100%">
+                
+                <div class="title-fav">
+                        <h1 class="main-title">
+                                <%= dealer.name %>
+                        </h1>
+                        <p class="lead">
+                                <%= dealer.address %>
+                            </p>
+                        <h3>Email</h3>
+                        <a href="mailto:<%= dealer.email %>"><%= dealer.email %></a>
+                        <h3>Email citas</h3>
+                        <a href="mailto:<%= dealer.emailapp %>"><%= dealer.emailapp %></a>
+                </div>
+                    
+                
+        </div>
+        <div class="body-text">
+                <br>
+                <h4>Comments:</h4>
+                <%= dealer.comments %>
+                <section class="border">
+                    <h3>Type</h3>
+                    <p>
+                        <%= dealer.type %>
+                    </p>
+                </section>
+                
+        </div>
+        
+        <% if (user.role == 'ADMIN') { %>
+            <a class="btn btn-success" href="/edit/<%= dealer._id %>">Edit</a>
+            <a class="btn btn-success" href="/delete/<%= dealer._id %>">Delete</a>
+        <% } %>
+    </div>
+</div>
+
+      

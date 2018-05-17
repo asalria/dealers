@@ -1,0 +1,184 @@
+<h1>New dealer</h1>
+<form method="POST" action="/create" onload="geolocate()">
+    <div class="form-group">
+          <label for="name">Name</label>
+            <input type="text" name="name" class="form-control" placeholder="Dealer name">
+            <% if (typeof(error) != 'undefined' && error.name) { %>
+            <label class="control-label"> 
+                <%= error.name %> 
+            </label>
+            <% } %>
+    </div>
+    <div class="form-group" id="locationField">
+            <label for="autocomplete">Dealer Address</label>
+            <input type="text" onFocus="geolocate()" name="address" id="autocomplete2" class="form-control">
+            <% if (typeof(error) != 'undefined' && error.address) { %>
+            <label class="control-label"> 
+                <%= error.address %> 
+            </label>
+            <% } %>
+    </div>
+    <div class="form-group">
+        <label for="phone">Phone number</label>
+        <input type="text" name="phone" id="phone" class="form-control" placeholder="Phone">
+        <% if (typeof(error) != 'undefined' && error.phone) { %>
+        <label class="control-label"> 
+            <%= error.phone %> 
+        </label>
+        <% } %>
+    </div>
+    <div class="form-group">
+        <label for="phoneaux">Phone aux number</label>
+        <input type="text" name="phoneaux" id="phoneaux" class="form-control" placeholder="Phone aux">
+        <% if (typeof(error) != 'undefined' && error.phoneaux) { %>
+        <label class="control-label"> 
+            <%= error.phoneaux %> 
+        </label>
+        <% } %>
+    </div>
+    <div class="form-group">
+        <label for="contact">Contact person</label>
+        <input type="text" name="contact" id="contact" class="form-control" placeholder="Contact">
+        <% if (typeof(error) != 'undefined' && error.contact) { %>
+        <label class="control-label"> 
+            <%= error.contact %> 
+        </label>
+        <% } %>
+    </div>
+    <div class="form-group">
+            <label for="email">Email address</label>
+            <input type="text" name="email" id="email" class="form-control" placeholder="Email">
+            <% if (typeof(error) != 'undefined' && error.email) { %>
+            <label class="control-label"> 
+                <%= error.email %> 
+            </label>
+            <% } %>
+    </div>
+    <div class="form-group">
+        <label for="emailapp">Email citas</label>
+        <input type="text" name="emailapp" id="emailapp" class="form-control" placeholder="Email citas">
+        <% if (typeof(error) != 'undefined' && error.emailapp) { %>
+        <label class="control-label"> 
+            <%= error.emailapp %> 
+        </label>
+        <% } %>
+</div>
+    <div class="form-group">
+        <label for="hours">Opening hours</label>
+        <input type="text" name="hours" id="hours" class="form-control" placeholder="Opening Hours">
+        <% if (typeof(error) != 'undefined' && error.hours) { %>
+        <label class="control-label"> 
+            <%= error.hours %> 
+        </label>
+        <% } %>
+    </div>
+    <div class="form-group">
+        <label for="hoursweekend">Opening hours weekend</label>
+        <input type="text" name="hoursweekend" id="hoursweekend" class="form-control" placeholder="Opening Hours weekend">
+        <% if (typeof(error) != 'undefined' && error.hoursweekend) { %>
+        <label class="control-label"> 
+            <%= error.hoursweekend %> 
+        </label>
+        <% } %>
+    </div>
+    <div class="form-group">
+            <input type="text" name="lat" id="lat" class="form-control" placeholder="Latitude">
+            <% if (typeof(error) != 'undefined' && error.latitude) { %>
+            <label class="control-label"> 
+                <%= error.latitude %> 
+            </label>
+            <% } %>
+    </div>
+    <div class="form-group">
+            <input type="text" name="lon" id="lon" class="form-control" placeholder="Longitude">
+            <% if (typeof(error) != 'undefined' && error.longitude) { %>
+            <label class="control-label"> 
+                <%= error.longitude %> 
+            </label>
+            <% } %>
+    </div>
+    <div class="form-group">
+        <label for="type">Type</label>
+        <select class="form-control" id="type" name="type">
+          <option value="ATESA">Atesa</option>
+          <option value="ATHLON">Athlon</option>
+          <option value="CONCESIONARIO">Concesionario</option>
+          <option value="DONTYRE">DonTyre</option>
+          <option value="SOLEDAD">Soledad</option>
+          <option value="VULCO">Vulco</option>
+          <option value="OTROS">Otros</option>
+        </select>
+    </div>
+    <div class="form-actions">
+      <textarea rows="4" name="comments" id="comments" class="form-control" placeholder="Comments">
+      </textarea>
+    </div>
+    <div class="form-actions">
+            <button type="submit" class="btn btn-block btn-primary">Create</button>
+    </div>
+</form>
+
+<script>
+        // This example displays an address form, using the autocomplete feature
+        // of the Google Places API to help users fill in the information.
+  
+        // This example requires the Places library. Include the libraries=places
+        // parameter when you first load the API. For example:
+        // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
+  
+        var placeSearch, autocomplete;
+        var componentForm = {
+          lat: 'short_name',
+          lon: 'long_name',
+          locality: 'long_name',
+          administrative_area_level_1: 'short_name',
+          country: 'long_name',
+          postal_code: 'short_name'
+        };
+  
+        function initAutocomplete() {
+          console.log("init2")
+          // Create the autocomplete object, restricting the search to geographical
+          // location types.
+          autocomplete = new google.maps.places.Autocomplete(
+              /** @type {!HTMLInputElement} */(document.getElementById('autocomplete2')),
+              {types: ['geocode']});
+  
+          // When the user selects an address from the dropdown, populate the address
+          // fields in the form.
+          autocomplete.addListener('place_changed', fillInAddress);
+        }
+  
+        function fillInAddress() {
+          console.log("asdf")
+          // Get the place details from the autocomplete object.
+          var place = autocomplete.getPlace();
+          //alert(place);
+          document.getElementById('lat').value = place.geometry.location.lat();
+          document.getElementById('lon').value = place.geometry.location.lng();
+
+  
+          // Get each component of the address from the place details
+          // and fill the corresponding field on the form.
+        }
+  
+        // Bias the autocomplete object to the user's geographical location,
+        // as supplied by the browser's 'navigator.geolocation' object.
+        function geolocate() {
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+              var geolocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+              };
+              var circle = new google.maps.Circle({
+                center: geolocation,
+                radius: position.coords.accuracy
+              });
+              autocomplete.setBounds(circle.getBounds());
+            });
+          }
+        }
+      </script>
+       <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD3AC6WEEZVQiqTVJsfbObHG-Pj6wwQaIc&libraries=places&callback=initAutocomplete"
+       async defer></script>

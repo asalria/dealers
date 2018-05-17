@@ -1,0 +1,51 @@
+<div class="row">
+    <div class="col-sm-6 col-sm-offset-5">
+        <h2><%= ingredients %></h2>
+    </div>
+</div>
+<br>
+<% if(typeof(recipes) != 'undefined' && recipes.length > 0) { %>
+<div class="row">
+    <div id="products" class="row list-group">
+        <% recipes.forEach(recipe => {%>
+            <a href="/recipes/recipe/<%= recipe._id %>">
+                <div class="item  col-xs-12 col-sm-3 col-lg-3">
+                    <div class="thumbnail">
+                    <% if( recipe.imgs ){%>
+                        <% if( recipe.url ){%>
+                            <img class="group list-group-image" src="<%= recipe.imgs%>" alt="" />
+                        <% } else { %>
+                            <img class="group list-group-image" src="https://dl.dropboxusercontent.com/s<%= recipe.imgs%>" alt="" />
+                    <% } %>
+                    <% } else { %>
+                        <img class="group list-group-image" src="http://placehold.it/400x250/000/fff" alt="" />
+                    <% } %>
+                        <div class="caption">
+                            <h4 class="group inner list-group-item-heading">
+                            <%= recipe.name %></h4>
+                                <p class="group inner list-group-item-text">
+                                    <% recipe.ingredients.forEach(ingredient => { %>
+                                        <%= ingredient.ingredient %>  
+                                    <% }); %>
+                                </p>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-9">
+                                    <p class="lead">
+                                    <%= recipe.author.username %></p>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </a>
+        <% }); %>
+    </div>
+</div>      
+<% } else { %>
+    <div class="col-sm-6 col-sm-offset-3">
+        <h2><%= errors.text%></h2>
+    </div>
+    <div class="col-sm-6 col-sm-offset-4">
+        <img src="https://media.giphy.com/media/CDpAmfo9dbOyA/giphy.gif" alt="Empty fridge">
+    </div>
+<% } %>

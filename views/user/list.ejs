@@ -1,0 +1,24 @@
+      <h2>Users</h2>
+      <% if (session.role === 'ADMIN') { %>
+          <div id="products" class="row list-group">
+              <% users.forEach(user => {%>
+              <div class="item  col-xs-4 col-lg-4">
+                  <div class="thumbnail">
+                      <div class="caption">
+                          <h4 class="group inner list-group-item-heading">
+                              <%= user.username %></h4>
+                              <h4 class="group inner list-group-item-heading">
+                                  <%= user.username %></h4>    
+                              <br>
+                          <div class="horiz">
+                                <div class="horiz-btn">
+                                    <a class="btn btn-success" href="/user/edit/<%= user._id %>">Edit</a>
+                                    <a class="btn btn-danger" href="/user/admin/<%= user._id %>">Make User Admin</a>
+                                </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <% }) %>
+          </div>
+          <% }%>

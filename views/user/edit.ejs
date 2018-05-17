@@ -1,0 +1,25 @@
+<div class="col-sm-2"></div>
+<div class="col-sm-8">
+    <h3>User:</h3>
+    <%= user.username %>
+    <br>
+    <img src="http://voice4thought.org/wp-content/uploads/2016/08/default1.jpg" class="profile-pic" height="100">
+
+    <form action="/user/edit/<%= user._id %>" method="post" enctype="multipart/form-data">
+        Name:
+        <input type="text" name="email" value="<%= user.email %>">
+
+        Description
+        <input type="text" name="description" value="<%= user.description %>">
+        <br>
+        <input type="file" name="profileImg" class="form-control" title="Images">
+        <% if (typeof(error) != 'undefined' && error.img) { %>
+            <label class="control-label"> 
+                <%= error.img %> 
+            </label>
+        <% } %>
+
+        <div class="col-sm-2"></div>
+        <input type="submit"/>
+    </form>
+</div>

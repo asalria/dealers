@@ -1,0 +1,59 @@
+<div class="row">
+    <div class="col-sm-7 col-lg-7 col-sm-offset-4 col-lg-offset-4">
+        <img class="logo2" src="/uploads/favslogo.png" alt="logo">
+    </div>
+    </div>
+        <br>
+        <% if(typeof(recipes) != 'undefined' && recipes.length > 0) { %>
+        <div class="row">
+            <div id="products" class="row list-group">
+                <% recipes.forEach(recipe => {%>
+                <a href="/recipes/recipe/<%= recipe._id %>">
+                <div class="item  col-xs-12 col-sm-3 col-lg-3">
+                    <div class="thumbnail">
+                        <% if( recipe.imgs ){%>
+                            <% if( recipe.url ){%>
+                                <img class="group list-group-image" src="<%= recipe.imgs%>" alt="" />
+                            <% } else { %>
+                                <img class="group list-group-image" src="https://dl.dropboxusercontent.com/s<%= recipe.imgs%>" alt="" />
+                            <% } %>
+                        <% } else { %>
+                        <img class="group list-group-image" src="http://placehold.it/400x250/000/fff" alt="" />
+                        <% } %>
+                        <div class="caption">
+                            <h4 class="group inner list-group-item-heading">
+                                <%= recipe.name %></h4>
+                                <p class="group inner list-group-item-text">
+                                    <% if ( recipe.ingredients.length < 3 ) { %>
+                                    <% recipe.ingredients.forEach(ingredient => { %>
+                                          <%= ingredient.ingredient %>  
+                                    <% }) %>
+                                    <% } else { %>
+                                        <%    for(i = 0; i < 3 ; i++ ){ %>
+                                            <%= recipe.ingredients[i].ingredient %>
+                                            
+                                    <% }} %>
+                                </p>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-9">
+                                    <p class="lead">
+                        
+                                        <%= recipe.author.username %></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </a>
+                <% }); %>
+            </div>
+        </div>      
+        <% } else { %>
+            <div class="col-xs-12 col-md-4 col-md-offset-4">
+                <h1>You don't have any favorite recipes</h1>
+            </div>
+            <div class="col-xs-12 col-md-6 col-md-offset-4">
+                    <img src="https://media.giphy.com/media/xT9IgrKMtJXnQ057dC/giphy.gif" id="heartless" alt="Heartless">
+            </div>
+        <% } %>
+        

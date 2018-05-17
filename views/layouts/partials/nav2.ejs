@@ -1,0 +1,58 @@
+<nav class="navbar navbar-expand-md navbar-dark container">
+        <div class="container">
+                <div class="row">
+                  <div class="col-sm-2 col-md-2">
+                      
+                  </div>
+                  <div class="col-sm-8 col-md-8">
+                        <form class="search-form form-horizontal"  role="form" action="/search" method="post">
+                            <input type="text" class="form-control" placeholder="Address" name="search" required/>
+    
+                                    <div class="dropdown dropdown-lg">
+                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="caret"></span></button>
+                                        <div class="dropdown-menu dropdown-menu-right" role="menu">
+                                              <div class="form-group">
+                                                <label for="contain">Radio</label>
+                                                <input type="number" class="form-control" name="radio" min="10" max="1000" step="10" value="30">
+                                              </div>
+                                              <div class="form-check">
+                                                    <label for="contain" class="form-check-label">Atesa</label>
+                                                    <input type="checkbox" class="form-check-input" name="atesa" value="atesa" checked>
+                                              </div>
+                                              <div class="form-check">
+                                                    <label for="contain" class="form-check-label">Leaseplan</label>
+                                                    <input type="checkbox" class="form-check-input" name="leaseplan" value="leaseplan">
+                                              </div>
+                                              <div class="form-check">
+                                                    <label for="contain" class="form-check-label">Athlon</label>
+                                                    <input type="checkbox" class="form-check-input" name="athlon" value="athlon">
+                                              </div>
+                                              <div class="button">
+                                                <button type="submit" class="btnnav btn-primary"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                                              </div>
+                                              
+                                            
+                                        </div>
+                                    </div>
+                                    <% if ( typeof(user) != 'undefined' && typeof(user.role) == 'undefined') { %>
+                                        <a href="/login">
+                                            <button type="button" class="btnnav btn-primary first"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span></button>
+                                        </a>
+                                    <% } else {%> 
+                                        <a href="/profile">
+                                            <button type="button" class="btnnav btn-primary middle"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></button>
+                                        </a>
+                                        <% } %>
+                                    <a href="/">
+                                        <button type="button" class="btnnav btn-primary middle"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></button>
+                                    </a>
+                                    <button type="submit" class="btnnav btn-primary last"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                         
+                                </form>
+                  </div>
+                  <div class="col-sm-8 col-md-8">
+                      
+                  </div>
+                </div>
+              </div>
+    </nav>

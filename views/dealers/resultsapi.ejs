@@ -1,0 +1,19 @@
+<% recipes.forEach((recipe) => { %>
+  
+  <div class="item  col-xs-3 col-lg-3">
+      <div class="thumbnail">
+          <% if( recipe.image_url ){%>
+          <img class="group list-group-image" src="<%= recipe.image_url%>" alt="" />
+          <% } else { %>
+          <img class="group list-group-image" src="http://placehold.it/400x250/000/fff" alt="" />
+          <% } %>
+          <div class="caption">
+            <a href="<%= recipe.source_url%>">
+              <h4 class="group inner list-group-item-heading">
+                  <%= recipe.title %></h4>
+                </a>
+          </div>
+      </div>
+  </div>
+
+  <% }); %>

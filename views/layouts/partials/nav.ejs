@@ -1,0 +1,54 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light center">
+<div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="input-group" id="adv-search">
+                    <form class="form-horizontal" role="form" action="/search" method="post">
+                    <input type="text" class="form-control" placeholder="Address" name="search" required/>
+                    <div class="input-group-btn">
+                        <div class="btn-group" role="group">
+                            <div class="dropdown dropdown-lg">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="caret"></span></button>
+                                <div class="dropdown-menu dropdown-menu-right" role="menu">
+                                      <div class="form-group">
+                                        <label for="contain">Radio</label>
+                                        <input type="number" class="form-control" name="radio" min="10" max="1000" step="10" value="30">
+                                      </div>
+                                      <div class="form-check">
+                                            <label for="contain" class="form-check-label">Atesa</label>
+                                            <input type="checkbox" class="form-check-input" name="atesa" value="atesa" checked>
+                                      </div>
+                                      <div class="form-check">
+                                            <label for="contain" class="form-check-label">Leaseplan</label>
+                                            <input type="checkbox" class="form-check-input" name="leaseplan" value="leaseplan">
+                                      </div>
+                                      <div class="form-check">
+                                            <label for="contain" class="form-check-label">Athlon</label>
+                                            <input type="checkbox" class="form-check-input" name="athlon" value="athlon">
+                                      </div>
+                                      <div class="button">
+                                        <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                                      </div>
+                                      
+                                    
+                                </div>
+                            </div>
+                            <% if ( typeof(user) != 'undefined' && typeof(user.role) == 'undefined') { %>
+                                <a href="/login">
+                                    <button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span></button>
+                                </a>
+                            <% } else {%> 
+                                <a href="/profile">
+                                    <button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></button>
+                                </a>
+                                <% } %>
+                            <a href="/">
+                                <button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></button>
+                            </a>
+                            <button type="submit" class="btn btn-primary last"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                        </form>
+                        </div>
+                    </div>
+                </div>
+              </div>
+</nav>

@@ -1,0 +1,49 @@
+<div class="row">
+    <div class="">
+<form class="form-inline" action="/searchdealer" method="POST">
+                <div class="form-group mx-sm-6 mb-2">
+                  <label for="search" class="sr-only">Password</label>
+                  <input type="text" class="form-control dealersearch" id="search" name="name" placeholder="Nombre del taller">
+                </div>
+                <button type="submit" class="btn btn-primary mb-2">Search</button>
+        </form>
+    </div>
+        
+        <br>
+        <div class="form-group mx-sm-3 mb-2">
+                <a href="/list"><button class="btn2 btn-danger">Reset</button></a>
+                <a href="/create"><button class="btn2 btn-success mb-2">Create</button></a>
+        </div>
+        <br>
+        <% if(typeof(dealers) != 'undefined' && dealers.length > 0) { %>
+        <div class="row">
+            <div id="products" class="row list-group">
+                <% dealers.forEach(dealer => {%>
+                <a href="/dealers/dealer/<%= dealer._id %>">
+                <div class="item  col-xs-12 col-sm-3 col-lg-3">
+                    <div class="thumbnail">
+                        <% if( dealer.img ){%>
+                                <img class="group list-group-image" src="<%= dealer.img%>" alt="" />
+                        <% } %>
+                        <div class="caption">
+                            <h4 class="group inner list-group-item-heading">
+                                <%= dealer.name %></h4>
+                                <p class="group inner list-group-item-text">
+                                <%= dealer.address %>   
+                                </p>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-9">
+                                    <p class="lead">
+                        
+                                        <%= dealer.type %></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </a>
+                <% }); %>
+            </div>
+        </div>      
+        <% } %>
+</div>      
