@@ -11,20 +11,4 @@
         }
       </style>
     <div id="map"></div>
-    <% var infowindow = new google.maps.InfoWindow() %>
-    <% dealers.forEach(dealer => { %>
-    <%  var contentString =  %>
-    <%      dealer.name %>
-    <%  var center = { %>
-    <%  lat: dealer.startPoint.coordinates[0], %>
-    <%  lng: dealer.startPoint.coordinates[1]  %>
-    <% } %>
-    <%  var pin = new google.maps.Marker({ %>
-    <%  position: center, %>
-    <%  map: map, %>
-    <% icon: type(dealer.type), %>
-    <%  title: dealer.name %>
-    <% }) %>
-    <% }) %>
-
-    </body>
+    <script src="/javascripts/main.js"></script>
