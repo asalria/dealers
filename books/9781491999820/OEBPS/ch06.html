@@ -1,0 +1,1035 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>6. Working with Template-Driven Forms</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><section data-type="chapter" epub:type="chapter" data-pdf-bookmark="Chapter 6. Working with Template-Driven Forms"><div class="chapter" id="chapter-6">
+<h1><span class="label">Chapter 6. </span>Working with Template-Driven Forms</h1>
+
+
+<p>In the chapters so far, we have worked on a basic Angular application, with the scaffolding in place and working with very simple components and user interactions.<a data-type="indexterm" data-primary="template-driven forms" id="ix_tdform"></a> We have learned how to create components and do basic data and event binding, and took a look at the capabilities and extensions that this enables.</p>
+
+<p>In this chapter, we will focus purely on how to handle user input, primarily via the use of forms.<a data-type="indexterm" data-primary="forms" data-seealso="reactive forms; template-driven forms" id="idm139828129660224"></a> Forms are the mainstay for many web applications, and are used for everything from logging in and registering to more complex use cases. Creating and using forms is not simply about the template for the form, but also the data binding (both from UI to the code, and vice versa), form state tracking, validation,  and error handling. There are two primary mechanisms to work with forms in Angular, and we will explore the <em>template-driven</em> approach in this chapter, followed by how we can create <em>reactive forms</em> in the following chapter.</p>
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Template-Driven Forms"><div class="sect1" id="idm139828129657696">
+<h1>Template-Driven Forms</h1>
+
+<p>Template-driven forms in Angular are an extension of how we have been creating and working with components so far. This approach is also reminiscent of how forms worked in AngularJS (1.x and below), as it uses a similar syntax and methodology. Anyone well-versed with that would have minimal problems adapting to this. In this section, we will create a simple form that allows us to add new stocks, and build our way up from there.</p>
+
+<p>Template-driven forms, as the name suggests, start with the template, and use data binding to get the data to and from your components. It is template-first, and allows you to drive the logic of your application via your template.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Setting Up Forms"><div class="sect2" id="idm139828129654896">
+<h2>Setting Up Forms</h2>
+
+<p>Before we dig into the actual form and the template and how it would work, we need to establish some basic groundwork with Angular.<a data-type="indexterm" data-primary="template-driven forms" data-secondary="setting up forms" id="idm139828129653184"></a> At this point, we still don’t know how to create multiple routes, so we will simply, for convenience, add a form on our main page itself.</p>
+
+<p>We can use the same codebase from <a data-type="xref" href="ch05.html#chapter-5">Chapter 5</a> as our base to build this in case you are not coding along with the book. You can get that from the <em>chapter5/component-spec</em> folder in the GitHub repository.</p>
+
+<p>The very first thing<a data-type="indexterm" data-primary="FormsModule, importing" id="idm139828129649472"></a> we will do is extend our <code>AppModule</code> to import <code>FormsModule</code> into our main <em>app.module.ts</em> file if we have not already done so. The <em>src/app/app.module.ts</em> file should look like this:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">BrowserModule</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/platform-browser'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">NgModule</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">FormsModule</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/forms'</code><code class="p">;</code><code>
+
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">AppComponent</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./app.component'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">StockItemComponent</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./stock/stock-item/stock-item.component'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">NgModule</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="nx">declarations</code><code class="o">:</code><code> </code><code class="p">[</code><code>
+    </code><code class="nx">AppComponent</code><code class="p">,</code><code>
+    </code><code class="nx">StockItemComponent</code><code>
+  </code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">imports</code><code class="o">:</code><code> </code><code class="p">[</code><code>
+    </code><code class="nx">BrowserModule</code><code class="p">,</code><code>
+    </code><code class="nx">FormsModule</code><code>               </code><a class="co" id="co_working_with_template_driven_forms_CO1-1" href="#callout_working_with_template_driven_forms_CO1-1"><img src="images/1.png" alt="1" /></a><code>
+  </code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">providers</code><code class="o">:</code><code> </code><code class="p">[</code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">bootstrap</code><code class="o">:</code><code> </code><code class="p">[</code><code class="nx">AppComponent</code><code class="p">]</code><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">AppModule</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_working_with_template_driven_forms_CO1-1" href="#co_working_with_template_driven_forms_CO1-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>The <code>FormsModule</code> in the <code>imports</code> section of your <code>AppModule</code></p></dd>
+</dl>
+
+<p>What this does is ensure that all the template-driven form features that are built into Angular are made available to your application. The reason form-specific logic and functionality is in a separate module is for performance and size, so that developers can decide whether or not they need form-specific features in their application.</p>
+
+<p>The <code>FormsModule</code> adds the capability of using <code>ngModel</code>, which allows for two-way data binding in Angular.<a data-type="indexterm" data-primary="data binding" data-secondary="two-way, with ngModel" id="idm139828129422464"></a><a data-type="indexterm" data-primary="two-way data binding" id="idm139828129431056"></a><a data-type="indexterm" data-primary="ngModel directive" id="idm139828129430384"></a> But before we use it, let’s explore what other ways we can accomplish this, so that we understand what <code>ngModel</code> does for us.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Alternative to ngModel—Event and Property Binding"><div class="sect2" id="idm139828129563664">
+<h2>Alternative to ngModel—Event and Property Binding</h2>
+
+<p>At its core, what <code>ngModel</code> does for us is two-way data binding. That is, whenever a user enters any text in the UI, it binds that data back to the component.<a data-type="indexterm" data-primary="template-driven forms" data-secondary="event and property binding as alternative to ngModel" id="idm139828129433072"></a><a data-type="indexterm" data-primary="ngModel directive" data-secondary="using event and property binding instead of" id="idm139828129432128"></a> And whenever the value in our component changes (say as a response to a server call, or the initialization logic), then it updates that value in the UI.</p>
+
+<p>If we break it down, the first one (the user entering a value in the UI) can be handled through event binding.<a data-type="indexterm" data-primary="event binding" data-secondary="using in template-driven forms" id="idm139828129434832"></a><a data-type="indexterm" data-primary="property binding" data-secondary="using in template-driven forms" id="idm139828129438528"></a> We can listen for the <code>input</code> event, grab the value from the event property target, and update the value in the component class.</p>
+
+<p>The second one similarly can be simply handled through data binding, in which we can bind the HTML element property value to the variable in our component.</p>
+
+<p>Let’s first create a new component, called <code>CreateStockComponent</code>. We can use the Angular CLI to create it by running:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="nx">ng</code> <code class="nx">g</code> <code class="nx">component</code> <code class="nx">stock</code><code class="o">/</code><code class="nx">create</code><code class="o">-</code><code class="nx">stock</code></pre>
+
+<p>This will create the skeleton component along with its test. Now, let’s modify the <em>app/stock/create-stock/create-stock.component.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-create-stock'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./create-stock.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./create-stock.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">CreateStockComponent</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">;</code>
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code> <code class="o">=</code>  <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'test'</code><code class="p">,</code> <code class="s1">''</code><code class="p">,</code> <code class="mi">0</code><code class="p">,</code> <code class="mi">0</code><code class="p">);</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>We are using the generated template of the Angular CLI, but we have made two small changes. We added a <code>stock</code> member variable with visibility <code>public</code>, and then initialized it with some dummy values in the constructor. We have also cleaned up and removed the <code>ngOnInit</code> because it was unnecessary.</p>
+
+<p>Next, let’s take a look at the template for the <code>CreateStockComponent</code>, which is where all the magic is. We will edit the file <em>app/stock/create-stock/create-stock.component​.html</em> as follows:</p>
+
+<pre data-type="programlisting" data-code-language="html" class="pagebreak-before"><code class="nt">&lt;h2&gt;</code>Create Stock Form<code class="nt">&lt;/h2&gt;</code>
+
+<code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"form-group"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;form&gt;</code>
+    <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-name"</code><code class="nt">&gt;</code>
+      <code class="nt">&lt;input</code> <code class="na">type=</code><code class="s">"text"</code>
+             <code class="na">placeholder=</code><code class="s">"Stock Name"</code>
+             <code class="err">[</code><code class="na">value</code><code class="err">]="</code><code class="na">stock</code><code class="err">.</code><code class="na">name</code><code class="err">"</code>
+             <code class="err">(</code><code class="na">input</code><code class="err">)="</code><code class="na">stock</code><code class="err">.</code><code class="na">name=</code><code class="s">$event.target.value"</code><code class="nt">&gt;</code>
+    <code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;/form&gt;</code>
+  <code class="nt">&lt;button</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">stock</code><code class="err">.</code><code class="na">name=</code><code class="s">'test'</code><code class="err">"</code><code class="nt">&gt;</code>Reset stock name<code class="nt">&lt;/button&gt;</code>
+<code class="nt">&lt;/div&gt;</code>
+
+<code class="nt">&lt;h4&gt;</code>Stock Name is {{stock.name}}<code class="nt">&lt;/h4&gt;</code></pre>
+
+<p>We have added a header, followed by a simple form with one <code>input</code> element of type <code>text</code>. <a data-type="indexterm" data-primary="input element" data-secondary="in template-driven forms" id="idm139828129212016"></a>Finally, we have another header that is using interpolation to show the current value of <code>name</code> from the <code>stock</code> variable in the component class. Now let’s take a look at the <code>input</code> element in more detail. Other than the <code>type</code> and <code>placeholder</code>, we have two bindings that we need to talk about:</p>
+
+<ul>
+<li>
+<p>The <code>value</code> binding is telling Angular to update the value property of the <code>input</code> element using the <code>stock.name</code> field in the component class.<a data-type="indexterm" data-primary="property binding" data-secondary="value property of input element" id="idm139828129206448"></a> If and when it changes, Angular will be responsible for updating the property as well.</p>
+</li>
+<li>
+<p>The <code>input</code> event binding is instructing Angular to update the <code>value</code> of <code>stock.name</code> with the value from the event.<a data-type="indexterm" data-primary="event binding" data-secondary="input event binding in template-driven forms" id="idm139828129202944"></a><a data-type="indexterm" data-primary="$event variable" id="idm139828129201872"></a> The <code>$event</code> in this case is the underlying DOM <code>InputEvent</code>, through which we access the target and from it, the changed value.</p>
+</li>
+</ul>
+
+<p>Finally, we have a button that on <code>click</code> resets the value of <code>stock.name</code> to <code>'test'</code>.</p>
+
+<p>When you run this, you should see something like <a data-type="xref" href="#fig0601">Figure 6-1</a> on your screen.</p>
+
+<p>To really understand how this works, I would recommend removing one binding and keeping just the other, and then reversing it.</p>
+
+<figure><div id="fig0601" class="figure">
+<img src="images/auar_06in01.png" alt="Alternative to NgModel at work" />
+<h6><span class="label">Figure 6-1. </span>Angular template-driven form in action</h6>
+</div></figure>
+
+<p>When you remove just the <code>value</code> binding and run the application (<code>ng serve</code>, in case you forgot!), you will see that when you type into the text box, the value in the UI gets updated as you type. But when you click the Reset button, then while the header gets updated, the value in the text box does not. Thus, the component gets updated when the event happens, but because we don’t have the Component → UI binding, the UI doesn’t update if the component gets updated under the covers.</p>
+
+<p>Similarly, we can turn off the <code>input</code> event binding. In this case, regardless of what we type in the text box, the underlying model does not get updated.</p>
+
+<p>The combination of the two bindings is what gives us the look and feel of a two-way data binding.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="ngModel"><div class="sect2" id="idm139828129562688">
+<h2>ngModel</h2>
+
+<p>Of course, who among us remembers exactly which property is used by each form field? Who can remember what are the various events and where the values would be available?<a data-type="indexterm" data-primary="template-driven forms" data-secondary="using ngModel for two-way data binding" id="idm139828129189648"></a><a data-type="indexterm" data-primary="ngModel directive" data-secondary="two-way data binding in template-driven forms" id="idm139828129188608"></a> To simplify and abstract this particular information away for ease of use, Angular has the <code>ngModel</code> directive.</p>
+
+<p>The <code>ngModel</code> directive and its special syntax abstracts away the internals of each and every input type from us developers, making it easier for us to quickly develop form-based applications. Let’s see how the code gets modified when we use <code>ngModel</code> instead of the <code>input</code> and <code>value</code> binding.</p>
+
+<p>We will only modify the <em>src/app/stock/create-stock/create-stock.component.html</em> file as follows; the rest of the code remains the same:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;h2&gt;</code>Create Stock Form<code class="nt">&lt;/h2&gt;</code>
+
+<code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"form-group"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;form&gt;</code>
+    <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-name"</code><code class="nt">&gt;</code>
+      <code class="nt">&lt;input</code> <code class="na">type=</code><code class="s">"text"</code>
+             <code class="na">placeholder=</code><code class="s">"Stock Name"</code>
+             <code class="na">name=</code><code class="s">"stockName"</code>
+             <code class="err">[</code><code class="na">ngModel</code><code class="err">]="</code><code class="na">stock</code><code class="err">.</code><code class="na">name</code><code class="err">"</code>
+             <code class="err">(</code><code class="na">ngModelChange</code><code class="err">)="</code><code class="na">stock</code><code class="err">.</code><code class="na">name=</code><code class="s">$event"</code><code class="nt">&gt;</code>
+    <code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;/form&gt;</code>
+  <code class="nt">&lt;button</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">stock</code><code class="err">.</code><code class="na">name=</code><code class="s">'test'</code><code class="err">"</code><code class="nt">&gt;</code>Reset stock name<code class="nt">&lt;/button&gt;</code>
+<code class="nt">&lt;/div&gt;</code>
+
+<code class="nt">&lt;h4&gt;</code>Stock Name is {{stock.name}}<code class="nt">&lt;/h4&gt;</code></pre>
+
+<p>Most of the HTML remains the same except for the following changes:</p>
+
+<ul>
+<li>
+<p>First, we added a name field to the input form element. This is necessary for the <code>ngModel</code> directive to work. If you remove this, you will see errors in the console.</p>
+</li>
+<li>
+<p>We added two bindings. The first one is <code>ngModel</code> data binding. This does the work of the <code>value</code> binding we had previously, but abstracting out which property underneath needs to be bound. It points to the component member variable that it takes the value from.</p>
+</li>
+<li>
+<p>The second binding we added is the <code>ngModelChange</code> event binding.<a data-type="indexterm" data-primary="ngModelChange event binding" id="idm139828129124192"></a><a data-type="indexterm" data-primary="event binding" data-secondary="ngModelChange" id="idm139828129123488"></a> In this, we update the underlying component member variable (<code>stock.name</code>) with the value of the <code>$event</code>, which is the changed value of the text field.<a data-type="indexterm" data-primary="$event variable" id="idm139828129121616"></a></p>
+</li>
+</ul>
+
+<p>There is a simpler version of this, which is what we use in most normal cases, which is the <code>[(ngModel)]</code> banana-in-a-box syntax, as it is called.<a data-type="indexterm" data-primary="[(ngModel)] banana-in-a-box syntax" id="idm139828129119808"></a> This encapsulates both of these statements into a single expression, like so:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;h2&gt;</code>Create Stock Form<code class="nt">&lt;/h2&gt;</code>
+
+<code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"form-group"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;form&gt;</code>
+    <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-name"</code><code class="nt">&gt;</code>
+      <code class="nt">&lt;input</code> <code class="na">type=</code><code class="s">"text"</code>
+             <code class="na">placeholder=</code><code class="s">"Stock Name"</code>
+             <code class="na">name=</code><code class="s">"stockName"</code>
+             <code class="err">[(</code><code class="na">ngModel</code><code class="err">)]="</code><code class="na">stock</code><code class="err">.</code><code class="na">name</code><code class="err">"</code><code class="nt">&gt;</code>
+    <code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;/form&gt;</code>
+  <code class="nt">&lt;button</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">stock</code><code class="err">.</code><code class="na">name=</code><code class="s">'test'</code><code class="err">"</code><code class="nt">&gt;</code>Reset stock name<code class="nt">&lt;/button&gt;</code>
+<code class="nt">&lt;/div&gt;</code>
+
+<code class="nt">&lt;h4&gt;</code>Stock Name is {{stock.name}}<code class="nt">&lt;/h4&gt;</code></pre>
+<div data-type="note" epub:type="note"><h1>Why Is It Called Banana-in-a-Box?</h1>
+<p>When used together, a common confusion while using the <code>ngModel</code> directive could be the order of the types<a data-type="indexterm" data-primary="banana-in-a-box syntax [()]" id="idm139828129018304"></a> of parentheses, whether it is <code>[()]</code> or <code>([])</code>. This is why the Angular team came up with a nickname to make it easy to remember. The <code>()</code> looks like a banana (yes, it’s a stretch, but roll with it!), and it is enclosed in a box <code>[]</code>. Hence, the banana-in-a-box, which is <code>[()]</code>.</p>
+</div>
+
+<p>In this, we replaced the two individual <code>ngModel</code> and <code>ngModelChange</code> bindings with the single banana-in-the-box <code>[(ngModel)]</code>. The end result will still be the same, as you should see the text value change as you type, as well as the value in the text box get reset when you press the Reset button.</p>
+<div data-type="note" epub:type="note"><h1>When to Use the Expanded ngModel Variant</h1>
+<p>Given that we accomplished the same thing via both the expanded and the collapsed version of the <code>ngModel</code> syntax, is there a need for the expanded version at all?<a data-type="indexterm" data-primary="ngModel directive" data-secondary="expanded syntax, use of" id="idm139828129011392"></a></p>
+
+<p>The combined <code>ngModel</code> syntax only has the capability to set the data-bound property. If you need to do something more complicated (say convert the text into upper-case before setting the model variable), or set it in a different field itself (a calculated value maybe?), or do multiple things, then you might want to consider the expanded syntax. For all other needs, the banana-in-the-box combined syntax works great!</p>
+</div>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="A Complete Form"><div class="sect2" id="idm139828129190944">
+<h2>A Complete Form</h2>
+
+<p>Now that we have seen a basic form field, let’s extend this to a complete form that has different types of controls that are bound to our component along with handling submission of the form.<a data-type="indexterm" data-primary="template-driven forms" data-secondary="complete form (example)" id="ix_tdformcomp"></a> We will continue building on the previous example, the code for which can be found in the <em>chapter6/simple-ng-model</em> folder in case you don’t have the codebase.</p>
+
+<p>Let’s extend our example now to allow users to enter in the other information about a stock, including its code, price, and the exchange it is listed on. In addition, we will have a confirmation checkbox that needs to be checked before the form can be submitted. Finally, we will see how to handle the actual submission event.</p>
+
+<p>First, we’ll add an additional field to our stock model (<em>src/app/model/stock.ts</em>), which we haven’t changed since the initial version, as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">export</code> <code class="kr">class</code> <code class="nx">Stock</code> <code class="p">{</code>
+  <code class="nx">favorite</code> <code class="o">=</code> <code class="kc">false</code><code class="p">;</code>
+
+  <code class="kr">constructor</code><code class="p">(</code><code class="kr">public</code> <code class="nx">name</code>: <code class="kt">string</code><code class="p">,</code>
+              <code class="kr">public</code> <code class="nx">code</code>: <code class="kt">string</code><code class="p">,</code>
+              <code class="kr">public</code> <code class="nx">price</code>: <code class="kt">number</code><code class="p">,</code>
+              <code class="kr">public</code> <code class="nx">previousPrice</code>: <code class="kt">number</code><code class="p">,</code>
+              <code class="kr">public</code> <code class="nx">exchange</code>: <code class="kt">string</code><code class="p">)</code> <code class="p">{}</code>
+
+  <code class="nx">isPositiveChange</code><code class="p">()</code><code class="o">:</code> <code class="kr">boolean</code> <code class="p">{</code>
+    <code class="k">return</code> <code class="k">this</code><code class="p">.</code><code class="nx">price</code> <code class="o">&gt;=</code> <code class="k">this</code><code class="p">.</code><code class="nx">previousPrice</code><code class="p">;</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>Next, let’s extend <em>app/model/create-stock/create-stock.component.ts</em>:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-create-stock'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./create-stock.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./create-stock.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">CreateStockComponent</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">confirmed</code> <code class="o">=</code> <code class="kc">false</code><code class="p">;</code>
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code> <code class="o">=</code>  <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'test'</code><code class="p">,</code> <code class="s1">''</code><code class="p">,</code> <code class="mi">0</code><code class="p">,</code> <code class="mi">0</code><code class="p">,</code> <code class="s1">'NASDAQ'</code><code class="p">);</code>
+  <code class="p">}</code>
+
+  <code class="nx">setStockPrice</code><code class="p">(</code><code class="nx">price</code><code class="p">)</code> <code class="p">{</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">price</code> <code class="o">=</code> <code class="nx">price</code><code class="p">;</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">previousPrice</code> <code class="o">=</code> <code class="nx">price</code><code class="p">;</code>
+  <code class="p">}</code>
+
+  <code class="nx">createStock() {</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Creating stock '</code><code class="p">,</code> <code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">);</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>We have added a few new pieces here, in particular:</p>
+
+<ul>
+<li>
+<p>We added to the stock initialization (an argument <code>'NASDAQ'</code> in this case).</p>
+</li>
+<li>
+<p>We added <code>confirmed</code>, a <code>boolean</code> member variable, to the component class, with a default value of <code>false</code>.</p>
+</li>
+<li>
+<p>We created a new function <code>setStockPrice</code>, which takes a price and then sets both the current and previous price for the <code>stock</code>.</p>
+</li>
+<li>
+<p>Finally, we have a new <code>createStock</code> method, which simply logs out the current stock variable to the console.</p>
+</li>
+</ul>
+
+<p>Now let’s see how these are used as we create and hook up the finished template for the form. We will change <em>src/app/stock/create-stock/create-stock.component.html</em> as <span class="keep-together">follows</span>
+:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;h2</code><code class="nt">&gt;</code><code>Create Stock Form</code><code class="nt">&lt;/h2&gt;</code><code>
+
+</code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"form-group"</code><code class="nt">&gt;</code><code>
+  </code><code class="nt">&lt;form</code><code> </code><code class="err">(</code><code class="na">ngSubmit</code><code class="err">)</code><code class="err">=</code><code class="err">"</code><code class="na">createStock</code><code class="err">(</code><code class="err">)</code><code class="err">"</code><code class="nt">&gt;</code><code>              </code><a class="co" id="co_working_with_template_driven_forms_CO2-1" href="#callout_working_with_template_driven_forms_CO2-1"><img src="images/1.png" alt="1" /></a><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-name"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;input</code><code> </code><code class="na">type=</code><code class="s">"text"</code><code> </code><code class="na">placeholder=</code><code class="s">"Stock Name"</code><code>
+             </code><code class="na">name=</code><code class="s">"stockName"</code><code> </code><code class="err">[</code><code class="err">(</code><code class="na">ngModel</code><code class="err">)</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">stock</code><code class="err">.</code><code class="na">name</code><code class="err">"</code><code class="nt">&gt;</code><code>
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-code"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;input</code><code> </code><code class="na">type=</code><code class="s">"text"</code><code> </code><code class="na">placeholder=</code><code class="s">"Stock Code"</code><code>
+             </code><code class="na">name=</code><code class="s">"stockCode"</code><code> </code><code class="err">[</code><code class="err">(</code><code class="na">ngModel</code><code class="err">)</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">stock</code><code class="err">.</code><code class="na">code</code><code class="err">"</code><code class="nt">&gt;</code><code>
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-code"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;input</code><code> </code><code class="na">type=</code><code class="s">"number"</code><code> </code><code class="na">placeholder=</code><code class="s">"Stock Price"</code><code>
+             </code><code class="na">name=</code><code class="s">"stockPrice"</code><code> </code><code class="err">[</code><code class="na">ngModel</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">stock</code><code class="err">.</code><code class="na">price</code><code class="err">"</code><code>      </code><a class="co" id="co_working_with_template_driven_forms_CO2-2" href="#callout_working_with_template_driven_forms_CO2-2"><img src="images/2.png" alt="2" /></a><code>
+             </code><code class="err">(</code><code class="na">ngModelChange</code><code class="err">)</code><code class="err">=</code><code class="err">"</code><code class="na">setStockPrice</code><code class="err">(</code><code class="err">$</code><code class="na">event</code><code class="err">)</code><code class="err">"</code><code class="nt">&gt;</code><code>
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-exchange"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;div</code><code class="nt">&gt;</code><code>
+        </code><code class="nt">&lt;input</code><code> </code><code class="na">type=</code><code class="s">"radio"</code><code> </code><code class="na">name=</code><code class="s">"stockExchange"</code><code>  </code><a class="co" id="co_working_with_template_driven_forms_CO2-3" href="#callout_working_with_template_driven_forms_CO2-3"><img src="images/3.png" alt="3" /></a><code>
+               </code><code class="err">[</code><code class="err">(</code><code class="na">ngModel</code><code class="err">)</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">stock</code><code class="err">.</code><code class="na">exchange</code><code class="err">"</code><code> </code><code class="na">value=</code><code class="s">"NYSE"</code><code class="nt">&gt;</code><code>NYSE
+      </code><code class="nt">&lt;/div&gt;</code><code>
+      </code><code class="nt">&lt;div</code><code class="nt">&gt;</code><code>
+        </code><code class="nt">&lt;input</code><code> </code><code class="na">type=</code><code class="s">"radio"</code><code> </code><code class="na">name=</code><code class="s">"stockExchange"</code><code>
+               </code><code class="err">[</code><code class="err">(</code><code class="na">ngModel</code><code class="err">)</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">stock</code><code class="err">.</code><code class="na">exchange</code><code class="err">"</code><code> </code><code class="na">value=</code><code class="s">"NASDAQ"</code><code class="nt">&gt;</code><code>NASDAQ
+      </code><code class="nt">&lt;/div&gt;</code><code>
+      </code><code class="nt">&lt;div</code><code class="nt">&gt;</code><code>
+        </code><code class="nt">&lt;input</code><code> </code><code class="na">type=</code><code class="s">"radio"</code><code> </code><code class="na">name=</code><code class="s">"stockExchange"</code><code>
+               </code><code class="err">[</code><code class="err">(</code><code class="na">ngModel</code><code class="err">)</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">stock</code><code class="err">.</code><code class="na">exchange</code><code class="err">"</code><code> </code><code class="na">value=</code><code class="s">"OTHER"</code><code class="nt">&gt;</code><code>OTHER
+      </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-confirm"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;input</code><code> </code><code class="na">type=</code><code class="s">"checkbox"</code><code> </code><code class="na">name=</code><code class="s">"stockConfirm"</code><code>   </code><a class="co" id="co_working_with_template_driven_forms_CO2-4" href="#callout_working_with_template_driven_forms_CO2-4"><img src="images/4.png" alt="4" /></a><code>
+             </code><code class="err">[</code><code class="err">(</code><code class="na">ngModel</code><code class="err">)</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">confirmed</code><code class="err">"</code><code class="nt">&gt;</code><code>
+      I confirm that the information provided above is accurate!
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;button</code><code> </code><code class="err">[</code><code class="na">disabled</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="err">!</code><code class="na">confirmed</code><code class="err">"</code><code> </code><code class="na">type=</code><code class="s">"submit"</code><code class="nt">&gt;</code><code>Create</code><code class="nt">&lt;/button&gt;</code><code> </code><a class="co" id="co_working_with_template_driven_forms_CO2-5" href="#callout_working_with_template_driven_forms_CO2-5"><img src="images/5.png" alt="5" /></a><code>
+  </code><code class="nt">&lt;/form&gt;</code><code>
+</code><code class="nt">&lt;/div&gt;</code><code>
+
+</code><code class="nt">&lt;h4</code><code class="nt">&gt;</code><code>Stock Name is {{stock | json}}</code><code class="nt">&lt;/h4&gt;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_working_with_template_driven_forms_CO2-1" href="#co_working_with_template_driven_forms_CO2-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Handling the form submission via the <code>ngSubmit</code> event handler</p></dd>
+<dt><a class="co" id="callout_working_with_template_driven_forms_CO2-2" href="#co_working_with_template_driven_forms_CO2-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Expanded version of <code>ngModel</code> to handle setting both current and previous price<a data-type="indexterm" data-primary="ngSubmit event handler" id="idm139828128389472"></a></p></dd>
+<dt><a class="co" id="callout_working_with_template_driven_forms_CO2-3" href="#co_working_with_template_driven_forms_CO2-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Handling radio buttons through <code>ngModel</code></p></dd>
+<dt><a class="co" id="callout_working_with_template_driven_forms_CO2-4" href="#co_working_with_template_driven_forms_CO2-4"><img src="images/4.png" alt="4" /></a></dt>
+<dd><p>Handling checkboxes through <code>ngModel</code></p></dd>
+<dt><a class="co" id="callout_working_with_template_driven_forms_CO2-5" href="#co_working_with_template_driven_forms_CO2-5"><img src="images/5.png" alt="5" /></a></dt>
+<dd><p>Disabling the form while the checkbox is unchecked</p></dd>
+</dl>
+
+<p>In the template, we have added a whole new set of form fields, from input boxes for stock code and price, to radio buttons to select the exchange and a checkbox to confirm if the data is correct. Let’s go through this step by step:</p>
+<ol>
+<li>
+<p>For the stock code, it remains similar to the stock name which we had. Nothing different other than, of course, the target variable.</p>
+</li>
+<li>
+<p>For the stock price, we are using the expanded version of the <code>ngModel</code> syntax. This is because while we want the value in the text box to come from <code>stock.price</code>, when the user sets it, we want both the <code>price</code> and the <code>previous​Price</code> to be set through the method <code>setStockPrice</code>.</p>
+</li>
+<li>
+<p>Next, we have a set of radio buttons that we are using to set the exchange. Each radio button has the same name (which is the standard HTML way of creating a radio group), and are bound to the same model variable (<code>stock.exchange</code>) using <code>ngModel</code>. The value for each radio button is what defines what the value in the <code>stock.exchange</code> variable is, and similarly, the value in the <code>stock.exchange</code> variable defines which of the radio buttons are selected.</p>
+</li>
+<li>
+<p>We then have a checkbox, which is bound to the variable <code>confirmed</code> on the component class. Since it is a checkbox, toggling the checkbox on and off sets the value of the variable <code>confirmed</code> to <code>true</code> and <code>false</code>, respectively.</p>
+</li>
+<li>
+<p>Finally, we have a <code>button</code> of type <code>submit</code>. This is only enabled when the <code>confirmed</code> boolean is set to <code>true</code>. On clicking this, it triggers a form <code>submit</code>, which is then intercepted by our <code>ngSubmit</code> event handler at the form level. This will then trigger the <code>createStock</code> method on our component class.</p>
+</li>
+
+</ol>
+
+<p>Once you run this, <a data-type="indexterm" data-primary="data binding" data-secondary="Angular form with" id="idm139828128518800"></a>you should see something like <a data-type="xref" href="#fig0602">Figure 6-2</a> on your screen.</p>
+
+<figure><div id="fig0602" class="figure">
+<img src="images/auar_06in02.png" alt="Angular Complete Form Example" />
+<h6><span class="label">Figure 6-2. </span>Angular form with data binding</h6>
+</div></figure>
+
+<p>We thus have a very simple form that handles different kinds of form elements and binds the value to the component, allowing us to get to the user input once he submits the form. To be fair, we haven’t handled any errors or requirements on the form, which we will do shortly in the next section.</p>
+<div data-type="note" epub:type="note"><h1>What about SELECT Boxes?</h1>
+<p>One type of input we didn’t cover in the preceding example was a <code>select</code> drop-down/combo box. <a data-type="indexterm" data-primary="select menu, template-driven form" id="idm139828128504864"></a>But we could have used it instead of the radio buttons, if we felt like it. How would our example have changed? We currently have the following HTML template code for displaying our radio buttons:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;input</code> <code class="na">type=</code><code class="s">"radio"</code> <code class="na">name=</code><code class="s">"stockExchange"</code>
+       <code class="err">[(</code><code class="na">ngModel</code><code class="err">)]="</code><code class="na">stock</code><code class="err">.</code><code class="na">exchange</code><code class="err">"</code> <code class="na">value=</code><code class="s">"NYSE"</code><code class="nt">&gt;</code>NYSE
+<code class="nt">&lt;input</code> <code class="na">type=</code><code class="s">"radio"</code> <code class="na">name=</code><code class="s">"stockExchange"</code>
+       <code class="err">[(</code><code class="na">ngModel</code><code class="err">)]="</code><code class="na">stock</code><code class="err">.</code><code class="na">exchange</code><code class="err">"</code> <code class="na">value=</code><code class="s">"NASDAQ"</code><code class="nt">&gt;</code>NASDAQ
+<code class="nt">&lt;input</code> <code class="na">type=</code><code class="s">"radio"</code> <code class="na">name=</code><code class="s">"stockExchange"</code>
+       <code class="err">[(</code><code class="na">ngModel</code><code class="err">)]="</code><code class="na">stock</code><code class="err">.</code><code class="na">exchange</code><code class="err">"</code> <code class="na">value=</code><code class="s">"OTHER"</code><code class="nt">&gt;</code>OTHER</pre>
+
+<p>We can replace this with a simple select HTML template as follows:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;select</code> <code class="na">name=</code><code class="s">"stockExchange"</code> <code class="err">[(</code><code class="na">ngModel</code><code class="err">)]="</code><code class="na">stock</code><code class="err">.</code><code class="na">exchange</code><code class="err">"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;option</code> <code class="na">value=</code><code class="s">"NYSE"</code><code class="nt">&gt;</code>NYSE<code class="nt">&lt;/option&gt;</code>
+  <code class="nt">&lt;option</code> <code class="na">value=</code><code class="s">"NASDAQ"</code><code class="nt">&gt;</code>NASDAQ<code class="nt">&lt;/option&gt;</code>
+  <code class="nt">&lt;option</code> <code class="na">value=</code><code class="s">"OTHER"</code><code class="nt">&gt;</code>OTHER<code class="nt">&lt;/option&gt;</code>
+<code class="nt">&lt;/select&gt;</code></pre>
+
+<p>Again, very similar to the other form elements, as long as we have a <code>name</code> and the <code>ngModel</code> directive, Angular internally handles the data binding for us. We could very easily replace the individual <code>option</code> tags with a single <code>option</code> tag and use <code>ngFor</code> to programmatically generate a list of options as well.<a data-type="indexterm" data-primary="NgFor directive" data-secondary="using to generate select options in form" id="idm139828128183584"></a> In those cases, assuming our component has the following code in it:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">public</code> <code class="nx">exchanges</code> <code class="o">=</code> <code class="p">[</code><code class="s1">'NYSE'</code><code class="p">,</code> <code class="s1">'NASDAQ'</code><code class="p">,</code> <code class="s1">'OTHER'</code><code class="p">];</code></pre>
+
+<p>Then we could replace our template code to be as simple as:</p>
+
+<pre data-type="programlisting" data-code-language="html"> <code class="nt">&lt;select</code> <code class="na">name=</code><code class="s">"stockExchange"</code> <code class="err">[(</code><code class="na">ngModel</code><code class="err">)]="</code><code class="na">stock</code><code class="err">.</code><code class="na">exchange</code><code class="err">"</code><code class="nt">&gt;</code>
+   <code class="nt">&lt;option</code> <code class="err">*</code><code class="na">ngFor=</code><code class="s">"let exchange of exchanges"</code>
+           <code class="err">[</code><code class="na">ngValue</code><code class="err">]="</code><code class="na">exchange</code><code class="err">"</code><code class="nt">&gt;</code>{{exchange}}<code class="nt">&lt;/option&gt;</code>
+ <code class="nt">&lt;/select&gt;</code></pre>
+
+<p>Note the <code>*ngFor</code> loop, and the usage of <code>ngValue</code> to ensure that the current value is used instead of a hardcoded value.<a data-type="indexterm" data-primary="ngValue directive" id="idm139828128275552"></a><a data-type="indexterm" data-primary="template-driven forms" data-secondary="complete form (example)" data-startref="ix_tdformcomp" id="idm139828128274912"></a></p>
+</div>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Control State"><div class="sect2" id="idm139828129008576">
+<h2>Control State</h2>
+
+<p>Angular form validation for template-driven forms relies and extends the <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation">native form validation from HTML</a>.<a data-type="indexterm" data-primary="validation of forms" data-secondary="control state in template-driven forms" id="ix_validcs"></a><a data-type="indexterm" data-primary="control state" data-secondary="in template-driven forms" id="ix_ctrlst"></a><a data-type="indexterm" data-primary="template-driven forms" data-secondary="control state" id="ix_tdformctrlst"></a><a data-type="indexterm" data-primary="HTML" data-secondary="native form validation from" id="idm139828128263920"></a> Thus, you can simply use most of the constraints that you already know and love out of the box, and they should work directly and cleanly with an Angular form. That said, Angular does the work of integrating these control states and validations with its own internal model (whether it is <code>ngModel</code> or <code>ngForm</code>), and it is up to us to use this internal model to then show the right kind of message to the user.</p>
+
+<p class="pagebreak-before">There are two aspects to this:</p>
+
+<ul>
+<li>
+<p>The state, which allows us to peek into the state of the form control, on whether the user has visited it, whether the user has changed it, and finally whether it is in a valid state.</p>
+</li>
+<li>
+<p>The validity, which tells us whether a form control is valid or not, and if it is not valid, the underlying reason (or reasons) for which the form element is invalid.</p>
+</li>
+</ul>
+
+<p>Let’s first see how state is made available to us and how we can use it. The <code>ngModel</code> directive changes and adds CSS classes to the element it is on, based on the user’s interaction with it.<a data-type="indexterm" data-primary="CSS" data-secondary="classes for control state" id="idm139828128257568"></a> There are three primary modes of interaction that it tracks, and two CSS classes per mode of interation associated with it. They are:</p>
+<table style="width: 60%">
+
+<thead>
+<tr>
+<th>Control state</th>
+<th>CSS class if True</th>
+<th>CSS class if False</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Visited</p></td>
+<td><p><code>ng-touched</code></p></td>
+<td><p><code>ng-untouched</code></p></td>
+</tr>
+<tr>
+<td><p>Changed</p></td>
+<td><p><code>ng-dirty</code></p></td>
+<td><p><code>ng-pristine</code></p></td>
+</tr>
+<tr>
+<td><p>Valid</p></td>
+<td><p><code>ng-valid</code></p></td>
+<td><p><code>ng-invalid</code></p></td>
+</tr>
+</tbody>
+</table>
+
+<p>In particular, these states allow you to present different experiences or views to users under various scenarios. We can use the code from the previous section as a base to work off, in case you are not coding along. The starting code can be found in <em>chapter6/template-driven/full-form</em>, which holds the completed code from the previous section.</p>
+
+<p>Now, to use these control state classes, we actually don’t need to make any component class code changes. We only need to tweak the CSS a bit and then leverage that in the HTML template for the component.</p>
+
+<p>Let’s first add the following CSS class definitions to the <em>src/app/stock/create-stock/create-stock.component.css</em> file:</p>
+
+<pre data-type="programlisting" data-code-language="css"><code class="nc">.stock-name</code> <code class="nc">.ng-valid</code><code class="o">,</code>
+<code class="nc">.stock-code</code> <code class="nc">.ng-pristine</code><code class="o">,</code>
+<code class="nc">.stock-price</code> <code class="nc">.ng-untouched</code> <code class="p">{</code>
+  <code class="k">background-color</code><code class="o">:</code> <code class="nb">green</code><code class="p">;</code>
+<code class="p">}</code>
+
+<code class="nc">.stock-name</code> <code class="nc">.ng-invalid</code><code class="o">,</code>
+<code class="nc">.stock-code</code> <code class="nc">.ng-dirty</code><code class="o">,</code>
+<code class="nc">.stock-price</code> <code class="nc">.ng-touched</code> <code class="p">{</code>
+  <code class="k">background-color</code><code class="o">:</code> <code class="nb">pink</code><code class="p">;</code>
+<code class="p">}</code></pre>
+
+<p>Now, we will make minor tweaks (which are more for highlighting different elements rather than any functional changes) to the template HTML in <em>src/app/stock/create-stock/create-stock.component.html</em>:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;h2</code><code class="nt">&gt;</code><code>Create Stock Form</code><code class="nt">&lt;/h2&gt;</code><code>
+
+</code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"form-group"</code><code class="nt">&gt;</code><code>
+  </code><code class="nt">&lt;form</code><code> </code><code class="err">(</code><code class="na">ngSubmit</code><code class="err">)</code><code class="err">=</code><code class="err">"</code><code class="na">createStock</code><code class="err">(</code><code class="err">)</code><code class="err">"</code><code class="nt">&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code class="nt">&gt;</code><code>
+      The following element changes from green to red
+      when it is invalid
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-name"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;input</code><code> </code><code class="na">type=</code><code class="s">"text"</code><code>
+             </code><code class="na">placeholder=</code><code class="s">"Stock Name"</code><code>
+             </code><code class="na">required</code><code>                               </code><a class="co" id="co_working_with_template_driven_forms_CO3-1" href="#callout_working_with_template_driven_forms_CO3-1"><img src="images/1.png" alt="1" /></a><code>
+             </code><code class="na">name=</code><code class="s">"stockName"</code><code>
+             </code><code class="err">[</code><code class="err">(</code><code class="na">ngModel</code><code class="err">)</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">stock</code><code class="err">.</code><code class="na">name</code><code class="err">"</code><code class="nt">&gt;</code><code>
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code class="nt">&gt;</code><code>
+      The following element changes from green to red
+      when it has been modified
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-code"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;input</code><code> </code><code class="na">type=</code><code class="s">"text"</code><code>
+             </code><code class="na">placeholder=</code><code class="s">"Stock Code"</code><code>
+             </code><code class="na">name=</code><code class="s">"stockCode"</code><code>
+             </code><code class="err">[</code><code class="err">(</code><code class="na">ngModel</code><code class="err">)</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">stock</code><code class="err">.</code><code class="na">code</code><code class="err">"</code><code class="nt">&gt;</code><code>
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code class="nt">&gt;</code><code>
+        The following element changes from green to red
+        when it is visited by the user, regardless of change
+      </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-price"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;input</code><code> </code><code class="na">type=</code><code class="s">"number"</code><code>
+             </code><code class="na">placeholder=</code><code class="s">"Stock Price"</code><code>
+             </code><code class="na">name=</code><code class="s">"stockPrice"</code><code>
+             </code><code class="err">[</code><code class="na">ngModel</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">stock</code><code class="err">.</code><code class="na">price</code><code class="err">"</code><code>
+             </code><code class="err">(</code><code class="na">ngModelChange</code><code class="err">)</code><code class="err">=</code><code class="err">"</code><code class="na">setStockPrice</code><code class="err">(</code><code class="err">$</code><code class="na">event</code><code class="err">)</code><code class="err">"</code><code class="nt">&gt;</code><code>
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-exchange"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;div</code><code class="nt">&gt;</code><code>
+        </code><code class="nt">&lt;select</code><code> </code><code class="na">name=</code><code class="s">"stockExchange"</code><code> </code><code class="err">[</code><code class="err">(</code><code class="na">ngModel</code><code class="err">)</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">stock</code><code class="err">.</code><code class="na">exchange</code><code class="err">"</code><code class="nt">&gt;</code><code>
+          </code><code class="nt">&lt;option</code><code> </code><code class="err">*</code><code class="na">ngFor=</code><code class="s">"let exchange of exchanges"</code><code>
+                  </code><code class="err">[</code><code class="na">ngValue</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">exchange</code><code class="err">"</code><code class="nt">&gt;</code><code>{{exchange}}</code><code class="nt">&lt;/option&gt;</code><code>
+        </code><code class="nt">&lt;/select&gt;</code><code>
+      </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-confirm"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;input</code><code> </code><code class="na">type=</code><code class="s">"checkbox"</code><code>
+             </code><code class="na">name=</code><code class="s">"stockConfirm"</code><code>
+             </code><code class="err">[</code><code class="err">(</code><code class="na">ngModel</code><code class="err">)</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">confirmed</code><code class="err">"</code><code class="nt">&gt;</code><code>
+      I confirm that the information provided above is accurate!
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;button</code><code> </code><code class="err">[</code><code class="na">disabled</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="err">!</code><code class="na">confirmed</code><code class="err">"</code><code>
+            </code><code class="na">type=</code><code class="s">"submit"</code><code class="nt">&gt;</code><code>Create</code><code class="nt">&lt;/button&gt;</code><code>
+  </code><code class="nt">&lt;/form&gt;</code><code>
+</code><code class="nt">&lt;/div&gt;</code><code>
+
+</code><code class="nt">&lt;h4</code><code class="nt">&gt;</code><code>Stock Name is {{stock | json}}</code><code class="nt">&lt;/h4&gt;</code><code>
+</code><code class="nt">&lt;h4</code><code class="nt">&gt;</code><code>Data has been confirmed: {{confirmed}}</code><code class="nt">&lt;/h4&gt;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_working_with_template_driven_forms_CO3-1" href="#co_working_with_template_driven_forms_CO3-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Adding a required attribute to the stock name</p></dd>
+</dl>
+
+<p>The only change we did to our component HTML is to make the stock name a required field. Angular’s Form Module is responsible for reading it and applying the form control state classes accordingly, without any other work on our side.</p>
+
+<p>With these two changes, we now have an application that:</p>
+
+<ul>
+<li>
+<p>For the stock name, when it is valid (the class <code>ng-valid</code>), we make the background color<a data-type="indexterm" data-primary="ng-valid class" id="idm139828127232144"></a> of the text box green, and when it is invalid (the class <code>ng-invalid</code>), we change the background color of the text box to be pink.<a data-type="indexterm" data-primary="ng-invalid class" id="idm139828127230928"></a></p>
+</li>
+<li>
+<p>For the stock code, when the user has not made any changes to the field (the class <code>ng-pristine</code>), we make the background color of the text box green, and whenever the user makes any change (the class <code>ng-dirty</code>), regardless of whether he reverts the change or not, we change the background color of the text box to pink.<a data-type="indexterm" data-primary="ng-dirty class" id="idm139828127228304"></a><a data-type="indexterm" data-primary="ng-pristine class" id="idm139828127227600"></a></p>
+</li>
+<li>
+<p>Finally, for the stock price, the background color remains green as long as the field is not interacted with (the class <code>ng-untouched</code>), and changes to pink as soon as the user interacts and then leaves it (the class <code>ng-touched</code>). Note that the color remains green while the user is interacting/typing on it, and only changes once he moves away from it.<a data-type="indexterm" data-primary="ng-untouched and ng-touched classes" id="idm139828127224976"></a></p>
+</li>
+</ul>
+
+<p>You can test it, of course, by:</p>
+<ol>
+<li>
+<p>Removing the default name of the stock (the background color should toggle from green to pink when there is no text in the field)</p>
+</li>
+<li>
+<p>Typing any character in the stock code field (the background color should toggle from green to pink when you do)</p>
+</li>
+<li>
+<p>Focusing and navigating away from the stock price field (the background color should toggle from green to pink when you do)</p>
+</li>
+
+</ol>
+
+<p>The end result if you do these actions in order is a screen that looks something like the image in <a data-type="xref" href="#fig0603">Figure 6-3</a>.</p>
+
+<figure><div id="fig0603" class="figure">
+<img src="images/auar_06in03.png" alt="Checking Angular Control State" />
+<h6><span class="label">Figure 6-3. </span>Angular form with control state bindings</h6>
+</div></figure>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Control Validity"><div class="sect2" id="idm139828128268720">
+<h2>Control Validity</h2>
+
+<p>Next, let’s take a look at how we can leverage the HTML form validation to create nice,<a data-type="indexterm" data-primary="validation of forms" data-secondary="control state in template-driven forms" data-startref="ix_validcs" id="idm139828127215040"></a><a data-type="indexterm" data-primary="control state" data-secondary="in template-driven forms" data-startref="ix_ctrlst" id="idm139828127213824"></a><a data-type="indexterm" data-primary="template-driven forms" data-secondary="control state" data-startref="ix_tdformctrlst" id="idm139828127212640"></a> meaningful errors for our users. We won’t get into custom validations just yet in this chapter, but will cover how to use multiple validations on the same elements, and how to display error messages for the same.<a data-type="indexterm" data-primary="template-driven forms" data-secondary="control validity" id="ix_tdformctrlval"></a><a data-type="indexterm" data-primary="control validity" data-secondary="in template-driven forms" id="ix_ctrlval"></a><a data-type="indexterm" data-primary="validation of forms" data-secondary="control validity in template-driven forms" id="ix_validcv"></a></p>
+
+<p>Internally, Angular has its own set of validators. These mirror the HTML Form validators that are then used to drive a similar behavior in the context of an Angular application. Once you add any validators to your form elements, Angular will take care of running them every time any of the form control changes. This would then be reflected at each control level, as well as at an aggregate level at the form.</p>
+
+<p>Before we dig into this, you can take a look at the following sidebar to get a brief understanding of template reference variables,<a data-type="indexterm" data-primary="template reference variables" id="idm139828127206064"></a> which are a major workhorse in how we execute and work with form control validity.</p>
+<aside data-type="sidebar" epub:type="sidebar"><div class="sidebar" id="template_reference_variables">
+<h5>Template Reference Variables</h5>
+<p>A template reference variable in Angular allows us to get a temporary handle on a DOM element, component, or directive directly in the template.<a data-type="indexterm" data-primary="# (pound sign), prefacing template reference variables" id="idm139828127315392"></a> It is denoted by a standard syntax in the HTML, which is a prefix of <code>#</code>. For example, in the following HTML:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;input</code> <code class="na">type=</code><code class="s">"text"</code> <code class="err">#</code><code class="na">myStockField</code> <code class="na">name=</code><code class="s">"stockName"</code><code class="nt">&gt;</code></pre>
+
+<p>The <code>#myStockField</code> is a template reference variable that gives us a reference to the input form field. We can then use this as a variable in any Angular expression, or directly access its value through <code>myStockField.value</code> and pass it as an argument to a function.</p>
+
+<p>In addition to the DOM elements, it can also be used to reference the class/value underlying a directive, which is how we use it in conjunction with forms and form fields.</p>
+
+<p>By default, when we don’t pass it any value, it will always refer to the HTML DOM element.</p>
+</div></aside>
+
+<p>Once you have looked through the sidebar note, we’ll dig into how we can accomplish simple error handling via our template-driven forms. In case you are not coding along, you can use the codebase from the previous section (which is located in <em>chapter6/template-driven/control-state</em>) as a base.</p>
+
+<p>We will undo some of the changes from the previous section and now focus purely on form validation. First, let’s change our CSS to reflect all invalid form controls with a pink background, by editing the <em>src/app/stock/create-stock/create-stock.component.css</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="css"><code class="nc">.stock-name</code> <code class="nc">.ng-valid</code><code class="o">,</code>
+<code class="nc">.stock-code</code> <code class="nc">.ng-valid</code><code class="o">,</code>
+<code class="nc">.stock-price</code> <code class="nc">.ng-valid</code> <code class="p">{</code>
+  <code class="k">background-color</code><code class="o">:</code> <code class="nb">green</code><code class="p">;</code>
+<code class="p">}</code>
+
+<code class="nc">.stock-name</code> <code class="nc">.ng-invalid</code><code class="o">,</code>
+<code class="nc">.stock-code</code> <code class="nc">.ng-invalid</code><code class="o">,</code>
+<code class="nc">.stock-price</code> <code class="nc">.ng-invalid</code> <code class="p">{</code>
+  <code class="k">background-color</code><code class="o">:</code> <code class="nb">pink</code><code class="p">;</code>
+<code class="p">}</code></pre>
+
+<p>Next, we will make minor changes to the component class (<em>src/app/stock/create-stock/create-stock.component.ts</em>), simply to log out different values under certain conditions as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-create-stock'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./create-stock.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./create-stock.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">CreateStockComponent</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">confirmed</code> <code class="o">=</code> <code class="kc">false</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">exchanges</code> <code class="o">=</code> <code class="p">[</code><code class="s1">'NYSE'</code><code class="p">,</code> <code class="s1">'NASDAQ'</code><code class="p">,</code> <code class="s1">'OTHER'</code><code class="p">];</code>
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code> <code class="o">=</code>  <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">''</code><code class="p">,</code> <code class="s1">''</code><code class="p">,</code> <code class="mi">0</code><code class="p">,</code> <code class="mi">0</code><code class="p">,</code> <code class="s1">'NASDAQ'</code><code class="p">);</code>
+  <code class="p">}</code>
+
+  <code class="nx">setStockPrice</code><code class="p">(</code><code class="nx">price</code><code class="p">)</code> <code class="p">{</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">price</code> <code class="o">=</code> <code class="nx">price</code><code class="p">;</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">previousPrice</code> <code class="o">=</code> <code class="nx">price</code><code class="p">;</code>
+  <code class="p">}</code>
+
+  <code class="nx">createStock</code><code class="p">(</code><code class="nx">stockForm</code><code class="p">)</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Stock form'</code><code class="p">,</code> <code class="nx">stockForm</code><code class="p">);</code>
+    <code class="k">if</code> <code class="p">(</code><code class="nx">stockForm</code><code class="p">.</code><code class="nx">valid</code><code class="p">)</code> <code class="p">{</code>
+      <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Creating stock '</code><code class="p">,</code> <code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">);</code>
+    <code class="p">}</code> <code class="k">else</code> <code class="p">{</code>
+      <code class="nx">console</code><code class="p">.</code><code class="nx">error</code><code class="p">(</code><code class="s1">'Stock form is in an invalid state'</code><code class="p">);</code>
+    <code class="p">}</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>We have made minor changes only to the <code>createStock</code> method:</p>
+
+<ul>
+<li>
+<p>We have now started taking the <code>stockForm</code> as an argument to the function. This is the <code>ngForm</code> object representing the form we have in our template, including all its controls and states.<a data-type="indexterm" data-primary="ngForm object" id="idm139828127470736"></a> We are also logging this out to the web console.</p>
+</li>
+<li>
+<p>We are checking if the form is valid using this passed-in object, and then only proceeding to create the stock (for what it’s worth, logging it out at this point).</p>
+</li>
+<li>
+<p>We have also changed the constructor to initialize the stock with an empty name, unlike before.</p>
+</li>
+</ul>
+
+<p>Next, let’s see the changes made to the template in <em>src/app/stock/create-stock/create-stock.component.html</em>:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;h2</code><code class="nt">&gt;</code><code>Create Stock Form</code><code class="nt">&lt;/h2&gt;</code><code>
+
+</code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"form-group"</code><code class="nt">&gt;</code><code>
+  </code><code class="nt">&lt;form</code><code> </code><code class="err">(</code><code class="na">ngSubmit</code><code class="err">)</code><code class="err">=</code><code class="err">"</code><code class="na">createStock</code><code class="err">(</code><code class="na">stockForm</code><code class="err">)</code><code class="err">"</code><code> </code><code class="err">#</code><code class="na">stockForm=</code><code class="s">"ngForm"</code><code class="nt">&gt;</code><code>    </code><a class="co" id="co_working_with_template_driven_forms_CO4-1" href="#callout_working_with_template_driven_forms_CO4-1"><img src="images/1.png" alt="1" /></a><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-name"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;input</code><code> </code><code class="na">type=</code><code class="s">"text"</code><code>
+             </code><code class="na">placeholder=</code><code class="s">"Stock Name"</code><code>
+             </code><code class="na">required</code><code>
+             </code><code class="na">name=</code><code class="s">"stockName"</code><code>
+             </code><code class="err">#</code><code class="na">stockName=</code><code class="s">"ngModel"</code><code>                                   </code><a class="co" id="co_working_with_template_driven_forms_CO4-2" href="#callout_working_with_template_driven_forms_CO4-2"><img src="images/2.png" alt="2" /></a><code>
+             </code><code class="err">[</code><code class="err">(</code><code class="na">ngModel</code><code class="err">)</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">stock</code><code class="err">.</code><code class="na">name</code><code class="err">"</code><code class="nt">&gt;</code><code>
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="err">*</code><code class="na">ngIf=</code><code class="s">"stockName.errors &amp;&amp; stockName.errors.required"</code><code class="nt">&gt;</code><code>     </code><a class="co" id="co_working_with_template_driven_forms_CO4-3" href="#callout_working_with_template_driven_forms_CO4-3"><img src="images/3.png" alt="3" /></a><code>
+        Stock Name is Mandatory
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-code"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;input</code><code> </code><code class="na">type=</code><code class="s">"text"</code><code>
+             </code><code class="na">placeholder=</code><code class="s">"Stock Code"</code><code>
+             </code><code class="na">required</code><code>
+             </code><code class="na">minlength=</code><code class="s">"2"</code><code>
+             </code><code class="na">name=</code><code class="s">"stockCode"</code><code>
+             </code><code class="err">#</code><code class="na">stockCode=</code><code class="s">"ngModel"</code><code>                                  </code><a class="co" id="co_working_with_template_driven_forms_CO4-4" href="#callout_working_with_template_driven_forms_CO4-4"><img src="images/4.png" alt="4" /></a><code>
+             </code><code class="err">[</code><code class="err">(</code><code class="na">ngModel</code><code class="err">)</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">stock</code><code class="err">.</code><code class="na">code</code><code class="err">"</code><code class="nt">&gt;</code><code>
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="err">*</code><code class="na">ngIf=</code><code class="s">"stockCode.dirty &amp;&amp; stockCode.invalid"</code><code class="nt">&gt;</code><code>             </code><a class="co" id="co_working_with_template_driven_forms_CO4-5" href="#callout_working_with_template_driven_forms_CO4-5"><img src="images/5.png" alt="5" /></a><code>
+      </code><code class="nt">&lt;div</code><code> </code><code class="err">*</code><code class="na">ngIf=</code><code class="s">"stockCode.errors.required"</code><code class="nt">&gt;</code><code>                      </code><a class="co" id="co_working_with_template_driven_forms_CO4-6" href="#callout_working_with_template_driven_forms_CO4-6"><img src="images/6.png" alt="6" /></a><code>
+        Stock Code is Mandatory
+      </code><code class="nt">&lt;/div&gt;</code><code>
+      </code><code class="nt">&lt;div</code><code> </code><code class="err">*</code><code class="na">ngIf=</code><code class="s">"stockCode.errors.minlength"</code><code class="nt">&gt;</code><code>
+        Stock Code must be atleast of length 2
+      </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-price"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;input</code><code> </code><code class="na">type=</code><code class="s">"number"</code><code>
+             </code><code class="na">placeholder=</code><code class="s">"Stock Price"</code><code>
+             </code><code class="na">name=</code><code class="s">"stockPrice"</code><code>
+             </code><code class="na">required</code><code>
+             </code><code class="err">#</code><code class="na">stockPrice=</code><code class="s">"ngModel"</code><code>                                 </code><a class="co" id="co_working_with_template_driven_forms_CO4-7" href="#callout_working_with_template_driven_forms_CO4-7"><img src="images/7.png" alt="7" /></a><code>
+             </code><code class="err">[</code><code class="na">ngModel</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">stock</code><code class="err">.</code><code class="na">price</code><code class="err">"</code><code>
+             </code><code class="err">(</code><code class="na">ngModelChange</code><code class="err">)</code><code class="err">=</code><code class="err">"</code><code class="na">setStockPrice</code><code class="err">(</code><code class="err">$</code><code class="na">event</code><code class="err">)</code><code class="err">"</code><code class="nt">&gt;</code><code>
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="err">*</code><code class="na">ngIf=</code><code class="s">"stockPrice.dirty &amp;&amp; stockPrice.invalid"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;div</code><code> </code><code class="err">*</code><code class="na">ngIf=</code><code class="s">"stockPrice.errors.required"</code><code class="nt">&gt;</code><code>
+        Stock Price is Mandatory
+      </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-exchange"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;div</code><code class="nt">&gt;</code><code>
+        </code><code class="nt">&lt;select</code><code> </code><code class="na">name=</code><code class="s">"stockExchange"</code><code> </code><code class="err">[</code><code class="err">(</code><code class="na">ngModel</code><code class="err">)</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">stock</code><code class="err">.</code><code class="na">exchange</code><code class="err">"</code><code class="nt">&gt;</code><code>
+          </code><code class="nt">&lt;option</code><code> </code><code class="err">*</code><code class="na">ngFor=</code><code class="s">"let exchange of exchanges"</code><code>
+                  </code><code class="err">[</code><code class="na">ngValue</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">exchange</code><code class="err">"</code><code class="nt">&gt;</code><code>{{exchange}}</code><code class="nt">&lt;/option&gt;</code><code>
+        </code><code class="nt">&lt;/select&gt;</code><code>
+      </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-confirm"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;input</code><code> </code><code class="na">type=</code><code class="s">"checkbox"</code><code>
+             </code><code class="na">name=</code><code class="s">"stockConfirm"</code><code>
+             </code><code class="na">required</code><code>
+             </code><code class="err">[</code><code class="err">(</code><code class="na">ngModel</code><code class="err">)</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">confirmed</code><code class="err">"</code><code class="nt">&gt;</code><code>
+      I confirm that the information provided above is accurate!
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;button</code><code> </code><code class="na">type=</code><code class="s">"submit"</code><code class="nt">&gt;</code><code>Create</code><code class="nt">&lt;/button&gt;</code><code>
+  </code><code class="nt">&lt;/form&gt;</code><code>
+</code><code class="nt">&lt;/div&gt;</code><code>
+
+</code><code class="nt">&lt;h4</code><code class="nt">&gt;</code><code>Stock Name is {{stock | json}}</code><code class="nt">&lt;/h4&gt;</code><code>
+</code><code class="nt">&lt;h4</code><code class="nt">&gt;</code><code>Data has been confirmed: {{confirmed}}</code><code class="nt">&lt;/h4&gt;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_working_with_template_driven_forms_CO4-1" href="#co_working_with_template_driven_forms_CO4-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Template reference variable <code>stockForm</code> to work at the form model level</p></dd>
+<dt><a class="co" id="callout_working_with_template_driven_forms_CO4-2" href="#co_working_with_template_driven_forms_CO4-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Template reference variable <code>stockName</code> to expose the name <code>ngModel</code></p></dd>
+<dt><a class="co" id="callout_working_with_template_driven_forms_CO4-3" href="#co_working_with_template_driven_forms_CO4-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Check on the template reference variable for errors and presence</p></dd>
+<dt><a class="co" id="callout_working_with_template_driven_forms_CO4-4" href="#co_working_with_template_driven_forms_CO4-4"><img src="images/4.png" alt="4" /></a></dt>
+<dd><p>Template reference variable <code>stockCode</code> to expose the code <code>ngModel</code></p></dd>
+<dt><a class="co" id="callout_working_with_template_driven_forms_CO4-5" href="#co_working_with_template_driven_forms_CO4-5"><img src="images/5.png" alt="5" /></a></dt>
+<dd><p>Check on the <code>stockCode</code> template reference variable for dirty and invalid form controls<a data-type="indexterm" data-primary="template reference variables" id="idm139828127726416"></a></p></dd>
+<dt><a class="co" id="callout_working_with_template_driven_forms_CO4-6" href="#co_working_with_template_driven_forms_CO4-6"><img src="images/6.png" alt="6" /></a></dt>
+<dd><p>Check on the <code>stockCode</code> for errors</p></dd>
+<dt><a class="co" id="callout_working_with_template_driven_forms_CO4-7" href="#co_working_with_template_driven_forms_CO4-7"><img src="images/7.png" alt="7" /></a></dt>
+<dd><p>Template reference variable <code>stockPrice</code> to expose the code <code>ngModel</code></p></dd>
+</dl>
+
+<p>Most of the template remains the same, but there are a few items worth calling out:</p>
+
+<ul>
+<li>
+<p>We added a template reference variable at the form level, and at each control level. The form-level template reference variable (<code>stockForm</code>) gets the <code>NgForm</code> model object bound to it, which allows us to check on things like form and control validity and values through it.</p>
+</li>
+<li>
+<p>We added template reference variables (<code>stockName</code>, <code>stockPrice</code>, <code>stockCode</code>) on each of the text boxes, and assigned the <code>NgModel</code> model object to it. This allows us to check the form field for all the control states that we were previously using through CSS classes (dirty/pristine, valid/invalid, and touched/untouched), in addition to errors.</p>
+</li>
+<li>
+<p>For the first form field (stock name), we added a div to show the error message that it is required, if the error exists.</p>
+</li>
+<li>
+<p>For the second and third field messages, we enclosed the error message within another div, which first checks if the form field is dirty and invalid before looking for a particular error message.</p>
+</li>
+<li>
+<p>On form submit we pass the <code>stockForm</code> template reference variable, which points to the form model, to the <code>createStock</code> method. This is another capability of template reference variables: you can pass them in as arguments to your component class.</p>
+</li>
+</ul>
+
+<p>This completed code is available in the <em>chapter6/template-driven/control-validity</em> folder. When you run this application, you should see something like <a data-type="xref" href="#fig0604">Figure 6-4</a>.</p>
+
+<figure class="width-90"><div id="fig0604" class="figure">
+<img src="images/auar_06in04.png" alt="Check form control validity in Angular" />
+<h6><span class="label">Figure 6-4. </span>Angular form with form validity checks</h6>
+</div></figure>
+
+<p>A few interesting things worth noting:</p>
+
+<ul>
+<li>
+<p>Notice that the error message for the stock name is displayed by default, but the error message that the price and code are required is only displayed after we touch the field. This is the advantage of wrapping the error message under the control state (dirty and invalid). Otherwise, the field is invalid by default (because it is empty).</p>
+</li>
+<li>
+<p>Most of the default validators (<code>required</code>, <code>minlength</code>, <code>maxlength</code>) will add a corresponding entry on the errors field on the template reference variable, which you can use to display a relevant message.</p>
+</li>
+<li>
+<p>Note that for the stock price, the <code>minlength</code> and <code>required</code> validators are not shown simultaneously. This is handled by the Angular built-in validators, but you need to be aware and handle multiple validators having errors simultaneously, and decide and show messages conditionally.</p>
+</li>
+<li>
+<p>Finally, we pass the <code>stockForm</code> template reference variable to the <code>createStock</code> method in the component class. This actually gives us access to the individual controls, as well as the value of the form model. We can use this (or similar template reference variables) to, for example, start showing error messages only after the first submit, instead of, say, as soon as the user types.</p>
+</li>
+</ul>
+
+<p>Thus, between the template reference variables and the validators, you get utmost control in how and when you want to show your validation messages. You can choose to do it completely in the template, or choose to have them in the template, but decide when and how to show them from your component class, or go to the extreme of creating your validation messages and drive it completely from your component class. It would be up to you which of the approaches you choose, as Angular gives you the tools and the complete flexibility to choose.<a data-type="indexterm" data-primary="validation of forms" data-secondary="control validity in template-driven forms" data-startref="ix_validcv" id="idm139828127098160"></a><a data-type="indexterm" data-primary="template-driven forms" data-secondary="control validity" data-startref="ix_tdformctrlval" id="idm139828127096944"></a><a data-type="indexterm" data-primary="control validity" data-secondary="in template-driven forms" data-startref="ix_ctrlval" id="idm139828127095728"></a></p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Working with FormGroups"><div class="sect1" id="idm139828127216000">
+<h1>Working with FormGroups</h1>
+
+<p>Before we finish with this chapter, we will quickly introduce another method of working with template-driven forms and the <code>ngModel</code> directive.<a data-type="indexterm" data-primary="FormGroups" data-secondary="using in template-driven forms" id="ix_formgrp"></a><a data-type="indexterm" data-primary="template-driven forms" data-secondary="working with FormGroups" id="ix_tdformFG"></a> So far, we have been declaring a member variable in our component, and then using <code>ngModel</code> to bind to it. We can instead let the form model drive the entire form, and copy over or use the values from it once the form has been submitted.</p>
+
+<p>We can use the same codebase from the previous section (<em>chapter6/template-driven/control-validity</em>) as the base to work off of.</p>
+
+<p>Let’s first modify the <code>CreateStockComponent</code> class with minor changes to take the model value from the form instead of relying on it being updated via data binding:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-create-stock'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./create-stock.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./create-stock.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">CreateStockComponent</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">confirmed</code> <code class="o">=</code> <code class="kc">false</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">exchanges</code> <code class="o">=</code> <code class="p">[</code><code class="s1">'NYSE'</code><code class="p">,</code> <code class="s1">'NASDAQ'</code><code class="p">,</code> <code class="s1">'OTHER'</code><code class="p">];</code>
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code> <code class="o">=</code>  <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">''</code><code class="p">,</code> <code class="s1">''</code><code class="p">,</code> <code class="mi">0</code><code class="p">,</code> <code class="mi">0</code><code class="p">,</code> <code class="s1">'NASDAQ'</code><code class="p">);</code>
+  <code class="p">}</code>
+
+  <code class="nx">createStock</code><code class="p">(</code><code class="nx">stockForm</code><code class="p">)</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Stock form'</code><code class="p">,</code> <code class="nx">stockForm</code><code class="p">.</code><code class="nx">value</code><code class="p">);</code>
+    <code class="k">if</code> <code class="p">(</code><code class="nx">stockForm</code><code class="p">.</code><code class="nx">valid</code><code class="p">)</code> <code class="p">{</code>
+      <code class="k">this</code><code class="p">.</code><code class="nx">stock</code> <code class="o">=</code> <code class="nx">stockForm</code><code class="p">.</code><code class="nx">value</code><code class="p">.</code><code class="nx">stock</code><code class="p">;</code>
+      <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Creating stock '</code><code class="p">,</code> <code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">);</code>
+    <code class="p">}</code> <code class="k">else</code> <code class="p">{</code>
+      <code class="nx">console</code><code class="p">.</code><code class="nx">error</code><code class="p">(</code><code class="s1">'Stock form is in an invalid state'</code><code class="p">);</code>
+    <code class="p">}</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>We have changed the <code>createStock</code> method, to copy over the <code>stock</code> object from the form <code>value</code> field. We have also dropped the <code>setStockPrice</code> method as we won’t be using it. Now, let’s take a look at the changes needed in the template to be able to support this:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;h2&gt;</code>Create Stock Form<code class="nt">&lt;/h2&gt;</code>
+
+<code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"form-group"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;form</code> <code class="err">(</code><code class="na">ngSubmit</code><code class="err">)="</code><code class="na">createStock</code><code class="err">(</code><code class="na">stockForm</code><code class="err">)"</code> <code class="err">#</code><code class="na">stockForm=</code><code class="s">"ngForm"</code> <code class="nt">&gt;</code>
+    <code class="nt">&lt;div</code> <code class="na">ngModelGroup=</code><code class="s">"stock"</code><code class="nt">&gt;</code>
+      <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-name"</code><code class="nt">&gt;</code>
+        <code class="nt">&lt;input</code> <code class="na">type=</code><code class="s">"text"</code>
+              <code class="na">placeholder=</code><code class="s">"Stock Name"</code>
+              <code class="na">required</code>
+              <code class="na">name=</code><code class="s">"name"</code>
+              <code class="na">ngModel</code><code class="nt">&gt;</code>
+      <code class="nt">&lt;/div&gt;</code>
+      <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-code"</code><code class="nt">&gt;</code>
+        <code class="nt">&lt;input</code> <code class="na">type=</code><code class="s">"text"</code>
+              <code class="na">placeholder=</code><code class="s">"Stock Code"</code>
+              <code class="na">required</code>
+              <code class="na">minlength=</code><code class="s">"2"</code>
+              <code class="na">name=</code><code class="s">"code"</code>
+              <code class="na">ngModel</code><code class="nt">&gt;</code>
+      <code class="nt">&lt;/div&gt;</code>
+      <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-price"</code><code class="nt">&gt;</code>
+        <code class="nt">&lt;input</code> <code class="na">type=</code><code class="s">"number"</code>
+              <code class="na">placeholder=</code><code class="s">"Stock Price"</code>
+              <code class="na">name=</code><code class="s">"price"</code>
+              <code class="na">required</code>
+              <code class="na">ngModel</code><code class="nt">&gt;</code>
+      <code class="nt">&lt;/div&gt;</code>
+      <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-exchange"</code><code class="nt">&gt;</code>
+        <code class="nt">&lt;div&gt;</code>
+          <code class="nt">&lt;select</code> <code class="na">name=</code><code class="s">"exchange"</code> <code class="na">ngModel</code><code class="nt">&gt;</code>
+            <code class="nt">&lt;option</code> <code class="err">*</code><code class="na">ngFor=</code><code class="s">"let exchange of exchanges"</code>
+                    <code class="err">[</code><code class="na">ngValue</code><code class="err">]="</code><code class="na">exchange</code><code class="err">"</code><code class="nt">&gt;</code>{{exchange}}<code class="nt">&lt;/option&gt;</code>
+          <code class="nt">&lt;/select&gt;</code>
+        <code class="nt">&lt;/div&gt;</code>
+      <code class="nt">&lt;/div&gt;</code>
+    <code class="nt">&lt;/div&gt;</code>
+    <code class="nt">&lt;button</code> <code class="na">type=</code><code class="s">"submit"</code><code class="nt">&gt;</code>Create<code class="nt">&lt;/button&gt;</code>
+  <code class="nt">&lt;/form&gt;</code>
+<code class="nt">&lt;/div&gt;</code>
+
+<code class="nt">&lt;h4&gt;</code>Stock Name is {{stock | json}}<code class="nt">&lt;/h4&gt;</code>
+<code class="nt">&lt;h4&gt;</code>Data has been confirmed: {{confirmed}}<code class="nt">&lt;/h4&gt;</code></pre>
+
+<p>We have temporarily removed all validators, so as to not distract us from the core change. The major changes are as follows:</p>
+
+<ul>
+<li>
+<p>We have removed the banana-in-a-box syntax from all the <code>ngModel</code> bindings, and just kept it as an attribute. When we use <code>ngModel</code> like this, Angular uses the name field on the form element as the model name and creates a model object corresponding to it on the form.</p>
+</li>
+<li>
+<p>We have surrounded the form fields with another <code>div</code>, and used an Angular directive called <code>ngModelGroup</code> on it, providing it a name (<code>stock</code> in this case).<a data-type="indexterm" data-primary="ngModelGroup directive" id="idm139828126650080"></a> What this does is group the form elements, thus creating the name, price, code, and exchange fields as models under the common name stock. This is visible in the component when we access this entire set of values through <code>form.value.stock</code>.</p>
+</li>
+</ul>
+
+<p>We can similarly create multiple form groups and use <code>ngModel</code> directly, and then finally copy over the entire values to a common field (or not copy it over at all) in our component on form submit. This is another way we can use <code>ngModel</code> and template-driven forms in our applications. The finished code for this is available in the <em>chapter6/template-driven/form-groups/</em> folder in the GitHub repository.<a data-type="indexterm" data-primary="FormGroups" data-secondary="using in template-driven forms" data-startref="ix_formgrp" id="idm139828126646368"></a><a data-type="indexterm" data-primary="template-driven forms" data-secondary="working with FormGroups" data-startref="ix_tdformFG" id="idm139828126645088"></a></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Conclusion"><div class="sect1" id="idm139828127094192">
+<h1>Conclusion</h1>
+
+<p>In this chapter, we started exploring how to handle user input through the use of forms. In particular, we took a deep dive into how to create and work with template-driven forms, and leverage <code>ngModel</code> for two-way data binding. We further saw what control states Angular provides out of the box and how to leverage that as well as show and deal with validations and error messages.</p>
+
+<p>In the next chapter, we will look at a different way of approaching this: reactive forms. We will discuss how to use reactive forms but will first review the ways they differ from template-driven forms and why you might choose one over the other.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Exercise"><div class="sect1" id="idm139828126640832">
+<h1>Exercise</h1>
+
+<p>Take the finished exercise from the previous chapter (available in <em>chapter5/exercise/ecommerce</em>). Do the following:</p>
+<ol>
+<li>
+<p>Create a new component that allows us to add new products.</p>
+</li>
+<li>
+<p>Create a form that takes in the product name, price, image URL, and whether or not it is on sale. Try to use the form groups approach rather than two-way binding through <code>ngModel</code>.</p>
+</li>
+<li>
+<p>Make all the fields required, and see if you can add a basic Regex pattern validation for the image URL.</p>
+</li>
+<li>
+<p>Display relevant error messages, but only after the user either edits the field or after the first submit.</p>
+</li>
+<li>
+<p>Copy over the form and print it to the console after successful submission.</p>
+</li>
+
+</ol>
+
+<p>All of this can be accomplished using concepts covered in this chapter. <a data-type="indexterm" data-primary="template-driven forms" data-startref="ix_tdform" id="idm139828126632912"></a>You can check out the finished solution in <em>chapter6/exercise/ecommerce</em>.</p>
+</div></section>
+
+
+
+
+
+
+
+</div></section></div>
+</body>
+</html>

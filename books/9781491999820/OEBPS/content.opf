@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns="http://www.idpf.org/2007/opf"
+         version="3.0"
+         unique-identifier="BookId"
+         xmlns:dc="http://purl.org/dc/elements/1.1/"
+         xmlns:dcterms="http://purl.org/dc/terms/"
+         xml:lang="en"
+         xmlns:media="http://www.idpf.org/epub/vocab/overlays/#"
+         prefix="ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/">
+
+    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/"
+              xmlns:opf="http://www.idpf.org/2007/opf">
+
+        <dc:identifier id="BookId">9781491999820</dc:identifier>
+        <meta refines="#BookId" property="identifier-type" scheme="onix:codelist5">22</meta>
+        <meta property="dcterms:identifier" id="meta-identifier">BookId</meta>
+        <dc:title>Angular: Up and Running</dc:title>
+        <meta property="dcterms:title" id="meta-title">Angular: Up and Running</meta>
+        <dc:language>en</dc:language>
+        <meta property="dcterms:language" id="meta-language">en</meta>
+        <meta property="dcterms:modified">2018-07-27T10:41:55Z</meta>
+        <dc:creator id="creator">Shyam Seshadri</dc:creator>
+        <meta refines="#creator" property="file-as">Shyam Seshadri</meta>
+        <meta property="dcterms:publisher">O&#39;Reilly Media, Inc.</meta>
+        <dc:publisher>O&#39;Reilly Media, Inc.</dc:publisher>
+        
+        <meta property="dcterms:date">2018-7-27</meta>
+        <dc:date>2018-7-27</dc:date>
+        <meta property="dcterms:rights">All rights reserved</meta>
+        <dc:rights>Copyright &#x00A9; 2018 by O&#39;Reilly Media, Inc.</dc:rights>
+        <meta name="cover" content="image_cover"/>
+        <meta name="generator" content="epub-nicohaenggi" />
+        <meta property="ibooks:specified-fonts">true</meta>
+
+    </metadata>
+
+    <manifest>
+        <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml" />
+        <item id="css" href="style.css" media-type="text/css" />
+        
+        <item id="css" href="core.css" media-type="text/css" />
+        
+
+        <item id="image_cover" href="images/cover.jpg" media-type="image/jpg" />
+
+        
+        <item id="image_0" href="images/cover.png" media-type="image/png" />
+        <item id="image_1" href="images/auar_02in01.png" media-type="image/png" />
+        <item id="image_2" href="images/1.png" media-type="image/png" />
+        <item id="image_3" href="images/2.png" media-type="image/png" />
+        <item id="image_4" href="images/3.png" media-type="image/png" />
+        <item id="image_5" href="images/4.png" media-type="image/png" />
+        <item id="image_6" href="images/5.png" media-type="image/png" />
+        <item id="image_7" href="images/auar_02in02.png" media-type="image/png" />
+        <item id="image_8" href="images/auar_02in03.png" media-type="image/png" />
+        <item id="image_9" href="images/auar_03in01.png" media-type="image/png" />
+        <item id="image_10" href="images/auar_0401.png" media-type="image/png" />
+        <item id="image_11" href="images/1.png" media-type="image/png" />
+        <item id="image_12" href="images/auar_04in01.png" media-type="image/png" />
+        <item id="image_13" href="images/1.png" media-type="image/png" />
+        <item id="image_14" href="images/2.png" media-type="image/png" />
+        <item id="image_15" href="images/3.png" media-type="image/png" />
+        <item id="image_16" href="images/4.png" media-type="image/png" />
+        <item id="image_17" href="images/5.png" media-type="image/png" />
+        <item id="image_18" href="images/6.png" media-type="image/png" />
+        <item id="image_19" href="images/auar_05in01.png" media-type="image/png" />
+        <item id="image_20" href="images/auar_05in02.png" media-type="image/png" />
+        <item id="image_21" href="images/7.png" media-type="image/png" />
+        <item id="image_22" href="images/8.png" media-type="image/png" />
+        <item id="image_23" href="images/9.png" media-type="image/png" />
+        <item id="image_24" href="images/10.png" media-type="image/png" />
+        <item id="image_25" href="images/auar_05in03.png" media-type="image/png" />
+        <item id="image_26" href="images/1.png" media-type="image/png" />
+        <item id="image_27" href="images/auar_06in01.png" media-type="image/png" />
+        <item id="image_28" href="images/2.png" media-type="image/png" />
+        <item id="image_29" href="images/3.png" media-type="image/png" />
+        <item id="image_30" href="images/4.png" media-type="image/png" />
+        <item id="image_31" href="images/5.png" media-type="image/png" />
+        <item id="image_32" href="images/auar_06in02.png" media-type="image/png" />
+        <item id="image_33" href="images/auar_06in03.png" media-type="image/png" />
+        <item id="image_34" href="images/6.png" media-type="image/png" />
+        <item id="image_35" href="images/7.png" media-type="image/png" />
+        <item id="image_36" href="images/auar_06in04.png" media-type="image/png" />
+        <item id="image_37" href="images/1.png" media-type="image/png" />
+        <item id="image_38" href="images/2.png" media-type="image/png" />
+        <item id="image_39" href="images/auar_07in01.png" media-type="image/png" />
+        <item id="image_40" href="images/3.png" media-type="image/png" />
+        <item id="image_41" href="images/auar_07in02.png" media-type="image/png" />
+        <item id="image_42" href="images/4.png" media-type="image/png" />
+        <item id="image_43" href="images/5.png" media-type="image/png" />
+        <item id="image_44" href="images/auar_07in03.png" media-type="image/png" />
+        <item id="image_45" href="images/1.png" media-type="image/png" />
+        <item id="image_46" href="images/2.png" media-type="image/png" />
+        <item id="image_47" href="images/3.png" media-type="image/png" />
+        <item id="image_48" href="images/4.png" media-type="image/png" />
+        <item id="image_49" href="images/auar_08in01.png" media-type="image/png" />
+        <item id="image_50" href="images/auar_08in02.png" media-type="image/png" />
+        <item id="image_51" href="images/5.png" media-type="image/png" />
+        <item id="image_52" href="images/1.png" media-type="image/png" />
+        <item id="image_53" href="images/2.png" media-type="image/png" />
+        <item id="image_54" href="images/3.png" media-type="image/png" />
+        <item id="image_55" href="images/auar_09in01.png" media-type="image/png" />
+        <item id="image_56" href="images/4.png" media-type="image/png" />
+        <item id="image_57" href="images/5.png" media-type="image/png" />
+        <item id="image_58" href="images/auar_09in02.png" media-type="image/png" />
+        <item id="image_59" href="images/6.png" media-type="image/png" />
+        <item id="image_60" href="images/1.png" media-type="image/png" />
+        <item id="image_61" href="images/2.png" media-type="image/png" />
+        <item id="image_62" href="images/3.png" media-type="image/png" />
+        <item id="image_63" href="images/4.png" media-type="image/png" />
+        <item id="image_64" href="images/5.png" media-type="image/png" />
+        <item id="image_65" href="images/6.png" media-type="image/png" />
+        <item id="image_66" href="images/1.png" media-type="image/png" />
+        <item id="image_67" href="images/2.png" media-type="image/png" />
+        <item id="image_68" href="images/3.png" media-type="image/png" />
+        <item id="image_69" href="images/auar_11in01.png" media-type="image/png" />
+        <item id="image_70" href="images/auar_11in02.png" media-type="image/png" />
+        <item id="image_71" href="images/4.png" media-type="image/png" />
+        <item id="image_72" href="images/5.png" media-type="image/png" />
+        <item id="image_73" href="images/auar_12in01.png" media-type="image/png" />
+        <item id="image_74" href="images/auar_12in02.png" media-type="image/png" />
+
+        
+        <item id="tocxhtmlfile" href="cover.html" media-type="application/xhtml+xml" />
+        <item id="tocxhtmlfile" href="toc01.html" media-type="application/xhtml+xml" />
+        <item id="tocxhtmlfile" href="titlepage01.html" media-type="application/xhtml+xml" />
+        <item id="tocxhtmlfile" href="copyright-page01.html" media-type="application/xhtml+xml" />
+        <item id="preface-idm139828148098976" href="preface01.html" media-type="application/xhtml+xml" />
+        <item id="chapter-idm139828148098320" href="ch01.html" media-type="application/xhtml+xml" />
+        <item id="chapter-idm139828148019584" href="ch02.html" media-type="application/xhtml+xml" />
+        <item id="chapter-idm139828147941216" href="ch03.html" media-type="application/xhtml+xml" />
+        <item id="chapter-idm139828135411776" href="ch04.html" media-type="application/xhtml+xml" />
+        <item id="chapter-idm139828135411152" href="ch05.html" media-type="application/xhtml+xml" />
+        <item id="chapter-idm139828132507296" href="ch06.html" media-type="application/xhtml+xml" />
+        <item id="chapter-idm139828126631056" href="ch07.html" media-type="application/xhtml+xml" />
+        <item id="chapter-idm139828126630592" href="ch08.html" media-type="application/xhtml+xml" />
+        <item id="chapter-idm139828120748864" href="ch09.html" media-type="application/xhtml+xml" />
+        <item id="chapter-idm139828116666768" href="ch10.html" media-type="application/xhtml+xml" />
+        <item id="chapter-idm139828116666144" href="ch11.html" media-type="application/xhtml+xml" />
+        <item id="chapter-idm139828109423296" href="ch12.html" media-type="application/xhtml+xml" />
+        <item id="index-idm139828106801904" href="ix01.html" media-type="application/xhtml+xml" />
+        <item id="tocxhtmlfile" href="colophon01.html" media-type="application/xhtml+xml" />
+        <item id="tocxhtmlfile" href="colophon02.html" media-type="application/xhtml+xml" />
+
+    </manifest>
+
+    <spine toc="ncx">
+      
+      <itemref idref="tocxhtmlfile"/>
+      <itemref idref="tocxhtmlfile"/>
+      <itemref idref="tocxhtmlfile"/>
+      <itemref idref="tocxhtmlfile"/>
+      <itemref idref="preface-idm139828148098976"/>
+      <itemref idref="chapter-idm139828148098320"/>
+      <itemref idref="chapter-idm139828148019584"/>
+      <itemref idref="chapter-idm139828147941216"/>
+      <itemref idref="chapter-idm139828135411776"/>
+      <itemref idref="chapter-idm139828135411152"/>
+      <itemref idref="chapter-idm139828132507296"/>
+      <itemref idref="chapter-idm139828126631056"/>
+      <itemref idref="chapter-idm139828126630592"/>
+      <itemref idref="chapter-idm139828120748864"/>
+      <itemref idref="chapter-idm139828116666768"/>
+      <itemref idref="chapter-idm139828116666144"/>
+      <itemref idref="chapter-idm139828109423296"/>
+      <itemref idref="index-idm139828106801904"/>
+      <itemref idref="tocxhtmlfile"/>
+      <itemref idref="tocxhtmlfile"/>
+
+    </spine>
+    <guide>
+      
+      <reference type="text" title="Table of Content" href="cover.html"/>
+      
+    </guide>
+</package>

@@ -1,0 +1,992 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>7. Working with Reactive Forms</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><section data-type="chapter" epub:type="chapter" data-pdf-bookmark="Chapter 7. Working with Reactive Forms"><div class="chapter" id="chapter-7">
+<h1><span class="label">Chapter 7. </span>Working with Reactive Forms</h1>
+
+
+<p>In the previous chapter, we started working on our first form-based Angular application.<a data-type="indexterm" data-primary="reactive forms" id="ix_reactfm"></a> To do this, we explored template-driven forms and how we might build and use them within the context of an Angular application. We saw how to perform data binding, work with different form elements, and also perform validity and show relevant error messages.</p>
+
+<p>In this chapter, we will focus on doing the exact same set of things, though this time, we will use a reactive approach. As mentioned in the previous chapter, Angular allows us to build forms using two approaches: template-driven and reactive. Both these approaches are part of the core <code>@angular/forms</code> library, but are part of two different modules, <code>FormsModule</code> and <code>ReactiveFormsModule</code>, respectively.</p>
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Reactive Forms"><div class="sect1" id="idm139828126625504">
+<h1>Reactive Forms</h1>
+
+<p>To understand and get into building forms in a reactive manner, it is important to understand what reactive programming is.<a data-type="indexterm" data-primary="reactive programming" id="idm139828126624000"></a> Reactive programming, to overly simplify it, is the concept of writing a program in a way that it fundamentally deals with and acts on asynchronous data streams. While most programs (especially web apps) do this, reactive programming does this by providing an amazing toolbox of utilities and functions to combine, filter, and merge these various streams and act on them, which is where it gets real fun real fast.</p>
+
+<p>Unlike template-driven forms in Angular, with reactive forms, you define the entire tree of Angular form control objects in your component code, and then bind them to native form control elements in your template. Because the component has access to the form controls as well as the backing data model, it can push data model changes into the form control and vice versa, thus reacting to changes either way.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Understanding the Differences"><div class="sect2" id="idm139828126621792">
+<h2>Understanding the Differences</h2>
+
+<p>Now, with two approaches in front of us (even though we haven’t looked at a single line of code of the reactive form approach), the question naturally arises: which one is better?<a data-type="indexterm" data-primary="reactive forms" data-secondary="differences from template-driven forms" id="idm139828126620016"></a><a data-type="indexterm" data-primary="template-driven forms" data-secondary="differences from reactive forms" id="idm139828126618976"></a> The answer, as you would expect, is that neither is truly “better” than the other. Both have their own advantages and disadvantages.</p>
+
+<p>When we create forms using the template-driven approach, we declare the form controls in the template, and add directives to it (like <code>ngModel</code>). Then Angular is responsible for creating the form controls through the use of directives.<a data-type="indexterm" data-primary="asynchronous vs. synchronous forms" id="idm139828126616672"></a><a data-type="indexterm" data-primary="synchronous vs. asynchronous forms" id="idm139828127073984"></a></p>
+
+<p>That said, template-driven forms are nice and declarative, and easy to understand. Angular is responsible for the data model sync and pushes data to the model and reads and updates values in the UI via directives like <code>ngModel</code>. This also usually means less code in the component class.</p>
+
+<p>Reactive forms, on the other hand, are synchronous, and you as a developer have absolute control over how and when the data is synced from the UI to the model and vice versa. Because you create the entire form control tree in the component, you have access to it immediately and don’t have to deal with Angular’s asynchronous life-cycle. While we haven’t encountered this ourselves in any of the examples so far, you will run into this if you try to update the form controls from your component class on initialization, as they might not be immediately available. You can read up on this in the <a href="http://bit.ly/2ki0EcR">official Angular docs</a>. It also fits in better if the rest of your application is following a reactive style of programming.</p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Using Reactive Forms"><div class="sect1" id="idm139828127070160">
+<h1>Using Reactive Forms</h1>
+
+<p>Now that we have briefly compared reactive versus template-driven forms and reviewed the pros and cons of each, let’s look at building a reactive form. We will do this step by step, starting with the building block of reactive forms, <code>Form Control</code>s, and work our way upwards to the other various components like <code>Form Group</code>s and <code>Form Builder</code>s.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Form Controls"><div class="sect2" id="idm139828127067088">
+<h2>Form Controls</h2>
+
+<p>The core of any reactive form<a data-type="indexterm" data-primary="reactive forms" data-secondary="form controls" id="ix_reactfmctrl"></a><a data-type="indexterm" data-primary="FormControls (reactive forms)" id="ix_frmctrl"></a> is the <code>FormControl</code>, which directly represents an individual form element in the template. Thus, any reactive form is nothing but a set of grouped <code>FormControl</code>s. It is at the <code>FormControl</code> level that we also assign initial values and validators (both sync and async). Thus, everything that we did in the template with template-driven forms now happens at a <code>FormControl</code> level in the TypeScript code.</p>
+
+<p>We can use the same codebase from <a data-type="xref" href="ch06.html#chapter-6">Chapter 6</a> as our base to build this in case you are not coding along with the book. You can get that from the <em>chapter6/template-driven/simple-ng-model</em> folder in the GitHub repository.</p>
+
+<p>The very first thing we will do is import <code>ReactiveFormsModule</code> into our main <em>app.module.ts</em> file. For this example, we can remove the old <code>FormsModule</code> from it. <a data-type="indexterm" data-primary="ReactiveFormsModule, importing" id="idm139828127057120"></a>The <em>src/app/app.module.ts</em> file should look like this:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">BrowserModule</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/platform-browser'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">NgModule</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">ReactiveFormsModule</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/forms'</code><code class="p">;</code><code>       </code><a class="co" id="co_working_with_reactive_forms_CO1-1" href="#callout_working_with_reactive_forms_CO1-1"><img src="images/1.png" alt="1" /></a><code>
+
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">AppComponent</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./app.component'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">StockItemComponent</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./stock/stock-item/stock-item.component'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">CreateStockComponent</code><code> </code><code class="p">}</code><code>
+    </code><code class="nx">from</code><code> </code><code class="s1">'./stock/create-stock/create-stock.component'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">NgModule</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="nx">declarations</code><code class="o">:</code><code> </code><code class="p">[</code><code>
+    </code><code class="nx">AppComponent</code><code class="p">,</code><code>
+    </code><code class="nx">StockItemComponent</code><code class="p">,</code><code>
+    </code><code class="nx">CreateStockComponent</code><code>
+  </code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">imports</code><code class="o">:</code><code> </code><code class="p">[</code><code>
+    </code><code class="nx">BrowserModule</code><code class="p">,</code><code>
+    </code><code class="nx">ReactiveFormsModule</code><code class="p">,</code><code>              </code><a class="co" id="co_working_with_reactive_forms_CO1-2" href="#callout_working_with_reactive_forms_CO1-2"><img src="images/2.png" alt="2" /></a><code>
+  </code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">providers</code><code class="o">:</code><code> </code><code class="p">[</code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">bootstrap</code><code class="o">:</code><code> </code><code class="p">[</code><code class="nx">AppComponent</code><code class="p">]</code><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">AppModule</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_working_with_reactive_forms_CO1-1" href="#co_working_with_reactive_forms_CO1-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Import the <code>ReactiveFormsModule</code></p></dd>
+<dt><a class="co" id="callout_working_with_reactive_forms_CO1-2" href="#co_working_with_reactive_forms_CO1-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Add the <code>ReactiveFormsModule</code> to the <code>NgModule</code> <code>imports</code> section</p></dd>
+</dl>
+
+<p>Now given this base setup, which enables reactive form features in our application, let’s see how to create a simple form that allows us to take and work with a name. We will first modify the template for our <code>CreateStockComponent</code> by changing the <em>src/app/stock/create-stock/create-stock.component.html</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;h2</code><code class="nt">&gt;</code><code>Create Stock Form</code><code class="nt">&lt;/h2&gt;</code><code>
+
+</code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"form-group"</code><code class="nt">&gt;</code><code>
+
+    </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-name"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;input</code><code> </code><code class="na">type=</code><code class="s">"text"</code><code>
+             </code><code class="na">placeholder=</code><code class="s">"Stock Name"</code><code>
+             </code><code class="na">name=</code><code class="s">"stockName"</code><code>
+             </code><code class="err">[</code><code class="na">formControl</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">nameControl</code><code class="err">"</code><code class="nt">&gt;</code><code>               </code><a class="co" id="co_working_with_reactive_forms_CO2-1" href="#callout_working_with_reactive_forms_CO2-1"><img src="images/1.png" alt="1" /></a><code>
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;button</code><code> </code><code class="err">(</code><code class="na">click</code><code class="err">)</code><code class="err">=</code><code class="err">"</code><code class="na">onSubmit</code><code class="err">(</code><code class="err">)</code><code class="err">"</code><code class="nt">&gt;</code><code>Submit</code><code class="nt">&lt;/button&gt;</code><code>
+</code><code class="nt">&lt;/div&gt;</code><code>
+
+</code><code class="nt">&lt;p</code><code class="nt">&gt;</code><code>Form Control value: {{ nameControl.value | json }}</code><code class="nt">&lt;/p&gt;</code><code>    </code><a class="co" id="co_working_with_reactive_forms_CO2-2" href="#callout_working_with_reactive_forms_CO2-2"><img src="images/2.png" alt="2" /></a><code>
+</code><code class="nt">&lt;p</code><code class="nt">&gt;</code><code>Form Control status: {{ nameControl.status | json }}</code><code class="nt">&lt;/p&gt;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_working_with_reactive_forms_CO2-1" href="#co_working_with_reactive_forms_CO2-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Using a form control binding instead of <code>ngModel</code></p></dd>
+<dt><a class="co" id="callout_working_with_reactive_forms_CO2-2" href="#co_working_with_reactive_forms_CO2-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Accessing the current value in the form field</p></dd>
+</dl>
+
+<p>The way we created this form is very different than the template-driven approach outlined in the previous chapter.<a data-type="indexterm" data-primary="data binding" data-secondary="using form control binding instead of ngModel" id="idm139828126438128"></a> Instead of using <code>ngModel</code>, we are binding the form element to <code>nameControl</code>. We can then derive the current value of the form control via this field, whether it is the value (via <code>nameControl.value</code>) or its status (via <code>nameControl.status</code>, which is always valid for this simple element). Finally, we have a simple button that triggers the <code>onSubmit()</code> method in the component.<a data-type="indexterm" data-primary="onSubmit method" id="idm139828126434704"></a></p>
+
+<p>Next, let’s take a look at the <em>src/app/component/stock/create-stock/create-stock.component.ts</em> file to see what changes we have to make to it to support this form:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">FormControl</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/forms'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-create-stock'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./create-stock.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./create-stock.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">CreateStockComponent</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">nameControl</code> <code class="o">=</code> <code class="k">new</code> <code class="nx">FormControl</code><code class="p">();</code>
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{}</code>
+
+  <code class="nx">onSubmit() {</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Name Control Value'</code><code class="p">,</code> <code class="k">this</code><code class="p">.</code><code class="nx">nameControl</code><code class="p">.</code><code class="nx">value</code><code class="p">);</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>We have removed all references of the <code>Stock</code> model from this. Instead, we import and create an instance of <code>FormControl</code> called <code>nameControl</code>. This is the variable we bound to in the template. Then, on the <code>onSubmit()</code> call, we simply print the current <code>value</code> of the <code>nameControl</code> control. Again, note that unlike traditional non-MVC frameworks, at no point is the control reaching out into the view to get the current value of the element. We rely on the <code>FormControl</code> to provide a representative view of the input element, and keep it up to date.<a data-type="indexterm" data-primary="input element" data-secondary="in reactive forms" id="idm139828126332288"></a></p>
+
+<p>We have used the default <code>FormControl</code> constructor, but it can also take the initial value along with a list of validators (both sync and async) as arguments. We will see how to add validators in a bit more detail in <a data-type="xref" href="#form_groups">“Form Groups”</a>.</p>
+
+<p>When we run this application, we should see something like <a data-type="xref" href="#fig0701">Figure 7-1</a>, with a simple form field below our stock widgets. If you type into it, you should see the form field below it.</p>
+
+<figure><div id="fig0701" class="figure">
+<img src="images/auar_07in01.png" alt="Form Control Output" />
+<h6><span class="label">Figure 7-1. </span>Simple Angular reactive form</h6>
+</div></figure>
+
+<p>Summing up, it is helpful to think of <code>FormControl</code> when we need to track the state and value of any individual form element, like an input box or a checkbox. In the next section, we will see how to build a more complete form using <code>FormControl</code> and something called <code>FormGroup</code>.</p>
+
+<p>The finished example is available in the <em>chapter7/form-control</em> folder in the GitHub repository.<a data-type="indexterm" data-primary="FormControls (reactive forms)" data-startref="ix_frmctrl" id="idm139828126323440"></a><a data-type="indexterm" data-primary="reactive forms" data-secondary="form controls" data-startref="ix_reactfmctrl" id="idm139828126322400"></a></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Form Groups"><div class="sect2" id="form_groups">
+<h2>Form Groups</h2>
+
+<p>Usually, when we build any form, it rarely has just one element.<a data-type="indexterm" data-primary="FormGroups" data-secondary="using in reactive forms" id="ix_FGrpreact"></a> We typically have a set of different fields and elements we want to track under one common form or heading. In these cases, the <code>FormGroup</code> is useful as a way to group relevant form fields under one group. This gives us the convenience of whether we want to track the form controls individually, or as a group. For example, we can get the entire form value, or check whether the form as a whole is valid (as a result of individual elements and their state).</p>
+
+<p>Let’s see how we can extend the example from the previous section to create a comprehensive form for creating a stock using <code>FormControl</code> and <code>FormGroup</code> instances.</p>
+
+<p>First, we will see how to modify the <em>src/app/stock/create-stock/create-stock.component​.html</em> template to ask for all the relevant fields of a stock from the user:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;h2</code><code class="nt">&gt;</code><code>Create Stock Form</code><code class="nt">&lt;/h2&gt;</code><code>
+
+</code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"form-group"</code><code class="nt">&gt;</code><code>
+  </code><code class="nt">&lt;form</code><code> </code><code class="err">[</code><code class="na">formGroup</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">stockForm</code><code class="err">"</code><code> </code><code class="err">(</code><code class="na">ngSubmit</code><code class="err">)</code><code class="err">=</code><code class="err">"</code><code class="na">onSubmit</code><code class="err">(</code><code class="err">)</code><code class="err">"</code><code class="nt">&gt;</code><code>      </code><a class="co" id="co_working_with_reactive_forms_CO3-1" href="#callout_working_with_reactive_forms_CO3-1"><img src="images/1.png" alt="1" /></a><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-name"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;input</code><code> </code><code class="na">type=</code><code class="s">"text"</code><code>
+             </code><code class="na">placeholder=</code><code class="s">"Stock Name"</code><code>
+             </code><code class="na">name=</code><code class="s">"stockName"</code><code>
+             </code><code class="na">formControlName=</code><code class="s">"name"</code><code class="nt">&gt;</code><code>                          </code><a class="co" id="co_working_with_reactive_forms_CO3-2" href="#callout_working_with_reactive_forms_CO3-2"><img src="images/2.png" alt="2" /></a><code>
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-code"</code><code class="nt">&gt;</code><code>
+        </code><code class="nt">&lt;input</code><code> </code><code class="na">type=</code><code class="s">"text"</code><code>
+               </code><code class="na">placeholder=</code><code class="s">"Stock Code"</code><code>
+               </code><code class="na">formControlName=</code><code class="s">"code"</code><code class="nt">&gt;</code><code>
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-price"</code><code class="nt">&gt;</code><code>
+        </code><code class="nt">&lt;input</code><code> </code><code class="na">type=</code><code class="s">"number"</code><code>
+               </code><code class="na">placeholder=</code><code class="s">"Stock Price"</code><code>
+               </code><code class="na">formControlName=</code><code class="s">"price"</code><code class="nt">&gt;</code><code>
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;button</code><code> </code><code class="na">type=</code><code class="s">"submit"</code><code class="nt">&gt;</code><code>Submit</code><code class="nt">&lt;/button&gt;</code><code>
+  </code><code class="nt">&lt;/form&gt;</code><code>
+</code><code class="nt">&lt;/div&gt;</code><code>
+
+</code><code class="nt">&lt;p</code><code class="nt">&gt;</code><code>Form Control value: {{ stockForm.value | json }}</code><code class="nt">&lt;/p&gt;</code><code>        </code><a class="co" id="co_working_with_reactive_forms_CO3-3" href="#callout_working_with_reactive_forms_CO3-3"><img src="images/3.png" alt="3" /></a><code>
+</code><code class="nt">&lt;p</code><code class="nt">&gt;</code><code>Form Control status: {{ stockForm.status | json }}</code><code class="nt">&lt;/p&gt;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_working_with_reactive_forms_CO3-1" href="#co_working_with_reactive_forms_CO3-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>We now bind to a <code>formGroup</code> instead of a <code>formControl</code></p></dd>
+<dt><a class="co" id="callout_working_with_reactive_forms_CO3-2" href="#co_working_with_reactive_forms_CO3-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Once we use a <code>formGroup</code>, we use <code>formControlName</code> inside the group</p></dd>
+<dt><a class="co" id="callout_working_with_reactive_forms_CO3-3" href="#co_working_with_reactive_forms_CO3-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Change over to printing the form group value instead of the element</p></dd>
+</dl>
+
+<p>The major change from the previous example is that we switched over from binding to <code>formControl</code> to a <code>formGroup</code>. We do this at the <code>form</code> level. Now within it, for each form element, we mention a <code>formControlName</code>. Each of these will bind to an individual element within the <code>formGroup</code>. Finally, we display the current <code>value</code> and <code>status</code> of the form similar to how we did for the <code>FormControl</code>.</p>
+
+<p>Also, for easier readability, we have switched from calling the control <code>nameControl</code>, and instead just call it <code>name</code>, <code>code</code>, and <code>price</code> in the component.</p>
+
+<p>Next, let’s take a look at how we change the <em>src/app/stock/create-stock/create-stock.component.ts</em> component class to get this example to work:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">FormControl</code><code class="p">,</code> <code class="nx">FormGroup</code><code class="p">,</code> <code class="nx">Validators</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/forms'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-create-stock'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./create-stock.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./create-stock.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">CreateStockComponent</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">stockForm</code>: <code class="kt">FormGroup</code> <code class="o">=</code> <code class="k">new</code> <code class="nx">FormGroup</code><code class="p">({</code>
+    <code class="nx">name</code>: <code class="kt">new</code> <code class="nx">FormControl</code><code class="p">(</code><code class="kc">null</code><code class="p">,</code> <code class="nx">Validators</code><code class="p">.</code><code class="nx">required</code><code class="p">),</code>
+    <code class="nx">code</code>: <code class="kt">new</code> <code class="nx">FormControl</code><code class="p">(</code><code class="kc">null</code><code class="p">,</code> <code class="p">[</code><code class="nx">Validators</code><code class="p">.</code><code class="nx">required</code><code class="p">,</code> <code class="nx">Validators</code><code class="p">.</code><code class="nx">minLength</code><code class="p">(</code><code class="mi">2</code><code class="p">)]),</code>
+    <code class="nx">price</code>: <code class="kt">new</code> <code class="nx">FormControl</code><code class="p">(</code><code class="mi">0</code><code class="p">,</code> <code class="p">[</code><code class="nx">Validators</code><code class="p">.</code><code class="nx">required</code><code class="p">,</code> <code class="nx">Validators</code><code class="p">.</code><code class="nx">min</code><code class="p">(</code><code class="mi">0</code><code class="p">)])</code>
+  <code class="p">});</code>
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{}</code>
+
+  <code class="nx">onSubmit() {</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Stock Form Value'</code><code class="p">,</code> <code class="k">this</code><code class="p">.</code><code class="nx">stockForm</code><code class="p">.</code><code class="nx">value</code><code class="p">);</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>In the component, we now instantiate and expose a <code>FormGroup</code> instance, named <code>stockForm</code>. This is what we had bound to at the form level in the template. <code>FormGroup</code> allows us to instantiate multiple named controls within it, and we have done so to instantiate a form control for the name, code, and price. This time, we are also using the constructor of the <code>FormControl</code> to the maximum extent possible, by adding a default value and validators as required.</p>
+
+<p>The first argument to the <code>FormControl</code> constructor is the default value of the form control. Here, we initialize the default values of the two form controls to be <code>null</code> and <code>0</code>, respectively.</p>
+
+<p class="pagebreak-before">The second argument to the <code>FormControl</code> constructor can either be a single <code>Validator</code>, or an array of <code>Validator</code>s.<a data-type="indexterm" data-primary="validation of forms" data-secondary="validators in reactive forms" id="idm139828126044992"></a> There are a set of built-in validators to ensure that the <code>FormControl</code> is <code>require</code>, or has a minimum value. These validators can either be synchronous (like the ones we have used), or can also be asynchronous (for example, to check whether a username is available in the server). You can check out the built-in validators in the <a href="https://angular.io/api/forms/Validators">official Angular docs</a>.</p>
+
+<p>When the<a data-type="indexterm" data-primary="ngSubmit event handler" id="idm139828126041680"></a> form is submitted (using <code>ngSubmit</code> event binding), we then print the entire form group value to the console.</p>
+
+<p>When we run this, and type in some values in the form, we should see the form react and print the current value of the form as well as its validity status in the UI. It would look something like <a data-type="xref" href="#fig0702">Figure 7-2</a>.</p>
+
+<figure><div id="fig0702" class="figure">
+<img src="images/auar_07in02.png" alt="Form Group in action" />
+<h6><span class="label">Figure 7-2. </span>Angular reactive form with form control state</h6>
+</div></figure>
+
+<p>The finished example is available in the <em>chapter7/form-groups</em> folder in the GitHub repository.<a data-type="indexterm" data-primary="FormGroups" data-secondary="using in reactive forms" data-startref="ix_FGrpreact" id="idm139828126036176"></a></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Form Builders"><div class="sect2" id="idm139828126320592">
+<h2>Form Builders</h2>
+
+<p>Now, while the <code>FormGroup</code> gives us the flexibility to build complex, nested forms (and by the way, you can absolutely nest further form groups within a form group!), its syntax is slightly verbose.<a data-type="indexterm" data-primary="reactive forms" data-secondary="FormBuilders" id="idm139828126032720"></a><a data-type="indexterm" data-primary="FormBuilders, using in reactive forms" id="idm139828126031744"></a> And that’s why, to replace it, we have a <code>FormBuilder</code> in Angular, which makes it slightly nicer to build these rich forms in a cleaner manner.</p>
+
+<p>The nice thing about the <code>FormBuilder</code> is that we don’t have to change or even touch our template. The <code>FormBuilder</code> fundamentally is syntactic sugar to allow us to quickly create <code>FormGroup</code> and <code>FormControl</code> elements without manually calling <code>new</code> for each one. The reactive form still relies on those elements under the covers for its functioning, and <code>FormBuilder</code> does not do away with them.</p>
+
+<p>Let’s see how we can switch our <code>CreateStockComponent</code> to use <code>FormBuilder</code>. We will change the <em>src/app/stock/create-stock/create-stock.component.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Component</code><code class="p">,</code><code> </code><code class="nx">OnInit</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">FormControl</code><code class="p">,</code><code> </code><code class="nx">FormGroup</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/forms'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Validators</code><code class="p">,</code><code> </code><code class="nx">FormBuilder</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/forms'</code><code class="p">;</code><code>    </code><a class="co" id="co_working_with_reactive_forms_CO4-1" href="#callout_working_with_reactive_forms_CO4-1"><img src="images/1.png" alt="1" /></a><code>
+
+</code><code class="err">@</code><code class="nx">Component</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="nx">selector</code><code class="o">:</code><code> </code><code class="s1">'app-create-stock'</code><code class="p">,</code><code>
+  </code><code class="nx">templateUrl</code><code class="o">:</code><code> </code><code class="s1">'./create-stock.component.html'</code><code class="p">,</code><code>
+  </code><code class="nx">styleUrls</code><code class="o">:</code><code> </code><code class="p">[</code><code class="s1">'./create-stock.component.css'</code><code class="p">]</code><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">CreateStockComponent</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="kr">public</code><code> </code><code class="nx">stockForm</code><code>: </code><code class="kt">FormGroup</code><code class="p">;</code><code>                 </code><a class="co" id="co_working_with_reactive_forms_CO4-2" href="#callout_working_with_reactive_forms_CO4-2"><img src="images/2.png" alt="2" /></a><code>
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code><code> </code><code class="nx">fb</code><code>: </code><code class="kt">FormBuilder</code><code class="p">)</code><code> </code><code class="p">{</code><code>       </code><a class="co" id="co_working_with_reactive_forms_CO4-3" href="#callout_working_with_reactive_forms_CO4-3"><img src="images/3.png" alt="3" /></a><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">createForm</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">createForm() {</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stockForm</code><code> </code><code class="o">=</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">fb</code><code class="p">.</code><code class="nx">group</code><code class="p">(</code><code class="p">{</code><code>             </code><a class="co" id="co_working_with_reactive_forms_CO4-4" href="#callout_working_with_reactive_forms_CO4-4"><img src="images/4.png" alt="4" /></a><code>
+      </code><code class="nx">name</code><code class="o">:</code><code> </code><code class="p">[</code><code class="kc">null</code><code class="p">,</code><code> </code><code class="nx">Validators</code><code class="p">.</code><code class="nx">required</code><code class="p">]</code><code class="p">,</code><code>         </code><a class="co" id="co_working_with_reactive_forms_CO4-5" href="#callout_working_with_reactive_forms_CO4-5"><img src="images/5.png" alt="5" /></a><code>
+      </code><code class="nx">code</code><code class="o">:</code><code> </code><code class="p">[</code><code class="kc">null</code><code class="p">,</code><code> </code><code class="p">[</code><code class="nx">Validators</code><code class="p">.</code><code class="nx">required</code><code class="p">,</code><code> </code><code class="nx">Validators</code><code class="p">.</code><code class="nx">minLength</code><code class="p">(</code><code class="mi">2</code><code class="p">)</code><code class="p">]</code><code class="p">]</code><code class="p">,</code><code>
+      </code><code class="nx">price</code><code class="o">:</code><code> </code><code class="p">[</code><code class="mi">0</code><code class="p">,</code><code> </code><code class="p">[</code><code class="nx">Validators</code><code class="p">.</code><code class="nx">required</code><code class="p">,</code><code> </code><code class="nx">Validators</code><code class="p">.</code><code class="nx">min</code><code class="p">(</code><code class="mi">0</code><code class="p">)</code><code class="p">]</code><code class="p">]</code><code>
+    </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">onSubmit() {</code><code>
+    </code><code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Stock Form Value'</code><code class="p">,</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">stockForm</code><code class="p">.</code><code class="nx">value</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_working_with_reactive_forms_CO4-1" href="#co_working_with_reactive_forms_CO4-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Import <code>FormBuilder</code> from <code>@angular/forms</code></p></dd>
+<dt><a class="co" id="callout_working_with_reactive_forms_CO4-2" href="#co_working_with_reactive_forms_CO4-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>We don’t initialize the <code>FormGroup</code> while declaring it anymore</p></dd>
+<dt><a class="co" id="callout_working_with_reactive_forms_CO4-3" href="#co_working_with_reactive_forms_CO4-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Inject an instance of the <code>FormBuilder</code> into the constructor</p></dd>
+<dt><a class="co" id="callout_working_with_reactive_forms_CO4-4" href="#co_working_with_reactive_forms_CO4-4"><img src="images/4.png" alt="4" /></a></dt>
+<dd><p>Create a <code>FormGroup</code> using the injected <code>FormBuilder</code> instance</p></dd>
+<dt><a class="co" id="callout_working_with_reactive_forms_CO4-5" href="#co_working_with_reactive_forms_CO4-5"><img src="images/5.png" alt="5" /></a></dt>
+<dd><p>Initialize the name control with an initial null value and a required validator<a data-type="indexterm" data-primary="FormGroups" data-secondary="using in reactive forms" id="idm139828125702768"></a></p></dd>
+</dl>
+
+<p>The major change from before is how we initialize the <code>stockForm</code> <code>FormGroup</code> instance. Instead of initializing it in line, with the <code>FormBuilder</code>, we first inject an instance of the <code>FormBuilder</code> into our constructor. Then, in the constructor itself, we use the <code>group</code> method on the <code>FormBuilder</code> instance to then create the various form controls.</p>
+
+<p>Even for creating the form controls, we simply use the <code>FormBuilder</code> syntactic sugar. For example, if we just wanted to initialize a text field called <code>name</code> with an empty string as the initial value, we could simply have a key called <code>name</code>, and pass an empty string as the value for it (that is, <code>name: ''</code>). In the preceding code, we actually want to both initialize it with a default value as well as add some validators, so instead of passing it just a value, we pass it an array.</p>
+
+<p>The first value in the array is the default value of the form control (null in the case of <code>name</code> and <code>code</code>, 0 in the case of <code>price</code>). The second value is then either a single validator (like in <code>name</code>), or an array of validators (like in <code>code</code> and <code>price</code>).</p>
+
+<p>Fundamentally, nothing else changes. The result of doing this is we get an application that behaves exactly like the version from the previous section, but we are able to hook it up in a more concise and less verbose manner. For any form with more than a few elements, it almost always makes sense to use the <code>FormBuilder</code> rather than the <code>FormGroup</code> method, as it reduces both the code and makes it a lot more concise and readable.</p>
+
+<p>The finished example is available in the <em>chapter7/form-builder</em> folder in the GitHub repository.</p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Form Data"><div class="sect1" id="idm139828126034336">
+<h1>Form Data</h1>
+
+<p>So far, we have hand-waved over handling the form data.<a data-type="indexterm" data-primary="reactive forms" data-secondary="handling form data" id="ix_reactfmda"></a> We have simply used the <code>FormControl</code> or <code>FormGroup</code> and accessed the value from it. In this section, we will go into the data and form model and how reactive forms allow us to deal with it as well as control and form state (like valid, invalid, etc.).</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Control State, Validity, and Error Messages"><div class="sect2" id="idm139828125675856">
+<h2>Control State, Validity, and Error Messages</h2>
+
+<p>Before we go deep into how the form model is structured, and how that corresponds to our data model in the component, we will first cover the simpler aspects, which is dealing with the control’s state and validity.<a data-type="indexterm" data-primary="reactive forms" data-secondary="handling form data" data-tertiary="control state, validity, and error messages" id="ix_reactfmdacsvem"></a><a data-type="indexterm" data-primary="control state" data-secondary="in reactive forms" id="idm139828125672720"></a><a data-type="indexterm" data-primary="control validity" data-secondary="in reactive forms" id="idm139828125671872"></a><a data-type="indexterm" data-primary="validation of forms" data-secondary="control validity in reactive forms" id="idm139828125671024"></a> Dealing with form control state and validity is quite similar to how we handle it with template-driven forms, in that the base control states and validity are the same. What changes is the method of accessing these properties.</p>
+
+<p>Let’s now add error messages to our form that we have been building so far, so that we can show respective error messages along each field.<a data-type="indexterm" data-primary="error messages, adding to reactive forms" id="idm139828125669264"></a> That said, we only want to show these error messages if the user has interacted with a field, and not before. So by default, when the page opens, we don’t want to show any error messages.</p>
+
+<p>We will build on the example from the previous section, so in case you are not coding along<a data-type="indexterm" data-primary="CSS" data-secondary="classes for control state" id="idm139828125667824"></a>, you can copy the codebase from <em>chapter7/form-builder</em>. Before we start going into the code, here’s a quick refresher on the basic Angular control states (repeated from <a data-type="xref" href="ch06.html#chapter-6">Chapter 6</a>):</p>
+<table style="width: 60%">
+
+<thead>
+<tr>
+<th>Control state</th>
+<th>CSS class if True</th>
+<th>CSS class if False</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Visited</p></td>
+<td><p><code>ng-touched</code></p></td>
+<td><p><code>ng-untouched</code></p></td>
+</tr>
+<tr>
+<td><p>Changed</p></td>
+<td><p><code>ng-dirty</code></p></td>
+<td><p><code>ng-pristine</code></p></td>
+</tr>
+<tr>
+<td><p>Valid</p></td>
+<td><p><code>ng-valid</code></p></td>
+<td><p><code>ng-invalid</code></p></td>
+</tr>
+</tbody>
+</table>
+
+<p>We could use these to highlight and show errors and state of the form, like we did before. But for this section, we will focus on showing only condition error messages, and cleanly handling cases with multiple validators.<a data-type="indexterm" data-primary="ng-untouched and ng-touched classes" id="idm139828125655520"></a><a data-type="indexterm" data-primary="ng-dirty class" id="idm139828125654912"></a><a data-type="indexterm" data-primary="ng-pristine class" id="idm139828125654304"></a><a data-type="indexterm" data-primary="ng-valid class" id="idm139828125653696"></a><a data-type="indexterm" data-primary="ng-invalid class" id="idm139828125653088"></a></p>
+
+<p>Now, let’s see how to edit the template to start showing relevant error messages in the form, while using the reactive form approach. We will edit the <em>src/app/stock/create-stock/create-stock.component.html</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;h2</code><code class="nt">&gt;</code><code>Create Stock Form</code><code class="nt">&lt;/h2&gt;</code><code>
+
+</code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"form-group"</code><code class="nt">&gt;</code><code>
+  </code><code class="nt">&lt;form</code><code> </code><code class="err">[</code><code class="na">formGroup</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">stockForm</code><code class="err">"</code><code> </code><code class="err">(</code><code class="na">ngSubmit</code><code class="err">)</code><code class="err">=</code><code class="err">"</code><code class="na">onSubmit</code><code class="err">(</code><code class="err">)</code><code class="err">"</code><code class="nt">&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-name"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;input</code><code> </code><code class="na">type=</code><code class="s">"text"</code><code>
+             </code><code class="na">placeholder=</code><code class="s">"Stock Name"</code><code>
+             </code><code class="na">name=</code><code class="s">"stockName"</code><code>
+             </code><code class="na">formControlName=</code><code class="s">"name"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;div</code><code> </code><code class="err">*</code><code class="na">ngIf=</code><code class="s">"stockForm.get('name').invalid &amp;&amp;         </code><a class="co" id="co_working_with_reactive_forms_CO5-1" href="#callout_working_with_reactive_forms_CO5-1"><img src="images/1.png" alt="1" /></a><code class="s">
+                  ( stockForm.get('name').dirty ||
+                    stockForm.get('name').touched )"</code><code class="nt">&gt;</code><code>
+        Name is required
+      </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-code"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;input</code><code> </code><code class="na">type=</code><code class="s">"text"</code><code>
+              </code><code class="na">placeholder=</code><code class="s">"Stock Code"</code><code>
+              </code><code class="na">formControlName=</code><code class="s">"code"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;div</code><code> </code><code class="err">*</code><code class="na">ngIf=</code><code class="s">"stockForm.get('code').invalid &amp;&amp;
+                  ( stockForm.get('code').dirty ||
+                    stockForm.get('code').touched )"</code><code class="nt">&gt;</code><code>
+        </code><code class="nt">&lt;div</code><code> </code><code class="err">*</code><code class="na">ngIf=</code><code class="s">"stockForm.get('code').errors.required"</code><code class="nt">&gt;</code><code>    </code><a class="co" id="co_working_with_reactive_forms_CO5-2" href="#callout_working_with_reactive_forms_CO5-2"><img src="images/2.png" alt="2" /></a><code>
+          Stock Code is required
+        </code><code class="nt">&lt;/div&gt;</code><code>
+        </code><code class="nt">&lt;div</code><code> </code><code class="err">*</code><code class="na">ngIf=</code><code class="s">"stockForm.get('code').errors.minlength"</code><code class="nt">&gt;</code><code>
+          Stock Code must be at least 2 characters
+        </code><code class="nt">&lt;/div&gt;</code><code>
+      </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-price"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;input</code><code> </code><code class="na">type=</code><code class="s">"number"</code><code>
+              </code><code class="na">placeholder=</code><code class="s">"Stock Price"</code><code>
+              </code><code class="na">formControlName=</code><code class="s">"price"</code><code class="nt">&gt;</code><code>
+      </code><code class="nt">&lt;div</code><code> </code><code class="err">*</code><code class="na">ngIf=</code><code class="s">"stockForm.get('price').invalid &amp;&amp;
+                  ( stockForm.get('price').dirty ||
+                    stockForm.get('price').touched )"</code><code class="nt">&gt;</code><code>
+        </code><code class="nt">&lt;div</code><code> </code><code class="err">*</code><code class="na">ngIf=</code><code class="s">"stockForm.get('price').errors.required"</code><code class="nt">&gt;</code><code>
+          Stock Price is required
+        </code><code class="nt">&lt;/div&gt;</code><code>
+        </code><code class="nt">&lt;div</code><code> </code><code class="err">*</code><code class="na">ngIf=</code><code class="s">"stockForm.get('price').errors.min"</code><code class="nt">&gt;</code><code>
+          Stock Price must be positive
+        </code><code class="nt">&lt;/div&gt;</code><code>
+      </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;/div&gt;</code><code>
+    </code><code class="nt">&lt;button</code><code> </code><code class="na">type=</code><code class="s">"submit"</code><code class="nt">&gt;</code><code>Submit</code><code class="nt">&lt;/button&gt;</code><code>
+  </code><code class="nt">&lt;/form&gt;</code><code>
+</code><code class="nt">&lt;/div&gt;</code><code>
+
+</code><code class="nt">&lt;p</code><code class="nt">&gt;</code><code>Form Control value: {{ stockForm.value | json }}</code><code class="nt">&lt;/p&gt;</code><code>
+</code><code class="nt">&lt;p</code><code class="nt">&gt;</code><code>Form Control status: {{ stockForm.status | json }}</code><code class="nt">&lt;/p&gt;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_working_with_reactive_forms_CO5-1" href="#co_working_with_reactive_forms_CO5-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Accessing an individual control element’s validity through the form group</p></dd>
+<dt><a class="co" id="callout_working_with_reactive_forms_CO5-2" href="#co_working_with_reactive_forms_CO5-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Checking for individual validator status for a form element</p></dd>
+</dl>
+
+<p>While the base form remains the same from the previous example, we have modified it now to show conditional error messages. There are a few noteworthy things happening in this template, so let’s walk through it step by step:</p>
+
+<ul>
+<li>
+<p>For each form element, we have added a <code>div</code> element beneath it to show conditional error messages.</p>
+</li>
+<li>
+<p>For each element, we first get the individual form element by calling <code>stockForm.get()</code> with the name of the individual form control that we provided while instantiating the <code>FormGroup</code> in the component class.</p>
+</li>
+<li>
+<p>With each <code>FormControl</code>, we can then check for various properties like whether the form element is touched or not (that is, whether the user has accessed the element), whether the form element has been modified or not (dirty or pristine), and whether it is valid or not.<a data-type="indexterm" data-primary="FormControls (reactive forms)" data-secondary="checking control state" id="idm139828125645136"></a></p>
+</li>
+<li>
+<p>For our example, we are relying on these properties to ensure that we display the error message only when the form element is both invalid and the user has interacted with it by either modifying it (<code>dirty</code> if modified, <code>pristine</code> otherwise) or at least accessing it (<code>touched</code> if accessed, <code>untouched</code> otherwise).</p>
+</li>
+<li>
+<p>For form fields with more than one validator (primarily, the stock code and price), we further look at the <code>errors</code> property on the form control. This field allows us to check what kind of error is causing the form field to be invalid, and thus show the respective error message.</p>
+</li>
+</ul>
+<div data-type="tip"><h6>Tip</h6>
+<p>Instead of repeating <code>stockForm.get('price')</code> every time, you might want to create simple getters in the component class like so:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-create-stock'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./create-stock.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./create-stock.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">CreateStockComponent</code> <code class="p">{</code>
+<code class="cm">/*  Skipping irrelevant code here */</code>
+
+  <code class="nx">get</code> <code class="nx">name() {</code> <code class="k">return</code> <code class="k">this</code><code class="p">.</code><code class="nx">stockForm</code><code class="p">.</code><code class="nx">get</code><code class="p">(</code><code class="s1">'name'</code><code class="p">);</code> <code class="p">}</code>
+
+  <code class="nx">get</code> <code class="nx">price() {</code> <code class="k">return</code> <code class="k">this</code><code class="p">.</code><code class="nx">stockForm</code><code class="p">.</code><code class="nx">get</code><code class="p">(</code><code class="s1">'price'</code><code class="p">);</code> <code class="p">}</code>
+
+  <code class="nx">get</code> <code class="nx">code() {</code> <code class="k">return</code> <code class="k">this</code><code class="p">.</code><code class="nx">stockForm</code><code class="p">.</code><code class="nx">get</code><code class="p">(</code><code class="s1">'code'</code><code class="p">);</code> <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>Now in your HTML, you can simply refer to <code>name.invalid</code> instead of <code>stockForm.get('name').invalid</code> and so on.</p>
+</div>
+
+<p>In this way, we can interact with the state of the form controls and provide the correct user experience to the users of our web application.</p>
+
+<p>The finished example is available in the <em>chapter7/control-state-validity</em> folder in the GitHub repository.<a data-type="indexterm" data-primary="reactive forms" data-secondary="handling form data" data-tertiary="control state, validity, and error messages" data-startref="ix_reactfmdacsvem" id="idm139828125411136"></a></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Form and Data Model"><div class="sect2" id="idm139828125675264">
+<h2>Form and Data Model</h2>
+
+<p>Now we will start digging into accessing and working with the data driving the form, and the interaction<a data-type="indexterm" data-primary="reactive forms" data-secondary="handling form data" data-tertiary="form and data model" id="ix_reactfmdadm"></a> between the form and the data model in our component.<a data-type="indexterm" data-primary="data model in reactive forms" id="ix_datamod"></a> We simplified this so far in the preceding examples, by simply accessing the <code>value</code> from the <code>FormGroup</code> or the <code>FormControl</code>. This is also what we log in both the template using the <code>json</code> pipe, as well as in the component when we click the Submit button.</p>
+
+<p>Let’s use an example to demonstrate how we work with the form and data model, and how the two interact. First, let’s change our template slightly from the previous example (in case you want the completed code, you can copy it from the <em>chapter7/control-state-validity</em> folder) to provide for a few more actions.</p>
+
+<p>We will edit the template for the <code>CreateStockComponent</code> by changing <em>src/app/stock/create-stock/create-stock.component.html</em> as follows:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;h2&gt;</code>Create Stock Form<code class="nt">&lt;/h2&gt;</code>
+
+<code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"form-group"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;form</code> <code class="err">[</code><code class="na">formGroup</code><code class="err">]="</code><code class="na">stockForm</code><code class="err">"</code> <code class="err">(</code><code class="na">ngSubmit</code><code class="err">)="</code><code class="na">onSubmit</code><code class="err">()"</code><code class="nt">&gt;</code>
+
+    <code class="c">&lt;!-- Repeated code from before, omitted for brevity --&gt;</code>
+
+    <code class="nt">&lt;button</code> <code class="na">type=</code><code class="s">"submit"</code><code class="nt">&gt;</code>Submit<code class="nt">&lt;/button&gt;</code>
+    <code class="nt">&lt;button</code> <code class="na">type=</code><code class="s">"button"</code>
+            <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">resetForm</code><code class="err">()"</code><code class="nt">&gt;</code>
+      Reset
+    <code class="nt">&lt;/button&gt;</code>
+    <code class="nt">&lt;button</code> <code class="na">type=</code><code class="s">"button"</code>
+            <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">loadStockFromServer</code><code class="err">()"</code><code class="nt">&gt;</code>
+      Simulate Stock Load from Server
+    <code class="nt">&lt;/button&gt;</code>
+    <code class="nt">&lt;button</code> <code class="na">type=</code><code class="s">"button"</code>
+            <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">patchStockForm</code><code class="err">()"</code><code class="nt">&gt;</code>
+      Patch Stock Form
+    <code class="nt">&lt;/button&gt;</code>
+  <code class="nt">&lt;/form&gt;</code>
+<code class="nt">&lt;/div&gt;</code>
+
+<code class="nt">&lt;p&gt;</code>Form Control value: {{ stockForm.value | json }}<code class="nt">&lt;/p&gt;</code>
+<code class="nt">&lt;p&gt;</code>Form Control status: {{ stockForm.status | json }}<code class="nt">&lt;/p&gt;</code></pre>
+
+<p>Most of the template has not changed, but we have added three new buttons at the end of the form. All three of them call out to a method in the component class, which we will see in just a bit. But the three buttons fundamentally perform the following two actions:</p>
+<ol>
+<li>
+<p>Reset the form to its original state</p>
+</li>
+<li>
+<p>Simulate loading a stock from the server</p>
+</li>
+
+</ol>
+
+<p>And to perform the latter, we show two methods by which we can accomplish that with our reactive form.</p>
+<div data-type="warning" epub:type="warning"><h6>Warning</h6>
+<p>Watch out in case you forget the <code>type</code> on the <code>button</code> element. Depending on the browser, it can take various defaults. For example, Chrome on Mac will assume the <code>type</code> as <code>submit</code> if omitted, causing a form submit even while triggering its event handler.</p>
+</div>
+
+<p>Now, let’s move to the <code>CreateStockComponent</code> class, which is where most of the activity and changes happen. We will edit the <em>src/app/stock/create-stock/create-stock.component.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** NO CHANGE IN IMPORTS **/</code><code>
+
+</code><code class="kd">let</code><code> </code><code class="nx">counter</code><code> </code><code class="o">=</code><code> </code><code class="mi">1</code><code class="p">;</code><code>
+
+</code><code class="cm">/** NO CHANGE IN COMPONENT DECORATOR **/</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">CreateStockComponent</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="kr">private</code><code> </code><code class="nx">stock</code><code>: </code><code class="kt">Stock</code><code class="p">;</code><code>             </code><a class="co" id="co_working_with_reactive_forms_CO6-1" href="#callout_working_with_reactive_forms_CO6-1"><img src="images/1.png" alt="1" /></a><code>
+  </code><code class="kr">public</code><code> </code><code class="nx">stockForm</code><code>: </code><code class="kt">FormGroup</code><code class="p">;</code><code>
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code><code> </code><code class="nx">fb</code><code>: </code><code class="kt">FormBuilder</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">createForm</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code> </code><code class="o">=</code><code> </code><code class="k">new</code><code> </code><code class="nx">Stock</code><code class="p">(</code><code class="s1">'Test '</code><code> </code><code class="o">+</code><code> </code><code class="nx">counter</code><code class="o">++</code><code class="p">,</code><code> </code><code class="s1">'TST'</code><code class="p">,</code><code> </code><code class="mi">20</code><code class="p">,</code><code> </code><code class="mi">10</code><code class="p">)</code><code class="p">;</code><code>  </code><a class="co" id="co_working_with_reactive_forms_CO6-2" href="#callout_working_with_reactive_forms_CO6-2"><img src="images/2.png" alt="2" /></a><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">createForm() {</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stockForm</code><code> </code><code class="o">=</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">fb</code><code class="p">.</code><code class="nx">group</code><code class="p">(</code><code class="p">{</code><code>
+      </code><code class="nx">name</code><code class="o">:</code><code> </code><code class="p">[</code><code class="kc">null</code><code class="p">,</code><code> </code><code class="nx">Validators</code><code class="p">.</code><code class="nx">required</code><code class="p">]</code><code class="p">,</code><code>
+      </code><code class="nx">code</code><code class="o">:</code><code> </code><code class="p">[</code><code class="kc">null</code><code class="p">,</code><code> </code><code class="p">[</code><code class="nx">Validators</code><code class="p">.</code><code class="nx">required</code><code class="p">,</code><code> </code><code class="nx">Validators</code><code class="p">.</code><code class="nx">minLength</code><code class="p">(</code><code class="mi">2</code><code class="p">)</code><code class="p">]</code><code class="p">]</code><code class="p">,</code><code>
+      </code><code class="nx">price</code><code class="o">:</code><code> </code><code class="p">[</code><code class="mi">0</code><code class="p">,</code><code> </code><code class="p">[</code><code class="nx">Validators</code><code class="p">.</code><code class="nx">required</code><code class="p">,</code><code> </code><code class="nx">Validators</code><code class="p">.</code><code class="nx">min</code><code class="p">(</code><code class="mi">0</code><code class="p">)</code><code class="p">]</code><code class="p">]</code><code>
+    </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">loadStockFromServer() {</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code> </code><code class="o">=</code><code> </code><code class="k">new</code><code> </code><code class="nx">Stock</code><code class="p">(</code><code class="s1">'Test '</code><code> </code><code class="o">+</code><code> </code><code class="nx">counter</code><code class="o">++</code><code class="p">,</code><code> </code><code class="s1">'TST'</code><code class="p">,</code><code> </code><code class="mi">20</code><code class="p">,</code><code> </code><code class="mi">10</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="kd">let</code><code> </code><code class="nx">stockFormModel</code><code> </code><code class="o">=</code><code> </code><code class="nb">Object</code><code class="p">.</code><code class="nx">assign</code><code class="p">(</code><code class="p">{</code><code class="p">}</code><code class="p">,</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="k">delete</code><code> </code><code class="nx">stockFormModel</code><code class="p">.</code><code class="nx">previousPrice</code><code class="p">;</code><code>
+    </code><code class="k">delete</code><code> </code><code class="nx">stockFormModel</code><code class="p">.</code><code class="nx">favorite</code><code class="p">;</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stockForm</code><code class="p">.</code><code class="nx">setValue</code><code class="p">(</code><code class="nx">stockFormModel</code><code class="p">)</code><code class="p">;</code><code>   </code><a class="co" id="co_working_with_reactive_forms_CO6-3" href="#callout_working_with_reactive_forms_CO6-3"><img src="images/3.png" alt="3" /></a><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">patchStockForm() {</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code> </code><code class="o">=</code><code> </code><code class="k">new</code><code> </code><code class="nx">Stock</code><code class="p">(</code><code class="err">`</code><code class="nx">Test</code><code> </code><code class="nx">$</code><code class="p">{</code><code class="nx">counter</code><code class="o">++</code><code class="p">}</code><code class="err">`</code><code class="p">,</code><code> </code><code class="s1">'TST'</code><code class="p">,</code><code> </code><code class="mi">20</code><code class="p">,</code><code> </code><code class="mi">10</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stockForm</code><code class="p">.</code><code class="nx">patchValue</code><code class="p">(</code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">)</code><code class="p">;</code><code>    </code><a class="co" id="co_working_with_reactive_forms_CO6-4" href="#callout_working_with_reactive_forms_CO6-4"><img src="images/4.png" alt="4" /></a><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">resetForm() {</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stockForm</code><code class="p">.</code><code class="nx">reset</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>      </code><a class="co" id="co_working_with_reactive_forms_CO6-5" href="#callout_working_with_reactive_forms_CO6-5"><img src="images/5.png" alt="5" /></a><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">onSubmit() {</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code> </code><code class="o">=</code><code> </code><code class="nb">Object</code><code class="p">.</code><code class="nx">assign</code><code class="p">(</code><code class="p">{</code><code class="p">}</code><code class="p">,</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">stockForm</code><code class="p">.</code><code class="nx">value</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Saving stock'</code><code class="p">,</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_working_with_reactive_forms_CO6-1" href="#co_working_with_reactive_forms_CO6-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>We have introduced a <code>stock</code> model object, in addition to the form model</p></dd>
+<dt><a class="co" id="callout_working_with_reactive_forms_CO6-2" href="#co_working_with_reactive_forms_CO6-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Instantiating our stock model with some default value</p></dd>
+<dt><a class="co" id="callout_working_with_reactive_forms_CO6-3" href="#co_working_with_reactive_forms_CO6-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Setting the entire form model with our <code>stock</code> data model values</p></dd>
+<dt><a class="co" id="callout_working_with_reactive_forms_CO6-4" href="#co_working_with_reactive_forms_CO6-4"><img src="images/4.png" alt="4" /></a></dt>
+<dd><p>Patching the form model with whatever fields are available</p></dd>
+<dt><a class="co" id="callout_working_with_reactive_forms_CO6-5" href="#co_working_with_reactive_forms_CO6-5"><img src="images/5.png" alt="5" /></a></dt>
+<dd><p>Resetting the form to its initial state</p></dd>
+</dl>
+
+<p>While it seems like we have added a lot of code, it is actually not that much. Let’s walk through the component step by step to understand what has changed and what it does:</p>
+<ol>
+<li>
+<p>You can ignore the <code>counter</code>; it is there simply to make sure that something (the name) changes every time we click a button. It is not tied into any of the Angular functionality otherwise.</p>
+</li>
+<li>
+<p>We create a <code>stock</code> model object, which is a pure data model object. This is not tied to the Angular form models or anything we have been dealing with so far. It parallels the form model, but has a few extra fields that we don’t ask for in the form. We instantiate this with a default value in the constructor (but it is not used or tied to the template until this point).</p>
+</li>
+<li>
+<p>We leave the <code>createForm</code> method untouched.</p>
+</li>
+<li>
+<p>We create a new method <code>loadStockFromServer</code>, to simulate us fetching the stock details from the server. While it is synchronous (unlike a real HTTP server call), it shows us how to take a value and push it to the UI’s form model.</p>
+</li>
+<li>
+<p>We use the <code>setValue</code> method on the <code>stockForm</code> <code>FormGroup</code> instance. This method takes a JSON model object that matches the form model exactly. That means for the <code>setValue</code> to work in this case, it needs an object with a <code>name</code>, <code>code</code>, and <code>price</code> key. It should not have more or fewer keys than this, as it would throw an error in this case. Based on the object, the form’s model object values would get updated and these values would be visible in the form in the UI. This is also the reason why we delete all other keys from the model object before calling <code>setValue</code>.</p>
+</li>
+<li>
+<p>Thus, triggering the <code>loadStockFromServer</code> method would end up updating the form with the name, code, and price from the newly created <code>stock</code> instance.</p>
+</li>
+<li>
+<p>The second method, <code>patchStockForm</code>, uses another method on the <code>stockForm</code> <code>FormGroup</code> instance called <code>patchValue</code>. This is a more forgiving method that takes the fields it has available, and updates the form with them. It will ignore extra fields even if it has fewer fields.</p>
+</li>
+<li>
+<p>Triggering the <code>patchStockForm</code> instance would also have the same effect as triggering the previous button. What is more interesting (and left as an exercise to the reader) is to delete the code from the stock object and try patching. In the case of <code>setValue</code>, it will fail and throw an exception, while <code>patchValue</code> would happily set the other fields (<code>name</code>, <code>price</code>) and leave the code untouched in the form.</p>
+</li>
+<li>
+<p>The final method is the <code>resetForm</code>, which simply resets the form to its initial state.</p>
+</li>
+
+</ol>
+
+<p>One final thing to note is that we have changed the <code>onSubmit</code> method slightly as well.<a data-type="indexterm" data-primary="onSubmit method" id="idm139828125065104"></a> While in this case our form model mirrors the data model, it is good practice to not directly assign the form model to our data model, but rather make a copy of it. In this case, since it is a simple object, a simple <code>Object.assign</code> or the spread operator works, but for slightly more complicated models, it might be necessary to do a deep copy.</p>
+
+<p>The finished example is available in the <em>chapter7/form-model</em> folder in the GitHub repository.</p>
+<aside data-type="sidebar" epub:type="sidebar"><div class="sidebar" id="idm139828125053120">
+<h5>Another Advantage of Reactive Forms</h5>
+<p>Another slightly subtle advantage of using reactive forms over template-driven forms is that it forces developers to have a separation between what the user sees and interacts with (what we call the form model), and the persisted data model that drives our application. This is quite common in most applications, where the presented view is different from what the underlying data model is. Reactive forms make that distinction clear, while also keeping you cognizant of the data flow and giving you control over when and what flows from UI to the component and vice versa.<a data-type="indexterm" data-primary="data model in reactive forms" data-startref="ix_datamod" id="idm139828125051184"></a><a data-type="indexterm" data-primary="reactive forms" data-secondary="handling form data" data-tertiary="form and data model" data-startref="ix_reactfmdadm" id="idm139828125050144"></a><a data-type="indexterm" data-primary="reactive forms" data-secondary="handling form data" data-startref="ix_reactfmda" id="idm139828124797616"></a></p>
+</div></aside>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="FormArrays"><div class="sect1" id="idm139828124796144">
+<h1>FormArrays</h1>
+
+<p>For the purpose of demonstrating the last thing related to reactive forms, we are going to extend our stock market example in a slightly tangential manner.<a data-type="indexterm" data-primary="reactive forms" data-secondary="FormArrays" id="ix_reactfmFA"></a><a data-type="indexterm" data-primary="FormArrays" id="ix_FmArr"></a> Let’s suppose that for each stock, we wanted to capture and highlight the key people related to the company, as well as their titles. A company may have none, one, or many such people associated with it.</p>
+
+<p>This will allow us to see how we can handle forms where we need to capture multiple values as well as handle nested form elements cleanly. We will take the codebase from the previous section and modify it to support the following:</p>
+<ol>
+<li>
+<p>Add a new model to represent one or many notable persons under a stock</p>
+</li>
+<li>
+<p>Add a button in the UI to add a new notable person for a stock</p>
+</li>
+<li>
+<p>Add a button to remove an added notable person from the stock</p>
+</li>
+<li>
+<p>Support basic validation on each notable person added</p>
+</li>
+
+</ol>
+
+<p>Let’s walk through, step by step, how to accomplish this. In case you are not coding along with the examples, you can copy the codebase from <em>chapter7/form-model</em> and work from there.</p>
+
+<p>We will first update the model to understand this new concept of a person. Ideally, we would do this in a model file of its own, but here, we took a shortcut for readability and making it easier to understand. We added our model to the <em>src/app/model/stock.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">export</code> <code class="kr">class</code> <code class="nx">Stock</code> <code class="p">{</code>
+  <code class="nx">favorite</code> <code class="o">=</code> <code class="kc">false</code><code class="p">;</code>
+  <code class="nx">notablePeople</code>: <code class="kt">Person</code><code class="p">[];</code>
+
+  <code class="kr">constructor</code><code class="p">(</code><code class="kr">public</code> <code class="nx">name</code>: <code class="kt">string</code><code class="p">,</code>
+              <code class="kr">public</code> <code class="nx">code</code>: <code class="kt">string</code><code class="p">,</code>
+              <code class="kr">public</code> <code class="nx">price</code>: <code class="kt">number</code><code class="p">,</code>
+              <code class="kr">public</code> <code class="nx">previousPrice</code>: <code class="kt">number</code><code class="p">)</code> <code class="p">{</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">notablePeople</code> <code class="o">=</code> <code class="p">[];</code>
+  <code class="p">}</code>
+
+  <code class="nx">isPositiveChange</code><code class="p">()</code><code class="o">:</code> <code class="kr">boolean</code> <code class="p">{</code>
+    <code class="k">return</code> <code class="k">this</code><code class="p">.</code><code class="nx">price</code> <code class="o">&gt;=</code> <code class="k">this</code><code class="p">.</code><code class="nx">previousPrice</code><code class="p">;</code>
+  <code class="p">}</code>
+<code class="p">}</code>
+
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">Person</code> <code class="p">{</code>
+  <code class="nx">name</code>: <code class="kt">string</code><code class="p">;</code>
+  <code class="nx">title</code>: <code class="kt">string</code><code class="p">;</code>
+<code class="p">}</code></pre>
+
+<p>We added a new class <code>Person</code> with a <code>name</code> and a <code>title</code>, and then added it as a child to the <code>Stock</code> class, with the name <code>notablePeople</code>. In the constructor for <code>Stock</code> class, we initialized it to an empty array.</p>
+
+<p>Now we move over to our <code>CreateStockComponent</code> class. First, let’s walk through the changes to the component class, which is located in <em>src/app/stock/create-stock/create-stock.component.ts</em>:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/**
+Omitted for brevity, no change in imports
+*/</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">CreateStockComponent</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="kr">private</code><code> </code><code class="nx">stock</code><code>: </code><code class="kt">Stock</code><code class="p">;</code><code>
+  </code><code class="kr">public</code><code> </code><code class="nx">stockForm</code><code>: </code><code class="kt">FormGroup</code><code class="p">;</code><code>
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code><code> </code><code class="nx">fb</code><code>: </code><code class="kt">FormBuilder</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">createForm</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">createForm() {</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stockForm</code><code> </code><code class="o">=</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">fb</code><code class="p">.</code><code class="nx">group</code><code class="p">(</code><code class="p">{</code><code>
+      </code><code class="nx">name</code><code class="o">:</code><code> </code><code class="p">[</code><code class="kc">null</code><code class="p">,</code><code> </code><code class="nx">Validators</code><code class="p">.</code><code class="nx">required</code><code class="p">]</code><code class="p">,</code><code>
+      </code><code class="nx">code</code><code class="o">:</code><code> </code><code class="p">[</code><code class="kc">null</code><code class="p">,</code><code> </code><code class="p">[</code><code class="nx">Validators</code><code class="p">.</code><code class="nx">required</code><code class="p">,</code><code> </code><code class="nx">Validators</code><code class="p">.</code><code class="nx">minLength</code><code class="p">(</code><code class="mi">2</code><code class="p">)</code><code class="p">]</code><code class="p">]</code><code class="p">,</code><code>
+      </code><code class="nx">price</code><code class="o">:</code><code> </code><code class="p">[</code><code class="mi">0</code><code class="p">,</code><code> </code><code class="p">[</code><code class="nx">Validators</code><code class="p">.</code><code class="nx">required</code><code class="p">,</code><code> </code><code class="nx">Validators</code><code class="p">.</code><code class="nx">min</code><code class="p">(</code><code class="mi">0</code><code class="p">)</code><code class="p">]</code><code class="p">]</code><code class="p">,</code><code>
+      </code><code class="nx">notablePeople</code><code>: </code><code class="kt">this.fb.array</code><code class="p">(</code><code class="p">[</code><code class="p">]</code><code class="p">)</code><code>       </code><a class="co" id="co_working_with_reactive_forms_CO7-1" href="#callout_working_with_reactive_forms_CO7-1"><img src="images/1.png" alt="1" /></a><code>
+    </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">get</code><code> </code><code class="nx">notablePeople</code><code class="p">(</code><code class="p">)</code><code class="o">:</code><code> </code><code class="nx">FormArray</code><code> </code><code class="p">{</code><code>           </code><a class="co" id="co_working_with_reactive_forms_CO7-2" href="#callout_working_with_reactive_forms_CO7-2"><img src="images/2.png" alt="2" /></a><code>
+    </code><code class="k">return</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">stockForm</code><code class="p">.</code><code class="nx">get</code><code class="p">(</code><code class="s1">'notablePeople'</code><code class="p">)</code><code> </code><code class="kr">as</code><code> </code><code class="nx">FormArray</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">addNotablePerson() {</code><code>                      </code><a class="co" id="co_working_with_reactive_forms_CO7-3" href="#callout_working_with_reactive_forms_CO7-3"><img src="images/3.png" alt="3" /></a><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">notablePeople</code><code class="p">.</code><code class="nx">push</code><code class="p">(</code><code class="k">this</code><code class="p">.</code><code class="nx">fb</code><code class="p">.</code><code class="nx">group</code><code class="p">(</code><code class="p">{</code><code>
+      </code><code class="nx">name</code><code class="o">:</code><code> </code><code class="p">[</code><code class="s1">''</code><code class="p">,</code><code> </code><code class="nx">Validators</code><code class="p">.</code><code class="nx">required</code><code class="p">]</code><code class="p">,</code><code>
+      </code><code class="nx">title</code><code class="o">:</code><code> </code><code class="p">[</code><code class="s1">''</code><code class="p">,</code><code> </code><code class="nx">Validators</code><code class="p">.</code><code class="nx">required</code><code class="p">]</code><code>
+    </code><code class="p">}</code><code class="p">)</code><code class="p">)</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">removeNotablePerson</code><code class="p">(</code><code class="nx">index</code><code>: </code><code class="kt">number</code><code class="p">)</code><code> </code><code class="p">{</code><code>      </code><a class="co" id="co_working_with_reactive_forms_CO7-4" href="#callout_working_with_reactive_forms_CO7-4"><img src="images/4.png" alt="4" /></a><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">notablePeople</code><code class="p">.</code><code class="nx">removeAt</code><code class="p">(</code><code class="nx">index</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">resetForm() {</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stockForm</code><code class="p">.</code><code class="nx">reset</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">onSubmit() {</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code> </code><code class="o">=</code><code> </code><code class="nb">Object</code><code class="p">.</code><code class="nx">assign</code><code class="p">(</code><code class="p">{</code><code class="p">}</code><code class="p">,</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">stockForm</code><code class="p">.</code><code class="nx">value</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Saving stock'</code><code class="p">,</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_working_with_reactive_forms_CO7-1" href="#co_working_with_reactive_forms_CO7-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Initialize <code>notablePeople</code> as a <code>FormArray</code> instance</p></dd>
+<dt><a class="co" id="callout_working_with_reactive_forms_CO7-2" href="#co_working_with_reactive_forms_CO7-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Getter to make it easier to access the underlying <code>FormArray</code> from the template</p></dd>
+<dt><a class="co" id="callout_working_with_reactive_forms_CO7-3" href="#co_working_with_reactive_forms_CO7-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Add a new <code>FormGroup</code> instance to the <code>FormArray</code></p></dd>
+<dt><a class="co" id="callout_working_with_reactive_forms_CO7-4" href="#co_working_with_reactive_forms_CO7-4"><img src="images/4.png" alt="4" /></a></dt>
+<dd><p>Remove a particular <code>FormGroup</code> instance from the <code>FormArray</code></p></dd>
+</dl>
+
+<p>There are a few notable things in the code for the component class. <a data-type="indexterm" data-primary="FormGroups" data-secondary="using in reactive forms" data-tertiary="adding to/removing from FormArrays" id="idm139828124556448"></a>Primarily, we have removed all things related to the model, including loading and patching the stock model object from the class. Instead, we have added:</p>
+
+<ul>
+<li>
+<p><code>notablePeople</code> to the main <code>FormGroup</code>. Note that <code>notablePeople</code> is a <code>FormArray</code> instance with an initial value that is empty. In case we have to populate it with existing values, we would pass it to the constructor.</p>
+</li>
+<li>
+<p>We have created a simple getter for <code>notablePeople</code>, which goes deep into the <code>stockForm</code> <code>FormGroup</code> instance and returns the <code>notablePeople</code> <code>FormArray</code> instance. This is more for the template to prevent us from writing <code>this.stockForm.get('notablePeople')</code> each time.</p>
+</li>
+<li>
+<p>Since we can have zero to many notable people per stock, we need a method to allow us to add as many notable people as we want. This is what the <code>addNotablePerson()</code> method does. Note that each instance of notable person in the actual form is represented by a <code>FormGroup</code>. So each time we want to add a new notable person, we add a <code>FormGroup</code> instance with a required <code>name</code> and <code>title</code>.</p>
+</li>
+<li>
+<p>Similarly, we want to be able to remove any notable person that we have added, which is what the <code>removeNotablePerson()</code> method does. It takes an index and just removes that particular index from the <code>FormArray</code> instance.</p>
+</li>
+</ul>
+
+<p>Next, we will add some simple CSS that will allow us to separate out each individual person by adding the following to <em>src/app/stock/create-stock/create-stock.component​.css</em>:</p>
+
+<pre data-type="programlisting" data-code-language="css"><code class="nc">.notable-people</code> <code class="p">{</code>
+  <code class="k">border</code><code class="o">:</code> <code class="m">1px</code> <code class="nb">solid</code> <code class="nb">black</code><code class="p">;</code>
+  <code class="k">padding</code><code class="o">:</code> <code class="m">10px</code><code class="p">;</code>
+  <code class="k">margin</code><code class="o">:</code> <code class="m">5px</code><code class="p">;</code>
+<code class="p">}</code></pre>
+
+<p>Finally, let’s now look at how the template changes to hook all of this up. We will modify <em>src/app/stock/create-stock/create-stock.component.html</em> as follows:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;h2&gt;</code>Create Stock Form<code class="nt">&lt;/h2&gt;</code>
+
+<code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"form-group"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;form</code> <code class="err">[</code><code class="na">formGroup</code><code class="err">]="</code><code class="na">stockForm</code><code class="err">"</code> <code class="err">(</code><code class="na">ngSubmit</code><code class="err">)="</code><code class="na">onSubmit</code><code class="err">()"</code><code class="nt">&gt;</code>
+    <code class="c">&lt;!-- No change until the end of price form element --&gt;</code>
+    <code class="c">&lt;!-- Omitted for brevity --&gt;</code>
+    <code class="nt">&lt;div</code> <code class="na">formArrayName=</code><code class="s">"notablePeople"</code><code class="nt">&gt;</code>
+      <code class="nt">&lt;div</code> <code class="err">*</code><code class="na">ngFor=</code><code class="s">"let person of notablePeople.controls; let i = index"</code>
+           <code class="err">[</code><code class="na">formGroupName</code><code class="err">]="</code><code class="na">i</code><code class="err">"</code>
+           <code class="na">class=</code><code class="s">"notable-people"</code><code class="nt">&gt;</code>
+        <code class="nt">&lt;div&gt;</code>
+          Person {{i + 1}}
+        <code class="nt">&lt;/div&gt;</code>
+        <code class="nt">&lt;div&gt;</code>
+          <code class="nt">&lt;input</code> <code class="na">type=</code><code class="s">"text"</code>
+                 <code class="na">placeholder=</code><code class="s">"Person Name"</code>
+                 <code class="na">formControlName=</code><code class="s">"name"</code><code class="nt">&gt;</code>
+        <code class="nt">&lt;/div&gt;</code>
+        <code class="nt">&lt;div&gt;</code>
+          <code class="nt">&lt;input</code> <code class="na">type=</code><code class="s">"text"</code>
+                  <code class="na">placeholder=</code><code class="s">"Person Title"</code>
+                  <code class="na">formControlName=</code><code class="s">"title"</code><code class="nt">&gt;</code>
+        <code class="nt">&lt;/div&gt;</code>
+        <code class="nt">&lt;button</code> <code class="na">type=</code><code class="s">"button"</code>
+                <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">removeNotablePerson</code><code class="err">(</code><code class="na">i</code><code class="err">)"</code><code class="nt">&gt;</code>
+         Remove Person
+        <code class="nt">&lt;/button&gt;</code>
+      <code class="nt">&lt;/div&gt;</code>
+    <code class="nt">&lt;/div&gt;</code>
+    <code class="nt">&lt;button</code> <code class="na">type=</code><code class="s">"button"</code>
+            <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">addNotablePerson</code><code class="err">()"</code><code class="nt">&gt;</code>
+      Add Notable Person
+     <code class="nt">&lt;/button&gt;</code>
+    <code class="nt">&lt;button</code> <code class="na">type=</code><code class="s">"submit"</code><code class="nt">&gt;</code>Submit<code class="nt">&lt;/button&gt;</code>
+    <code class="nt">&lt;button</code> <code class="na">type=</code><code class="s">"button"</code>
+            <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">resetForm</code><code class="err">()"</code><code class="nt">&gt;</code>
+      Reset
+    <code class="nt">&lt;/button&gt;</code>
+  <code class="nt">&lt;/form&gt;</code>
+<code class="nt">&lt;/div&gt;</code>
+
+<code class="nt">&lt;p&gt;</code>Form Control value: {{ stockForm.value | json }}<code class="nt">&lt;/p&gt;</code>
+<code class="nt">&lt;p&gt;</code>Form Control status: {{ stockForm.status | json }}<code class="nt">&lt;/p&gt;</code>
+<code class="nt">&lt;p&gt;</code>Stock Value: {{stock | json}}<code class="nt">&lt;/p&gt;</code></pre>
+
+<p>There are a few things to note on how we hooked together the <code>FormArray</code> instance we created in our component to the template for the component:</p>
+
+<ul>
+<li>
+<p>Instead of using <code>formControlName</code>, we use <code>formGroupName</code> on the enclosing <code>div</code> element. This is the element that will contain zero to many forms, one for each notable person.</p>
+</li>
+<li>
+<p>We then have a <code>div</code> element that is repeated once for each entry in the <code>FormArray</code> instance, which we access through <code>notablePeople.controls</code>. The <code>notable​Peo⁠ple</code> accesses the getter that we created in the component.</p>
+</li>
+<li>
+<p>We also expose the current index of the <code>*ngFor</code> via the variable <code>i</code>.</p>
+</li>
+<li>
+<p>We then connect the <code>FormGroup</code> that is each element in the <code>FormArray</code> via the <code>formGroupName</code> binding, binding it to each individual index in the array.</p>
+</li>
+<li>
+<p>This allows us to then use <code>formControlName</code> individually for the <code>name</code> and <code>title</code> like we have done so far. This ensures that the <code>name</code> and <code>title</code> are bound to that particular <code>FormGroup</code> instance denoted by the index in the <code>FormArray</code>.</p>
+</li>
+<li>
+<p>Finally, we have the Remove Person button within each <code>*ngFor</code> instance, which calls the <code>removeNotablePerson()</code> method, and a global Add Person button, which calls the <code>addNotablePerson()</code> method.</p>
+</li>
+</ul>
+
+<p>When you run this, you should now see a new button, Add Notable Person. Clicking this should show new form elements to enter a person’s details. You can click this multiple times to add more people, and you can click Remove on any individual person to remove them. Your working application should look something like <a data-type="xref" href="#fig0703">Figure 7-3</a>.</p>
+
+<figure class="width-75"><div id="fig0703" class="figure">
+<img src="images/auar_07in03.png" alt="Form Arrays in action" />
+<h6><span class="label">Figure 7-3. </span>Angular form using FormArray</h6>
+</div></figure>
+
+<p>Notice that the form value (printed as JSON) also holds all the person data that you enter. Thus, when the form is submitted, you can capture this data and transform it to the necessary data model before transmitting it.</p>
+
+<p>The finished example is available in the <em>chapter7/form-arrays</em> folder in the GitHub repository.<a data-type="indexterm" data-primary="reactive forms" data-secondary="FormArrays" data-startref="ix_reactfmFA" id="idm139828124168944"></a><a data-type="indexterm" data-primary="FormArrays" data-startref="ix_FmArr" id="idm139828124167696"></a></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Conclusion"><div class="sect1" id="idm139828124795232">
+<h1>Conclusion</h1>
+
+<p>In this chapter, we explored how to create reactive forms as an alternative to using template-driven forms. We reviewed the building blocks of these forms and saw how to use elements like <code>FormControl</code>, <code>FormGroup</code>, and even <code>FormArray</code> to build complex user experiences. We also briefly touched upon the major differences between template-driven forms and reactive forms, and how reactive forms facilitate and highlight the difference between having a form model (or the presentation model), which is different from our underlying data model.</p>
+
+<p>In the next chapter, we will start exploring Angular services, what they are, and when and how to create them. We will also touch upon Angular’s dependency injection framework and how to deal with asynchronous behavior using observables.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Exercise"><div class="sect1" id="idm139828124163088">
+<h1>Exercise</h1>
+
+<p>Take the finished exercise from <a data-type="xref" href="ch05.html#chapter-5">Chapter 5</a> (available in <em>chapter5/exercise/ecommerce</em>). We will repeat the same exercise that we accomplished using template-driven forms, by performing the following:</p>
+<ol>
+<li>
+<p>Create a new component that allows us to add new products.</p>
+</li>
+<li>
+<p>Create a form that takes in the product name, price, image URL, and whether it is on sale or not. Create proper <code>FormGroup</code> to encapsulate this form. Use <code>Form​Builder</code> ideally.</p>
+</li>
+<li>
+<p>Make all the fields except the On Sale checkbox required. Set the minimum valid price as 1.</p>
+</li>
+<li>
+<p>Add a basic Regex pattern validation for the image URL.</p>
+</li>
+<li>
+<p>Display relevant error messages, but only after the user either modifies a field or after the first submit.</p>
+</li>
+<li>
+<p>Copy over the form and print it to the console after successful submission.</p>
+</li>
+
+</ol>
+
+<p>All of this can be accomplished using concepts covered in this chapter.<a data-type="indexterm" data-primary="reactive forms" data-startref="ix_reactfm" id="idm139828124152880"></a> You can check out the finished solution in <em>chapter7/exercise/ecommerce</em>.</p>
+</div></section>
+
+
+
+
+
+
+
+</div></section></div>
+</body>
+</html>

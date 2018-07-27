@@ -1,0 +1,1307 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>11. Routing in Angular</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><section data-type="chapter" epub:type="chapter" data-pdf-bookmark="Chapter 11. Routing in Angular"><div class="chapter" id="chapter-11">
+<h1><span class="label">Chapter 11. </span>Routing in Angular</h1>
+
+
+<p>In the previous few chapters, we saw how to extend our application and make reusable services.<a data-type="indexterm" data-primary="routing" id="ix_rte"></a> We also saw how to integrate and deal with HTTP calls in our application using the <code>HttpClient</code> module, and deal with the asynchronous flows using observables and RxJS.</p>
+
+<p>In this chapter, we will deal with another common requirement of web applications, which is to encapsulate various pages and pieces under different routes, and be able to deep-link to them when needed. We will implement Angular’s built-in routing module. In addition, we will also dig into how to secure our application using <code>AuthGuards</code> and other features of the router.</p>
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Setting Up Angular Routing"><div class="sect1" id="idm139828113004112">
+<h1>Setting Up Angular Routing</h1>
+
+<p>For this chapter, we are going to build against a precoded server, as well as use a codebase that has most of the base components built so that we can focus only on the key aspects.<a data-type="indexterm" data-primary="routing" data-secondary="setting up Angular routing" id="ix_rteset"></a> We are going to continue extending our application that we have been working on across the chapters by adding routing capability to it. We are going to try to add four routes: one for the stock list, one to create a stock, one for registering, and one for logging in. Furthermore, we will protect the stock list route and the create stock route so that you can access them only if you are logged in. Finally, we will add protections to ensure that we don’t lose our work by navigating away from a filled-in form.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Server Setup"><div class="sect2" id="idm139828113000240">
+<h2>Server Setup</h2>
+
+<p>As mentioned earlier, the server we will be working with is already developed and available in the repository in the <em>chapter11/server</em> folder.<a data-type="indexterm" data-primary="routing" data-secondary="setting up Angular routing" data-tertiary="server setup" id="idm139828112998160"></a><a data-type="indexterm" data-primary="servers" data-secondary="setup for Angular routing" id="idm139828112996864"></a> Before we start any web development, let’s get our server up and running. Note that this server has more <span class="keep-together">functionality</span> than the previous ones, so please use this one instead of continuing to keep the previous server running.</p>
+
+<p>Checkout and browse to the <em>chapter11/server</em> folder in the <a href="https://github.com/shyamseshadri/angular-up-and-running">GitHub repository</a>. From within the folder, execute the following commands in your terminal:</p>
+<pre data-type="programlisting">
+<strong>npm i</strong>
+<strong>node index.js</strong>
+</pre>
+
+<p>This installs all the necessary dependencies for our Node.js server, and then starts the server on port 3000. Keep this server running in the background. This will be what our application hits to fetch and save stocks, in addition to logging in and registering users.</p>
+<div data-type="warning" epub:type="warning"><h6>Warning</h6>
+<p>Note that this server is a very simplistic, dummy server with an in-memory data store. Anything you create/save will be reset if you restart the server. This includes any usernames you might register.</p>
+</div>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Starting Codebase"><div class="sect2" id="idm139828113508048">
+<h2>Starting Codebase</h2>
+
+<p>Similarly, instead of spending time building all the components for the remaining routes, and reviewing concepts we have already covered in previous chapters, we will instead use the precoded base Angular application that has a few more components.<a data-type="indexterm" data-primary="routing" data-secondary="setting up Angular routing" data-tertiary="starting codebase" id="idm139828113506368"></a> If you’re planning to keep coding along, do note the following additions and make sure you add them to your application.</p>
+
+<p>The code is available for you in the <em>chapter11/base-code-base</em> folder. The major additions are:</p>
+
+<ul>
+<li>
+<p>A <code>LoginComponent</code> and <code>RegisterComponent</code></p>
+</li>
+<li>
+<p>A <code>UserService</code> that makes HTTP calls to login and register a user</p>
+</li>
+<li>
+<p>A <code>UserStoreService</code> that stores whether a user is logged in or not, along with the token</p>
+</li>
+<li>
+<p>A <code>StockAppInterceptor</code> that will be used to send the authentication token if it exists with every request</p>
+</li>
+</ul>
+
+<p>All of these are also registered in the main <code>AppModule</code>.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Importing the Router Module"><div class="sect2" id="idm139828113496944">
+<h2>Importing the Router Module</h2>
+
+<p>With all the set up done, we can now get into how to set up routing in our application.<a data-type="indexterm" data-primary="routing" data-secondary="setting up Angular routing" data-tertiary="importing RouterModule" id="idm139828113494992"></a> The very first thing is to set up our <em>index.html</em> to ensure that it is able to provide enough context to Angular on how to set up its navigation. We do this by using the <code>base</code> tag within the <code>head</code> element in <em>index.html</em>. If the application is being served from the root (like we are doing so far), then it is enough to add the following to your <em>index.html</em>:</p>
+
+<pre data-type="programlisting" data-code-language="html">  <code class="nt">&lt;base</code> <code class="na">href=</code><code class="s">"/"</code><code class="nt">&gt;</code></pre>
+
+<p>This is automatically done by the Angular CLI, so you only need to change it in case you are serving your application from a non-root location. <a data-type="indexterm" data-primary="RouterModule, importing and setting up" id="idm139828113487184"></a>The next thing to do is to import and set up the <code>RouterModule</code>, as routing is an optional module in Angular. Before we can add the <code>RouterModule</code>, we need to define the routes of our application. So we will first look at how to define the routes. We will then come back to seeing how to import and add the <code>RouterModule</code>.</p>
+
+<p>We will define a separate routes module file, <em>app-routes.module.ts</em>, instead of defining it in the same <em>app.module.ts</em>. This is generally good practice, as you want to keep it separate and modular, even if you only have a few routes initially. While we are just defining a separate module for our routes, it would eventually make sense for us to define a separate module and routes for each feature. This would also allow us to lazy load feature modules and certain routes instead of loading all our code up front.</p>
+
+<p>We could choose to manually create our new module and hook it up to the main <code>AppModule</code>, or <a data-type="indexterm" data-primary="ng generate module app-routes --flat --module=app command" id="idm139828113450704"></a>let the Angular CLI do it for us, by running:</p>
+<pre data-type="programlisting">
+<strong>ng generate module app-routes --flat --module=app</strong>
+</pre>
+
+<p>This would generate an <em>app-routes.module.ts</em> file in the main <em>app</em> folder. We can drop the basic <code>CommonModule</code> import from it, as we won’t be declaring any components as part of our routing module.<a data-type="indexterm" data-primary="AppRoutesModule" id="idm139828113446704"></a> Our final <em>app-routing.module.ts</em> might look something like the following:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">NgModule</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">RouterModule</code><code class="p">,</code><code> </code><code class="nx">Routes</code><code> </code><code class="p">}</code><code>  </code><code class="nx">from</code><code> </code><code class="s1">'@angular/router'</code><code class="p">;</code><code>
+
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">CreateStockComponent</code><code> </code><code class="p">}</code><code>
+    </code><code class="nx">from</code><code> </code><code class="s1">'./stock/create-stock/create-stock.component'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">StockListComponent</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./stock/stock-list/stock-list.component'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">LoginComponent</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./user/login/login.component'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">RegisterComponent</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./user/register/register.component'</code><code class="p">;</code><code>
+
+</code><code class="kr">const</code><code> </code><code class="nx">appRoutes</code><code>: </code><code class="kt">Routes</code><code> </code><code class="o">=</code><code> </code><code class="p">[</code><code>                       </code><a class="co" id="co_routing_in_angular_CO1-1" href="#callout_routing_in_angular_CO1-1"><img src="images/1.png" alt="1" /></a><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'login'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">LoginComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'register'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">RegisterComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'stocks/list'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">StockListComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'stocks/create'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">CreateStockComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+</code><code class="p">]</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">NgModule</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="nx">imports</code><code class="o">:</code><code> </code><code class="p">[</code><code>
+    </code><code class="nx">RouterModule</code><code class="p">.</code><code class="nx">forRoot</code><code class="p">(</code><code class="nx">appRoutes</code><code class="p">)</code><code class="p">,</code><code>                </code><a class="co" id="co_routing_in_angular_CO1-2" href="#callout_routing_in_angular_CO1-2"><img src="images/2.png" alt="2" /></a><code>
+  </code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">exports</code><code class="o">:</code><code> </code><code class="p">[</code><code>
+    </code><code class="nx">RouterModule</code><code>                                    </code><a class="co" id="co_routing_in_angular_CO1-3" href="#callout_routing_in_angular_CO1-3"><img src="images/3.png" alt="3" /></a><code>
+  </code><code class="p">]</code><code class="p">,</code><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">AppRoutesModule</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_routing_in_angular_CO1-1" href="#co_routing_in_angular_CO1-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Declare the array of routes for our application</p></dd>
+<dt><a class="co" id="callout_routing_in_angular_CO1-2" href="#co_routing_in_angular_CO1-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Import and register the routes for the root application</p></dd>
+<dt><a class="co" id="callout_routing_in_angular_CO1-3" href="#co_routing_in_angular_CO1-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Export the <code>RouterModule</code> so that any module importing <code>AppRoutesModule</code> gets access to router directives</p></dd>
+</dl>
+
+<p>This is the first time we have created another module, separate from the auto-generated one of the Angular CLI. The <code>AppRoutesModule</code> (annotated with <code>@NgModule</code>) simply imports the <code>RouterModule</code> and then exports it so that all modules get access to router directives (which we will use in a bit). While importing the <code>RouterModule</code>, we mark it for the root module by calling the <code>forRoot</code> method on it, with the routes we are defining.<a data-type="indexterm" data-primary="forRoot method" id="idm139828113246880"></a></p>
+
+<p>The routes we pass to the <code>forRoot</code> method are nothing but an array of <code>Routes</code>. Each route is simply a configuration that defines the <code>path</code> for the route, as well as the component to be loaded when the route is loaded.<a data-type="indexterm" data-primary="path (for routes)" id="idm139828113298576"></a> We define four routes, one for each of the components.</p>
+
+<p>Next, we just need to hook up this module to our main module, by modifying the <em>app.module.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** Other imports not changed, skipping for brevity **/</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">AppRoutesModule</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./app-routes.module'</code><code class="p">;</code><code>
+
+
+</code><code class="err">@</code><code class="nx">NgModule</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="nx">declarations</code><code class="o">:</code><code> </code><code class="p">[</code><code>
+    </code><code class="cm">/** No change, skipping for brevity **/</code><code>
+  </code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">imports</code><code class="o">:</code><code> </code><code class="p">[</code><code>
+    </code><code class="nx">BrowserModule</code><code class="p">,</code><code>
+    </code><code class="nx">FormsModule</code><code class="p">,</code><code>
+    </code><code class="nx">HttpClientModule</code><code class="p">,</code><code>
+    </code><code class="nx">AppRoutesModule</code><code class="p">,</code><code>                </code><a class="co" id="co_routing_in_angular_CO2-1" href="#callout_routing_in_angular_CO2-1"><img src="images/1.png" alt="1" /></a><code>
+  </code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">providers</code><code class="o">:</code><code> </code><code class="p">[</code><code>
+    </code><code class="cm">/** No change, skipping for brevity **/</code><code>
+  </code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">bootstrap</code><code class="o">:</code><code> </code><code class="p">[</code><code class="nx">AppComponent</code><code class="p">]</code><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">AppModule</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_routing_in_angular_CO2-1" href="#co_routing_in_angular_CO2-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Importing the newly created <code>AppRoutesModule</code></p></dd>
+</dl>
+
+<p>There are a lot more components and services, but these were created before we started hooking up the routing. These were part of the base codebase we used to build on top of.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Displaying the Route Contents"><div class="sect2" id="idm139828113496352">
+<h2>Displaying the Route Contents</h2>
+
+<p>The last thing we need to do to get our routing app up and running is to tell Angular where to load the components when a certain route or path is matched.<a data-type="indexterm" data-primary="routing" data-secondary="setting up Angular routing" data-tertiary="displaying route contents" id="idm139828113405904"></a> If you consider what we have done so far, we have defined the base for our routing and set up the module and the routes.</p>
+
+<p>The final thing we do is to mark out where Angular is to load the components, and we do that by using the <code>RouterOutlet</code> directive<a data-type="indexterm" data-primary="RouterOutlet directive" id="idm139828113403632"></a> that is made available as part of the <code>RouterModule</code>. We will change the <em>src/app.component.html</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div&gt;</code>
+  <code class="nt">&lt;span&gt;&lt;a</code> <code class="na">href=</code><code class="s">"/login"</code><code class="nt">&gt;</code>Login<code class="nt">&lt;/a&gt;&lt;/span&gt;</code>
+  <code class="nt">&lt;span&gt;&lt;a</code> <code class="na">href=</code><code class="s">"/register"</code><code class="nt">&gt;</code>Register<code class="nt">&lt;/a&gt;&lt;/span&gt;</code>
+  <code class="nt">&lt;span&gt;&lt;a</code> <code class="na">href=</code><code class="s">"/stocks/list"</code><code class="nt">&gt;</code>Stock List<code class="nt">&lt;/a&gt;&lt;/span&gt;</code>
+  <code class="nt">&lt;span&gt;&lt;a</code> <code class="na">href=</code><code class="s">"/stocks/create"</code><code class="nt">&gt;</code>Create Stock<code class="nt">&lt;/a&gt;&lt;/span&gt;</code>
+<code class="nt">&lt;/div&gt;</code>
+<code class="nt">&lt;router-outlet&gt;&lt;/router-outlet&gt;</code></pre>
+
+<p>Previously, we used to have the <code>StockListComponent</code> and the <code>CreateStockComponent</code> as part of this HTML file. Instead, now we are telling Angular to load the relevant component based on the URL and path it matches. We have also added a bunch of links to the various pages we added.</p>
+
+<p>We are at a point when we can now run the application, and see the various routes in action. Run it with the following command (making sure you proxy to the node server you have running):</p>
+<pre data-type="programlisting">
+<strong>ng serve --proxy proxy.conf.json</strong>
+</pre>
+
+<p>You should see something like <a data-type="xref" href="#fig1101">Figure 11-1</a> when you browse to <em>http://localhost:4200</em> in your browser.</p>
+
+<p>Clicking any of the links should open that particular component’s page in your browser.</p>
+
+<figure><div id="fig1101" class="figure">
+<img src="images/auar_11in01.png" alt="Simple Routing in Angular" />
+<h6><span class="label">Figure 11-1. </span>Angular application with routing</h6>
+</div></figure>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Navigating Within the Application"><div class="sect2" id="idm139828113407024">
+<h2>Navigating Within the Application</h2>
+
+<p>If you do click any of the links at the top, and open the network inspector simultaneously, you will see something interesting and unexpected.<a data-type="indexterm" data-primary="routing" data-secondary="setting up Angular routing" data-tertiary="navigating within the application" id="ix_rtesetnav"></a> You will see that the entire page reloads, rather than behaving like how we might expect a Single-Page Application routing to work. What we would want and expect is that when the route changes, only the component is loaded, and its respective XHR calls (if any) are executed. So how do we accomplish this?</p>
+
+<p>Angular provides a directive that allows us to navigate within the application. The modified <em>app.component.html</em> would look as follows:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"links"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;span&gt;</code>
+      <code class="nt">&lt;a</code> <code class="na">routerLink=</code><code class="s">"/login"</code> <code class="na">routerLinkActive=</code><code class="s">"active"</code><code class="nt">&gt;</code>
+          Login
+      <code class="nt">&lt;/a&gt;</code>
+  <code class="nt">&lt;/span&gt;</code>
+  <code class="nt">&lt;span&gt;</code>
+      <code class="nt">&lt;a</code> <code class="na">routerLink=</code><code class="s">"/register"</code> <code class="na">routerLinkActive=</code><code class="s">"active"</code><code class="nt">&gt;</code>
+          Register
+      <code class="nt">&lt;/a&gt;</code>
+  <code class="nt">&lt;/span&gt;</code>
+  <code class="nt">&lt;span&gt;</code>
+      <code class="nt">&lt;a</code> <code class="na">routerLink=</code><code class="s">"/stocks/list"</code> <code class="na">routerLinkActive=</code><code class="s">"active"</code><code class="nt">&gt;</code>
+          Stock List
+      <code class="nt">&lt;/a&gt;</code>
+  <code class="nt">&lt;/span&gt;</code>
+  <code class="nt">&lt;span&gt;</code>
+      <code class="nt">&lt;a</code> <code class="na">routerLink=</code><code class="s">"/stocks/create"</code> <code class="na">routerLinkActive=</code><code class="s">"active"</code><code class="nt">&gt;</code>
+          Create Stock
+      <code class="nt">&lt;/a&gt;</code>
+  <code class="nt">&lt;/span&gt;</code>
+<code class="nt">&lt;/div&gt;</code>
+<code class="nt">&lt;router-outlet&gt;&lt;/router-outlet&gt;</code></pre>
+
+<p>We have slightly changed the content, and also added some styling to make it look nicer. From a functionality perspective, the major changes are as follows:</p>
+
+<ul>
+<li>
+<p>We have replaced the <code>href</code> links<a data-type="indexterm" data-primary="routerLink directive" id="idm139828113534208"></a> with an Angular directive <code>routerLink</code>. This ensures that all navigation happens within Angular.</p>
+</li>
+<li>
+<p>We have also added another Angular directive, <code>routerLinkActive</code>, which  adds the <a data-type="indexterm" data-primary="routerLinkActive directive" id="idm139828113531680"></a>argument passed to it (<code>active</code> in our case) as a CSS class when the current link in the browser matches the <code>routerLink</code> directive. It is a simple way of adding a class when the current link is selected.</p>
+</li>
+</ul>
+
+<p>We also add <a data-type="indexterm" data-primary="CSS" data-secondary="app.component.css file" id="idm139828113529248"></a>some CSS to <em>app.component.css</em> as follows:</p>
+
+<pre data-type="programlisting" data-code-language="css"><code class="nc">.links</code><code class="o">,</code> <code class="nc">.links</code> <code class="nt">a</code> <code class="p">{</code>
+  <code class="k">padding</code><code class="o">:</code> <code class="m">10px</code><code class="p">;</code>
+<code class="p">}</code>
+
+<code class="nc">.links</code> <code class="nt">a</code><code class="nc">.active</code> <code class="p">{</code>
+  <code class="k">background-color</code><code class="o">:</code> <code class="n">grey</code><code class="p">;</code>
+<code class="p">}</code></pre>
+
+<p>We have added a <code>background-color</code> to the currently active link. This class will automatically get added to the link based on the current URL.</p>
+
+<p>Now when you run the application, you should see the screen in <a data-type="xref" href="#fig1102">Figure 11-2</a> in your browser.</p>
+
+<p>By default, if you open <em>http://localhost:4200</em> in your browser, you will see an empty page with only the links at the top. If you click any of the links (say, Login), then the respective components will be loaded.<a data-type="indexterm" data-primary="routing" data-secondary="setting up Angular routing" data-tertiary="navigating within the application" data-startref="ix_rtesetnav" id="idm139828113615376"></a></p>
+
+<figure><div id="fig1102" class="figure">
+<img src="images/auar_11in02.png" alt="Linking in Angular" />
+<h6><span class="label">Figure 11-2. </span>Angular application with routing and highlighting</h6>
+</div></figure>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Wildcards and Defaults"><div class="sect2" id="idm139828113178544">
+<h2>Wildcards and Defaults</h2>
+
+<p>The one last thing we will take care of before we wrap up this example is handling the initial load.<a data-type="indexterm" data-primary="routing" data-secondary="setting up Angular routing" data-tertiary="wildcards and defaults" id="ix_rtesetwd"></a> If we open up <em>http://localhost:4200</em> in our browser, we are treated with an empty page. Similarly, if we try to navigate to a URL that does not exist, it results in an error (in the developer console) and a redirect to the home page automatically. Let’s see how we might tackle these in our application.</p>
+
+<p>For both of these, we will go back to our <code>AppRoutesModule</code>. We will modify the <em>app-routes.module.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** No change in imports, skipping for brevity **/</code><code>
+
+</code><code class="kr">const</code><code> </code><code class="nx">appRoutes</code><code>: </code><code class="kt">Routes</code><code> </code><code class="o">=</code><code> </code><code class="p">[</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">''</code><code class="p">,</code><code> </code><code class="nx">redirectTo</code><code class="o">:</code><code> </code><code class="s1">'/login'</code><code class="p">,</code><code> </code><code class="nx">pathMatch</code><code class="o">:</code><code> </code><code class="s1">'full'</code><code> </code><code class="p">}</code><code class="p">,</code><code>     </code><a class="co" id="co_routing_in_angular_CO3-1" href="#callout_routing_in_angular_CO3-1"><img src="images/1.png" alt="1" /></a><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'login'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">LoginComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'register'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">RegisterComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'stocks/list'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">StockListComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'stocks/create'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">CreateStockComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+</code><code class="p">]</code><code class="p">;</code><code>
+
+</code><code class="cm">/** No change in remaining file, skipping for brevity **/</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">AppRoutesModule</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_routing_in_angular_CO3-1" href="#co_routing_in_angular_CO3-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Add a default path to redirect to Login page</p></dd>
+</dl>
+
+<p>We have added one more entry to our routes array.<a data-type="indexterm" data-primary="default path (for routes)" id="idm139828112646144"></a><a data-type="indexterm" data-primary="path (for routes)" id="idm139828112645424"></a> Here, we match the empty path and ask Angular to redirect us to the login route. Note that for any path, instead of asking Angular to use a component, we can redirect to another already defined path as well.<a data-type="indexterm" data-primary="pathMatch key" id="idm139828112644400"></a> Also note the <code>pathMatch</code> key, which is set as <code>full</code>. This ensures that only if the remaining path matches the empty string do we redirect to the login route.</p>
+<div data-type="note" epub:type="note"><h1>pathMatch</h1>
+<p>The default <code>pathMatch</code> is <code>prefix</code>, which would check if a URL starts with the given <code>path</code>. <a data-type="indexterm" data-primary="prefix value (pathMatch)" id="idm139828112639776"></a>If we had the first route as the default matching one, and we forgot to add <code>pathMatch: full</code>, then every URL would match and redirect to the login path. Thus, both the ordering of routes as well as the <code>pathMatch</code> value is important.</p>
+
+<p>You can check this out by changing the <code>pathMatch</code> to <code>prefix</code>. When you do this, all the links will end up linking to the Login page.</p>
+</div>
+
+<p>The final piece we will see is how to handle if the user types in a wrong URL, or we end up having bad links in our application. It is always useful to have a catch-all route that leads to a “Page not found” page or a redirect to some other page. Let’s see how we can have such a capability in our application. Again, we will only modify the <em>app-routes.module.ts</em> file:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** No change in imports, skipping for brevity **/</code><code>
+
+</code><code class="kr">const</code><code> </code><code class="nx">appRoutes</code><code>: </code><code class="kt">Routes</code><code> </code><code class="o">=</code><code> </code><code class="p">[</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">''</code><code class="p">,</code><code> </code><code class="nx">redirectTo</code><code class="o">:</code><code> </code><code class="s1">'/login'</code><code class="p">,</code><code> </code><code class="nx">pathMatch</code><code class="o">:</code><code> </code><code class="s1">'full'</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'login'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">LoginComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'register'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">RegisterComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'stocks/list'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">StockListComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'stocks/create'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">CreateStockComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'**'</code><code class="p">,</code><code> </code><code class="nx">redirectTo</code><code class="o">:</code><code> </code><code class="s1">'/register'</code><code> </code><code class="p">}</code><code>        </code><a class="co" id="co_routing_in_angular_CO4-1" href="#callout_routing_in_angular_CO4-1"><img src="images/1.png" alt="1" /></a><code>
+</code><code class="p">]</code><code class="p">;</code><code>
+
+</code><code class="cm">/** No change in remaining file, skipping for brevity **/</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">AppRoutesModule</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_routing_in_angular_CO4-1" href="#co_routing_in_angular_CO4-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Add a catch-all route that redirects to the Register page</p></dd>
+</dl>
+
+<p>Our catch-all route<a data-type="indexterm" data-primary="wildcards in path matches" id="idm139828112591744"></a> is added by matching the <code>path</code> <code>**</code>. On matching this route, we then have the option of loading a component (like the other routes). Alternatively, we can redirect again, as we have done here, to another route. We redirect to the <code>/register</code> route in case we can’t match the URL.</p>
+
+<p>The end result of both of these changes is that if you just open <em>http://localhost:4200</em> in your browser, you will be automatically taken to the login route. In case we type in some random URL that doesn’t exist, we will be redirected to the register route.</p>
+
+<p>The entire finished example is available in the <em>chapter11/simple-routing</em> folder in the GitHub repository.<a data-type="indexterm" data-primary="routing" data-secondary="setting up Angular routing" data-tertiary="wildcards and defaults" data-startref="ix_rtesetwd" id="idm139828112587456"></a><a data-type="indexterm" data-primary="routing" data-secondary="setting up Angular routing" data-startref="ix_rteset" id="idm139828112585904"></a></p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Common Routing Requirements"><div class="sect1" id="idm139828113611392">
+<h1>Common Routing Requirements</h1>
+
+<p>In this section, we will continue digging into Angular routing capabilities, and see how we might accomplish common tasks that are needed in the course of building a web application. <a data-type="indexterm" data-primary="routing" data-secondary="common tasks in" id="ix_rtecomm"></a>In particular, we will focus on having and using routes with parameters (both required and optional), as well as understand the various ways we might navigate within our application, whether it be through the template or via our component code.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Required Route Params"><div class="sect2" id="idm139828112476032">
+<h2>Required Route Params</h2>
+
+<p>Let’s first see how we add a route where we might depend on the route to decide what to load.<a data-type="indexterm" data-primary="routing" data-secondary="common tasks in" data-tertiary="required route params" id="idm139828112474224"></a> The simplest thing we can do within the context of our example is to build a details page for our stock.</p>
+
+<p>For this section, we will use the previous section code as the base and build on top of it. In case you are not coding along, you can grab the codebase from the <em>chapter11/simple-routing</em> folder in the GitHub repository. Also, make sure you keep the Node server running in the background, and you proxy your requests to it when you serve your Angular application.</p>
+
+<p>For the purpose of keeping our example focused on the routing, a completed (simplistic) <code>StockDetailsComponent</code> is already created in the <em>src/app/stocks</em> folder. It is already registered in the <code>AppModule</code>. All it shows is a repetition of the individual <code>StockItemComponent</code>, but without the favoriting logic. Before we look at it, let’s first see how our routes definition would change to include this new route. We would modify the <em>app-routes.module.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** No change in imports, skipping for brevity **/</code><code>
+
+</code><code class="kr">const</code><code> </code><code class="nx">appRoutes</code><code>: </code><code class="kt">Routes</code><code> </code><code class="o">=</code><code> </code><code class="p">[</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">''</code><code class="p">,</code><code> </code><code class="nx">redirectTo</code><code class="o">:</code><code> </code><code class="s1">'/login'</code><code class="p">,</code><code> </code><code class="nx">pathMatch</code><code class="o">:</code><code> </code><code class="s1">'full'</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'login'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">LoginComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'register'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">RegisterComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'stocks/list'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">StockListComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'stocks/create'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">CreateStockComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'stock/:code'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">StockDetailsComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>    </code><a class="co" id="co_routing_in_angular_CO5-1" href="#callout_routing_in_angular_CO5-1"><img src="images/1.png" alt="1" /></a><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'**'</code><code class="p">,</code><code> </code><code class="nx">redirectTo</code><code class="o">:</code><code> </code><code class="s1">'/register'</code><code> </code><code class="p">}</code><code>
+</code><code class="p">]</code><code class="p">;</code><code>
+
+</code><code class="cm">/** No change in remaining file, skipping for brevity **/</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">AppRoutesModule</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_routing_in_angular_CO5-1" href="#co_routing_in_angular_CO5-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>A new route to load the details of a stock</p></dd>
+</dl>
+
+<p>There is only one addition to the route, which is a path to <code>StockDetailsComponent</code>. Note the path, which is <code>stock/:code</code>. This includes a variable in the URL, which can change based on which stock needs to be loaded. Our component in this case, the <code>StockDetailsComponent</code>, can then when it is loaded read the <code>code</code> from the route, and then load the corresponding stock from our server. Let’s see how the <code>Stock​DetailsComponent</code> looks:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Component</code><code class="p">,</code><code> </code><code class="nx">OnInit</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">StockService</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'../../services/stock.service'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">ActivatedRoute</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/router'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Stock</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'../../model/stock'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">Component</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="nx">selector</code><code class="o">:</code><code> </code><code class="s1">'app-stock-details'</code><code class="p">,</code><code>
+  </code><code class="nx">templateUrl</code><code class="o">:</code><code> </code><code class="s1">'./stock-details.component.html'</code><code class="p">,</code><code>
+  </code><code class="nx">styleUrls</code><code class="o">:</code><code> </code><code class="p">[</code><code class="s1">'./stock-details.component.css'</code><code class="p">]</code><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">StockDetailsComponent</code><code> </code><code class="kr">implements</code><code> </code><code class="nx">OnInit</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="kr">public</code><code> </code><code class="nx">stock</code><code>: </code><code class="kt">Stock</code><code class="p">;</code><code>
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code><code> </code><code class="nx">stockService</code><code>: </code><code class="kt">StockService</code><code class="p">,</code><code>
+              </code><code class="kr">private</code><code> </code><code class="nx">route</code><code>: </code><code class="kt">ActivatedRoute</code><code class="p">)</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code><code>     </code><a class="co" id="co_routing_in_angular_CO6-1" href="#callout_routing_in_angular_CO6-1"><img src="images/1.png" alt="1" /></a><code>
+
+  </code><code class="nx">ngOnInit() {</code><code>
+    </code><code class="kr">const</code><code> </code><code class="nx">stockCode</code><code> </code><code class="o">=</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">route</code><code class="p">.</code><code class="nx">snapshot</code><code class="p">.</code><code class="nx">paramMap</code><code class="p">.</code><code class="nx">get</code><code class="p">(</code><code class="s1">'code'</code><code class="p">)</code><code class="p">;</code><code>    </code><a class="co" id="co_routing_in_angular_CO6-2" href="#callout_routing_in_angular_CO6-2"><img src="images/2.png" alt="2" /></a><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStock</code><code class="p">(</code><code class="nx">stockCode</code><code class="p">)</code><code class="p">.</code><code class="nx">subscribe</code><code class="p">(</code><code class="nx">stock</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code> </code><code class="o">=</code><code> </code><code class="nx">stock</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_routing_in_angular_CO6-1" href="#co_routing_in_angular_CO6-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Injecting the activated route into the constructor</p></dd>
+<dt><a class="co" id="callout_routing_in_angular_CO6-2" href="#co_routing_in_angular_CO6-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Using the activated route to read the code from the URL</p></dd>
+</dl>
+
+<p>Most of the component is similar to the remaining components we have seen so far, except for two differences:</p>
+
+<ul>
+<li>
+<p>We inject what we call an <code>ActivatedRoute</code> into the constructor. The <code>ActivatedRoute</code> is a context-specific service that holds the information about the currently activated route, and knows how to parse and retrieve information from it.<a data-type="indexterm" data-primary="ActivatedRoute" id="idm139828112078144"></a></p>
+</li>
+<li>
+<p>We then use the <code>ActivatedRoute</code> to read the stock code (<code>code</code>) from the URL. Note that we read it from a <code>snapshot</code>. <a data-type="indexterm" data-primary="paramMap" id="idm139828112075104"></a>The <code>paramMap</code> in the <code>snapshot</code> is a map of all the URL parameters. We will talk about what that implies in just a bit.</p>
+</li>
+</ul>
+
+<p>Then we use the code to make a service call, and store the return value in a variable. This is then used to display information in the UI, like we have done so far.</p>
+
+<p>The <code>StockService.getStock</code> code is a trivial addition to the <em>src/app/services/stock.service.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Injectable</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">HttpClient</code><code class="p">,</code> <code class="nx">HttpHeaders</code><code class="p">,</code> <code class="nx">HttpResponse</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/common/http'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Observable</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'rxjs/Observable'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/model/stock'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">HttpEvent</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/common/http/src/response'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">UserStoreService</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'./user-store.service'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Injectable</code><code class="p">()</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockService</code> <code class="p">{</code>
+
+  <code class="cm">/** Skipped for brevity **/</code>
+
+  <code class="nx">getStock</code><code class="p">(</code><code class="nx">code</code>: <code class="kt">string</code><code class="p">)</code><code class="o">:</code> <code class="nx">Observable</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="o">&gt;</code> <code class="p">{</code>
+    <code class="k">return</code> <code class="k">this</code><code class="p">.</code><code class="nx">http</code><code class="p">.</code><code class="nx">get</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="o">&gt;</code><code class="p">(</code><code class="s1">'/api/stock/'</code> <code class="o">+</code> <code class="nx">code</code><code class="p">);</code>
+  <code class="p">}</code>
+
+  <code class="cm">/** Skipped for brevity **/</code>
+<code class="p">}</code></pre>
+
+<p>The preceding code skips most of the implementation, other than the new addition. Make sure you add it to the existing service. <code>getStock</code> simply makes a GET request with the provided <code>code</code> to the server and returns the relevant stock.</p>
+
+<p>At this point, if we run the application, we would have a route that corresponds the stock details. But if you navigate via URL to it (say <em>http://localhost:4200/stock/TSC</em>), you would see an empty page with just the $ sign. Inspect the Network tab in developer tools, and you will actually see a request to get the stock details, but it is responding with a <code>403</code> at this point because the user is not logged in right now. A <code>403</code> status response is usually sent when the access is forbidden to a certain resource, usually because the user is not logged in or doesn’t have access to the data. We will see how to deal with it in the section <a data-type="xref" href="#route-guards">“Route Guards”</a>.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Navigating in Your Application"><div class="sect2" id="idm139828112475440">
+<h2>Navigating in Your Application</h2>
+
+<p>Now that we have the route for details of a stock, let’s hook up the navigation within the application.<a data-type="indexterm" data-primary="routing" data-secondary="common tasks in" data-tertiary="navigating in your application" id="idm139828112113600"></a> These are the few activities we want to enable:</p>
+
+<ul>
+<li>
+<p>Navigate to the login page on successful registration</p>
+</li>
+<li>
+<p>Navigate to the stock list page on successful login</p>
+</li>
+<li>
+<p>Navigate to the stock detail page when we click any stock item in the stock list</p>
+</li>
+</ul>
+
+<p>Of these, two need to be handled in the TypeScript code, while the other is handled in the template HTML. Let’s see how we can achieve this.</p>
+
+<p>First, we’ll modify <a data-type="indexterm" data-primary="RegisterComponent" id="idm139828112108032"></a>the <code>RegisterComponent</code> by changing <em>src/app/user/register/register.component.ts</em> as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Component</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">UserService</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'../../services/user.service'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Router</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/router'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">Component</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="nx">selector</code><code class="o">:</code><code> </code><code class="s1">'app-register'</code><code class="p">,</code><code>
+  </code><code class="nx">templateUrl</code><code class="o">:</code><code> </code><code class="s1">'./register.component.html'</code><code class="p">,</code><code>
+  </code><code class="nx">styleUrls</code><code class="o">:</code><code> </code><code class="p">[</code><code class="s1">'./register.component.css'</code><code class="p">]</code><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">RegisterComponent</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="kr">public</code><code> </code><code class="nx">username</code><code>: </code><code class="kt">string</code><code> </code><code class="o">=</code><code> </code><code class="s1">''</code><code class="p">;</code><code>
+  </code><code class="kr">public</code><code> </code><code class="nx">password</code><code>: </code><code class="kt">string</code><code> </code><code class="o">=</code><code> </code><code class="s1">''</code><code class="p">;</code><code>
+
+  </code><code class="kr">public</code><code> </code><code class="nx">message</code><code>: </code><code class="kt">string</code><code> </code><code class="o">=</code><code> </code><code class="s1">''</code><code class="p">;</code><code>
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code><code> </code><code class="nx">userService</code><code>: </code><code class="kt">UserService</code><code class="p">,</code><code>
+              </code><code class="kr">private</code><code> </code><code class="nx">router</code><code>: </code><code class="kt">Router</code><code class="p">)</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code><code>       </code><a class="co" id="co_routing_in_angular_CO7-1" href="#callout_routing_in_angular_CO7-1"><img src="images/1.png" alt="1" /></a><code>
+
+  </code><code class="nx">register() {</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">userService</code><code class="p">.</code><code class="nx">register</code><code class="p">(</code><code class="k">this</code><code class="p">.</code><code class="nx">username</code><code class="p">,</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">password</code><code class="p">)</code><code>
+      </code><code class="p">.</code><code class="nx">subscribe</code><code class="p">(</code><code class="p">(</code><code class="nx">resp</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+        </code><code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Successfully registered'</code><code class="p">)</code><code class="p">;</code><code>
+        </code><code class="k">this</code><code class="p">.</code><code class="nx">message</code><code> </code><code class="o">=</code><code> </code><code class="nx">resp</code><code class="p">.</code><code class="nx">msg</code><code class="p">;</code><code>
+        </code><code class="k">this</code><code class="p">.</code><code class="nx">router</code><code class="p">.</code><code class="nx">navigate</code><code class="p">(</code><code class="p">[</code><code class="s1">'login'</code><code class="p">]</code><code class="p">)</code><code class="p">;</code><code>        </code><a class="co" id="co_routing_in_angular_CO7-2" href="#callout_routing_in_angular_CO7-2"><img src="images/2.png" alt="2" /></a><code>
+      </code><code class="p">}</code><code class="p">,</code><code> </code><code class="p">(</code><code class="nx">err</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+        </code><code class="nx">console</code><code class="p">.</code><code class="nx">error</code><code class="p">(</code><code class="s1">'Error registering'</code><code class="p">,</code><code> </code><code class="nx">err</code><code class="p">)</code><code class="p">;</code><code>
+        </code><code class="k">this</code><code class="p">.</code><code class="nx">message</code><code> </code><code class="o">=</code><code> </code><code class="nx">err</code><code class="p">.</code><code class="nx">error</code><code class="p">.</code><code class="nx">msg</code><code class="p">;</code><code>
+      </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_routing_in_angular_CO7-1" href="#co_routing_in_angular_CO7-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Inject the <code>Router</code> into<a data-type="indexterm" data-primary="Router object" id="idm139828111819088"></a> the component</p></dd>
+<dt><a class="co" id="callout_routing_in_angular_CO7-2" href="#co_routing_in_angular_CO7-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Navigate to a path using the <code>Router</code></p></dd>
+</dl>
+
+<p>We have made some minor changes in the <code>RegisterComponent</code>. Primarly, we have now injected an instance of the Angular <code>Router</code> into our constructor, which gives us the capabilities to navigate within our application. Then, when we make a successful register call, at that point, we use the <code>router.navigate</code> call to navigate to the login page. <a data-type="indexterm" data-primary="Router object" data-secondary="navigate method" id="idm139828111547456"></a>The <code>navigate</code> method takes an array of commands, which together will resolve to a particular route.<a data-type="indexterm" data-primary="navigate method (router)" id="idm139828111546048"></a></p>
+
+<p>There are more intricacies to the <code>router.navigate</code> method. By default, any array of commands that we pass to it result in an absolute URL that Angular navigates to. So if we use <code>router.navigate(['stocks', 'list'])</code>, it would navigate to <code>stocks/list</code> route. But we can also specify the route it is relative to (for example, the current route, which we can obtain by injecting the current <code>ActivatedRoute</code> in the constructor).<a data-type="indexterm" data-primary="ActivatedRoute" id="idm139828111542832"></a> So if we wanted to navigate to the parent of the current route, we could execute <code>router.navigate(['../'], {relativeTo: this.route})</code>.</p>
+
+<p>We also have the capability to preserve the URL, skip changing the location, and so on. You can read up more on the other capabilities in <a href="https://angular.io/api/router/Router#navigate">the official Angular Docs</a>.</p>
+
+<p>We can make a similar<a data-type="indexterm" data-primary="LoginComponent" id="idm139828111540016"></a> change to the <code>LoginComponent</code> as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Component</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">UserService</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'../../services/user.service'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Router</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/router'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">Component</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="nx">selector</code><code class="o">:</code><code> </code><code class="s1">'app-login'</code><code class="p">,</code><code>
+  </code><code class="nx">templateUrl</code><code class="o">:</code><code> </code><code class="s1">'./login.component.html'</code><code class="p">,</code><code>
+  </code><code class="nx">styleUrls</code><code class="o">:</code><code> </code><code class="p">[</code><code class="s1">'./login.component.css'</code><code class="p">]</code><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">LoginComponent</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="kr">public</code><code> </code><code class="nx">username</code><code>: </code><code class="kt">string</code><code> </code><code class="o">=</code><code> </code><code class="s1">''</code><code class="p">;</code><code>
+  </code><code class="kr">public</code><code> </code><code class="nx">password</code><code>: </code><code class="kt">string</code><code> </code><code class="o">=</code><code> </code><code class="s1">''</code><code class="p">;</code><code>
+
+  </code><code class="kr">public</code><code> </code><code class="nx">message</code><code>: </code><code class="kt">string</code><code> </code><code class="o">=</code><code> </code><code class="s1">''</code><code class="p">;</code><code>
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code><code> </code><code class="nx">userService</code><code>: </code><code class="kt">UserService</code><code class="p">,</code><code>
+              </code><code class="kr">private</code><code> </code><code class="nx">router</code><code>: </code><code class="kt">Router</code><code class="p">)</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code><code>            </code><a class="co" id="co_routing_in_angular_CO8-1" href="#callout_routing_in_angular_CO8-1"><img src="images/1.png" alt="1" /></a><code>
+
+  </code><code class="nx">login() {</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">userService</code><code class="p">.</code><code class="nx">login</code><code class="p">(</code><code class="k">this</code><code class="p">.</code><code class="nx">username</code><code class="p">,</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">password</code><code class="p">)</code><code>
+      </code><code class="p">.</code><code class="nx">subscribe</code><code class="p">(</code><code class="p">(</code><code class="nx">resp</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+        </code><code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Successfully logged in'</code><code class="p">)</code><code class="p">;</code><code>
+        </code><code class="k">this</code><code class="p">.</code><code class="nx">message</code><code> </code><code class="o">=</code><code> </code><code class="nx">resp</code><code class="p">.</code><code class="nx">msg</code><code class="p">;</code><code>
+        </code><code class="k">this</code><code class="p">.</code><code class="nx">router</code><code class="p">.</code><code class="nx">navigate</code><code class="p">(</code><code class="p">[</code><code class="s1">'stocks'</code><code class="p">,</code><code> </code><code class="s1">'list'</code><code class="p">]</code><code class="p">)</code><code class="p">;</code><code>    </code><a class="co" id="co_routing_in_angular_CO8-2" href="#callout_routing_in_angular_CO8-2"><img src="images/2.png" alt="2" /></a><code>
+      </code><code class="p">}</code><code class="p">,</code><code> </code><code class="p">(</code><code class="nx">err</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+        </code><code class="nx">console</code><code class="p">.</code><code class="nx">error</code><code class="p">(</code><code class="s1">'Error logging in'</code><code class="p">,</code><code> </code><code class="nx">err</code><code class="p">)</code><code class="p">;</code><code>
+        </code><code class="k">this</code><code class="p">.</code><code class="nx">message</code><code> </code><code class="o">=</code><code> </code><code class="nx">err</code><code class="p">.</code><code class="nx">error</code><code class="p">.</code><code class="nx">msg</code><code class="p">;</code><code>
+      </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_routing_in_angular_CO8-1" href="#co_routing_in_angular_CO8-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Inject the <code>Router</code> into the component</p></dd>
+<dt><a class="co" id="callout_routing_in_angular_CO8-2" href="#co_routing_in_angular_CO8-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Navigate to a path using the <code>Router</code></p></dd>
+</dl>
+
+<p>Just like the <code>RegisterComponent</code>, we again inject the <code>Router</code>, and then use it on successful login to redirect to the stocks list page.<a data-type="indexterm" data-primary="Router object" data-secondary="injecting into LoginComponent and using for redirect" id="idm139828111502288"></a> Notice here that we use an array of commands to redirect to the correct stocks list page.</p>
+
+<p>Finally, let’s see how we might ensure that clicking a stock takes us to the details page for that stock. We have already created and hooked up the route for the <code>Stock​DetailsComponent</code>, which is at <code>stock/:code</code>. Let’s modify <em>src/app/stock/stock-item/stock-item.component.html</em> as follows:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-container"</code> <code class="na">routerLink=</code><code class="s">"/stock/{{stock.code}}"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"name"</code><code class="nt">&gt;</code>{{stock.name + ' (' + stock.code + ')'}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"exchange"</code><code class="nt">&gt;</code>{{stock.exchange}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"price"</code>
+      <code class="err">[</code><code class="na">class</code><code class="err">.</code><code class="na">positive</code><code class="err">]="</code><code class="na">stock</code><code class="err">.</code><code class="na">price</code> <code class="nt">&gt;</code> stock.previousPrice"
+      [class.negative]="stock.price <code class="err">&lt;</code>= stock.previousPrice"&gt;
+      $ {{stock.price}}
+  <code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;button</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">onToggleFavorite</code><code class="err">($</code><code class="na">event</code><code class="err">)"</code>
+          <code class="err">*</code><code class="na">ngIf=</code><code class="s">"!stock.favorite"</code><code class="nt">&gt;</code>Add to Favorite<code class="nt">&lt;/button&gt;</code>
+  <code class="nt">&lt;button</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">onToggleFavorite</code><code class="err">($</code><code class="na">event</code><code class="err">)"</code>
+          <code class="err">*</code><code class="na">ngIf=</code><code class="s">"stock.favorite"</code><code class="nt">&gt;</code>Remove from Favorite<code class="nt">&lt;/button&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>The only change is on the first line, where we use the <code>routerLink</code> directive on the container <code>div</code> element itself.<a data-type="indexterm" data-primary="routerLink directive" id="idm139828111790016"></a> Note that unlike the links we had in the navigation bar, here we combine the <code>routerLink</code> directive with a binding. Thus, depending on the stock, the value of <code>routerLink</code> will change to have the correct code in it.</p>
+
+<p>Now run the application, and perform the following steps in order:</p>
+<ol>
+<li>
+<p>Open <em>http://localhost:4200</em> in your browser. It should redirect you to the login page.</p>
+</li>
+<li>
+<p>You can try entering a username and password, and it should update the UI with a message that the username and password is incorrect.</p>
+</li>
+<li>
+<p>Click the Register link at the top. It should redirect you to the Register page, and also highlight the Register link at the top (this is using the <code>routerLinkActive</code> directive if you remember).<a data-type="indexterm" data-primary="routerLinkActive directive" id="idm139828111783920"></a></p>
+</li>
+<li>
+<p>Enter a username and password, and click Register. It should redirect you to the Login page if successful.</p>
+</li>
+<li>
+<p>Enter the same username and password. It should now redirect you to the stocks list page, with three stocks present.</p>
+</li>
+<li>
+<p>Click any of the stocks. It should open a page with only that stock (no new details though, we were lazy!). Notice that the URL has also changed.</p>
+</li>
+
+</ol>
+
+<p>A few things to note and keep in mind:</p>
+
+<ul>
+<li>
+<p>We have not added any local storage capabilities in our application yet. Refreshing the page means you will have to login again!</p>
+</li>
+<li>
+<p>Restarting the node server will mean that you have to register again, as the Node server also keeps all data in memory.</p>
+</li>
+<li>
+<p>If you try to open the stocks list page or the stock details page directly via URL, expect to see a page with empty data, as the authentication token gets reset (between reloads of the page) and you have to go through login again.</p>
+</li>
+</ul>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Optional Route Params"><div class="sect2" id="idm139828112114800">
+<h2>Optional Route Params</h2>
+
+<p>Before we wrap up this section and example, we will look at one last thing. There are routes where we might want additional params that may or may not be optional.<a data-type="indexterm" data-primary="routing" data-secondary="common tasks in" data-tertiary="optional route params" id="idm139828111879568"></a> These could be things like the current page number, the page size, or any filtering data that might be passed around, and we want to ensure that they can be bookmarked. First we will cover how to handle those cases, and then quickly look at another way in Angular to read both defined parameters and query parameters.</p>
+
+<p>Let’s assume that we wanted to pass a page number to the <code>StockListComponent</code> so that it can display the corresponding page. Now this parameter would be optional, so we want to pass it as a query parameter.</p>
+
+<p>First, let’s modify the <code>LoginComponent</code> to pass<a data-type="indexterm" data-primary="LoginComponent" id="idm139828111876080"></a> in a page number to the route:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** Imports and Decorator unchanged, skipping for brevity **/</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">LoginComponent</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="cm">/** Code unchanged, skipping for brevity **/</code><code>
+
+  </code><code class="nx">login() {</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">userService</code><code class="p">.</code><code class="nx">login</code><code class="p">(</code><code class="k">this</code><code class="p">.</code><code class="nx">username</code><code class="p">,</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">password</code><code class="p">)</code><code>
+      </code><code class="p">.</code><code class="nx">subscribe</code><code class="p">(</code><code class="p">(</code><code class="nx">resp</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+        </code><code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Successfully logged in'</code><code class="p">)</code><code class="p">;</code><code>
+        </code><code class="k">this</code><code class="p">.</code><code class="nx">message</code><code> </code><code class="o">=</code><code> </code><code class="nx">resp</code><code class="p">.</code><code class="nx">msg</code><code class="p">;</code><code>
+        </code><code class="k">this</code><code class="p">.</code><code class="nx">router</code><code class="p">.</code><code class="nx">navigate</code><code class="p">(</code><code class="p">[</code><code class="s1">'stocks'</code><code class="p">,</code><code> </code><code class="s1">'list'</code><code class="p">]</code><code class="p">,</code><code> </code><code class="p">{</code><code>
+          </code><code class="nx">queryParams</code><code class="o">:</code><code> </code><code class="p">{</code><code class="nx">page</code><code>: </code><code class="kt">1</code><code class="p">}</code><code>                     </code><a class="co" id="co_routing_in_angular_CO9-1" href="#callout_routing_in_angular_CO9-1"><img src="images/1.png" alt="1" /></a><code>
+        </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+      </code><code class="p">}</code><code class="p">,</code><code> </code><code class="p">(</code><code class="nx">err</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+        </code><code class="nx">console</code><code class="p">.</code><code class="nx">error</code><code class="p">(</code><code class="s1">'Error logging in'</code><code class="p">,</code><code> </code><code class="nx">err</code><code class="p">)</code><code class="p">;</code><code>
+        </code><code class="k">this</code><code class="p">.</code><code class="nx">message</code><code> </code><code class="o">=</code><code> </code><code class="nx">err</code><code class="p">.</code><code class="nx">error</code><code class="p">.</code><code class="nx">msg</code><code class="p">;</code><code>
+      </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_routing_in_angular_CO9-1" href="#co_routing_in_angular_CO9-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Passing query params as part of navigation request</p></dd>
+</dl>
+
+<p>We have made a slight change to the <code>router.navigate</code> in the <code>subscribe</code>, in that we pass a <code>queryParams</code> object as part of the second argument to the call.<a data-type="indexterm" data-primary="Router object" data-secondary="navigate method" id="idm139828111245968"></a><a data-type="indexterm" data-primary="queryParams object" id="idm139828111244992"></a> This will translate to query parameters in the route.</p>
+
+<p>Now let’s see how we might read the query params when necessary in our component. We would modify the <code>StockListComponent</code> as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** Imports unchanged, skipping for brevity **/</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">ActivatedRoute</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/router'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">Component</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="nx">selector</code><code class="o">:</code><code> </code><code class="s1">'app-stock-list'</code><code class="p">,</code><code>
+  </code><code class="nx">templateUrl</code><code class="o">:</code><code> </code><code class="s1">'./stock-list.component.html'</code><code class="p">,</code><code>
+  </code><code class="nx">styleUrls</code><code class="o">:</code><code> </code><code class="p">[</code><code class="s1">'./stock-list.component.css'</code><code class="p">]</code><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">StockListComponent</code><code> </code><code class="kr">implements</code><code> </code><code class="nx">OnInit</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="kr">public</code><code> </code><code class="nx">stocks$</code><code>: </code><code class="kt">Observable</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="p">[</code><code class="p">]</code><code class="o">&gt;</code><code class="p">;</code><code>
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code><code> </code><code class="nx">stockService</code><code>: </code><code class="kt">StockService</code><code class="p">,</code><code>
+              </code><code class="kr">private</code><code> </code><code class="nx">userStore</code><code>: </code><code class="kt">UserStoreService</code><code class="p">,</code><code>
+              </code><code class="kr">private</code><code> </code><code class="nx">route</code><code>: </code><code class="kt">ActivatedRoute</code><code class="p">)</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code><code>       </code><a class="co" id="co_routing_in_angular_CO10-1" href="#callout_routing_in_angular_CO10-1"><img src="images/1.png" alt="1" /></a><code>
+
+  </code><code class="nx">ngOnInit() {</code><code>
+    </code><code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Page No. : '</code><code class="p">,</code><code>
+        </code><code class="k">this</code><code class="p">.</code><code class="nx">route</code><code class="p">.</code><code class="nx">snapshot</code><code class="p">.</code><code class="nx">queryParamMap</code><code class="p">.</code><code class="nx">get</code><code class="p">(</code><code class="s1">'page'</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>    </code><a class="co" id="co_routing_in_angular_CO10-2" href="#callout_routing_in_angular_CO10-2"><img src="images/2.png" alt="2" /></a><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stocks</code><code class="nx">$</code><code> </code><code class="o">=</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocks</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_routing_in_angular_CO10-1" href="#co_routing_in_angular_CO10-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Inject the current <code>ActivatedRoute</code> into the constructor</p></dd>
+<dt><a class="co" id="callout_routing_in_angular_CO10-2" href="#co_routing_in_angular_CO10-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Read the query parameter from the route <code>snapshot</code></p></dd>
+</dl>
+
+<p>Very similar to <a data-type="indexterm" data-primary="ActivatedRoute" data-secondary="snapshot" id="idm139828111029456"></a><a data-type="indexterm" data-primary="snapshot (ActivatedRoute)" id="idm139828111028448"></a>how we read the defined parameters, we can also read the query parameters from the <code>ActivatedRoute</code> <code>snapshot</code>. In this case, when we run the application, when we successfully login, we would see that our route in the browser becomes <em>http://localhost:4200/stocks/list?page=1</em>, and we get the page number printed in the console.</p>
+
+<p>Before we wrap up this topic, there is one additional thing to note or be wary of when working with routes and route parameters (whether mandatory or query parameters). So far, we used the <code>snapshot</code> from the <code>ActivatedRoute</code> to read our parameters in the <code>ngOnInit</code> of our components. This is OK if the component is loaded only once, and we navigate from it to another component and route. But if there is a chance that the same component might need to be loaded with different parameters, then it is recommended that we do not rely on the <code>snapshot</code>.</p>
+
+<p>Instead, we can treat the parameters and query parameters as an observable, just like service calls and HTTP requests. This way, the subscription will get triggered each time the URL changes, allowing us to reload the data rather than relying on the <span class="keep-together"><code>snapshot</code></span>.</p>
+
+<p>Let’s change our <code>StockListComponent</code> slightly to see it action. First we will add a button to our template to simulate moving to the next page, by modifying the <em>src/app/stock/stock-list/stock-list.component.html</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;app-stock-item</code> <code class="err">*</code><code class="na">ngFor=</code><code class="s">"let stock of stocks$ | async"</code>
+                <code class="err">[</code><code class="na">stock</code><code class="err">]="</code><code class="na">stock</code><code class="err">"</code><code class="nt">&gt;</code>
+<code class="nt">&lt;/app-stock-item&gt;</code>
+<code class="nt">&lt;div&gt;</code>
+  <code class="nt">&lt;button</code> <code class="na">type=</code><code class="s">"button"</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">nextPage</code><code class="err">()"</code><code class="nt">&gt;</code>Next page<code class="nt">&lt;/button&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>We simply added a button, which on click triggers the <code>nextPage()</code> method that we will create.<a data-type="indexterm" data-primary="observables" data-secondary="subscription to, using instead of ActivatedRoute snapshot" id="idm139828111080752"></a> Next, let’s modify the component code to use a subscription to an observable, instead of relying on the <code>snapshot</code>. Our finished <em>src/app/stock/stock-list/stock-list.component.ts</em> would look like this:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** Imports unchanged, skipping for brevity **/</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">ActivatedRoute</code><code class="p">,</code><code> </code><code class="nx">Router</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/router'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">Component</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="nx">selector</code><code class="o">:</code><code> </code><code class="s1">'app-stock-list'</code><code class="p">,</code><code>
+  </code><code class="nx">templateUrl</code><code class="o">:</code><code> </code><code class="s1">'./stock-list.component.html'</code><code class="p">,</code><code>
+  </code><code class="nx">styleUrls</code><code class="o">:</code><code> </code><code class="p">[</code><code class="s1">'./stock-list.component.css'</code><code class="p">]</code><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">StockListComponent</code><code> </code><code class="kr">implements</code><code> </code><code class="nx">OnInit</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="kr">public</code><code> </code><code class="nx">stocks$</code><code>: </code><code class="kt">Observable</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="p">[</code><code class="p">]</code><code class="o">&gt;</code><code class="p">;</code><code>
+  </code><code class="kr">private</code><code> </code><code class="nx">page</code><code> </code><code class="o">=</code><code> </code><code class="mi">1</code><code class="p">;</code><code>
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code><code> </code><code class="nx">stockService</code><code>: </code><code class="kt">StockService</code><code class="p">,</code><code>
+              </code><code class="kr">private</code><code> </code><code class="nx">userStore</code><code>: </code><code class="kt">UserStoreService</code><code class="p">,</code><code>
+              </code><code class="kr">private</code><code> </code><code class="nx">router</code><code>: </code><code class="kt">Router</code><code class="p">,</code><code>               </code><a class="co" id="co_routing_in_angular_CO11-1" href="#callout_routing_in_angular_CO11-1"><img src="images/1.png" alt="1" /></a><code>
+              </code><code class="kr">private</code><code> </code><code class="nx">route</code><code>: </code><code class="kt">ActivatedRoute</code><code class="p">)</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code><code>    </code><a class="co" id="co_routing_in_angular_CO11-2" href="#callout_routing_in_angular_CO11-2"><img src="images/2.png" alt="2" /></a><code>
+
+  </code><code class="nx">ngOnInit() {</code><code>
+    </code><code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Page No. : '</code><code class="p">,</code><code>
+        </code><code class="k">this</code><code class="p">.</code><code class="nx">route</code><code class="p">.</code><code class="nx">snapshot</code><code class="p">.</code><code class="nx">queryParamMap</code><code class="p">.</code><code class="nx">get</code><code class="p">(</code><code class="s1">'page'</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>    </code><a class="co" id="co_routing_in_angular_CO11-3" href="#callout_routing_in_angular_CO11-3"><img src="images/3.png" alt="3" /></a><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">route</code><code class="p">.</code><code class="nx">queryParams</code><code class="p">.</code><code class="nx">subscribe</code><code class="p">(</code><code class="p">(</code><code class="nx">params</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>         </code><a class="co" id="co_routing_in_angular_CO11-4" href="#callout_routing_in_angular_CO11-4"><img src="images/4.png" alt="4" /></a><code>
+      </code><code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Page : '</code><code class="p">,</code><code> </code><code class="nx">params</code><code class="p">.</code><code class="nx">page</code><code class="p">)</code><code class="p">;</code><code>
+      </code><code class="k">this</code><code class="p">.</code><code class="nx">stocks</code><code class="nx">$</code><code> </code><code class="o">=</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocks</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">nextPage() {</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">router</code><code class="p">.</code><code class="nx">navigate</code><code class="p">(</code><code class="p">[</code><code class="p">]</code><code class="p">,</code><code> </code><code class="p">{</code><code>
+      </code><code class="nx">queryParams</code><code class="o">:</code><code> </code><code class="p">{</code><code>
+        </code><code class="nx">page</code><code class="o">:</code><code> </code><code class="o">++</code><code class="k">this</code><code class="p">.</code><code class="nx">page</code><code>                                  </code><a class="co" id="co_routing_in_angular_CO11-5" href="#callout_routing_in_angular_CO11-5"><img src="images/5.png" alt="5" /></a><code>
+      </code><code class="p">}</code><code>
+    </code><code class="p">}</code><code class="p">)</code><code>
+  </code><code class="p">}</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_routing_in_angular_CO11-1" href="#co_routing_in_angular_CO11-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Inject router into the constructor</p></dd>
+<dt><a class="co" id="callout_routing_in_angular_CO11-2" href="#co_routing_in_angular_CO11-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Inject <code>ActivatedRoute</code> into the constructor</p></dd>
+<dt><a class="co" id="callout_routing_in_angular_CO11-3" href="#co_routing_in_angular_CO11-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Read page from query params <code>snapshot</code></p></dd>
+<dt><a class="co" id="callout_routing_in_angular_CO11-4" href="#co_routing_in_angular_CO11-4"><img src="images/4.png" alt="4" /></a></dt>
+<dd><p>Subscribe to <code>queryParams</code> for any changes</p></dd>
+<dt><a class="co" id="callout_routing_in_angular_CO11-5" href="#co_routing_in_angular_CO11-5"><img src="images/5.png" alt="5" /></a></dt>
+<dd><p>Navigate to the same page while increasing the page number</p></dd>
+</dl>
+
+<p>There are a few changes, so let’s go over them one by one:</p>
+
+<ul>
+<li>
+<p>We added a local variable <code>page</code>, and initialized it to 1.</p>
+</li>
+<li>
+<p>We added a <code>nextPage()</code> method, which on click navigates (using <code>router.navigate</code>) to the next page.<a data-type="indexterm" data-primary="queryParams object" id="idm139828110838256"></a> Note that we don’t provide any commands, to keep it at the same page, but just change the query params.</p>
+</li>
+<li>
+<p>In the <code>ngOnInit</code>, we left the old <code>console.log</code> as it is reading from the <code>snapshot</code>. In addition, we subscribe to the <code>queryParams</code> observable. This subscription will trigger each time the <code>page</code> changes, while we remain on the same component.</p>
+</li>
+</ul>
+
+<p>Now, you can try the following:</p>
+
+<ul>
+<li>
+<p>Login (or register again, in case you restarted the server).</p>
+</li>
+<li>
+<p>Note the developer tools console to see the initial page number in the <code>snapshot</code> as well as the observable subscription getting triggered.</p>
+</li>
+<li>
+<p>Click the “Next page” button a few times, to see the subscription getting <span class="keep-together">triggered</span>.</p>
+</li>
+</ul>
+
+<p>Whether we subscribe to the <code>queryParams</code> or to <code>params</code>, the code doesn’t change by much. This is a super useful approach in case you have a component where the data will get loaded for various parameters without the component getting reloaded.</p>
+
+<p>The entire completed example (including parameters, navigation, and query parameters including the subscription-based approach) can be found in the <em>chapter11/navigation-and-params</em> folder in the GitHub repository.<a data-type="indexterm" data-primary="routing" data-secondary="common tasks in" data-startref="ix_rtecomm" id="idm139828110863808"></a></p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Route Guards"><div class="sect1" id="route-guards">
+<h1>Route Guards</h1>
+
+<p>The next thing we will cover is the concept of route guards.<a data-type="indexterm" data-primary="routing" data-secondary="route guards" id="ix_rtegrd"></a> Route guards in Angular are a way of protecting the loading or unloading of a route based on your own conditions. Route guards give you a lot of flexibility in the kinds of checks you want to add before a route opens or closes. In this section, we will deal with three in particular: a guard to prevent a route from opening, a guard to prevent a route from closing, and a guard that loads necessary data before a route is opened. We will keep the examples very simple, but these could be extended to do whatever is needed in your use case.</p>
+
+<p>For this entire section, we will use the codebase from the previous section as a base to build on. In case you are not coding along, you can find the starter code in the <em>chapter11/navigation-and-params</em> folder in the GitHub repository.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Authenticated-Only Routes"><div class="sect2" id="idm139828110873280">
+<h2>Authenticated-Only Routes</h2>
+
+<p>The first thing we will tackle is the issue we saw in the previous section, where if we tried to navigate to the Stock List component without logging in, we would end up seeing an empty page.<a data-type="indexterm" data-primary="authenticated-only routes" id="ix_authrt"></a><a data-type="indexterm" data-primary="routing" data-secondary="route guards" data-tertiary="authenticated-only routes" id="ix_rtegrdauth"></a> What we would ideally want in this case is a message or error, and a redirection to the login page so that we can prompt the user to login.</p>
+
+<p>For this, we will rely on the <code>UserStoreService</code> to figure out if the user is currently logged in or not. Using this service, we will then create an authentication guard, which will kick in before we open a protected route. The authentication guard will then decide whether we can continue on to the route, or if we need to redirect to a different route.</p>
+
+<p>To accomplish this, the first thing we will do is create an <code>AuthGuard</code>. To get it kickstarted, you can of course use the Angular CLI (remember, <code>ng g guard guards/auth</code> will do the trick).<a data-type="indexterm" data-primary="ng g guard guards/auth command" id="idm139828110874208"></a> Replace the content of the generated file (<em>src/app/guards/auth.guard.ts</em>) with the following:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Injectable</code> <code class="p">}</code>     <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">CanActivate</code><code class="p">,</code> <code class="nx">Router</code> <code class="p">}</code>    <code class="nx">from</code> <code class="s1">'@angular/router'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">UserStoreService</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'../services/user-store.service'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Observable</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'rxjs/Observable'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Injectable</code><code class="p">()</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">AuthGuard</code> <code class="kr">implements</code> <code class="nx">CanActivate</code> <code class="p">{</code>
+
+  <code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code> <code class="nx">userStore</code>: <code class="kt">UserStoreService</code><code class="p">,</code>
+              <code class="kr">private</code> <code class="nx">router</code>: <code class="kt">Router</code><code class="p">)</code> <code class="p">{}</code>
+
+  <code class="nx">canActivate</code><code class="p">()</code><code class="o">:</code> <code class="kr">boolean</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'AuthGuard#canActivate called'</code><code class="p">);</code>
+
+    <code class="k">if</code> <code class="p">(</code><code class="k">this</code><code class="p">.</code><code class="nx">userStore</code><code class="p">.</code><code class="nx">isLoggedIn</code><code class="p">())</code> <code class="p">{</code> <code class="k">return</code> <code class="kc">true</code> <code class="p">};</code>
+
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'AuthGuard#canActivate not authorized to access page'</code><code class="p">);</code>
+    <code class="c1">// Can store current route and redirect back to it</code>
+    <code class="c1">// Store it in a service, add it to a query param</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">router</code><code class="p">.</code><code class="nx">navigate</code><code class="p">([</code><code class="s1">'login'</code><code class="p">]);</code>
+
+    <code class="k">return</code> <code class="kc">false</code><code class="p">;</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>The <code>AuthGuard</code> class is straightforward, and looks and behaves just like an Angular service. The service looks pretty simple, but let’s walk through the changes one by one:</p>
+
+<ul>
+<li>
+<p>We implement an interface called <code>CanActivate</code> from the Angular router module.<a data-type="indexterm" data-primary="CanActivate interface" id="idm139828110523216"></a></p>
+</li>
+<li>
+<p>We inject both the <code>UserStoreService</code> and the <code>Router</code> as part of the constructor.<a data-type="indexterm" data-primary="canActivate method" id="idm139828110520784"></a></p>
+</li>
+<li>
+<p>We then implement the <code>canActivate</code> method. The <code>canActivate</code> method can return either a <code>boolean</code> or an <code>Observable&lt;boolean&gt;</code>. If it resolves to <code>true</code>, then the route will activate. If not, the route will not open.</p>
+</li>
+<li>
+<p>In the <code>canActivate</code>, we check the <code>UserStoreService</code> to see if the user is logged in. If he’s not, we redirect the user to the Login page, and return <code>false</code> as well.</p>
+</li>
+</ul>
+
+<p>In the last step is where we can add our custom logic, if needed. For example, we could preserve the URL we were trying to open. Once the user successfully logs in, we can then redirect to the saved URL rather than the default.</p>
+
+<p>We also can access the newly activated route as well as the router <code>snapshot</code> as arguments to the <code>canActivate</code> method, in case we need to access any route or URL-specific values to make our decision.</p>
+
+<p>Another thing to note is that in our example, we are actually relying on synchronous state to decide whether to proceed or not. But as mentioned, <code>canActivate</code> can also return an observable or a promise, thus allowing you to make server calls to decide whether or not to proceed. Angular will wait for the service to return before making a decision on whether or not the route should activate.</p>
+
+<p>Make sure that you hook up the service in the <code>AppModule</code> before you proceed further. This might be required even if you use the Angular CLI, as we have multiple modules in our application.</p>
+
+<p>Now, let’s hook up our <code>AuthGuard</code> to the routing. We will modify the <em>src/app-routes.module.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** Imports unchanged, skipping for brevity **/</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">AuthGuard</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./guards/auth.guard'</code><code class="p">;</code><code>
+
+</code><code class="kr">const</code><code> </code><code class="nx">appRoutes</code><code>: </code><code class="kt">Routes</code><code> </code><code class="o">=</code><code> </code><code class="p">[</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">''</code><code class="p">,</code><code> </code><code class="nx">redirectTo</code><code class="o">:</code><code> </code><code class="s1">'/login'</code><code class="p">,</code><code> </code><code class="nx">pathMatch</code><code class="o">:</code><code> </code><code class="s1">'full'</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'login'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">LoginComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'register'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">RegisterComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'stocks/list'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">StockListComponent</code><code class="p">,</code><code>
+    </code><code class="nx">canActivate</code><code class="o">:</code><code> </code><code class="p">[</code><code class="nx">AuthGuard</code><code class="p">]</code><code> </code><code class="p">}</code><code class="p">,</code><code>                 </code><a class="co" id="co_routing_in_angular_CO12-1" href="#callout_routing_in_angular_CO12-1"><img src="images/1.png" alt="1" /></a><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'stocks/create'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">CreateStockComponent</code><code class="p">,</code><code>
+    </code><code class="nx">canActivate</code><code class="o">:</code><code> </code><code class="p">[</code><code class="nx">AuthGuard</code><code class="p">]</code><code> </code><code class="p">}</code><code class="p">,</code><code>                 </code><a class="co" id="co_routing_in_angular_CO12-2" href="#callout_routing_in_angular_CO12-2"><img src="images/2.png" alt="2" /></a><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'stock/:code'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">StockDetailsComponent</code><code class="p">,</code><code>
+    </code><code class="nx">canActivate</code><code class="o">:</code><code> </code><code class="p">[</code><code class="nx">AuthGuard</code><code class="p">]</code><code> </code><code class="p">}</code><code class="p">,</code><code>                 </code><a class="co" id="co_routing_in_angular_CO12-3" href="#callout_routing_in_angular_CO12-3"><img src="images/3.png" alt="3" /></a><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'**'</code><code class="p">,</code><code> </code><code class="nx">redirectTo</code><code class="o">:</code><code> </code><code class="s1">'/register'</code><code> </code><code class="p">}</code><code>
+</code><code class="p">]</code><code class="p">;</code><code>
+
+</code><code class="cm">/** Code unchanged, skipping for brevity **/</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">AppRoutesModule</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_routing_in_angular_CO12-1" href="#co_routing_in_angular_CO12-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Add the <code>AuthGuard</code> to the <code>StockListComponent</code></p></dd>
+<dt><a class="co" id="callout_routing_in_angular_CO12-2" href="#co_routing_in_angular_CO12-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Add the <code>AuthGuard</code> to the <code>CreateStockComponent</code></p></dd>
+<dt><a class="co" id="callout_routing_in_angular_CO12-3" href="#co_routing_in_angular_CO12-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Add the <code>AuthGuard</code> to the <code>StockDetailsComponent</code></p></dd>
+</dl>
+
+<p>To the three stock routes, we have added another key to the route definition. We have added a <code>canActivate</code> key, which takes an array of guards. We only have the <code>AuthGuard</code>, so we pass that as the only element of the array. Thus, only the routes we add to the <code>canActivate</code> guard will use the guard, and the others will continue to work as normal.</p>
+
+<p>Before we run this application, ensure that the <code>AuthGuard</code> is hooked up as a provider in the <code>AppModule</code>, which the <code>ng generate guard</code> does not do by default. Your <em>src/app.module.ts</em> file should have the following in it:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** Other imports unchanged, skipping for brevity **/</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">AuthGuard</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./guards/auth.guard'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">NgModule</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="cm">/** No changes to imports and declarations **/</code><code>
+  </code><code class="nx">providers</code><code class="o">:</code><code> </code><code class="p">[</code><code>
+    </code><code class="cm">/** No changes to other services **/</code><code>
+    </code><code class="nx">AuthGuard</code><code class="p">,</code><code>                       </code><a class="co" id="co_routing_in_angular_CO13-1" href="#callout_routing_in_angular_CO13-1"><img src="images/1.png" alt="1" /></a><code>
+    </code><code class="p">{</code><code>
+      </code><code class="nx">provide</code><code>: </code><code class="kt">HTTP_INTERCEPTORS</code><code class="p">,</code><code>
+      </code><code class="nx">useClass</code><code>: </code><code class="kt">StockAppInterceptor</code><code class="p">,</code><code>
+      </code><code class="nx">multi</code><code>: </code><code class="kt">true</code><code class="p">,</code><code>
+    </code><code class="p">}</code><code>
+  </code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">bootstrap</code><code class="o">:</code><code> </code><code class="p">[</code><code class="nx">AppComponent</code><code class="p">]</code><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">AppModule</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_routing_in_angular_CO13-1" href="#co_routing_in_angular_CO13-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Add <code>AuthGuard</code> to the <code>providers</code> list</p></dd>
+</dl>
+
+<p>If you run the application at this point, you should see that trying to navigate directly to the stock list or create stock page will end up redirecting you to the Login page. You can confirm that the guard is working by checking the web development console logs.<a data-type="indexterm" data-primary="authenticated-only routes" data-startref="ix_authrt" id="idm139828110230288"></a><a data-type="indexterm" data-primary="routing" data-secondary="route guards" data-tertiary="authenticated-only routes" data-startref="ix_rtegrdauth" id="idm139828110229344"></a></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Preventing Unload"><div class="sect2" id="idm139828110872688">
+<h2>Preventing Unload</h2>
+
+<p>Similar to how we can prevent loading of a route, we can also prevent deactivation of a route using guards.<a data-type="indexterm" data-primary="deactivation of a route, preventing" id="ix_deactrt"></a><a data-type="indexterm" data-primary="routing" data-secondary="route guards" data-tertiary="preventing unload" id="ix_rtegrdunl"></a><a data-type="indexterm" data-primary="CanDeactivate guard" id="ix_cande"></a> The <code>canDeactivate</code> guard is most commonly used to prevent the user from losing data by navigating away unintentionally from a form page, or to autosave the data when the user navigates away from a page. Other creative uses for the <code>canDeactivate</code> guard could be logging and analytics.</p>
+
+<p>In this example, we will again keep it very simple to just demonstrate the point, but you can extend it for your purpose. We will simply always prompt the user when navigating away from the <code>CreateStockComponent</code>. But you could make it smarter by looking at the form state, and whether there are any changes before prompting.</p>
+
+<p>Create a <code>CreateStockDeactivateGuard</code> (again, your choice, either create it manually or using the Angular CLI). Don’t forget to register it in the <code>providers</code> array in the <code>AppModule</code>, and then replace the contents of the service with the following:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Injectable</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">CanDeactivate</code><code class="p">,</code><code> </code><code class="nx">ActivatedRouteSnapshot</code><code class="p">,</code><code> </code><code class="nx">RouterStateSnapshot</code><code> </code><code class="p">}</code><code>
+    </code><code class="nx">from</code><code> </code><code class="s1">'@angular/router'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">CreateStockComponent</code><code> </code><code class="p">}</code><code>
+    </code><code class="nx">from</code><code> </code><code class="s1">'../stock/create-stock/create-stock.component'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Observable</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'rxjs/Observable'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">Injectable</code><code class="p">(</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">CreateStockDeactivateGuard</code><code>
+       </code><code class="kr">implements</code><code> </code><code class="nx">CanDeactivate</code><code class="o">&lt;</code><code class="nx">CreateStockComponent</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>      </code><a class="co" id="co_routing_in_angular_CO14-1" href="#callout_routing_in_angular_CO14-1"><img src="images/1.png" alt="1" /></a><code>
+
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="p">)</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code><code>
+
+  </code><code class="nx">canDeactivate</code><code class="p">(</code><code class="nx">component</code><code>: </code><code class="kt">CreateStockComponent</code><code class="p">,</code><code>             </code><a class="co" id="co_routing_in_angular_CO14-2" href="#callout_routing_in_angular_CO14-2"><img src="images/2.png" alt="2" /></a><code>
+                </code><code class="nx">currentRoute</code><code>: </code><code class="kt">ActivatedRouteSnapshot</code><code class="p">,</code><code>        </code><a class="co" id="co_routing_in_angular_CO14-3" href="#callout_routing_in_angular_CO14-3"><img src="images/3.png" alt="3" /></a><code>
+                </code><code class="nx">currentState</code><code>: </code><code class="kt">RouterStateSnapshot</code><code class="p">,</code><code>           </code><a class="co" id="co_routing_in_angular_CO14-4" href="#callout_routing_in_angular_CO14-4"><img src="images/4.png" alt="4" /></a><code>
+                </code><code class="nx">nextState?</code><code>: </code><code class="kt">RouterStateSnapshot</code><code class="p">)</code><code class="o">:</code><code>            </code><a class="co" id="co_routing_in_angular_CO14-5" href="#callout_routing_in_angular_CO14-5"><img src="images/5.png" alt="5" /></a><code>
+                   </code><code class="kr">boolean</code><code> </code><code class="o">|</code><code> </code><code class="nx">Observable</code><code class="o">&lt;</code><code class="kr">boolean</code><code class="o">&gt;</code><code> </code><code class="o">|</code><code> </code><code class="nx">Promise</code><code class="o">&lt;</code><code class="kr">boolean</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="k">return</code><code> </code><code class="nb">window</code><code class="p">.</code><code class="nx">confirm</code><code class="p">(</code><code class="s1">'Do you want to navigate away from this page?'</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_routing_in_angular_CO14-1" href="#co_routing_in_angular_CO14-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Implement the <code>CanDeactivate</code> interface, specific for our <code>CreateStockComponent</code></p></dd>
+<dt><a class="co" id="callout_routing_in_angular_CO14-2" href="#co_routing_in_angular_CO14-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Instance of the <code>CreateStockComponent</code> passed to the <code>canDeactivate</code> method</p></dd>
+<dt><a class="co" id="callout_routing_in_angular_CO14-3" href="#co_routing_in_angular_CO14-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>The currently <code>ActivatedRoute</code> <code>snapshot</code> passed to the <code>canDeactivate</code> method</p></dd>
+<dt><a class="co" id="callout_routing_in_angular_CO14-4" href="#co_routing_in_angular_CO14-4"><img src="images/4.png" alt="4" /></a></dt>
+<dd><p>The current router state <code>snapshot</code> passed to the <code>canDeactivate</code> method</p></dd>
+<dt><a class="co" id="callout_routing_in_angular_CO14-5" href="#co_routing_in_angular_CO14-5"><img src="images/5.png" alt="5" /></a></dt>
+<dd><p>The next state that is being navigated to from the current state</p></dd>
+</dl>
+
+<p>Our <code>CanDeactivate</code> guard is slightly different from the <code>CanActivate</code> guard, and for a few reasons. The most important reason is that usually, the deactivation is in context of an existing component, and so the state of that component is usually important in deciding whether or not the router can deactivate the component and route.</p>
+
+<p>Here, we implement a <code>CanDeactivate</code> guard that is specific to our <code>CreateStockComponent</code>. The advantage is that we can access state and methods from our component to make the decision (not that we are doing it in our example!). If we had the form state available in the component, this would be a great place to access it and check if the form was <code>dirty</code> or not. You can also refer to the current route and state, as well as what the transition is going to and factor all of these into your decision.</p>
+
+<p>You can return a simple <code>boolean</code> (like we are), or return an observable or a promise that translates to a <code>boolean</code>, and Angular will wait for the asynchronous behavior to finish before making a decision.</p>
+
+<p>Now, let’s hook up this guard to the <code>AppRoutesModule</code>:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** Imports unchanged, skipping for brevity **/</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">CreateStockDeactivateGuard</code><code> </code><code class="p">}</code><code>
+    </code><code class="nx">from</code><code> </code><code class="s1">'./guards/create-stock-deactivate.guard'</code><code class="p">;</code><code>
+
+</code><code class="kr">const</code><code> </code><code class="nx">appRoutes</code><code>: </code><code class="kt">Routes</code><code> </code><code class="o">=</code><code> </code><code class="p">[</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">''</code><code class="p">,</code><code> </code><code class="nx">redirectTo</code><code class="o">:</code><code> </code><code class="s1">'/login'</code><code class="p">,</code><code> </code><code class="nx">pathMatch</code><code class="o">:</code><code> </code><code class="s1">'full'</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'login'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">LoginComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'register'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">RegisterComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'stocks/list'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">StockListComponent</code><code class="p">,</code><code>
+    </code><code class="nx">canActivate</code><code class="o">:</code><code> </code><code class="p">[</code><code class="nx">AuthGuardService</code><code class="p">]</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'stocks/create'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">CreateStockComponent</code><code class="p">,</code><code>
+    </code><code class="nx">canActivate</code><code class="o">:</code><code> </code><code class="p">[</code><code class="nx">AuthGuardService</code><code class="p">]</code><code class="p">,</code><code>
+    </code><code class="nx">canDeactivate</code><code class="o">:</code><code> </code><code class="p">[</code><code class="nx">CreateStockDeactivateGuard</code><code class="p">]</code><code> </code><code class="p">}</code><code class="p">,</code><code>    </code><a class="co" id="co_routing_in_angular_CO15-1" href="#callout_routing_in_angular_CO15-1"><img src="images/1.png" alt="1" /></a><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'stock/:code'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">StockDetailsComponent</code><code class="p">,</code><code>
+    </code><code class="nx">canActivate</code><code class="o">:</code><code> </code><code class="p">[</code><code class="nx">AuthGuardService</code><code class="p">]</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'**'</code><code class="p">,</code><code> </code><code class="nx">redirectTo</code><code class="o">:</code><code> </code><code class="s1">'/register'</code><code> </code><code class="p">}</code><code>
+</code><code class="p">]</code><code class="p">;</code><code>
+
+</code><code class="cm">/** Code unchanged, skipping for brevity **/</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">AppRoutesModule</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_routing_in_angular_CO15-1" href="#co_routing_in_angular_CO15-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Add the <code>CreateStockDeactivateGuard</code> to the create stock route</p></dd>
+</dl>
+
+<p>We have only added another guard (<code>canDeactivate</code>) on the <code>stocks/create</code> route, and hooked up the <code>CreateStockDeactivateGuardService</code> as the only item in the array.</p>
+<div data-type="warning" epub:type="warning"><h6>Warning</h6>
+<p>Make sure you hook up the new guard to the <code>AppModule</code> and register it with the <code>providers</code> array like the other guard. Don’t forget to do this for any new service or guard if it is not automatically added by the Angular CLI.</p>
+</div>
+
+<p>Once you do this, you can run your application. Log in and navigate to the create stock page, and then try clicking any of the links at the top. At that point, you should see the confirmation asking whether you really want to navigate away. Clicking “No” should leave you on the same page, while clicking “Yes” would allow you to navigate away.</p>
+
+<p>Again, remember that you are free to make the logic as complex as needed. You need to make a call to server to persist the data and then only navigate away? Feel free to change the guard around. The only thing to note is that this will not detect if you change  the URL manually yourself. It will only detect navigation within the application context.</p>
+<div data-type="note" epub:type="note"><h1>A Generic CanDeactivate Guard?</h1>
+<p>We just saw that the <code>CanDeactivate</code> guard was specific to a component, and we get an instance of that component in the <code>canDeactivate</code> method. Then is it possible for us to create a generic guard?</p>
+
+<p>The answer is yes. One common technique is to create an interface (say, <code>DeactivateableComponent</code>), with a method (say, <code>canDeactivate</code>) that returns a <code>boolean</code>, a <code>Promise&lt;boolean&gt;</code>, or an <code>Observable&lt;boolean&gt;</code>.</p>
+
+<p>We can then create a <code>CanDeactivate&lt;DeactivateableComponent&gt;</code> that relies on the return value of <code>canDeactivate</code> to decide whether to deactivate or not. Each component that needs this guard simply needs to implement this interface, and you can then reuse the guard as needed.</p>
+
+<p>Again, this is only useful for a select handful of cases, primarily if you have multiple components that need to decide whether they can deactivate or not, but all in different ways.<a data-type="indexterm" data-primary="CanDeactivate guard" data-startref="ix_cande" id="idm139828109899008"></a><a data-type="indexterm" data-primary="routing" data-secondary="route guards" data-tertiary="preventing unload" data-startref="ix_rtegrdunl" id="idm139828109898032"></a></p>
+</div>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Preloading Data Using Resolve"><div class="sect2" id="idm139828110227296">
+<h2>Preloading Data Using Resolve</h2>
+
+<p>The last thing we will see in this section is how to preload data before a route is activated.<a data-type="indexterm" data-primary="deactivation of a route, preventing" data-startref="ix_deactrt" id="idm139828109894768"></a><a data-type="indexterm" data-primary="routing" data-secondary="route guards" data-tertiary="preloading data using Resolver" id="ix_rtegrdpre"></a><a data-type="indexterm" data-primary="Resolver, preloading data with" id="ix_Resolv"></a> There might be cases where we want to make the service call to fetch its data before the component loads. Similarly, we might want to check if the data exists before even opening up the component. In these cases, it might make sense for us to try to prefetch the data before the component itself. In Angular, we do this using a <code>Resolver</code>.</p>
+
+<p>Let’s take an example to demonstrate how a <code>Resolver</code> works and how you might implement one. Say we wanted to resolve the stock data even before we open up the details of a stock. This would also in some sense allow us to check if the stock with a particular code exists even before opening the stock details component.</p>
+
+<p>To accomplish this, we would use a <code>Resolver</code>. Use the Angular CLI or manually create a <code>StockLoadResolver</code>, with the following content:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Injectable</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">StockService</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'./stock.service'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Resolve</code><code class="p">,</code> <code class="nx">ActivatedRouteSnapshot</code><code class="p">,</code> <code class="nx">RouterStateSnapshot</code> <code class="p">}</code>
+  <code class="nx">from</code> <code class="s1">'@angular/router'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'../model/stock'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Observable</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'rxjs/Observable'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Injectable</code><code class="p">()</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockLoadResolverService</code> <code class="kr">implements</code> <code class="nx">Resolve</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="o">&gt;</code> <code class="p">{</code>
+
+  <code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code> <code class="nx">stockService</code>: <code class="kt">StockService</code><code class="p">)</code> <code class="p">{</code> <code class="p">}</code>
+
+  <code class="nx">resolve</code><code class="p">(</code><code class="nx">route</code>: <code class="kt">ActivatedRouteSnapshot</code><code class="p">,</code>
+          <code class="nx">state</code>: <code class="kt">RouterStateSnapshot</code><code class="p">)</code><code class="o">:</code>
+            <code class="nx">Stock</code> <code class="o">|</code> <code class="nx">Observable</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="o">&gt;</code> <code class="o">|</code> <code class="nx">Promise</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="o">&gt;</code> <code class="p">{</code>
+    <code class="kr">const</code> <code class="nx">stockCode</code> <code class="o">=</code> <code class="nx">route</code><code class="p">.</code><code class="nx">paramMap</code><code class="p">.</code><code class="nx">get</code><code class="p">(</code><code class="s1">'code'</code><code class="p">);</code>
+    <code class="k">return</code> <code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStock</code><code class="p">(</code><code class="nx">stockCode</code><code class="p">);</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>A <code>Resolver</code> implements the <code>Resolve</code> interface, and is typed. In this case, we are building a <code>Resolver</code> that returns one individual stock. We inject the <code>StockService</code> into the constructor, and then implement the <code>resolve</code> method. Here we have access to the route and state, which allows us to fetch the parameter information from the URL.<a data-type="indexterm" data-primary="resolve method" id="idm139828109955920"></a></p>
+
+<p>In the <code>resolve</code>, we load the <code>stockCode</code> from the URL, and then return an <code>Observable&lt;Stock&gt;</code> by making the service call to <code>getStock</code> for the given <code>stockCode</code>. That is all there is to the <code>Resolver</code>.</p>
+
+<p>Make sure you hook this up to the <code>AppModule</code> and register it with the <code>providers</code> array like the other guards.</p>
+
+<p>Now we can hook this up to the <code>AppRoutesModule</code> as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** Imports unchanged, skipping for brevity **/</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">StockLoadResolverService</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./resolver/stock-load-resolver.service'</code><code class="p">;</code><code>
+
+</code><code class="kr">const</code><code> </code><code class="nx">appRoutes</code><code>: </code><code class="kt">Routes</code><code> </code><code class="o">=</code><code> </code><code class="p">[</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">''</code><code class="p">,</code><code> </code><code class="nx">redirectTo</code><code class="o">:</code><code> </code><code class="s1">'/login'</code><code class="p">,</code><code> </code><code class="nx">pathMatch</code><code class="o">:</code><code> </code><code class="s1">'full'</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'login'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">LoginComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'register'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">RegisterComponent</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'stocks/list'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">StockListComponent</code><code class="p">,</code><code>
+    </code><code class="nx">canActivate</code><code class="o">:</code><code> </code><code class="p">[</code><code class="nx">AuthGuardService</code><code class="p">]</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'stocks/create'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">CreateStockComponent</code><code class="p">,</code><code>
+    </code><code class="nx">canActivate</code><code class="o">:</code><code> </code><code class="p">[</code><code class="nx">AuthGuardService</code><code class="p">]</code><code class="p">,</code><code>
+    </code><code class="nx">canDeactivate</code><code class="o">:</code><code> </code><code class="p">[</code><code class="nx">CreateStockDeactivateGuardService</code><code class="p">]</code><code> </code><code class="p">}</code><code class="p">,</code><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'stock/:code'</code><code class="p">,</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">StockDetailsComponent</code><code class="p">,</code><code>
+    </code><code class="nx">canActivate</code><code class="o">:</code><code> </code><code class="p">[</code><code class="nx">AuthGuardService</code><code class="p">]</code><code class="p">,</code><code>
+    </code><code class="nx">resolve</code><code class="o">:</code><code> </code><code class="p">{</code><code> </code><code class="nx">stock</code><code>: </code><code class="kt">StockLoadResolverService</code><code> </code><code class="p">}</code><code> </code><code class="p">}</code><code class="p">,</code><code>     </code><a class="co" id="co_routing_in_angular_CO16-1" href="#callout_routing_in_angular_CO16-1"><img src="images/1.png" alt="1" /></a><code>
+  </code><code class="p">{</code><code> </code><code class="nx">path</code><code class="o">:</code><code> </code><code class="s1">'**'</code><code class="p">,</code><code> </code><code class="nx">redirectTo</code><code class="o">:</code><code> </code><code class="s1">'/register'</code><code> </code><code class="p">}</code><code>
+</code><code class="p">]</code><code class="p">;</code><code>
+
+</code><code class="cm">/** Code unchanged, skipping for brevity **/</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">AppRoutesModule</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_routing_in_angular_CO16-1" href="#co_routing_in_angular_CO16-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Add a resolver to the stock details route</p></dd>
+</dl>
+
+<p>Again, this file has only changed in one line. To the <code>stock/:code</code> route, we have now added a <code>resolve</code> key, which is an object. For each key of the object, we map a <code>Resolver</code> implementation. In this case, we only have the <code>stock</code> that needs to be resolved using the <code>StockLoadResolverService</code>. This is one part of the work that needs to be done, which ensures that the stock with the given code (based on the URL) is prefetched.</p>
+
+<p>Next, let’s see how to modify the <code>StockDetailsComponent</code> to use the prefetched information instead of making the service call itself:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">StockService</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'../../services/stock.service'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">ActivatedRoute</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/router'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'../../model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-details'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./stock-details.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./stock-details.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockDetailsComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">;</code>
+  <code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code> <code class="nx">route</code>: <code class="kt">ActivatedRoute</code><code class="p">)</code> <code class="p">{</code> <code class="p">}</code>
+
+  <code class="nx">ngOnInit() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">route</code><code class="p">.</code><code class="nx">data</code><code class="p">.</code><code class="nx">subscribe</code><code class="p">((</code><code class="nx">data</code><code class="o">:</code> <code class="p">{</code><code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">})</code> <code class="o">=&gt;</code> <code class="p">{</code>
+      <code class="k">this</code><code class="p">.</code><code class="nx">stock</code> <code class="o">=</code> <code class="nx">data</code><code class="p">.</code><code class="nx">stock</code><code class="p">;</code>
+    <code class="p">});</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>The major change in the component is that we have now gotten rid of our dependency on the <code>StockService</code>. Instead, we just use the <code>ActivatedRoute</code>. In the <code>ngOnInit</code>, we subscribe to<a data-type="indexterm" data-primary="ActivatedRoute" data-secondary="subscribing to changes on data element" id="idm139828109640064"></a> changes on the <code>data</code> element on the <code>ActivatedRoute</code>. The resolved data would be made available in the data with the key that we used in the route (<code>stock</code> for us). We simply read the key and store the data for use.</p>
+
+<p>You could easily extend the resolve to any data and any number of data items that you want to prefetch.<a data-type="indexterm" data-primary="Resolver, preloading data with" data-startref="ix_Resolv" id="idm139828109637200"></a><a data-type="indexterm" data-primary="routing" data-secondary="route guards" data-tertiary="preloading data using Resolver" data-startref="ix_rtegrdpre" id="idm139828109636256"></a><a data-type="indexterm" data-primary="routing" data-secondary="route guards" data-startref="ix_rtegrd" id="idm139828109634752"></a> The completed example is available in the <em>chapter11/route-guards</em> folder in the GitHub repository.</p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Conclusion"><div class="sect1" id="idm139828109895952">
+<h1>Conclusion</h1>
+
+<p>In this chapter, we took a deep dive into Angular routing. In particular, we saw how to start setting up the Angular router for any Angular application. We then dealt with handling different kinds of routes, and handling required and optional parameters in routing. We also dealt with handling protected routes, as well as ensuring that we don’t lose data by navigating away from a filled-out form.</p>
+
+<p>In the next chapter, we will bring together all the topics we have covered, and then talk about what it takes to build a performant Angular application, and how to think about deploying it in production.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Exercise"><div class="sect1" id="idm139828109630416">
+<h1>Exercise</h1>
+
+<p>Take the base exercise from <em>chapter11/exercise/starter</em>. Install and run the server in the <em>chapter11/exercise/server</em> folder by running:</p>
+<pre data-type="programlisting">
+<strong>npm i</strong>
+<strong>node index.js</strong>
+</pre>
+
+<p>from within the folder. This will start a local Node.js server which can work with products (similar to one we had for stocks). It exposes the following APIs:</p>
+
+<ul>
+<li>
+<p>GET on <em>/api/product</em> to get a list of products. It can also take an optional query param <code>q</code>, which is the product name to search for.</p>
+</li>
+<li>
+<p>GET on <em>/api/product/:id</em> to get an individual product with an ID.</p>
+</li>
+<li>
+<p>POST on <em>/api/product</em> with a product information in the body to create a product on the server (in-memory of course; restarting the server would lose all created products).</p>
+</li>
+<li>
+<p>PATCH  on <em>/api/product/:id</em> with the product ID in the URL and a field <code>changeInQuantity</code> in the body would change the quantity in the cart of the product by that amount.</p>
+</li>
+</ul>
+
+<p>Given this, now try to accomplish the following:</p>
+
+<ul>
+<li>
+<p>Hook up routing in the application. We want a login route, a register route, the product list route, a create product route, and a product details route. The <span class="keep-together">components</span> for the route are already created, as are the extra services you might need.</p>
+</li>
+<li>
+<p>Only the create product route should be protected and accessible after login.</p>
+</li>
+<li>
+<p>In the product list and product details route, the add to cart should only be visible after login.</p>
+</li>
+<li>
+<p>See if you can adapt the login flow to remember that the user has logged in even through page refreshes.</p>
+</li>
+</ul>
+
+<p>Most of this can be accomplished using concepts covered in this chapter. The only new thing might be trying to remember that you have logged in across page refreshes, for which you need to extend the service using <code>localStorage</code> or something similar.<a data-type="indexterm" data-primary="routing" data-startref="ix_rte" id="idm139828109425056"></a> You can check out the finished solution in <em>chapter11/exercise/ecommerce</em>.</p>
+</div></section>
+
+
+
+
+
+
+
+</div></section></div>
+</body>
+</html>

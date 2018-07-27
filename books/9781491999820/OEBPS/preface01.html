@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>Introduction</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><section data-type="preface" epub:type="preface" data-pdf-bookmark="Introduction"><div class="preface" id="preface">
+<h1>Introduction</h1>
+
+
+<p>It’s funny that we constantly over- or underestimate the impact of certain events and projects in our lives. I seriously believed that the last project I worked on at Google, Google Feedback, would end up completely changing how the company interacted with its customers. And I believed Angular (AngularJS at the time) would just be another flash-in-the-pan, yet-another-framework that would not outlive the Feedback project’s admin interface.</p>
+
+<p>And in hindsight, it was exactly the other way around. While Feedback still exists and is baked into a lot of Google products, it is Angular that has gone from a tiny project used by one internal team at Angular to now being used by thousands of developers and companies worldwide. And a lot of it stems from Misko, Igor, and the entire team around it, and their unerring dedication to improving how we develop web applications.</p>
+
+<p>What started off as a two-member project is now one of the largest open source communities on the web, and the framework has impacted and been a part of thousands of projects across the world. There are dozens of books, hundreds of tutorials, and thousands of articles on Angular, and Angular’s adoption and support continues to grow each day.</p>
+
+<p>Some of the major concepts that were ahead of their time during the first version of Angular (like data binding, separation of concerns, dependency injection, etc.) are now common features of new frameworks.</p>
+
+<p>The biggest change to the AngularJS ecosystem has been the release of the new version of Angular (initially called Angular 2.0, now just called Angular). It was a drastic, non-backward-compatible change that almost divided an entire community. But with community engagement and an open, inclusive team, what could have been a disastrous step turned out to be a much needed overhaul of Angular to bring it to the new age of web development.</p>
+
+<p>Truly, what makes Angular a great technology and framework is the community around it—those who contribute to the core framework, or develop plug-ins for it, as well as those who use it on a day-to-day basis.</p>
+
+<p>As part of the community, I am truly excited to present this book, and contribute in my own way to what makes this community great.</p>
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Who Should Read This Book"><div class="sect1" id="idm139828143272864">
+<h1>Who Should Read This Book</h1>
+
+<p>This book is for anyone who is looking to get started with Angular (2.0 and onward), whether as a side project, as an additional tool, or for their main work. It is expected that readers are comfortable with JavaScript and HTML before starting this book, but a basic knowledge of JavaScript should be sufficient to learn Angular. Knowledge of AngularJS 1.0 is not needed or expected.</p>
+
+<p>We will also use TypeScript, which is the recommended way of developing in Angular, but a preliminary knowledge is sufficient to read this book.</p>
+
+<p>We will take it step by step, so relax and have fun learning with me.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Why I Wrote This Book"><div class="sect1" id="idm139828143269296">
+<h1>Why I Wrote This Book</h1>
+
+<p>Angular as a framework has grown immensely, and comes with a large set of features and capabilities. With a large community behind it, it also comes with an influx of helpful content. But the help content, tutorials, and guides are either focused only on particular topics, or sporadic and not necessarily useful for someone getting started.</p>
+
+<p>The aim of this book is to provide a step-by-step guide on getting started with Angular. Each concept is provided in a logical, organized fashion, building on top of the previous one. With so many moving parts and an active community, this book does not intend to cover each and every aspect, but instead focuses on the core building blocks in a detailed fashion while letting readers discover the rest on their own.</p>
+
+<p>At the end of the book, you should be familiar with a majority of the Angular framework, and be able to use Angular to develop your own web applications and use it in your own projects.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="A Word on Web Application Development Today"><div class="sect1" id="idm139828148120096">
+<h1>A Word on Web Application Development Today</h1>
+
+<p>JavaScript has come a long way, to the point where it is one of the most widely used and adopted programming languages.<a data-type="indexterm" data-primary="JavaScript" id="idm139828148118064"></a><a data-type="indexterm" data-primary="web application development, current state of" id="idm139828148117200"></a> Nowadays, it’s rare for web developers to have to worry about browser inconsistencies and the like, which was the primary reason for frameworks like jQuery to have existed.</p>
+
+<p>Frameworks (like Angular and React) are now a very common choice for developing frontend experiences, and it is rare for anyone nowadays to decide to build a frontend application without leveraging one.</p>
+
+<p>The advantages of using frameworks are manifold, from reducing boilerplate code, to providing a consistent structure and layout for developing an application to many more.<a data-type="indexterm" data-primary="frameworks" data-secondary="advantages of using" id="idm139828148114544"></a> The primary intent is always to reduce the time spent on cruft, and focus more on the major functionality we want to provide. And if it works across browsers (and platforms, like Android and iOS, in addition to desktop), then more power to it.<a data-type="indexterm" data-primary="Angular" data-secondary="core fundamentals" id="idm139828148113024"></a></p>
+
+<p>Angular (as well as other frameworks) provides this, primarily through some core fundamentals that are at the heart of the framework, including:</p>
+
+<ul>
+<li>
+<p>Powerful templating syntax driven by declarative programming</p>
+</li>
+<li>
+<p>Modularity and separation of concerns</p>
+</li>
+<li>
+<p>Data binding, and through it, data-driven programming</p>
+</li>
+<li>
+<p>Testability and awesome testing support</p>
+</li>
+<li>
+<p>Routing and navigation</p>
+</li>
+<li>
+<p>And a host of other features, from server-side rendering, to the ability to write native mobile applications, and much more!</p>
+</li>
+</ul>
+
+<p>With the help of Angular, we can focus on building amazing experiences, while managing complexity and maintainability in a seamless fashion.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Navigating This Book"><div class="sect1" id="idm139828148328672">
+<h1>Navigating This Book</h1>
+
+<p>This book aims to walk a developer through each part of Angular, step by step. Each chapter that introduces a new concept will be immediately followed by a chapter on how we can unit test it. The book is roughly organized as follows:</p>
+
+<ul>
+<li>
+<p><a data-type="xref" data-xrefstyle="chap-num-title" href="ch01.html#chapter-1">Chapter 1, <em>Introducing Angular</em></a>, is an introduction to Angular as well as the concepts behind it. It also covers what it takes to start writing an Angular <span class="keep-together">application.</span></p>
+</li>
+<li>
+<p><a data-type="xref" data-xrefstyle="chap-num-title" href="ch02.html#chapter-2">Chapter 2, <em>Hello Angular</em></a>, walks through creating a very simple Angular application, and diving into how the pieces work together. It also introduces the Angular CLI.</p>
+</li>
+<li>
+<p><a data-type="xref" data-xrefstyle="chap-num-title" href="ch03.html#chapter-3">Chapter 3, <em>Useful Built-In Angular Directives</em></a>, digs into the basic built-in Angular directives (including <code>ngFor</code>, <code>ngIf</code>, etc.) and when and how to use them.</p>
+</li>
+<li>
+<p><a data-type="xref" data-xrefstyle="chap-num-title" href="ch04.html#chapter-4">Chapter 4, <em>Understanding and Using <span class="keep-together">Angular Components</span></em></a>, covers Angular components in more detail, as well as the various options available when creating them. It also covers the basic lifecycle hooks available with components.</p>
+</li>
+<li>
+<p><a data-type="xref" data-xrefstyle="chap-num-title" href="ch05.html#chapter-5">Chapter 5, <em>Testing Angular Components</em></a>, introduces how to unit test angular components using Karma and Jasmine, along with the Angular testing framework.</p>
+</li>
+<li>
+<p><a data-type="xref" data-xrefstyle="chap-num-title" href="ch06.html#chapter-6">Chapter 6, <em>Working with Template-Driven Forms</em></a>, covers creating and working with forms in Angular, specifically template-driven forms.</p>
+</li>
+<li>
+<p><a data-type="xref" data-xrefstyle="chap-num-title" href="ch07.html#chapter-7">Chapter 7, <em>Working with Reactive Forms</em></a>, covers the other way of defining and working with forms, which is how to create and develop reactive forms.</p>
+</li>
+<li>
+<p><a data-type="xref" data-xrefstyle="chap-num-title" href="ch08.html#chapter-8">Chapter 8, <em>Angular Services</em></a>, covers Angular services, which includes how to use built-in Angular services, as well as how and when to define our own Angular services.</p>
+</li>
+<li>
+<p><a data-type="xref" data-xrefstyle="chap-num-title" href="ch09.html#chapter-9">Chapter 9, <em>Making HTTP Calls in Angular</em></a>, moves into the server communication aspect of Angular, and delves into making HTTP calls, as well as some advanced topics like interceptors and the like.</p>
+</li>
+<li>
+<p><a data-type="xref" data-xrefstyle="chap-num-title" href="ch10.html#chapter-10">Chapter 10, <em>Unit Testing Services</em></a>, takes a step back and covers unit testing again, but this time with a focus on unit testing services. This includes testing simple services and slightly harder cases like asynchronous flows as well as services and components that make HTTP calls.</p>
+</li>
+<li>
+<p><a data-type="xref" data-xrefstyle="chap-num-title" href="ch11.html#chapter-11">Chapter 11, <em>Routing in Angular</em></a>, goes in depth into how we can accomplish routing in an Angular application and covers the Angular routing module in detail as well as a majority of its features.</p>
+</li>
+<li>
+<p><a data-type="xref" data-xrefstyle="chap-num-title" href="ch12.html#chapter-12">Chapter 12, <em>Productionizing an Angular App</em></a>, finally brings together all the concepts and covers taking the developed Angular application to production and the various concerns and techniques involved in the same.</p>
+</li>
+</ul>
+
+<p>The entire code repository is hosted on GitHub, so if you don’t want to type in the code examples from this book, or want to ensure that you are looking at the latest and greatest code examples, visit the repository and <a href="https://github.com/shyamseshadri/angular-up-and-running">grab the contents</a>.</p>
+
+<p>This book uses AngularJS version 5.0.0 for all its code examples.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Online Resources"><div class="sect1" id="idm139828148176752">
+<h1>Online Resources</h1>
+
+<p>The following resources are a great starting point for any AngularJS developer, and should be always available at your fingertips:</p>
+
+<ul>
+<li>
+<p><a href="https://angular.io/api">The Official Angular API Documentation</a></p>
+</li>
+<li>
+<p><a href="https://angular.io/guide/quickstart">The Official Angular Quickstart Guide</a></p>
+</li>
+<li>
+<p><a href="https://angular.io/tutorial">The Angular Heroes Tutorial App</a></p>
+</li>
+</ul>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Conventions Used in This Book"><div class="sect1" id="idm139828148170720">
+<h1>Conventions Used in This Book</h1>
+
+<p>The following typographical conventions are used in this book:</p>
+<dl>
+<dt><em>Italic</em></dt>
+<dd>
+<p>Indicates new terms, URLs, email addresses, filenames, and file extensions.</p>
+</dd>
+<dt><code><em>Constant width</em></code></dt>
+<dd>
+<p>Used for program listings, as well as within paragraphs to refer to program elements such as variable or function names, databases, data types, environment variables, statements, and keywords.</p>
+</dd>
+<dt><strong><code>Constant width bold</code></strong></dt>
+<dd>
+<p>Shows commands or other text that should be typed literally by the user.</p>
+</dd>
+<dt><em><code>Constant width italic</code></em></dt>
+<dd>
+<p>Shows text that should be replaced with user-supplied values or by values determined by context.</p>
+</dd>
+</dl>
+<div data-type="tip"><h6>Tip</h6>
+<p>This element signifies a tip or suggestion.</p>
+</div>
+<div data-type="note" epub:type="note"><h6>Note</h6>
+<p>This element signifies a general note.</p>
+</div>
+<div data-type="warning" epub:type="warning"><h6>Warning</h6>
+<p>This element indicates a warning or caution.</p>
+</div>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Using Code Examples"><div class="sect1" id="idm139828148158672">
+<h1>Using Code Examples</h1>
+<!--PROD: Please reach out to author to find out if they will be uploading code examples to oreilly.com or their own site (e.g., GitHub). If there is no code download, delete this whole section. If there is, when you email digidist with the link, let them know what you filled in for title_title (should be as close to book title as possible, i.e., learning_python_2e). This info will determine where digidist loads the files.-->
+
+<p>Supplemental<a data-type="indexterm" data-primary="code examples from this book" id="idm139828148156384"></a> material (code examples, exercises, etc.) is available for download at <a href="https://github.com/shyamseshadri/angular-up-and-running"><em class="hyperlink">https://github.com/shyamseshadri/angular-up-and-running</em></a>.</p>
+
+<p>This book is here to help you get your job done. In general, if example code is offered with this book, you may use it in your programs and documentation. You do not need to contact us for permission unless you’re reproducing a significant portion of the code. For example, writing a program that uses several chunks of code from this book does not require permission. Selling or distributing a CD-ROM of examples from O’Reilly books does require permission. Answering a question by citing this book and quoting example code does not require permission. Incorporating a significant amount of example code from this book into your product’s documentation does require permission.</p>
+
+<p>We appreciate, but do not require, attribution. An attribution usually includes the title, author, publisher, and ISBN. For example: “<em>Angular: Up and Running</em> by Shyam Seshadri (O’Reilly). Copyright 2018 Shyam Seshadri, 978-1-491-99983-7.”</p>
+
+<p>If you feel your use of code examples falls outside fair use or the permission given above, feel free to contact us at <a href="mailto:permissions@oreilly.com">permissions@oreilly.com</a>.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="O’Reilly Safari"><div class="sect1" id="idm139828148044384">
+<h1>O’Reilly Safari</h1>
+<div data-type="note" epub:type="note" class="safarienabled"><h6>Note</h6>
+<p><a href="http://oreilly.com/safari" class="orm:hideurl">Safari</a> (formerly Safari Books Online) is a membership-based training and reference platform for enterprise, government, educators, and individuals.</p>
+</div>
+
+<p>Members have access to thousands of books, training videos, Learning Paths, interactive tutorials, and curated playlists from over 250 publishers, including O’Reilly Media, Harvard Business Review, Prentice Hall Professional, Addison-Wesley Professional, Microsoft Press, Sams, Que, Peachpit Press, Adobe, Focal Press, Cisco Press, John Wiley &amp; Sons, Syngress, Morgan Kaufmann, IBM Redbooks, Packt, Adobe Press, FT Press, Apress, Manning, New Riders, McGraw-Hill, Jones &amp; Bartlett, and Course Technology, among others.</p>
+
+<p>For more information, please visit <a href="http://oreilly.com/safari" class="orm:hideurl"><em>http://oreilly.com/safari</em></a>.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="How to Contact Us"><div class="sect1" id="idm139828148038064">
+<h1>How to Contact Us</h1>
+
+<p>Please address comments and questions concerning this book to the publisher:</p>
+<ul class="simplelist">
+  <li>O’Reilly Media, Inc.</li>
+  <li>1005 Gravenstein Highway North</li>
+  <li>Sebastopol, CA 95472</li>
+  <li>800-998-9938 (in the United States or Canada)</li>
+  <li>707-829-0515 (international or local)</li>
+  <li>707-829-0104 (fax)</li>
+</ul>
+
+<p>We have a web page for this book, where we list errata, examples, and any additional information. You can access this page at <a href="http://bit.ly/angularUR"><em class="hyperlink">http://bit.ly/angularUR</em></a>.</p>
+<!--Don't forget to update the link above.-->
+
+<p>To comment or ask technical questions about this book, send email to <a href="mailto:bookquestions@oreilly.com">bookquestions@oreilly.com</a>.</p>
+
+<p>For more information about our books, courses, conferences, and news, see our website at <a href="http://www.oreilly.com"><em class="hyperlink">http://www.oreilly.com</em></a>.</p>
+
+<p>Find us on Facebook: <a href="http://facebook.com/oreilly"><em class="hyperlink">http://facebook.com/oreilly</em></a></p>
+
+<p>Follow us on Twitter: <a href="http://twitter.com/oreillymedia"><em class="hyperlink">http://twitter.com/oreillymedia</em></a></p>
+
+<p>Watch us on YouTube: <a href="http://www.youtube.com/oreillymedia"><em class="hyperlink">http://www.youtube.com/oreillymedia</em></a></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Acknowledgments"><div class="sect1" id="idm139828148037472">
+<h1>Acknowledgments</h1>
+
+<p>This book is dedicated to my wife, Sanchita, and my parents and grandmom who were my rock as well as my motivation to write this book in the best manner I could, all the while balancing my own fledgling startup in its most precarious time (the beginning!).</p>
+
+<p>I’d also like to thank my reviewers, Yakov Fain and Victor Mejia, who had to read and review my unedited ramblings and make sure I got my point across in the most succinct and understandable terms.</p>
+
+<p>This book of course wouldn’t be possible without the faith and efforts of the awesome team at O’Reilly, especially Angela and Kristen!</p>
+
+<p>And finally, thank you to the amazing Angular community for all their contributions, feedback, and support, and for teaching us how to use and make it better.</p>
+</div></section>
+
+
+
+
+
+
+
+</div></section></div>
+</body>
+</html>

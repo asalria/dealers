@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chapter 1. A Pragmatic Philosophy</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><p><a id="ch01"></a><a id="page_1"></a></p>
+<h2 id="title-IDALHFT" class="docChapterTitle">Chapter 1<br/><br/>A Pragmatic Philosophy</h2>
+<p class="docText">What distinguishes Pragmatic Programmers? We feel it's an attitude, a style, a philosophy of approaching problems and their solutions. They think beyond the immediate problem, always trying to place it in its larger context, always trying to be aware of the bigger picture. After all, without this larger context, how can you be pragmatic? How can you make intelligent compromises and informed decisions?</p>
+<p class="docText">Another key to their success is that they take responsibility for everything they do, which we discuss in <em>The Cat Ate My Source Code.</em> Being responsible, Pragmatic Programmers won't sit idly by and watch their projects fall apart through neglect. In <em>Software Entropy,</em> we tell you how to keep your projects pristine.</p>
+<p class="docText">Most people find change difficult to accept, sometimes for good reasons, sometimes because of plain old inertia. In <em>Stone Soup and Boiled Frogs,</em> we look at a strategy for instigating change and (in the interests of balance) present the cautionary tale of an amphibian that ignored the dangers of gradual change.</p>
+<p class="docText">One of the benefits of understanding the context in which you work is that it becomes easier to know just how good your software has to be. Sometimes near-perfection is the only option, but often there are trade-offs involved. We explore this in <em>Good-Enough Software.</em></p>
+<p class="docText">Of course, you need to have a broad base of knowledge and experience to pull all of this off. Learning is a continuous and ongoing process. In <em>Your Knowledge Portfolio,</em> we discuss some strategies for keeping the momentum up.</p>
+<p class="docText"><a id="page_2"></a>Finally, none of us works in a vacuum. We all spend a large amount of time interacting with others. <em>Communicate!</em> lists ways we can do this better.</p>
+<p class="docText">Pragmatic programming stems from a philosophy of pragmatic thinking. This chapter sets the basis for that philosophy.</p>
+<p class="docText"><a id="ch01lev1sec1"></a></p>
+<h3 id="title-IDAUIFT" class="docSection1Title">1. The Cat Ate My Source Code</h3>
+<p class="blockquote"><em>The greatest of all weaknesses is the fear of appearing weak.</em></p>
+<p class="attribution">• <strong>J. B. Bossuet, <em>Politics from Holy Writ,</em> 1709</strong></p>
+<p class="docText">One of the cornerstones of the pragmatic philosophy is the idea of taking responsibility for yourself and your actions in terms of your career advancement, your project, and your day-to-day work. A Pragmatic Programmer takes charge of his or her own career, and isn't afraid to admit ignorance or error. It's not the most pleasant aspect of programming, to be sure, but it will happen—even on the best of projects. Despite thorough testing, good documentation, and solid automation, things go wrong. Deliveries are late. Unforeseen technical problems come up.</p>
+<p class="docText">These things happen, and we try to deal with them as professionally as we can. This means being honest and direct. We can be proud of our abilities, but we must be honest about our shortcomings—our ignorance as well as our mistakes.</p>
+<p class="docText"><a id="ch01lev2sec1"></a></p>
+<h4 id="title-IDA1JFT" class="docSection2Title">Take Responsibility</h4>
+<p class="docText">Responsibility is something you actively agree to. You make a commitment to ensure that something is done right, but you don't necessarily have direct control over every aspect of it. In addition to doing your own personal best, you must analyze the situation for risks that are beyond your control. You have the right <em>not</em> to take on a responsibility for an impossible situation, or one in which the risks are too great. You'll have to make the call based on your own ethics and judgment.</p>
+<p class="docText">When you <em>do</em> accept the responsibility for an outcome, you should expect to be held accountable for it. When you make a mistake (as we all do) or an error in judgment, admit it honestly and try to offer options.</p>
+<p class="docText"><a id="page_3"></a>Don't blame someone or something else, or make up an excuse. Don't blame all the problems on a vendor, a programming language, management, or your coworkers. Any and all of these may play a role, but it is up to <em>you</em> to provide solutions, not excuses.</p>
+<p class="docText">If there was a risk that the vendor wouldn't come through for you, then you should have had a contingency plan. If the disk crashes—taking all of your source code with it—and you don't have a backup, it's your fault. Telling your boss <a href="ch01.html#ch01lev1sec1">"the cat ate my source code"</a> just won't cut it.</p>
+<p class="docNoteTitle">Tip 3</p>
+<p class="note"><a href="app03.html#id1e928">Provide Options, Don't Make Lame Excuses</a></p>
+<p class="docText">Before you approach anyone to tell them why something can't be done, is late, or is broken, stop and listen to yourself. Talk to the rubber duck on your monitor, or the cat. Does your excuse sound reasonable, or stupid? How's it going to sound to your boss?</p>
+<p class="docText">Run through the conversation in your mind. What is the other person likely to say? Will they ask, "Have you tried this..." or "Didn't you consider that?" How will you respond? Before you go and tell them the bad news, is there anything else you can try? Sometimes, you just <em>know</em> what they are going to say, so save them the trouble.</p>
+<p class="docText">Instead of excuses, provide options. Don't say it can't be done; explain what <em>can</em> be done to salvage the situation. Does code have to be thrown out? Educate them on the value of refactoring (see <a href="ch06.html#ch06lev1sec3"><em>Refactoring</em></a>, page <a href="ch06.html#page_184">184</a>). Do you need to spend time prototyping to determine the best way to proceed (see <a href="ch02.html#ch02lev1sec5"><em>Prototypes and Post-it Notes</em></a>, page <a href="ch02.html#page_53">53</a>)? Do you need to introduce better testing (see <a href="ch06.html#ch06lev1sec4"><em>Code That's Easy to Test</em></a>, page <a href="ch06.html#page_189">189</a>, and <a href="ch08.html#ch08lev1sec3"><em>Ruthless Testing</em></a>, page <a href="ch08.html#page_237">237</a>) or automation (see <a href="ch08.html#ch08lev1sec2"><em>Ubiquitous Automation</em></a>, page <a href="ch08.html#page_230">230</a>) to prevent it from happening again? Perhaps you need additional resources. Don't be afraid to ask, or to admit that you need help.</p>
+<p class="docText">Try to flush out the lame excuses before voicing them aloud. If you must, tell your cat first. After all, if little Tiddles is going to take the blame....</p>
+<p class="docText"><a id="ch01lev3sec1"></a><a id="page_4"></a></p>
+<h5 id="title-IDANMFT" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch02.html#ch02lev1sec5"><em>Prototypes and Post-it Notes</em></a>, page <a href="ch02.html#page_53">53</a></li>
+<li><a href="ch06.html#ch06lev1sec3"><em>Refactoring</em></a>, page <a href="ch06.html#page_184">184</a></li>
+<li><a href="ch06.html#ch06lev1sec4"><em>Code That's Easy to Test</em></a>, page <a href="ch06.html#page_189">189</a></li>
+<li><a href="ch08.html#ch08lev1sec2"><em>Ubiquitous Automation</em></a>, page <a href="ch08.html#page_230">230</a></li>
+<li><a href="ch08.html#ch08lev1sec3"><em>Ruthless Testing</em></a>, page <a href="ch08.html#page_237">237</a></li>
+</ul>
+<p class="docText"><a id="ch01lev3sec2"></a></p>
+<h5 id="title-IDA0NFT" class="docSection3Title">Challenges</h5>
+<ul>
+<li>How do you react when someone—such as a bank teller, an auto mechanic, or a clerk—comes to you with a lame excuse? What do you think of them and their company as a result?</li>
+</ul>
+<p class="docText"><a id="ch01lev1sec2"></a></p>
+<h3 id="title-IDAVOFT" class="docSection1Title">2. Software Entropy</h3>
+<p class="docText">While software development is immune from almost all physical laws, <em>entropy</em> hits us hard. <em>Entropy</em> is a term from physics that refers to the amount of "disorder" in a system. Unfortunately, the laws of thermodynamics guarantee that the entropy in the universe tends toward a maximum. When disorder increases in software, programmers call it "software rot."</p>
+<p class="docText">There are many factors that can contribute to software rot. The most important one seems to be the psychology, or culture, at work on a project. Even if you are a team of one, your project's psychology can be a very delicate thing. Despite the best laid plans and the best people, a project can still experience ruin and decay during its lifetime. Yet there are other projects that, despite enormous difficulties and constant setbacks, successfully fight nature's tendency toward disorder and manage to come out pretty well.</p>
+<p class="docText">What makes the difference?</p>
+<p class="docText">In inner cities, some buildings are beautiful and clean, while others are rotting hulks. Why? Researchers in the field of crime and urban decay discovered a fascinating trigger mechanism, one that very quickly turns a clean, intact, inhabited building into a smashed and abandoned derelict [<a href="app01.html#wk82">WK82</a>].</p>
+<p class="docText"><a id="page_5"></a>A broken window.</p>
+<p class="docText">One broken window, left unrepaired for any substantial length of time, instills in the inhabitants of the building a sense of abandonment—a sense that the powers that be don't care about the building. So another window gets broken. People start littering. Graffiti appears. Serious structural damage begins. In a relatively short space of time, the building becomes damaged beyond the owner's desire to fix it, and the sense of abandonment becomes reality.</p>
+<p class="docText">The "Broken Window Theory" has inspired police departments in New York and other major cities to crack down on the small stuff in order to keep out the big stuff. It works: keeping on top of broken windows, graffiti, and other small infractions has reduced the serious crime level.</p>
+<p class="docNoteTitle">Tip 4</p>
+<p class="note"><a href="app03.html#id1e1052">Don't Live with Broken Windows</a></p>
+<p class="docText">Don't leave "broken windows" (bad designs, wrong decisions, or poor code) unrepaired. Fix each one as soon as it is discovered. If there is insufficient time to fix it properly, then <em>board it up.</em> Perhaps you can comment out the offending code, or display a "Not Implemented" message, or substitute dummy data instead. Take <em>some</em> action to prevent further damage and to show that you're on top of the situation.</p>
+<p class="docText">We've seen clean, functional systems deteriorate pretty quickly once windows start breaking. There are other factors that can contribute to software rot, and we'll touch on some of them elsewhere, but neglect <em>accelerates</em> the rot faster than any other factor.</p>
+<p class="docText">You may be thinking that no one has the time to go around cleaning up all the broken glass of a project. If you continue to think like that, then you'd better plan on getting a dumpster, or moving to another neighborhood. Don't let entropy win.</p>
+<p class="docText"><a id="ch01lev3sec3"></a></p>
+<h4 id="title-IDARQFT" class="docSection2Title">Putting Out Fires</h4>
+<p class="docText">By contrast, there's the story of an obscenely rich acquaintance of Andy's. His house was immaculate, beautiful, loaded with priceless antiques, <em>objets d'art,</em> and so on. One day, a tapestry that was hanging a little too close to his living room fireplace caught on fire. The fire <a id="page_6"></a>department rushed in to save the day—and his house. But before they dragged their big, dirty hoses into the house, they stopped—with the fire raging—to roll out a mat between the front door and the source of the fire.</p>
+<p class="docText">They didn't want to mess up the carpet.</p>
+<p class="docText">A pretty extreme case, to be sure, but that's the way it must be with software. One broken window—a badly designed piece of code, a poor management decision that the team must live with for the duration of the project—is all it takes to start the decline. If you find yourself working on a project with quite a few broken windows, it's all too easy to slip into the mindset of "All the rest of this code is crap, I'll just follow suit." It doesn't matter if the project has been fine up to this point. In the original experiment leading to the "Broken Window Theory," an abandoned car sat for a week untouched. But once a single window was broken, the car was stripped and turned upside down within <em>hours.</em></p>
+<p class="docText">By the same token, if you find yourself on a team and a project where the code is pristinely beautiful—cleanly written, well designed, and elegant—you will likely take extra special care not to mess it up, just like the firefighters. Even if there's a fire raging (deadline, release date, trade show demo, etc.), <em>you</em> don't want to be the first one to make a mess.</p>
+<p class="docText"><a id="ch01lev3sec4"></a></p>
+<h4 id="title-IDA5RFT" class="docSection2Title">Related sections include:</h4>
+<ul>
+<li><a href="ch01.html#ch01lev1sec3"><em>Stone Soup and Boiled Frogs</em></a>, page <a href="ch01.html#page_7">7</a></li>
+<li><a href="ch06.html#ch06lev1sec3"><em>Refactoring</em></a>, page <a href="ch06.html#page_184">184</a></li>
+<li><a href="ch08.html#ch08lev1sec1"><em>Pragmatic Teams</em></a>, page <a href="ch08.html#page_224">224</a></li>
+</ul>
+<p class="docText"><a id="ch01lev3sec5"></a></p>
+<h4 id="title-IDAATFT" class="docSection2Title">Challenges</h4>
+<ul>
+<li>Help strengthen your team by surveying your computing "neighborhood." Choose two or three "broken windows" and discuss with your colleagues what the problems are and what could be done to fix them.</li>
+<li>Can you tell when a window first gets broken? What is your reaction? If it was the result of someone else's decision, or a management edict, what can you do about it?</li>
+</ul>
+<p class="docText"><a id="ch01lev1sec3"></a><a id="page_7"></a></p>
+<h3 id="title-IDAWTFT" class="docSection1Title">3. Stone Soup and Boiled Frogs</h3>
+<p class="docText"><em>The three soldiers returning home from war were hungry. When they saw the village ahead their spirits lifted—they were sure the villagers would give them a meal. But when they got there, they found the doors locked and the windows closed. After many years of war, the villagers were short of food, and hoarded what they had.</em></p>
+<p class="docText"><em>Undeterred, the soldiers boiled a pot of water and carefully placed three stones into it. The amazed villagers came out to watch.</em></p>
+<p class="docText"><em>"This is stone soup," the soldiers explained. "Is that all you put in it?" asked the villagers. "Absolutely—although some say it tastes even better with a few carrots...." A villager ran off, returning in no time with a basket of carrots from his hoard.</em></p>
+<p class="docText"><em>A couple of minutes later, the villagers again asked "Is that it?"</em></p>
+<p class="docText"><em>"Well," said the soldiers, "a couple of potatoes give it body." Off ran another villager.</em></p>
+<p class="docText"><em>Over the next hour, the soldiers listed more ingredients that would enhance the soup: beef, leeks, salt, and herbs. Each time a different villager would run off to raid their personal stores.</em></p>
+<p class="docText"><em>Eventually they had produced a large pot of steaming soup. The soldiers removed the stones, and they sat down with the entire village to enjoy the first square meal any of them had eaten in months.</em></p>
+<p class="docText">There are a couple of morals in the stone soup story. The villagers are tricked by the soldiers, who use the villagers' curiosity to get food from them. But more importantly, the soldiers act as a catalyst, bringing the village together so they can jointly produce something that they couldn't have done by themselves—a synergistic result. Eventually everyone wins.</p>
+<p class="docText">Every now and then, you might want to emulate the soldiers.</p>
+<p class="docText">You may be in a situation where you know exactly what needs doing and how to do it. The entire system just appears before your eyes—you know it's right. But ask permission to tackle the whole thing and you'll be met with delays and blank stares. People will form committees, budgets will need approval, and things will get complicated. Everyone will guard their own resources. Sometimes this is called "start-up fatigue."</p>
+<p class="docText"><a id="page_8"></a>It's time to bring out the stones. Work out what you <em>can</em> reasonably ask for. Develop it well. Once you've got it, show people, and let them marvel. Then say "of course, it <em>would</em> be better if we added...." Pretend it's not important. Sit back and wait for them to start asking you to add the functionality you originally wanted. People find it easier to join an ongoing success. Show them a glimpse of the future and you'll get them to rally around.<sup><a href="#ch01fn01">[1]</a></sup></p>
+<p class="docFootnote"><sup><a id="ch01fn01">[1]</a></sup> While doing this, you may be comforted by the line attributed to Rear Admiral Dr. Grace Hopper: "It's easier to ask forgiveness than it is to get permission."</p>
+<p class="docNoteTitle">Tip 5</p>
+<p class="note"><a href="app03.html#id1e1198">Be a Catalyst for Change</a></p>
+<p class="docText"><a id="ch01lev2sec2"></a></p>
+<h4 id="title-IDABWFT" class="docSection2Title">The Villagers' Side</h4>
+<p class="docText">On the other hand, the stone soup story is also about gentle and gradual deception. It's about focusing too tightly. The villagers think about the stones and forget about the rest of the world. We all fall for it, every day. Things just creep up on us.</p>
+<p class="docText">We've all seen the symptoms. Projects slowly and inexorably get totally out of hand. Most software disasters start out too small to notice, and most project overruns happen a day at a time. Systems drift from their specifications feature by feature, while patch after patch gets added to a piece of code until there's nothing of the original left. It's often the accumulation of small things that breaks morale and teams.</p>
+<p class="docNoteTitle">Tip 6</p>
+<p class="note"><a href="app03.html#id1e1216">Remember the Big Picture</a></p>
+<p class="docText">We've never tried this—honest. But they say that if you take a frog and drop it into boiling water, it will jump straight back out again. However, if you place the frog in a pan of cold water, then gradually heat it, the frog won't notice the slow increase in temperature and will stay put until cooked.</p>
+<p class="docText"><a id="page_9"></a>Note that the frog's problem is different from the broken windows issue discussed in <a href="ch01.html#ch01lev1sec2">Section 2</a>. In the Broken Window Theory, people lose the will to fight entropy because they perceive that no one else cares. The frog just doesn't notice the change.</p>
+<p class="docText">Don't be like the frog. Keep an eye on the big picture. Constantly review what's happening around you, not just what you personally are doing.</p>
+<p class="docText"><a id="ch01lev3sec6"></a></p>
+<h5 id="title-IDADXFT" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch01.html#ch01lev1sec2"><em>Software Entropy</em></a>, page <a href="ch01.html#page_4">4</a></li>
+<li><a href="ch06.html#ch06lev1sec1"><em>Programming by Coincidence</em></a>, page <a href="ch06.html#page_172">172</a></li>
+<li><a href="ch06.html#ch06lev1sec3"><em>Refactoring</em></a>, page <a href="ch06.html#page_184">184</a></li>
+<li><a href="ch07.html#ch07lev1sec1"><em>The Requirements Pit</em></a>, page <a href="ch07.html#page_202">202</a></li>
+<li><a href="ch08.html#ch08lev1sec1"><em>Pragmatic Teams</em></a>, page <a href="ch08.html#page_224">224</a></li>
+</ul>
+<p class="docText"><a id="ch01lev3sec7"></a></p>
+<h5 id="title-IDATYFT" class="docSection3Title">Challenges</h5>
+<ul>
+<li>While reviewing a draft of this book, John Lakos raised the following issue: The soldiers progressively deceive the villagers, but the change they catalyze does them all good. However, by progressively deceiving the frog, you're doing it harm. Can you determine whether you're making stone soup or frog soup when you try to catalyze change? Is the decision subjective or objective?</li>
+</ul>
+<p class="docText"><a id="ch01lev1sec4"></a></p>
+<h3 id="title-IDAHZFT" class="docSection1Title">4. Good-Enough Software</h3>
+<p class="blockquote"><em>Striving to better, oft we mar what's well.</em></p>
+<p class="attribution">• <strong><em>King Lear</em> 1.4</strong></p>
+<p class="docText">There's an old(ish) joke about a U.S. company that places an order for 100,000 integrated circuits with a Japanese manufacturer. Part of the specification was the defect rate: one chip in 10,000. A few weeks later the order arrived: one large box containing thousands of ICs, and a small one containing just ten. Attached to the small box was a label that read: "These are the faulty ones."</p>
+<p class="docText"><a id="page_10"></a>If only we really had this kind of control over quality. But the real world just won't let us produce much that's truly perfect, particularly not bug-free software. Time, technology, and temperament all conspire against us.</p>
+<p class="docText">However, this doesn't have to be frustrating. As Ed Yourdon described in an article in <em>IEEE Software</em> [<a href="app01.html#you95">You95</a>], you can discipline yourself to write software that's good enough—good enough for your users, for future maintainers, for your own peace of mind. You'll find that you are more productive and your users are happier. And you may well find that your programs are actually better for their shorter incubation.</p>
+<p class="docText">Before we go any further, we need to qualify what we're about to say. The phrase "good enough" does not imply sloppy or poorly produced code. All systems must meet their users' requirements to be successful. We are simply advocating that users be given an opportunity to participate in the process of deciding when what you've produced is good enough.</p>
+<p class="docText"><a id="ch01lev2sec3"></a></p>
+<h4 id="title-IDAO0FT" class="docSection2Title">Involve Your Users in the Trade-Off</h4>
+<p class="docText">Normally you're writing software for other people. Often you'll remember to get requirements from them.<sup><a href="#ch01fn02">[2]</a></sup> But how often do you ask them <em>how good</em> they want their software to be? Sometimes there'll be no choice. If you're working on pacemakers, the space shuttle, or a low-level library that will be widely disseminated, the requirements will be more stringent and your options more limited. However, if you're working on a brand new product, you'll have different constraints. The marketing people will have promises to keep, the eventual end users may have made plans based on a delivery schedule, and your company will certainly have cash-flow constraints. It would be unprofessional to ignore these users' requirements simply to add new features to the program, or to polish up the code just one more time. We're not advocating panic: it is equally unprofessional to promise impossible time scales and to cut basic engineering corners to meet a deadline.</p>
+<p class="docFootnote"><sup><a id="ch01fn02">[2]</a></sup> That was supposed to be a joke!</p>
+<p class="docText"><a id="page_11"></a>The scope and quality of the system you produce should be specified as part of that system's requirements.</p>
+<p class="docNoteTitle">Tip 7</p>
+<p class="note"><a href="app03.html#id1e1337">Make Quality a Requirements Issue</a></p>
+<p class="docText">Often you'll be in situations where trade-offs are involved. Surprisingly, many users would rather use software with some rough edges <em>today</em> than wait a year for the multimedia version. Many IT departments with tight budgets would agree. Great software today is often preferable to perfect software tomorrow. If you give your users something to play with early, their feedback will often lead you to a better eventual solution (see <a href="ch02.html#ch02lev1sec4"><em>Tracer Bullets</em></a>, page <a href="ch02.html#page_48">48</a>).</p>
+<p class="docText"><a id="ch01lev2sec4"></a></p>
+<h4 id="title-IDAU1FT" class="docSection2Title">Know When to Stop</h4>
+<p class="docText">In some ways, programming is like painting. You start with a blank canvas and certain basic raw materials. You use a combination of science, art, and craft to determine what to do with them. You sketch out an overall shape, paint the underlying environment, then fill in the details. You constantly step back with a critical eye to view what you've done. Every now and then you'll throw a canvas away and start again.</p>
+<p class="docText">But artists will tell you that all the hard work is ruined if you don't know when to stop. If you add layer upon layer, detail over detail, <em>the painting becomes lost in the paint.</em></p>
+<p class="docText">Don't spoil a perfectly good program by overembellishment and over-refinement. Move on, and let your code stand in its own right for a while. It may not be perfect. Don't worry: it could never be perfect. (In <a href="ch06.html">Chapter 6</a>, page <a href="ch06.html#page_171">171</a>, we'll discuss philosophies for developing code in an imperfect world.)</p>
+<p class="docText"><a id="ch01lev3sec8"></a></p>
+<h5 id="title-IDAJ2FT" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch02.html#ch02lev1sec4"><em>Tracer Bullets</em></a>, page <a href="ch02.html#page_48">48</a></li>
+<li><a href="ch07.html#ch07lev1sec1"><em>The Requirements Pit</em></a>, page <a href="ch07.html#page_202">202</a></li>
+<li><a href="ch08.html#ch08lev1sec1"><em>Pragmatic Teams</em></a>, page <a href="ch08.html#page_224">224</a></li>
+<li><a href="ch08.html#ch08lev1sec5"><em>Great Expectations</em></a>, page <a href="ch08.html#page_255">255</a></li>
+</ul>
+<p class="docText"><a id="ch01lev3sec9"></a><a id="page_12"></a></p>
+<h5 id="title-IDAQ3FT" class="docSection3Title">Challenges</h5>
+<ul>
+<li>Look at the manufacturers of the software tools and operating systems that you use. Can you find any evidence that these companies are comfortable shipping software they know is not perfect? As a user, would you rather (1) wait for them to get all the bugs out, (2) have complex software and accept some bugs, or (3) opt for simpler software with fewer defects?</li>
+<li>Consider the effect of modularization on the delivery of software. Will it take more or less time to get a monolithic block of software to the required quality compared with a system designed in modules? Can you find commercial examples?</li>
+</ul>
+<p class="docText"><a id="ch01lev1sec5"></a></p>
+<h3 id="title-IDAH4FT" class="docSection1Title">5. Your Knowledge Portfolio</h3>
+<p class="blockquote"><em>An investment in knowledge always pays the best interest.</em></p>
+<p class="attribution">• <strong>Benjamin Franklin</strong></p>
+<p class="docText">Ah, good old Ben Franklin—never at a loss for a pithy homily. Why, if we could just be early to bed and early to rise, we'd be great programmers—right? The early bird might get the worm, but what happens to the early worm?</p>
+<p class="docText">In this case, though, Ben really hit the nail on the head. Your knowledge and experience are your most important professional assets.</p>
+<p class="docText">Unfortunately, they're <em>expiring assets.</em><sup><a href="#ch01fn03">[3]</a></sup> Your knowledge becomes out of date as new techniques, languages, and environments are developed. Changing market forces may render your experience obsolete or irrelevant. Given the speed at which Web-years fly by, this can happen pretty quickly.</p>
+<p class="docFootnote"><sup><a id="ch01fn03">[3]</a></sup> An <em>expiring asset</em> is something whose value diminishes over time. Examples include a warehouse full of bananas and a ticket to a ball game.</p>
+<p class="docText">As the value of your knowledge declines, so does your value to your company or client. We want to prevent this from ever happening.</p>
+<p class="docText"><a id="ch01lev2sec5"></a><a id="page_13"></a></p>
+<h4 id="title-IDAT5FT" class="docSection2Title">Your Knowledge Portfolio</h4>
+<p class="docText">We like to think of all the facts programmers know about computing, the application domains they work in, and all their experience as their <em>Knowledge Portfolios.</em> Managing a knowledge portfolio is very similar to managing a financial portfolio:</p>
+<ol>
+<li>Serious investors invest regularly—as a habit.</li>
+<li>Diversification is the key to long-term success.</li>
+<li>Smart investors balance their portfolios between conservative and high-risk, high-reward investments.</li>
+<li>Investors try to buy low and sell high for maximum return.</li>
+<li>Portfolios should be reviewed and rebalanced periodically.</li>
+</ol>
+<p class="docText">To be successful in your career, you must manage your knowledge portfolio using these same guidelines.</p>
+<p class="docText"><a id="ch01lev2sec6"></a></p>
+<h4 id="title-IDABBM0" class="docSection2Title">Building Your Portfolio</h4>
+<ul>
+<li><a id="d1e1502"></a><strong>Invest regularly.</strong> Just as in financial investing, you must invest in your knowledge portfolio <em>regularly.</em> Even if it's just a small amount, the habit itself is as important as the sums. A few sample goals are listed in the next section.</li>
+<li><a id="d1e1512"></a><strong>Diversify.</strong> The more <em>different</em> things you know, the more valuable you are. As a baseline, you need to know the ins and outs of the particular technology you are working with currently. But don't stop there. The face of computing changes rapidly—hot technology today may well be close to useless (or at least not in demand) tomorrow. The more technologies you are comfortable with, the better you will be able to adjust to change.</li>
+<li><a id="d1e1522"></a><strong>Manage risk.</strong> Technology exists along a spectrum from risky, potentially high-reward to low-risk, low-reward standards. It's not a good idea to invest all of your money in high-risk stocks that might collapse suddenly, nor should you invest all of it conservatively and miss out on possible opportunities. Don't put all your technical eggs in one basket.</li>
+<li><a id="page_14"></a><a id="d1e1529"></a><strong>Buy low, sell high.</strong> Learning an emerging technology before it becomes popular can be just as hard as finding an undervalued stock, but the payoff can be just as rewarding. Learning Java when it first came out may have been risky, but it paid off handsomely for the early adopters who are now at the top of that field.</li>
+<li><a id="d1e1536"></a><strong>Review and rebalance.</strong> This is a very dynamic industry. That hot technology you started investigating last month might be stone cold by now. Maybe you need to brush up on that database technology that you haven't used in a while. Or perhaps you could be better positioned for that new job opening if you tried out that other language....</li>
+</ul>
+<p class="docText">Of all these guidelines, the most important one is the simplest to do:</p>
+<p class="docNoteTitle">Tip 8</p>
+<p class="note"><a href="app03.html#id1e1547">Invest Regularly in Your Knowledge Portfolio</a></p>
+<p class="docText"><a id="ch01lev2sec7"></a></p>
+<h4 id="title-IDATDM0" class="docSection2Title">Goals</h4>
+<p class="docText">Now that you have some guidelines on what and when to add to your knowledge portfolio, what's the best way to go about acquiring intellectual capital with which to fund your portfolio? Here are a few suggestions.</p>
+<ul>
+<li><a id="d1e1566"></a><strong>Learn at least one new language every year.</strong> Different languages solve the same problems in different ways. By learning several different approaches, you can help broaden your thinking and avoid getting stuck in a rut. Additionally, learning many languages is far easier now, thanks to the wealth of freely available software on the Internet (see page <a href="app01.html#page_267">267</a>).</li>
+<li><a id="d1e1574"></a><strong>Read a technical book each quarter.</strong> Bookstores are full of technical books on interesting topics related to your current project. Once you're in the habit, read a book a month. After you've mastered the technologies you're currently using, branch out and study some that <em>don't</em> relate to your project.</li>
+<li><a id="d1e1585"></a><strong>Read nontechnical books, too.</strong> It is important to remember that computers are used by <em>people</em>—people whose needs you are trying to satisfy. Don't forget the human side of the equation.</li>
+<li><a id="page_15"></a><a id="d1e1596"></a><strong>Take classes.</strong> Look for interesting courses at your local community college or university, or perhaps at the next trade show that comes to town.</li>
+<li><a id="d1e1604"></a><strong>Participate in local user groups.</strong> Don't just go and listen, but actively participate. Isolation can be deadly to your career; find out what people are working on outside of your company.</li>
+<li><a id="d1e1612"></a><strong>Experiment with different environments.</strong> If you've worked only in Windows, play with Unix at home (the freely available Linux is perfect for this). If you've used only <code>makefiles</code> and an editor, try an IDE, and vice versa.</li>
+<li><a id="d1e1623"></a><strong>Stay current.</strong> Subscribe to trade magazines and other journals (see page <a href="app01.html#page_262">262</a> for recommendations). Choose some that cover technology different from that of your current project.</li>
+<li><a id="d1e1631"></a><strong>Get wired.</strong> Want to know the ins and outs of a new language or other technology? Newsgroups are a great way to find out what experiences other people are having with it, the particular jargon they use, and so on. Surf the Web for papers, commercial sites, and any other sources of information you can find.</li>
+</ul>
+<p class="docText">It's important to continue investing. Once you feel comfortable with some new language or bit of technology, move on. Learn another one.</p>
+<p class="docText">It doesn't matter whether you ever use any of these technologies on a project, or even whether you put them on your resume. The process of learning will expand your thinking, opening you to new possibilities and new ways of doing things. The cross-pollination of ideas is important; try to apply the lessons you've learned to your current project. Even if your project doesn't use that technology, perhaps you can borrow some ideas. Get familiar with object orientation, for instance, and you'll write plain C programs differently.</p>
+<p class="docText"><a id="ch01lev2sec8"></a></p>
+<h4 id="title-IDADHM0" class="docSection2Title">Opportunities for Learning</h4>
+<p class="docText">So you're reading voraciously, you're on top of all the latest breaking developments in your field (not an easy thing to do), and somebody asks you a question. You don't have the faintest idea what the answer is, and freely admit as much.</p>
+<p class="docText"><a id="page_16"></a><em>Don't let it stop there.</em> Take it as a personal challenge to find the answer. Ask a guru. (If you don't have a guru in your office, you should be able to find one on the Internet: see the box on on the facing page.) Search the Web. Go to the library.<sup><a href="#ch01fn04">[4]</a></sup></p>
+<p class="docFootnote"><sup><a id="ch01fn04">[4]</a></sup> In this era of the Web, many people seem to have forgotten about real live libraries filled with research material and staff.</p>
+<p class="docText">If you can't find the answer yourself, find out who <em>can.</em> Don't let it rest. Talking to other people will help build your personal network, and you may surprise yourself by finding solutions to other, unrelated problems along the way. And that old portfolio just keeps getting bigger....</p>
+<p class="docText">All of this reading and researching takes time, and time is already in short supply. So you need to plan ahead. Always have something to read in an otherwise dead moment. Time spent waiting for doctors and dentists can be a great opportunity to catch up on your reading—but be sure to bring your own magazine with you, or you might find yourself thumbing through a dog-eared 1973 article about Papua New Guinea.</p>
+<p class="docText"><a id="ch01lev2sec9"></a></p>
+<h4 id="title-IDAIIM0" class="docSection2Title">Critical Thinking</h4>
+<p class="docText">The last important point is to think <em>critically</em> about what you read and hear. You need to ensure that the knowledge in your portfolio is accurate and unswayed by either vendor or media hype. Beware of the zealots who insist that their dogma provides the <em>only</em> answer—it may or may not be applicable to you and your project.</p>
+<p class="docText">Never underestimate the power of commercialism. Just because a Web search engine lists a hit first doesn't mean that it's the best match; the content provider can pay to get top billing. Just because a bookstore features a book prominently doesn't mean it's a good book, or even popular; they may have been paid to place it there.</p>
+<p class="docNoteTitle">Tip 9</p>
+<p class="note"><a href="app03.html#id1e1689">Critically Analyze What You Read and Hear</a></p>
+<p class="docText">Unfortunately, there are very few simple answers anymore. But with your extensive portfolio, and by applying some critical analysis to the <a id="page_17"></a>torrent of technical publications you will read, you can understand the <em>complex</em> answers.</p>
+<div class="sidebar1">
+<p class="docSidebarTitle">Care and Cultivation of Gurus</p>
+<p class="sidebar">With the global adoption of the Internet, gurus suddenly are as close as your <code>Enter</code> key. So, how do you find one, and how do you get one to talk with you?</p>
+<p class="sidebar">We find there are some simple tricks.</p>
+<ul>
+<li>Know exactly what you want to ask, and be as specific as you can be.</li>
+<li>Frame your question carefully and politely. Remember that you're asking a favor; don't seem to be demanding an answer.</li>
+<li>Once you've framed your question, stop and look again for the answer. Pick out some keywords and search the Web. Look for appropriate FAQs (lists of frequently asked questions with answers).</li>
+<li>Decide if you want to ask publicly or privately. Usenet news-groups are wonderful meeting places for experts on just about any topic, but some people are wary of these groups' public nature. Alternatively, you can always e-mail your guru directly. Either way, use a meaningful subject line. ("<code>Need Help!!!</code>" doesn't cut it.)</li>
+<li>Sit back and be patient. People are busy, and it may take days to get a specific answer.</li>
+</ul>
+<p class="sidebar">Finally, please be sure to thank anyone who responds to you. And if you see people asking questions <em>you</em> can answer, play your part and participate.</p>
+</div>
+<p class="docText"><a id="ch01lev3sec10"></a></p>
+<h5 id="title-IDAVKM0" class="docSection3Title">Challenges</h5>
+<ul>
+<li>Start learning a new language this week. Always programmed in C++? Try Smalltalk [<a href="app01.html#app01lev3sec13">URL 13</a>] or Squeak [<a href="app01.html#app01lev3sec14">URL 14</a>]. Doing Java? Try Eiffel [<a href="app01.html#app01lev3sec10">URL 10</a>] or TOM [<a href="app01.html#app01lev3sec15">URL 15</a>]. See page <a href="app01.html#page_267">267</a> for sources of other free compilers and environments.</li>
+<li>Start reading a new book (but finish this one first!). If you are doing very detailed implementation and coding, read a book on design and architecture. If you are doing high-level design, read a book on coding techniques.</li>
+<li><a id="page_18"></a>Get out and talk technology with people who aren't involved in your current project, or who don't work for the same company. Network in your company cafeteria, or maybe seek out fellow enthusiasts at a local user's group meeting.</li>
+</ul>
+<p class="docText"><a id="ch01lev1sec6"></a></p>
+<h3 id="title-IDAAMM0" class="docSection1Title">6. Communicate!</h3>
+<p class="blockquote"><em>I believe that it is better to be looked over than it is to be overlooked.</em></p>
+<p class="attribution">• <strong>Mae West,</strong> <strong><em>Belle of the Nineties,</em></strong> <strong>1934</strong></p>
+<p class="docText">Maybe we can learn a lesson from Ms. West. It's not just what you've got, but also how you package it. Having the best ideas, the finest code, or the most pragmatic thinking is ultimately sterile unless you can communicate with other people. A good idea is an orphan without effective communication.</p>
+<p class="docText">As developers, we have to communicate on many levels. We spend hours in meetings, listening and talking. We work with end users, trying to understand their needs. We write code, which communicates our intentions to a machine and documents our thinking for future generations of developers. We write proposals and memos requesting and justifying resources, reporting our status, and suggesting new approaches. And we work daily within our teams to advocate our ideas, modify existing practices, and suggest new ones. A large part of our day is spent communicating, so we need to do it well.</p>
+<p class="docText">We've put together a list of ideas that we find useful.</p>
+<p class="docText"><a id="ch01lev3sec11"></a></p>
+<h4 id="title-IDAANM0" class="docSection2Title">Know What You Want to Say</h4>
+<p class="docText">Probably the most difficult part of the more formal styles of communication used in business is working out exactly what it is you want to say. Fiction writers plot out their books in detail before they start, but people writing technical documents are often happy to sit down at a keyboard, enter "1. Introduction," and start typing whatever comes into their heads next.</p>
+<p class="docText">Plan what you want to say. Write an outline. Then ask yourself, "Does this get across whatever I'm trying to say?" Refine it until it does.</p>
+<p class="docText"><a id="page_19"></a>This approach is not just applicable to writing documents. When you're faced with an important meeting or a phone call with a major client, jot down the ideas you want to communicate, and plan a couple of strategies for getting them across.</p>
+<p class="docText"><a id="ch01lev3sec12"></a></p>
+<h4 id="title-IDAPNM0" class="docSection2Title">Know Your Audience</h4>
+<p class="docText">You're communicating only if you're conveying information. To do that, you need to understand the needs, interests, and capabilities of your audience. We've all sat in meetings where a development geek glazes over the eyes of the vice president of marketing with a long monologue on the merits of some arcane technology. This isn't communicating: it's just talking, and it's annoying.<sup><a href="#ch01fn05">[5]</a></sup></p>
+<p class="docFootnote"><sup><a id="ch01fn05">[5]</a></sup> The word <em>annoy</em> comes from the Old French <em>enui,</em> which also means "to bore."</p>
+<p class="docText">Form a strong mental picture of your audience. The acrostic <small>WISDOM</small>, shown in <a href="#ch01fig01">Figure 1.1</a> on the following page, may help.</p>
+<p class="docText"><a id="ch01fig01"></a></p>
+<p class="docFigureTitle">Figure 1.1. The wisdom acrostic—understanding an audience</p>
+<p class="image"><img src="images/f01fig01.gif" alt="image" /></p>
+<p class="docText">Say you want to suggest a Web-based system to allow your end users to submit bug reports. You can present this system in many different ways, depending on your audience. End users will appreciate that they can submit bug reports 24 hours a day without waiting on the phone. Your marketing department will be able to use this fact to boost sales. Managers in the support department will have two reasons to be happy: fewer staff will be needed, and problem reporting will be automated. Finally, developers may enjoy getting experience with Web-based client-server technologies and a new database engine. By making the appropriate pitch to each group, you'll get them all excited about your project.</p>
+<p class="docText"><a id="ch01lev3sec13"></a></p>
+<h4 id="title-IDADPM0" class="docSection2Title">Choose Your Moment</h4>
+<p class="docText">It's six o'clock on Friday afternoon, following a week when the auditors have been in. Your boss's youngest is in the hospital, it's pouring rain outside, and the commute home is guaranteed to be a nightmare. This probably isn't a good time to ask her for a memory upgrade for your PC.</p>
+<p class="docText">As part of understanding what your audience needs to hear, you need to work out what their priorities are. Catch a manager who's just been given a hard time by her boss because some source code got lost, and <a id="page_20"></a>you'll have a more receptive listener to your ideas on source code repositories. Make what you're saying relevant in time, as well as in content. Sometimes all it takes is the simple question "Is this a good time to talk about...?"</p>
+<p class="docText"><a id="ch01lev3sec14"></a></p>
+<h4 id="title-IDAUPM0" class="docSection2Title">Choose a Style</h4>
+<p class="docText">Adjust the style of your delivery to suit your audience. Some people want a formal "just the facts" briefing. Others like a long, wide-ranging chat before getting down to business. When it comes to written documents, some like to receive large bound reports, while others expect a simple memo or e-mail. If in doubt, ask.</p>
+<p class="docText">Remember, however, that you are half of the communication transaction. If someone says they need a paragraph describing something and you can't see any way of doing it in less than several pages, tell them so. Remember, that kind of feedback is a form of communication, too.</p>
+<p class="docText"><a id="ch01lev3sec15"></a></p>
+<h4 id="title-IDAEQM0" class="docSection2Title">Make It Look Good</h4>
+<p class="docText">Your ideas are important. They deserve a good-looking vehicle to convey them to your audience.</p>
+<p class="docText">Too many developers (and their managers) concentrate solely on content when producing written documents. We think this is a mistake. Any chef will tell you that you can slave in the kitchen for hours only to ruin your efforts with poor presentation.</p>
+<p class="docText">There is no excuse today for producing poor-looking printed documents. Modern word processors (along with layout systems such as L<small>A</small>TEX and troff) can produce stunning output. You need to learn just a few basic commands. If your word processor supports style sheets, use <a id="page_21"></a>them. (Your company may already have defined style sheets that you can use.) Learn how to set page headers and footers. Look at the sample documents included with your package to get ideas on style and layout. <em>Check the spelling,</em> first automatically and then by hand. After awl, their are spelling miss steaks that the chequer can knot ketch.</p>
+<p class="docText"><a id="ch01lev3sec16"></a></p>
+<h4 id="title-IDAWQM0" class="docSection2Title">Involve Your Audience</h4>
+<p class="docText">We often find that the documents we produce end up being less important than the process we go through to produce them. If possible, involve your readers with early drafts of your document. Get their feedback, and pick their brains. You'll build a good working relationship, and you'll probably produce a better document in the process.</p>
+<p class="docText"><a id="ch01lev3sec17"></a></p>
+<h4 id="title-IDABRM0" class="docSection2Title">Be a Listener</h4>
+<p class="docText">There's one technique that you must use if you want people to listen to you: <em>listen to them.</em> Even if this is a situation where you have all the information, even if this is a formal meeting with you standing in front of 20 suits—if you don't listen to them, they won't listen to you.</p>
+<p class="docText">Encourage people to talk by asking questions, or have them summarize what you tell them. Turn the meeting into a dialog, and you'll make your point more effectively. Who knows, you might even learn something.</p>
+<p class="docText"><a id="ch01lev3sec18"></a></p>
+<h4 id="title-IDAURM0" class="docSection2Title">Get Back to People</h4>
+<p class="docText">If you ask someone a question, you feel they're impolite if they don't respond. But how often do you fail to get back to people when they send you an e-mail or a memo asking for information or requesting some action? In the rush of everyday life, it's easy to forget. Always respond to e-mails and voice mails, even if the response is simply "I'll get back to you later." Keeping people informed makes them far more forgiving of the occasional slip, and makes them feel that you haven't forgotten them.</p>
+<p class="docNoteTitle">Tip 10</p>
+<p class="note"><a href="app03.html#id1e1931">It's Both What You Say and the Way You Say It</a></p>
+<p class="docText">Unless you work in a vacuum, you need to be able to communicate. The more effective that communication, the more influential you become.</p>
+<p class="docText"><a id="page_22"></a></p>
+<div class="sidebar1">
+<p class="docSidebarTitle">E-Mail Communication</p>
+<p class="sidebar">Everything we've said about communicating in writing applies equally to electronic mail. E-mail has evolved to the point where it is a main-stay of intra- and intercorporate communications. E-mail is used to discuss contracts, to settle disputes, and as evidence in court. But for some reason, people who would never send out a shabby paper document are happy to fling nasty-looking e-mail around the world.</p>
+<p class="sidebar">Our e-mail tips are simple:</p>
+<ul>
+<li>Proofread before you hit <img src="images/send.gif" alt="image" />.</li>
+<li>Check the spelling.</li>
+<li>Keep the format simple. Some people read e-mail using proportional fonts, so the ASCII art pictures you laboriously created will look to them like hen-scratchings.</li>
+<li>Use rich-text or HTML formatted mail only if you know that all your recipients can read it. Plain text is universal.</li>
+<li>Try to keep quoting to a minimum. No one likes to receive back their own 100-line e-mail with "I agree" tacked on.</li>
+<li>If you're quoting other people's e-mail, be sure to attribute it, and quote it inline (rather than as an attachment).</li>
+<li>Don't flame unless you want it to come back and haunt you later.</li>
+<li>Check your list of recipients before sending. A recent <em>Wall Street Journal</em> article described an employee who took to distributing criticisms of his boss over departmental e-mail, without realizing that his boss was included on the distribution list.</li>
+<li>Archive and organize your e-mail—both the important stuff you receive and the mail you send.</li>
+</ul>
+<p class="sidebar">As various Microsoft and Netscape employees discovered during the 1999 Department of Justice investigation, e-mail is forever. Try to give the same attention and care to e-mail as you would to any written memo or report.</p>
+</div>
+<p class="docText"><a id="ch01lev2sec10"></a><a id="page_23"></a></p>
+<h4 id="title-IDAGUM0" class="docSection2Title">Summary</h4>
+<ul>
+<li>Know what you want to say.</li>
+<li>Know your audience.</li>
+<li>Choose your moment.</li>
+<li>Choose a style.</li>
+<li>Make it look good.</li>
+<li>Involve your audience.</li>
+<li>Be a listener.</li>
+<li>Get back to people.</li>
+</ul>
+<p class="docText"><a id="ch01lev3sec19"></a></p>
+<h5 id="title-IDAMVM0" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch02.html#ch02lev1sec5"><em>Prototypes and Post-it Notes</em></a>, page <a href="ch02.html#page_53">53</a></li>
+<li><a href="ch08.html#ch08lev1sec1"><em>Pragmatic Teams</em></a>, page <a href="ch08.html#page_224">224</a></li>
+</ul>
+<p class="docText"><a id="ch01lev3sec20"></a></p>
+<h5 id="title-IDAHWM0" class="docSection3Title">Challenges</h5>
+<ul>
+<li>There are several good books that contain sections on communications within development teams [<a href="app01.html#bro95">Bro95</a>, <a href="app01.html#mcc95">McC95</a>, <a href="app01.html#dl99">DL99</a>]. Make it a point to try to read all three over the next 18 months. In addition, the book <em>Dinosaur Brains</em> [<a href="app01.html#ber96">Ber96</a>] discusses the emotional baggage we all bring to the work environment.</li>
+<li>The next time you have to give a presentation, or write a memo advocating some position, try working through the <small>WISDOM</small> acrostic on page <a href="ch01.html#page_20">20</a> before you start. See if it helps you understand how to position what you say. If appropriate, talk to your audience afterward and see how accurate your assessment of their needs was.</li>
+</ul>
+</div>
+</body>
+</html>

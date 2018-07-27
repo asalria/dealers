@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns="http://www.idpf.org/2007/opf"
+         version="3.0"
+         unique-identifier="BookId"
+         xmlns:dc="http://purl.org/dc/elements/1.1/"
+         xmlns:dcterms="http://purl.org/dc/terms/"
+         xml:lang="en"
+         xmlns:media="http://www.idpf.org/epub/vocab/overlays/#"
+         prefix="ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/">
+
+    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/"
+              xmlns:opf="http://www.idpf.org/2007/opf">
+
+        <dc:identifier id="BookId">9780062565723</dc:identifier>
+        <meta refines="#BookId" property="identifier-type" scheme="onix:codelist5">22</meta>
+        <meta property="dcterms:identifier" id="meta-identifier">BookId</meta>
+        <dc:title>WTF?: What&#39;s the Future and Why It&#39;s Up to Us</dc:title>
+        <meta property="dcterms:title" id="meta-title">WTF?: What&#39;s the Future and Why It&#39;s Up to Us</meta>
+        <dc:language>en-us</dc:language>
+        <meta property="dcterms:language" id="meta-language">en-us</meta>
+        <meta property="dcterms:modified">2018-07-27T10:50:28Z</meta>
+        <dc:creator id="creator">Tim O&#39;Reilly</dc:creator>
+        <meta refines="#creator" property="file-as">Tim O&#39;Reilly</meta>
+        <meta property="dcterms:publisher">HarperCollins Publishers</meta>
+        <dc:publisher>HarperCollins Publishers</dc:publisher>
+        
+        <meta property="dcterms:date">2018-7-27</meta>
+        <dc:date>2018-7-27</dc:date>
+        <meta property="dcterms:rights">All rights reserved</meta>
+        <dc:rights>Copyright &#x00A9; 2018 by HarperCollins Publishers</dc:rights>
+        <meta name="cover" content="image_cover"/>
+        <meta name="generator" content="epub-nicohaenggi" />
+        <meta property="ibooks:specified-fonts">true</meta>
+
+    </metadata>
+
+    <manifest>
+        <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml" />
+        <item id="css" href="style.css" media-type="text/css" />
+        
+        <item id="css" href="core.css" media-type="text/css" />
+        
+
+        <item id="image_cover" href="images/cover.jpg" media-type="image/jpg" />
+
+        
+        <item id="image_0" href="images/9780062565723_Cover.jpg" media-type="image/jpeg" />
+        <item id="image_1" href="images/Titlepage.jpg" media-type="image/jpeg" />
+        <item id="image_2" href="images/Ch003_001_9780062565716_Revised.jpg" media-type="image/jpeg" />
+        <item id="image_3" href="images/Ch003_002_9780062565716.jpg" media-type="image/jpeg" />
+        <item id="image_4" href="images/Ch003_003_9780062565716_Revised.jpg" media-type="image/jpeg" />
+        <item id="image_5" href="images/Ch011_001_9780062565716.jpg" media-type="image/jpeg" />
+        <item id="image_6" href="images/Ch016_001_9780062565716.jpg" media-type="image/jpeg" />
+        <item id="image_7" href="images/Ch016_002_9780062565716.jpg" media-type="image/jpeg" />
+        <item id="image_8" href="images/bookperk-boba-V1.jpg" media-type="image/jpeg" />
+        <item id="image_9" href="images/HarperCollins_200_Logo_BW.jpg" media-type="image/jpeg" />
+
+        
+        <item id="cover" href="9780062565723_Cover.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-1" href="9780062565723_Titlepage.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-2" href="9780062565723_Dedication.xhtml" media-type="application/xhtml+xml" />
+        <item id="toc" href="nav.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-4" href="9780062565723_Introduction.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-5" href="9780062565723_Part_1.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-6" href="9780062565723_Chapter_1.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-7" href="9780062565723_Chapter_2.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-8" href="9780062565723_Chapter_3.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-9" href="9780062565723_Chapter_4.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-10" href="9780062565723_Part_2.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-11" href="9780062565723_Chapter_5.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-12" href="9780062565723_Chapter_6.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-13" href="9780062565723_Chapter_7.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-14" href="9780062565723_Part_3.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-15" href="9780062565723_Chapter_8.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-16" href="9780062565723_Chapter_9.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-17" href="9780062565723_Chapter_10.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-18" href="9780062565723_Chapter_11.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-19" href="9780062565723_Part_4.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-20" href="9780062565723_Chapter_12.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-21" href="9780062565723_Chapter_13.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-22" href="9780062565723_Chapter_14.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-23" href="9780062565723_Chapter_15.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-24" href="9780062565723_Chapter_16.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-25" href="9780062565723_Acknowledgments.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-26" href="9780062565723_Notes.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-27" href="9780062565723_Index.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-28" href="About_the_Author.xhtml" media-type="application/xhtml+xml" />
+        <item id="tocxhtmlfile" href="9780062565723_BA.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-29" href="9780062565723_Credits.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-31" href="9780062565723_Copyright.xhtml" media-type="application/xhtml+xml" />
+        <item id="x9780062565723-32" href="About_the_Publisher.xhtml" media-type="application/xhtml+xml" />
+
+    </manifest>
+
+    <spine toc="ncx">
+      
+      <itemref idref="cover"/>
+      <itemref idref="x9780062565723-1"/>
+      <itemref idref="x9780062565723-2"/>
+      <itemref idref="toc"/>
+      <itemref idref="x9780062565723-4"/>
+      <itemref idref="x9780062565723-5"/>
+      <itemref idref="x9780062565723-6"/>
+      <itemref idref="x9780062565723-7"/>
+      <itemref idref="x9780062565723-8"/>
+      <itemref idref="x9780062565723-9"/>
+      <itemref idref="x9780062565723-10"/>
+      <itemref idref="x9780062565723-11"/>
+      <itemref idref="x9780062565723-12"/>
+      <itemref idref="x9780062565723-13"/>
+      <itemref idref="x9780062565723-14"/>
+      <itemref idref="x9780062565723-15"/>
+      <itemref idref="x9780062565723-16"/>
+      <itemref idref="x9780062565723-17"/>
+      <itemref idref="x9780062565723-18"/>
+      <itemref idref="x9780062565723-19"/>
+      <itemref idref="x9780062565723-20"/>
+      <itemref idref="x9780062565723-21"/>
+      <itemref idref="x9780062565723-22"/>
+      <itemref idref="x9780062565723-23"/>
+      <itemref idref="x9780062565723-24"/>
+      <itemref idref="x9780062565723-25"/>
+      <itemref idref="x9780062565723-26"/>
+      <itemref idref="x9780062565723-27"/>
+      <itemref idref="x9780062565723-28"/>
+      <itemref idref="tocxhtmlfile"/>
+      <itemref idref="x9780062565723-29"/>
+      <itemref idref="x9780062565723-31"/>
+      <itemref idref="x9780062565723-32"/>
+
+    </spine>
+    <guide>
+      
+      <reference type="text" title="Table of Content" href="9780062565723_Cover.xhtml"/>
+      
+    </guide>
+</package>

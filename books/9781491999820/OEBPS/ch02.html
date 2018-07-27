@@ -1,0 +1,1148 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>2. Hello Angular</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><section data-type="chapter" epub:type="chapter" data-pdf-bookmark="Chapter 2. Hello Angular"><div class="chapter" id="chapter-2">
+<h1><span class="label">Chapter 2. </span>Hello Angular</h1>
+
+
+<p>In the previous chapter, we got a very quick overview of Angular and its features, as well as a step-by-step guide on how to set up our local environment for developing any Angular application. In this chapter, we will go through the various parts of an Angular application by creating a very simple application from scratch. Through the use of this application, we will cover some of the basic terminologies and concepts like modules, components, data and event binding, and passing data to and from components.</p>
+
+<p>We will start with a very simple stock market application, which allows us to see a list of stocks, each with its own name, stock code, and price. During the course of this chapter, we will see how to package rendering a stock into an individual, reusable component, and how to work with Angular event and data binding.</p>
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Starting Your First Angular Project"><div class="sect1" id="idm139828147938272">
+<h1>Starting Your First Angular Project</h1>
+
+<p>As mentioned in the previous chapter, we will heavily rely on the Angular CLI to help us bootstrap and develop our application.<a data-type="indexterm" data-primary="Angular" data-secondary="starting a project" id="idm139828147936592"></a> I will assume that you have already followed the initial setup instructions in the previous chapter and have Node.js, TypeScript, and the Angular CLI installed in your development environment.</p>
+
+<p>Creating a new application is as simple <a data-type="indexterm" data-primary="applications (Angular)" data-secondary="creating on the CLI" id="idm139828147934896"></a>as running the following command:</p>
+<pre>
+<strong>ng new stock-market</strong>
+</pre>
+
+<p>When you run this command, it will automatically generate a skeleton application under the folder <em>stock-market</em> with a bunch of files, and install all the necessary dependencies for the Angular application to work.  This might take a while, but eventually, you should see the following line in your terminal:</p>
+<pre>Project 'stock-market' successfully created.</pre>
+
+<p>Congratulations, you have just created your first Angular application!</p>
+<div data-type="tip"><h6>Tip</h6>
+<p>While we created our first application with the vanilla Angular CLI command, the <code>ng new</code> command takes a few arguments that allow you to customize the application generated to your preference.<a data-type="indexterm" data-primary="ng  new command, arguments" id="idm139828147929296"></a> These include:</p>
+
+<ul>
+<li>
+<p>Whether you want to use vanilla CSS or SCSS <a data-type="indexterm" data-primary="CSS" id="idm139828147927184"></a>or any other CSS framework (for example, <code>ng new --style=scss</code>)</p>
+</li>
+<li>
+<p>Whether you want to generate <a data-type="indexterm" data-primary="routing modules, generating with ng new command" id="idm139828147924912"></a>a routing module (for example, <code>ng new --routing</code>); we’ll discuss this further in <a data-type="xref" href="ch11.html#chapter-11">Chapter 11</a>.</p>
+</li>
+<li>
+<p>Whether you want inline styles/templates<a data-type="indexterm" data-primary="inline styles" id="idm139828147921808"></a><a data-type="indexterm" data-primary="templates" id="idm139828147921104"></a></p>
+</li>
+<li>
+<p>Whether you want a <a data-type="indexterm" data-primary="prefixing components" id="idm139828147919600"></a>common prefix to all components (for example, to prefix <code>acme</code> to all components, <code>ng new <span class="keep-together">--prefix=acme</span></code>)</p>
+</li>
+</ul>
+
+<p>And much more. It’s worth exploring these options by running <code>ng help</code> once you are a bit more familiar with the Angular framework to decide if you have specific preferences one way or the other.<a data-type="indexterm" data-primary="ng help command" id="idm139828147915808"></a></p>
+</div>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Understanding the Angular CLI"><div class="sect1" id="idm139828147914848">
+<h1>Understanding the Angular CLI</h1>
+
+<p>While we have just created our first Angular application, the Angular CLI does a bit more than just the initial skeleton creation.<a data-type="indexterm" data-primary="command-line interface (CLI)" data-secondary="understanding" id="idm139828147913200"></a> In fact, it is useful throughout the development process for a variety of tasks, including:</p>
+
+<ul>
+<li>
+<p>Bootstrapping your application</p>
+</li>
+<li>
+<p>Serving the application</p>
+</li>
+<li>
+<p>Running the tests (both unit and end-to-end)</p>
+</li>
+<li>
+<p>Creating a build for distribution</p>
+</li>
+<li>
+<p>Generating new components, services, routes and more for your application</p>
+</li>
+</ul>
+
+<p>Each of these corresponds to one or more Angular CLI commands, and we will cover each one as and when we need or encounter them, instead of trying to cover each command and its uses upfront. Each command provides further flexibility with a variety of arguments and options, making the Angular CLI truly diverse and capable for a wide variety of uses.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Running the Application"><div class="sect2" id="idm139828147906144">
+<h2>Running the Application</h2>
+
+<p>Now that we have generated our application, the next part is to run it so that we can see our live running application in the browser.<a data-type="indexterm" data-primary="running applications" id="idm139828147904272"></a> There are technically two ways to <span class="keep-together">run it</span>:</p>
+
+<ul>
+<li>
+<p>Running it in development mode, where the Angular CLI compiles the changes as it happens and refreshes our UI<a data-type="indexterm" data-primary="development mode, running application in" id="idm139828147901568"></a></p>
+</li>
+<li>
+<p>Running it in production mode, with an optimal compiled build, served via static files<a data-type="indexterm" data-primary="production mode" data-secondary="running application in" id="idm139828147900000"></a></p>
+</li>
+</ul>
+
+<p>For now, we will run it in development mode, which is as simple as running</p>
+<pre>
+<strong>ng serve</strong>
+</pre>
+
+<p>from the root folder of the generated project, which is the <em>stock-market</em> folder in this case. After a little bit of processing and compilation, you should see something like the following in your terminal:</p>
+<pre>** NG Live Development Server is listening on localhost:4200,
+   open your browser on http://localhost:4200/ **
+Date: 2018-03-26T10:09:18.869Z
+Hash: 0b730a52f97909e2d43a
+Time: 11086ms
+chunk {inline} inline.bundle.js (inline) 3.85 kB [entry] [rendered]
+chunk {main} main.bundle.js (main) 17.9 kB [initial] [rendered]
+chunk {polyfills} polyfills.bundle.js (polyfills) 549 kB [initial] [rendered]
+chunk {styles} styles.bundle.js (styles) 41.5 kB [initial] [rendered]
+chunk {vendor} vendor.bundle.js (vendor) 7.42 MB [initial] [rendered]
+
+webpack: Compiled successfully.</pre>
+
+<p>The preceding output is a snapshot of all the files that the Angular CLI generates in order for your Angular application to be served successfully.<a data-type="indexterm" data-primary="command-line interface (CLI)" data-secondary="running an application on" id="idm139828147894720"></a> It includes the <em>main.bundle.js</em>, which is the transpiled code that is specific to your application, and the <em>vendor.bundle.js</em>, which includes all the third-party libraries and frameworks you depend on (including Angular). <em>styles.bundle.js</em> is a compilation of all the CSS styles that are needed for your application, while <em>polyfills.bundle.js</em> includes all the polyfills needed for supporting some capabilities in older browsers (like advanced ECMAScript features not yet available in all browsers). Finally, <em>inline.bundle.js</em> is a tiny file with webpack utilities and loaders that is needed for bootstrapping the application.</p>
+
+<p><code>ng serve</code> starts a local<a data-type="indexterm" data-primary="ng serve command" id="idm139828147890528"></a> development server on port 4200 for you to hit from your browser. Opening <em>http://localhost:4200</em> in your browser should result in you seeing the live running Angular application, which should look like <a data-type="xref" href="#fig0201">Figure 2-1</a>.</p>
+
+<figure><div id="fig0201" class="figure">
+<img src="images/auar_02in01.png" alt="Live Running Angular Application" />
+<h6><span class="label">Figure 2-1. </span>Hello Angular application in the browser</h6>
+</div></figure>
+<div data-type="tip"><h6>Tip</h6>
+<p>You can actually leave the <code>ng serve</code> command running in the terminal, and continue making changes. If you have the application opened in your browser, it will automatically refresh each time you save your changes. This makes the development quick and iterative.</p>
+</div>
+
+<p>In the following section, we will go into a bit more detail about what exactly happened under the covers to see how the generated Angular application works and what the various pieces are.</p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Basics of an Angular Application"><div class="sect1" id="idm139828147905520">
+<h1>Basics of an Angular Application</h1>
+
+<p>At its core, any Angular application is still a Single-Page Application (SPA), and thus its loading is triggered by a main request to the server.<a data-type="indexterm" data-primary="applications (Angular)" data-secondary="basics of" id="ix_appbasic"></a> When we open any URL in our browser, the very first request is made to our server (which is running within <code>ng serve</code> in this case). This initial request is satisfied by an HTML page, which then loads the necessary JavaScript files to load both Angular as well as our application code and templates.</p>
+
+<p>One thing to note is that although we develop our Angular application in TypeScript, the web application works with transpiled JavaScript.<a data-type="indexterm" data-primary="JavaScript" data-secondary="translation of TypeScript code to" id="idm139828147879296"></a> The <code>ng serve</code> command is responsible for translating our TypeScript code into JavaScript for the browser to load.<a data-type="indexterm" data-primary="TypeScript" data-secondary="translation of code into JavaScript" id="idm139828147877648"></a></p>
+
+<p>If we look at the structure the Angular CLI has generated, it is something like this:</p>
+
+<pre data-type="programlisting">stock-market
++----e2e
++----src
+     +----app
+          +----app.component.css
+          +----app.component.html
+          +----app.component.spec.ts
+          +----app.component.ts               <a class="co" id="co_hello_angular_CO1-1" href="#callout_hello_angular_CO1-1"><img src="images/1.png" alt="1" /></a>
+          +----app.module.ts                  <a class="co" id="co_hello_angular_CO1-2" href="#callout_hello_angular_CO1-2"><img src="images/2.png" alt="2" /></a>
+     +----assets
+     +----environments
+     +----index.html                          <a class="co" id="co_hello_angular_CO1-3" href="#callout_hello_angular_CO1-3"><img src="images/3.png" alt="3" /></a>
+     +----main.ts                             <a class="co" id="co_hello_angular_CO1-4" href="#callout_hello_angular_CO1-4"><img src="images/4.png" alt="4" /></a>
+ +----.angular-cli.json                       <a class="co" id="co_hello_angular_CO1-5" href="#callout_hello_angular_CO1-5"><img src="images/5.png" alt="5" /></a></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_hello_angular_CO1-1" href="#co_hello_angular_CO1-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Root component</p></dd>
+<dt><a class="co" id="callout_hello_angular_CO1-2" href="#co_hello_angular_CO1-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Main module</p></dd>
+<dt><a class="co" id="callout_hello_angular_CO1-3" href="#co_hello_angular_CO1-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Root HTML</p></dd>
+<dt><a class="co" id="callout_hello_angular_CO1-4" href="#co_hello_angular_CO1-4"><img src="images/4.png" alt="4" /></a></dt>
+<dd><p>Entry point</p></dd>
+<dt><a class="co" id="callout_hello_angular_CO1-5" href="#co_hello_angular_CO1-5"><img src="images/5.png" alt="5" /></a></dt>
+<dd><p>Angular CLI config</p></dd>
+</dl>
+
+<p>There are a few more files than listed here in the <em>stock-market</em> folder, but these are the major ones we are going to focus on in this chapter. In addition, there are unit tests, end-to-end (e2e) tests, the assets that support our application, configuration specific to various environments (dev, prod, etc.), and other general configuration that we will touch upon in Chapters <a data-type="xref" data-xrefstyle="select:labelnumber" href="ch05.html#chapter-5">5</a>, <a data-type="xref" data-xrefstyle="select:labelnumber" href="ch10.html#chapter-10">10</a>, and <a data-type="xref" data-xrefstyle="select:labelnumber" href="ch12.html#chapter-12">12</a>.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Root HTML—index.html"><div class="sect2" id="idm139828147848064">
+<h2>Root HTML—index.html</h2>
+
+<p>If you take a look at the <em>index.html</em> file, which is in the <em>src</em> folder, you will notice that it looks very clean and pristine, with no references to any scripts or<a data-type="indexterm" data-primary="root component" id="idm139828147845488"></a><a data-type="indexterm" data-primary="index.html file" id="idm139828147844784"></a> dependencies:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="cp">&lt;!doctype html&gt;</code><code>
+</code><code class="nt">&lt;html</code><code> </code><code class="na">lang=</code><code class="s">"en"</code><code class="nt">&gt;</code><code>
+</code><code class="nt">&lt;head</code><code class="nt">&gt;</code><code>
+  </code><code class="nt">&lt;meta</code><code> </code><code class="na">charset=</code><code class="s">"utf-8"</code><code class="nt">&gt;</code><code>
+  </code><code class="nt">&lt;title</code><code class="nt">&gt;</code><code>StockMarket</code><code class="nt">&lt;/title&gt;</code><code>
+  </code><code class="nt">&lt;base</code><code> </code><code class="na">href=</code><code class="s">"/"</code><code class="nt">&gt;</code><code>
+
+  </code><code class="nt">&lt;meta</code><code> </code><code class="na">name=</code><code class="s">"viewport"</code><code> </code><code class="na">content=</code><code class="s">"width=device-width, initial-scale=1"</code><code class="nt">&gt;</code><code>
+  </code><code class="nt">&lt;link</code><code> </code><code class="na">rel=</code><code class="s">"icon"</code><code> </code><code class="na">type=</code><code class="s">"image/x-icon"</code><code> </code><code class="na">href=</code><code class="s">"favicon.ico"</code><code class="nt">&gt;</code><code>
+</code><code class="nt">&lt;/head&gt;</code><code>
+</code><code class="nt">&lt;body</code><code class="nt">&gt;</code><code>
+  </code><code class="nt">&lt;app-root</code><code class="nt">&gt;</code><code class="nt">&lt;/app-root&gt;</code><code>                     </code><a class="co" id="co_hello_angular_CO2-1" href="#callout_hello_angular_CO2-1"><img src="images/1.png" alt="1" /></a><code>
+</code><code class="nt">&lt;/body&gt;</code><code>
+</code><code class="nt">&lt;/html&gt;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_hello_angular_CO2-1" href="#co_hello_angular_CO2-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Root component for our Angular application</p></dd>
+</dl>
+
+<p>The only thing of note in the preceding code is the <code>&lt;app-root&gt;</code> element in the HTML, which is the marker for loading our application code.</p>
+
+<p>What about the part that loads the core Angular scripts and our application code? That is inserted dynamically at runtime by the <code>ng serve</code> command, which combines all the vendor libraries, our application code, the styles, and inline templates each into individual bundles and injects them into <em>index.html</em> to be loaded as soon as the page renders in our browser.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="The Entry Point—main.ts"><div class="sect2" id="idm139828146794880">
+<h2>The Entry Point—main.ts</h2>
+
+<p>The second important part of our bootstrapping piece is the <em>main.ts</em> file.<a data-type="indexterm" data-primary="main.ts file" id="idm139828145652256"></a> The <em>index.html</em> file is responsible for deciding which files are to be loaded. The <em>main.ts</em> file, on the other hand, identifies which Angular module (which we will talk a bit more about in the following section) is to be loaded when the application starts. It can also change application-level configuration (like turning off framework-level asserts and verifications using the <code>enableProdMode()</code> flag), which we will cover in <a data-type="xref" href="ch12.html#chapter-12">Chapter 12</a>:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">enableProdMode</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">platformBrowserDynamic</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/platform-browser-dynamic'</code><code class="p">;</code><code>
+
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">AppModule</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./app/app.module'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">environment</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./environments/environment'</code><code class="p">;</code><code>
+
+</code><code class="k">if</code><code> </code><code class="p">(</code><code class="nx">environment</code><code class="p">.</code><code class="nx">production</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+  </code><code class="nx">enableProdMode</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+</code><code class="p">}</code><code>
+
+</code><code class="nx">platformBrowserDynamic</code><code class="p">(</code><code class="p">)</code><code class="p">.</code><code class="nx">bootstrapModule</code><code class="p">(</code><code class="nx">AppModule</code><code class="p">)</code><code>           </code><a class="co" id="co_hello_angular_CO3-1" href="#callout_hello_angular_CO3-1"><img src="images/1.png" alt="1" /></a><code>
+  </code><code class="p">.</code><code class="k">catch</code><code class="p">(</code><code class="nx">err</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="nx">err</code><code class="p">)</code><code class="p">)</code><code class="p">;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_hello_angular_CO3-1" href="#co_hello_angular_CO3-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Bootstrap the main <code>AppModule</code></p></dd>
+</dl>
+
+<p>Most of the code in the <em>main.ts</em> file is generic, and you will rarely have to touch or change this entry point file. Its main aim is to point the Angular framework at the core module of your application and let it trigger the rest of your application source code from that point.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Main Module—app.module.ts"><div class="sect2" id="idm139828144816912">
+<h2>Main Module—app.module.ts</h2>
+
+<p>This is where your application-specific source code starts from. The application module file can be thought of as the core configuration of your application, from loading all the relevant and necessary dependencies, declaring which components will be used within your application, to marking which is the main entry point component of your application:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">BrowserModule</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/platform-browser'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">NgModule</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+
+
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">AppComponent</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./app.component'</code><code class="p">;</code><code>
+
+
+</code><code class="err">@</code><code class="nx">NgModule</code><code class="p">(</code><code class="p">{</code><code>                            </code><a class="co" id="co_hello_angular_CO4-1" href="#callout_hello_angular_CO4-1"><img src="images/1.png" alt="1" /></a><code>
+  </code><code class="nx">declarations</code><code class="o">:</code><code> </code><code class="p">[</code><code>
+    </code><code class="nx">AppComponent</code><code>                       </code><a class="co" id="co_hello_angular_CO4-2" href="#callout_hello_angular_CO4-2"><img src="images/2.png" alt="2" /></a><code>
+  </code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">imports</code><code class="o">:</code><code> </code><code class="p">[</code><code>                           </code><a class="co" id="co_hello_angular_CO4-3" href="#callout_hello_angular_CO4-3"><img src="images/3.png" alt="3" /></a><code>
+    </code><code class="nx">BrowserModule</code><code>
+  </code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">providers</code><code class="o">:</code><code> </code><code class="p">[</code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">bootstrap</code><code class="o">:</code><code> </code><code class="p">[</code><code class="nx">AppComponent</code><code class="p">]</code><code>            </code><a class="co" id="co_hello_angular_CO4-4" href="#callout_hello_angular_CO4-4"><img src="images/4.png" alt="4" /></a><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">AppModule</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_hello_angular_CO4-1" href="#co_hello_angular_CO4-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p><code>NgModule</code> TypeScript annotation to mark this class definition as an Angular <span class="keep-together">module</span><a data-type="indexterm" data-primary="@NgModule TypeScript annotation" id="idm139828144466256"></a></p></dd>
+<dt><a class="co" id="callout_hello_angular_CO4-2" href="#co_hello_angular_CO4-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Declarations marking out which components and directives can be used within the application</p></dd>
+<dt><a class="co" id="callout_hello_angular_CO4-3" href="#co_hello_angular_CO4-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Importing other modules that provide functionality needed in the application</p></dd>
+<dt><a class="co" id="callout_hello_angular_CO4-4" href="#co_hello_angular_CO4-4"><img src="images/4.png" alt="4" /></a></dt>
+<dd><p>The entry point component for starting the application</p></dd>
+</dl>
+<div data-type="tip"><h6>Tip</h6>
+<p>This is our first time dealing with a TypeScript-specific feature, which are decorators (you can think of them as annotations).<a data-type="indexterm" data-primary="decorators (TypeScript)" id="idm139828144403024"></a><a data-type="indexterm" data-primary="annotations" id="idm139828144402320"></a><a data-type="indexterm" data-primary="TypeScript" data-secondary="decorators" id="idm139828144401648"></a> Decorators allow us to decorate classes with annotations and properties as well as meta-functionality.</p>
+
+<p>Angular heavily leverages this TypeScript feature across the board, such as using decorators for modules, components, and more.</p>
+
+<p>You can read more about TypeScript decorators in <a href="http://bit.ly/2IDQd1U">the official documentation</a>.</p>
+</div>
+
+<p>We will go over the details of each of these sections in the following chapters, but at its core:</p>
+<dl>
+<dt><code>declarations</code></dt>
+<dd>
+<p>The <code>declarations</code> block defines all the components that are allowed to be used in the scope of the HTML within this module. Any component that you create must be declared before it can be used.<a data-type="indexterm" data-primary="declarations" id="idm139828144395680"></a></p>
+</dd>
+<dt><code>imports</code></dt>
+<dd>
+<p>You will not create each and every functionality used in the application, and the <code>imports</code> array allows you to import other Angular application and library modules and thus leverage the components, services, and other capabilities that have already been created in those modules.<a data-type="indexterm" data-primary="imports" id="idm139828144392944"></a></p>
+</dd>
+<dt><code>bootstrap</code></dt>
+<dd>
+<p>The <code>bootstrap</code> array defines the component that acts as the entry point to your application.<a data-type="indexterm" data-primary="bootstrap array" id="idm139828144390384"></a> If the main component is not added here, your application will not kick-start, as Angular will not know what elements to look for in your <em>index.html</em>.</p>
+</dd>
+</dl>
+
+<p>You usually end up needing (if you are not using the CLI for any reason!) to modify this file if and only if you add new components, services, or add/integrate with new libraries and modules.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Root Component—AppComponent"><div class="sect2" id="idm139828144388096">
+<h2>Root Component—AppComponent</h2>
+
+<p>We finally get to the actual Angular code that drives the functionality of the application, and in this case, it is the main (and only) component we have, the <code>AppComponent</code>.<a data-type="indexterm" data-primary="root component" data-secondary="AppComponent (example)" id="idm139828144386096"></a><a data-type="indexterm" data-primary="AppComponent (example)" id="idm139828144385088"></a> The code for it looks something like this:</p>
+
+<pre data-type="programlisting" data-code-language="ts" class="pagebreak-before"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Component</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">Component</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="nx">selector</code><code class="o">:</code><code> </code><code class="s1">'app-root'</code><code class="p">,</code><code>                       </code><a class="co" id="co_hello_angular_CO5-1" href="#callout_hello_angular_CO5-1"><img src="images/1.png" alt="1" /></a><code>
+  </code><code class="nx">templateUrl</code><code class="o">:</code><code> </code><code class="s1">'./app.component.html'</code><code class="p">,</code><code>        </code><a class="co" id="co_hello_angular_CO5-2" href="#callout_hello_angular_CO5-2"><img src="images/2.png" alt="2" /></a><code>
+  </code><code class="nx">styleUrls</code><code class="o">:</code><code> </code><code class="p">[</code><code class="s1">'./app.component.css'</code><code class="p">]</code><code>          </code><a class="co" id="co_hello_angular_CO5-3" href="#callout_hello_angular_CO5-3"><img src="images/3.png" alt="3" /></a><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">AppComponent</code><code> </code><code class="p">{</code><code>
+  </code><code class="nx">title</code><code> </code><code class="o">=</code><code> </code><code class="s1">'app'</code><code class="p">;</code><code>                              </code><a class="co" id="co_hello_angular_CO5-4" href="#callout_hello_angular_CO5-4"><img src="images/4.png" alt="4" /></a><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_hello_angular_CO5-1" href="#co_hello_angular_CO5-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>The DOM selector that gets translated into an instance of this component</p></dd>
+<dt><a class="co" id="callout_hello_angular_CO5-2" href="#co_hello_angular_CO5-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>The HTML template backing this component—in this case, the URL to it</p></dd>
+<dt><a class="co" id="callout_hello_angular_CO5-3" href="#co_hello_angular_CO5-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Any component-specific styling, again pointing to a separate file in this case</p></dd>
+<dt><a class="co" id="callout_hello_angular_CO5-4" href="#co_hello_angular_CO5-4"><img src="images/4.png" alt="4" /></a></dt>
+<dd><p>The component class with its own members and functions</p></dd>
+</dl>
+
+<p>A <em>component</em> in Angular is nothing but a TypeScript class, decorated with some attributes and metadata. The class encapsulates all the data and functionality of the component, while the decorator specifies how it translates into the HTML.</p>
+
+<p>The <em>app-selector</em> is a CSS selector that identifies how Angular finds this particular component in any HTML page. While we generally use element selectors (<code>app-root</code> in the preceding example, which translates to looking for <code>&lt;app-root&gt;</code> elements in the HTML), they can be any CSS selector, from a CSS class to an attribute as well.<a data-type="indexterm" data-primary="CSS" data-secondary="app-selector" id="idm139828144287824"></a></p>
+
+<p>The <code>templateUrl</code> is the path to the HTML used to render this component. We can also use inline templates instead of specifying a <code>templateUrl</code> like we have done in the example.<a data-type="indexterm" data-primary="templateUrl attribute" id="idm139828144285472"></a> In this particular case, the template we are referring to is <em>app.component.html</em>.</p>
+
+<p><code>styleUrls</code> is the styling counterpart to the template, encapsulating all the styles for this component.<a data-type="indexterm" data-primary="styleUrls attribute" id="idm139828144283408"></a><a data-type="indexterm" data-primary="CSS" data-secondary="styleUrls for templates" id="idm139828144282704"></a> Angular ensures that the styles are encapsulated, so you don’t have to worry about your CSS classes from one component affecting another. Unlike <code>template​Url</code>, <code>styleUrls</code> is an array.</p>
+
+<p>The component class itself finally encapsulates all the functionality backing your component.<a data-type="indexterm" data-primary="components" data-secondary="component class" id="idm139828144280080"></a> It makes it easy to think of the responsibilities of the component class as twofold:</p>
+
+<ul>
+<li>
+<p>Load and hold all the data necessary for rendering the component</p>
+</li>
+<li>
+<p>Handle and process any events that may arise from any element in the <span class="keep-together">component</span></p>
+</li>
+</ul>
+
+<p>The data in the class will drive what can be displayed as part of the component. So let’s take a look at what the template for this component looks like:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;h1</code><code class="nt">&gt;</code><code>
+  {{title}}                              </code><a class="co" id="co_hello_angular_CO6-1" href="#callout_hello_angular_CO6-1"><img src="images/1.png" alt="1" /></a><code>
+</code><code class="nt">&lt;/h1&gt;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_hello_angular_CO6-1" href="#co_hello_angular_CO6-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Data-bound title from the component</p></dd>
+</dl>
+
+<p>Our HTML is as simple as can be for the component.<a data-type="indexterm" data-primary="data binding" data-secondary="component title" id="idm139828144265936"></a> All it has is one element, which is data-bound to a field in our component class. The double-curly (<code>{{ }}</code>) syntax is an indication to Angular to replace the value between the braces with the value of the variable from the corresponding class.<a data-type="indexterm" data-primary="{{ }} (double curly braces), interpolation syntax" id="idm139828144264176"></a></p>
+
+<p>In this case, once the application loads, and the component is rendered, the <code>{{title}}</code> will be replaced with the text <code>app works!</code>. We will talk in more detail about data binding in <a data-type="xref" href="#understand_data_bind">“Understanding Data Binding”</a>.<a data-type="indexterm" data-primary="applications (Angular)" data-secondary="basics of" data-startref="ix_appbasic" id="idm139828144261456"></a></p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Creating a Component"><div class="sect1" id="idm139828147883312">
+<h1>Creating a Component</h1>
+
+<p>So far, we have dealt with the basic skeleton code that the Angular CLI has generated for us. <a data-type="indexterm" data-primary="components" data-secondary="creating" id="ix_compcr"></a>Let’s now look at adding new components, and what that entails. We will use the Angular CLI to generate a new component, but look underneath the covers to see what steps it takes. We will then walk through some very basic common tasks we try to accomplish with components.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Steps in Creating New Components"><div class="sect2" id="idm139828144237520">
+<h2>Steps in Creating New Components</h2>
+
+<p>Using the Angular CLI, creating a new component is simply running a simple command.<a data-type="indexterm" data-primary="components" data-secondary="creating" data-tertiary="steps in" id="idm139828144235856"></a> We will first try creating a stock widget, which displays the name of the stock, its stock code, the current price, and whether it has changed for the positive or negative.</p>
+
+<p>We can simply create a new <code>stock-item</code> by running the following command from the main folder<a data-type="indexterm" data-primary="ng generate component stock/stock-item command" id="idm139828144233488"></a><a data-type="indexterm" data-primary="stock-item, generating" id="idm139828144232816"></a> of the application:</p>
+<pre>
+<strong>ng generate component stock/stock-item</strong>
+</pre>
+
+<p>There are a few interesting things to note here:</p>
+
+<ul>
+<li>
+<p>The Angular CLI has a command called <code>generate</code>, which can be used to generate components (like we did in the preceding example), and also to generate other Angular elements, such as interfaces, services, modules, and more.<a data-type="indexterm" data-primary="command-line interface (CLI)" data-secondary="generating components and other Angular elements" id="idm139828144229024"></a></p>
+</li>
+<li>
+<p>With the target type, we also specify the name (and the folder) within which the component has to be generated. Here, we are telling the Angular CLI to generate a component called <code>stock-item</code> within a folder called <em>stock</em>. If we don’t specify <code>stock</code>, it will create a component called <code>stock-item</code> in the <em>app</em> folder itself.</p>
+</li>
+</ul>
+
+<p>The command will generate all the relevant files for a new component, including:</p>
+
+<ul>
+<li>
+<p>The component definition (named <em>stock-item.component.ts</em>)</p>
+</li>
+<li>
+<p>The corresponding template definition (named <em>stock-item.component.html</em>)</p>
+</li>
+<li>
+<p>The styles for the component (in a file named <em>stock-item.component.css</em>)</p>
+</li>
+<li>
+<p>The skeleton unit tests for the component (named <em>stock-item.component.spec.ts</em>)</p>
+</li>
+</ul>
+
+<p>In addition, it updated the original <code>app module</code> that we saw earlier so that our Angular application recognizes the new module.</p>
+
+<p>This is the recommended convention to follow whenever you are working with <span class="keep-together">components</span>:</p>
+
+<ul>
+<li>
+<p>The filename starts with the name of the item you are creating</p>
+</li>
+<li>
+<p>This is followed by the type of element it is (in this case, a component)</p>
+</li>
+<li>
+<p>Finally, we have the relevant extension</p>
+</li>
+</ul>
+
+<p>This allows us to both group and easily identify relevant and related files in a simple manner.</p>
+
+<p>When you run the command, you should see something like this:</p>
+<pre>  create src/app/stock/stock-item/stock-item.component.css
+  create src/app/stock/stock-item/stock-item.component.html
+  create src/app/stock/stock-item/stock-item.component.spec.ts
+  create src/app/stock/stock-item/stock-item.component.ts
+  update src/app/app.module.ts</pre>
+
+<p>The source for the component, HTML, and the CSS remain pretty much barebones, so I won’t repeat that here. What is important is how this new component that we create is hooked up and made available to our Angular application. Let’s take a look at the modified <em>app.module.ts</em> file:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">BrowserModule</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/platform-browser'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">NgModule</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">AppComponent</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./app.component'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">StockItemComponent</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./stock/stock-item/stock-item.component'</code><code class="p">;</code><code>    </code><a class="co" id="co_hello_angular_CO7-1" href="#callout_hello_angular_CO7-1"><img src="images/1.png" alt="1" /></a><code>
+
+</code><code class="err">@</code><code class="nx">NgModule</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="nx">declarations</code><code class="o">:</code><code> </code><code class="p">[</code><code>
+    </code><code class="nx">AppComponent</code><code class="p">,</code><code>
+    </code><code class="nx">StockItemComponent</code><code>                     </code><a class="co" id="co_hello_angular_CO7-2" href="#callout_hello_angular_CO7-2"><img src="images/2.png" alt="2" /></a><code>
+  </code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">imports</code><code class="o">:</code><code> </code><code class="p">[</code><code>
+    </code><code class="nx">BrowserModule</code><code>
+  </code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">providers</code><code class="o">:</code><code> </code><code class="p">[</code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">bootstrap</code><code class="o">:</code><code> </code><code class="p">[</code><code class="nx">AppComponent</code><code class="p">]</code><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">AppModule</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_hello_angular_CO7-1" href="#co_hello_angular_CO7-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Importing the newly created <code>stock-item</code> component</p></dd>
+<dt><a class="co" id="callout_hello_angular_CO7-2" href="#co_hello_angular_CO7-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Adding the new component to the <code>declarations</code> section</p></dd>
+</dl>
+
+<p>In the application module, we have to ensure that the new component is imported and added to the <code>declarations</code> array, before we can start using it in our Angular application.<a data-type="indexterm" data-primary="declarations" data-secondary="adding new components to declarations array" id="idm139828144109584"></a></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Using Our New Component"><div class="sect2" id="idm139828144236928">
+<h2>Using Our New Component</h2>
+
+<p>Now that we have created a new component, let’s see how we can use it in our application. We will now try to use this skeleton in the app component.<a data-type="indexterm" data-primary="components" data-secondary="using our new component" id="idm139828144106784"></a> First, take a look at the generated <em>stock-item.component.ts</em> file:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Component</code><code class="p">,</code><code> </code><code class="nx">OnInit</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">Component</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="nx">selector</code><code class="o">:</code><code> </code><code class="s1">'app-stock-item'</code><code class="p">,</code><code>                    </code><a class="co" id="co_hello_angular_CO8-1" href="#callout_hello_angular_CO8-1"><img src="images/1.png" alt="1" /></a><code>
+  </code><code class="nx">templateUrl</code><code class="o">:</code><code> </code><code class="s1">'./stock-item.component.html'</code><code class="p">,</code><code>
+  </code><code class="nx">styleUrls</code><code class="o">:</code><code> </code><code class="p">[</code><code class="s1">'./stock-item.component.css'</code><code class="p">]</code><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">StockItemComponent</code><code> </code><code class="kr">implements</code><code> </code><code class="nx">OnInit</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="p">)</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code><code>
+
+  </code><code class="nx">ngOnInit() {</code><code>
+  </code><code class="p">}</code><code>
+
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_hello_angular_CO8-1" href="#co_hello_angular_CO8-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>The selector for using this component. Note it is prefixed with <code>app</code>, which is added by the Angular CLI by default unless otherwise specified.</p></dd>
+</dl>
+
+<p>The component has no data and does not provide any functionality at this point; it simply renders the template associated with it. The template at this point is also trivial, and just prints out a static message.</p>
+
+<p>To use this component in our application, we can simply create an element that matches the selector defined anywhere inside our main app component. If we had more components and a deeper hierarchy of components, we could choose to use it in any of their templates as well. So let’s replace most of the placeholder content in <em>app.component.html</em> with the following, so that we can render the <code>stock-item</code> <span class="keep-together">component</span>:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code><code> </code><code class="na">style=</code><code class="s">"text-align:center"</code><code class="nt">&gt;</code><code>
+  </code><code class="nt">&lt;h1</code><code class="nt">&gt;</code><code>
+    Welcome to {{ title }}!
+  </code><code class="nt">&lt;/h1&gt;</code><code>
+  </code><code class="nt">&lt;app-stock-item</code><code class="nt">&gt;</code><code class="nt">&lt;/app-stock-item&gt;</code><code>              </code><a class="co" id="co_hello_angular_CO9-1" href="#callout_hello_angular_CO9-1"><img src="images/1.png" alt="1" /></a><code>
+</code><code class="nt">&lt;/div&gt;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_hello_angular_CO9-1" href="#co_hello_angular_CO9-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Adding our <code>stock-item</code> component</p></dd>
+</dl>
+
+<p>All it takes is adding the <code>&lt;app-stock-item&gt;&lt;/app-stock-item&gt;</code> to our <em>app.component.html</em> file to use our component.  We simply create an element using the selector we defined in our component. Then when the application loads, Angular recognizes that the element refers to a component, and triggers the relevant code path.</p>
+
+<p>When you run this (or if your <code>ng serve</code> is still running), you should see both the original <code>"app works"</code> along with a new <code>"stock-item works"</code> in the UI.<a data-type="indexterm" data-primary="components" data-secondary="creating" data-startref="ix_compcr" id="idm139828143958528"></a></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Understanding Data Binding"><div class="sect2" id="understand_data_bind">
+<h2>Understanding Data Binding</h2>
+
+<p>Next, let’s focus on getting some data and figuring out how to display it as part of our component.<a data-type="indexterm" data-primary="data binding" data-secondary="in components (example)" id="ix_databnd"></a> What we are trying to build is a stock widget, which will take some stock information, and render it accordingly.<a data-type="indexterm" data-primary="components" data-secondary="data binding" id="ix_compcrdb"></a></p>
+
+<p>Let’s assume that we have a stock for a company named <code>Test Stock Company</code>, with a stock code of <code>TSC</code>. Its current price is <code>$85</code>, while the previous price it traded at was <code>$80</code>. In the widget, we want to show both the name and its code, as well as the current price, the percentage change since last time, and highlight the price and percentage change in green if it is an increment, or red if it is a decrement.</p>
+
+<p>Let’s walk through this step by step. First, we will make sure we can display the name and code in the widget (we will hardcode the information for now, and we will build up the example to get the data from a different source later).</p>
+
+<p>We would change our component code (the <em>stock-item.component.ts</em> file) as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Component</code><code class="p">,</code><code> </code><code class="nx">OnInit</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">Component</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="nx">selector</code><code class="o">:</code><code> </code><code class="s1">'app-stock-item'</code><code class="p">,</code><code>
+  </code><code class="nx">templateUrl</code><code class="o">:</code><code> </code><code class="s1">'./stock-item.component.html'</code><code class="p">,</code><code>
+  </code><code class="nx">styleUrls</code><code class="o">:</code><code> </code><code class="p">[</code><code class="s1">'./stock-item.component.css'</code><code class="p">]</code><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">StockItemComponent</code><code> </code><code class="kr">implements</code><code> </code><code class="nx">OnInit</code><code> </code><code class="p">{</code><code>  </code><a class="co" id="co_hello_angular_CO10-1" href="#callout_hello_angular_CO10-1"><img src="images/1.png" alt="1" /></a><code>
+
+  </code><code class="kr">public</code><code> </code><code class="nx">name</code><code>: </code><code class="kt">string</code><code class="p">;</code><code>                        </code><a class="co" id="co_hello_angular_CO10-2" href="#callout_hello_angular_CO10-2"><img src="images/2.png" alt="2" /></a><code>
+  </code><code class="kr">public</code><code> </code><code class="nx">code</code><code>: </code><code class="kt">string</code><code class="p">;</code><code>
+  </code><code class="kr">public</code><code> </code><code class="nx">price</code><code>: </code><code class="kt">number</code><code class="p">;</code><code>
+  </code><code class="kr">public</code><code> </code><code class="nx">previousPrice</code><code>: </code><code class="kt">number</code><code class="p">;</code><code>
+
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="p">)</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code><code>
+
+  </code><code class="nx">ngOnInit() {</code><code>                                </code><a class="co" id="co_hello_angular_CO10-3" href="#callout_hello_angular_CO10-3"><img src="images/3.png" alt="3" /></a><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">name</code><code> </code><code class="o">=</code><code> </code><code class="s1">'Test Stock Company'</code><code class="p">;</code><code>         </code><a class="co" id="co_hello_angular_CO10-4" href="#callout_hello_angular_CO10-4"><img src="images/4.png" alt="4" /></a><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">code</code><code> </code><code class="o">=</code><code> </code><code class="s1">'TSC'</code><code class="p">;</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">price</code><code> </code><code class="o">=</code><code> </code><code class="mi">85</code><code class="p">;</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">previousPrice</code><code> </code><code class="o">=</code><code> </code><code class="mi">80</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_hello_angular_CO10-1" href="#co_hello_angular_CO10-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Implement <code>OnInit</code> interface from Angular, which gives us a hook to when the component is initialized<a data-type="indexterm" data-primary="OnInit interface" data-secondary="implementing" id="idm139828143792096"></a></p></dd>
+<dt><a class="co" id="callout_hello_angular_CO10-2" href="#co_hello_angular_CO10-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Definition of the various fields we will want to access from the HTML</p></dd>
+<dt><a class="co" id="callout_hello_angular_CO10-3" href="#co_hello_angular_CO10-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p><code>OnInit</code> function that is triggered when a component is initialized</p></dd>
+<dt><a class="co" id="callout_hello_angular_CO10-4" href="#co_hello_angular_CO10-4"><img src="images/4.png" alt="4" /></a></dt>
+<dd><p>Initializing the values for each of the fields</p></dd>
+</dl>
+
+<p>Angular gives us hooks into the lifecycle of a component to let us take certain actions when a component is initialized, when its view is rendered, when it is destroyed, and so on.<a data-type="indexterm" data-primary="lifecycle hooks for components" id="idm139828143770000"></a><a data-type="indexterm" data-primary="hooks in component lifecycle" id="idm139828143769328"></a> We’ve extended our trivial component with a few notable things:</p>
+<dl>
+<dt><code>OnInit</code></dt>
+<dd>
+<p>Angular’s <code>OnInit</code> hook is executed after the component is created by the Angular framework, after all the data fields are initialized.<a data-type="indexterm" data-primary="OnInit hook" id="idm139828143766320"></a> It is generally recommended to do any initialization work of a component in the <code>OnInit</code> hook, so that it makes it easier to test the functionality of the rest of the component without necessarily triggering the initialization flow every time. We will cover the remaining lifecycle hooks in <a data-type="xref" href="ch04.html#chapter-4">Chapter 4</a>.</p>
+</dd>
+<dt><code>ngOnInit</code></dt>
+<dd>
+<p>When you want to hook on the initialization phase of a component, you need to implement the <code>OnInit</code> interface (as in the example) and then implement the <span class="keep-together"><code>ngOnInit</code></span> function in the component, which is where you write your initialization logic.<a data-type="indexterm" data-primary="ngOnInit function" id="idm139828143761232"></a> We have initialized the basic information we need to render our stock widget in the <code>ngOnInit</code> function.</p>
+</dd>
+<dt>Class member variables</dt>
+<dd>
+<p>We have declared a few public variables as class instance variables.<a data-type="indexterm" data-primary="class member variables, declaring in component creation" id="idm139828143758704"></a> This information will be used to render our template.</p>
+</dd>
+</dl>
+
+<p>Now, let’s change the template (the <em>stock-item.component.html</em> file) to start rendering this information:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-container"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"name"</code><code class="nt">&gt;&lt;h3&gt;</code>{{name}}<code class="nt">&lt;/h3&gt;</code> - <code class="nt">&lt;h4&gt;</code>({{code}})<code class="nt">&lt;/h4&gt;&lt;/div&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"price"</code><code class="nt">&gt;</code>$ {{price}}<code class="nt">&lt;/div&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>and its corresponding CSS  (the <em>stock-item.component.css</em> file), to make it look nice:</p>
+
+<pre data-type="programlisting" data-code-language="css"><code class="nc">.stock-container</code> <code class="p">{</code>
+  <code class="k">border</code><code class="o">:</code> <code class="m">1px</code> <code class="nb">solid</code> <code class="nb">black</code><code class="p">;</code>
+  <code class="k">border-radius</code><code class="o">:</code> <code class="m">5px</code><code class="p">;</code>
+  <code class="k">display</code><code class="o">:</code> <code class="nb">inline-block</code><code class="p">;</code>
+  <code class="k">padding</code><code class="o">:</code> <code class="m">10px</code><code class="p">;</code>
+<code class="p">}</code>
+
+<code class="nc">.stock-container</code> <code class="nc">.name</code> <code class="nt">h3</code><code class="o">,</code> <code class="nc">.stock-container</code> <code class="nc">.name</code> <code class="nt">h4</code> <code class="p">{</code>
+  <code class="k">display</code><code class="o">:</code> <code class="nb">inline-block</code><code class="p">;</code>
+<code class="p">}</code></pre>
+<div data-type="note" epub:type="note"><h6>Note</h6>
+<p>Note that the CSS is purely from a visual perspective, and is not needed nor impacts our Angular application.<a data-type="indexterm" data-primary="CSS" data-secondary="and Angular applications" id="idm139828143701760"></a> You could skip it completely and still have a functional application.</p>
+</div>
+
+<p>Once we make these changes and refresh our application, we should see something like <a data-type="xref" href="#fig0202">Figure 2-2</a> in our browser.</p>
+
+<figure class="width-75"><div id="fig0202" class="figure">
+<img src="images/auar_02in02.png" alt="Stock widget" />
+<h6><span class="label">Figure 2-2. </span>Angular app with stock component</h6>
+</div></figure>
+
+<p>We have just used one fundamental building block from Angular to render our data from our component into the HTML. We use the double-curly notation (<code>{{ }}</code>), which is also known as <em>interpolation</em>.<a data-type="indexterm" data-primary="interpolation" id="idm139828143695760"></a><a data-type="indexterm" data-primary="{{ }} (double curly braces), interpolation syntax" id="idm139828143695024"></a> Interpolation evaluates the expression between the curly braces as per the component backing it, and then renders the result as a string in place in the HTML. In this case, we render the name, code, and the price of the stock using interpolation. This picks up the values of name, code, and price, and then replaces the double-curly expression with its value, thus rendering our UI.</p>
+
+<p>This is Angular’s one-way data binding at work.<a data-type="indexterm" data-primary="one-way data binding" id="idm139828143693344"></a> One-way data binding simply refers to Angular’s capability to automatically update the UI based on values in the component, and then keeping it updated as the value changes in the component. Without one-way binding, we would have to write code to take the value from our component, find the right element in HTML, and update its value. Then we would have to write listeners/watchers to keep track of when the value in the component changes, and then change the value in the HTML at that time. We can get rid of all of this extra code because of data binding.</p>
+
+<p>In this particular case, we are binding to simple variables, but it is not necessarily restricted to simple variables. The expressions can be slightly more complex. For example, we could render the same UI by changing the binding expression as follows in <em>stock-item.component.html</em>:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-container"</code><code class="nt">&gt;</code>
+    <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"name"</code><code class="nt">&gt;</code>{{name + ' (' + code + ')'}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"price"</code><code class="nt">&gt;</code>$ {{price}}<code class="nt">&lt;/div&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>In this case, we replaced our multiple heading elements with a single div. The interpolation expression is now a combination of both the name and the code, with the code surrounded by parentheses. Angular will evaluate this like normal JavaScript, and return the value of it as a string to our UI.<a data-type="indexterm" data-primary="data binding" data-secondary="in components (example)" data-startref="ix_databnd" id="idm139828143609440"></a><a data-type="indexterm" data-primary="components" data-secondary="data binding" data-startref="ix_compcrdb" id="idm139828143599936"></a></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Understanding Property Binding"><div class="sect2" id="idm139828143943120">
+<h2>Understanding Property Binding</h2>
+
+<p>So far, we used interpolation to get data from our component code to the HTML. But Angular also provides a way to bind not just text, but also DOM element properties.<a data-type="indexterm" data-primary="DOM" data-secondary="binding DOM properties" id="ix_DOMprop"></a><a data-type="indexterm" data-primary="property binding" id="ix_propbi"></a><a data-type="indexterm" data-primary="components" data-secondary="property binding" id="ix_compcrpb"></a> This allows us to modify the content and the behavior of the HTML that is rendered in the browser.</p>
+
+<p>For example, let’s try to modify our stock widget to highlight the price in red if the price is less than the previous price, and in green if it is equal to or more than the previous price. We can first change our component (the <em>stock-item.component.ts</em>) to precalculate if the difference is positive or negative like so:</p>
+
+<pre data-type="programlisting" data-code-language="ts" class="pagebreak-before"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-item'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./stock-item.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./stock-item.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockItemComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">name</code>: <code class="kt">string</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">code</code>: <code class="kt">string</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">price</code>: <code class="kt">number</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">previousPrice</code>: <code class="kt">number</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">positiveChange</code>: <code class="kt">boolean</code><code class="p">;</code>
+
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{</code> <code class="p">}</code>
+
+  <code class="nx">ngOnInit() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">name</code> <code class="o">=</code> <code class="s1">'Test Stock Company'</code><code class="p">;</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">code</code> <code class="o">=</code> <code class="s1">'TSC'</code><code class="p">;</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">price</code> <code class="o">=</code> <code class="mi">85</code><code class="p">;</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">previousPrice</code> <code class="o">=</code> <code class="mi">80</code><code class="p">;</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">positiveChange</code> <code class="o">=</code> <code class="k">this</code><code class="p">.</code><code class="nx">price</code> <code class="o">&gt;=</code> <code class="k">this</code><code class="p">.</code><code class="nx">previousPrice</code><code class="p">;</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>In this code, we added a new public variable called <code>positiveChange</code>, which is of type <code>boolean</code>, and then set the value based on comparing the current price with the previous price. This gives us a singular <code>boolean</code> value that we can use to decide whether to highlight the price in red or green.</p>
+
+<p>Next, let’s add some classes in the <em>stock-item.component.css</em> file to allow for changing the color of the text:</p>
+
+<pre data-type="programlisting" data-code-language="css"><code class="nc">.stock-container</code> <code class="p">{</code>
+  <code class="k">border</code><code class="o">:</code> <code class="m">1px</code> <code class="nb">solid</code> <code class="nb">black</code><code class="p">;</code>
+  <code class="k">border-radius</code><code class="o">:</code> <code class="m">5px</code><code class="p">;</code>
+  <code class="k">display</code><code class="o">:</code> <code class="nb">inline-block</code><code class="p">;</code>
+  <code class="k">padding</code><code class="o">:</code> <code class="m">10px</code><code class="p">;</code>
+<code class="p">}</code>
+
+<code class="nc">.positive</code> <code class="p">{</code>
+  <code class="k">color</code><code class="o">:</code> <code class="nb">green</code><code class="p">;</code>
+<code class="p">}</code>
+
+<code class="nc">.negative</code> <code class="p">{</code>
+  <code class="k">color</code><code class="o">:</code> <code class="nb">red</code><code class="p">;</code>
+<code class="p">}</code></pre>
+
+<p>We simply added two classes, <code>positive</code> and <code>negative</code>, which change the color of the text to green and red, respectively. Now let’s tie this together to see how we can use this information and classes in our <em>stock-item.component.html</em> file:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-container"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"name"</code><code class="nt">&gt;</code>{{name + ' (' + code + ')'}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"price"</code>
+       <code class="err">[</code><code class="na">class</code><code class="err">]="</code><code class="na">positiveChange</code> <code class="err">?</code> <code class="err">'</code><code class="na">positive</code><code class="err">'</code> <code class="na">:</code> <code class="err">'</code><code class="na">negative</code><code class="err">'"</code><code class="nt">&gt;</code>$ {{price}}<code class="nt">&lt;/div&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>We have added one new binding on the <code>price</code> div element, which reads as:</p>
+
+<pre data-type="programlisting" data-code-language="html">[class]="positiveChange ? 'positive' : 'negative'"</pre>
+
+<p>This is the Angular syntax for property binding, which binds the value of the expression to the DOM property between the square brackets.<a data-type="indexterm" data-primary="[] (square brackets), property binding syntax" id="idm139828138199888"></a> The <code>[]</code> is the general syntax that can be used with any property on an element to bind one-way from the component to the UI.</p>
+
+<p>In this particular case, we are telling Angular to bind to the class property of the DOM element to the value of the expression. Angular will evaluate it like a normal JavaScript expression, and assign the value (positive in this case) to the class property of the <code>div</code> element.</p>
+<div data-type="warning" epub:type="warning"><h6>Warning</h6>
+<p>When you bind to the class property like we did in the example, note that it overrides the existing value of the property. In our example, the <code>"price"</code> class is replaced with the class <code>"positive"</code>, instead of appending to the existing value of the property. You can notice this for yourself if you inspect the rendered HTML in the browser. Be careful about this if you bind directly to the <code>class</code> property.</p>
+</div>
+
+<p>If the value of the variable <code>positiveChange</code> in the component changes, Angular will automatically re-evaluate the expression in the HTML and update it accordingly. Try changing the price so that there is a negative change and then refresh the UI to make sure it works.</p>
+
+<p>Notice that we have been explicitly referring to the data binding working with DOM properties, and not HTML attributes. The following sidebar goes into more detail on the difference between the two, and why it is important to know and understand as you work on Angular. But simplifying it, Angular data binding only works with DOM properties, and not with HTML attributes.</p>
+<aside data-type="sidebar" epub:type="sidebar"><div class="sidebar" id="idm139828138191920">
+<h5>HTML Attribute Versus DOM Property: What’s the Difference?</h5>
+<p>As mentioned, when we work with data binding in Angular, we aren’t working with HTML attributes but rather DOM properties.<a data-type="indexterm" data-primary="HTML attributes vs. DOM properties" id="idm139828138190240"></a> Attributes are defined by HTML, while properties are defined by the Document Object Model. Though some attributes (like ID and class) directly map to DOM properties, others may exist on one side but not the other.</p>
+
+<p>But more importantly, the distinction between the two is that HTML attributes are generally used for initialization of a DOM element, but after that, they have no purpose or effect on the underlying element. Once the element is initialized, its behavior is controlled by the DOM properties from then on.</p>
+
+<p>For example, consider the <code>input</code> HTML element. If we bootstrap our HTML with something like:</p>
+
+<pre data-type="programlisting">&lt;input type="text" value="foo"/&gt;</pre>
+
+<p>this initializes an <code>input</code> DOM element, with the initial value of the DOM property <code>value</code> to be set to <code>foo</code>. Now let’s assume we type something in the text box, say <code>bar</code>. At this point:</p>
+
+<ul>
+<li>
+<p>If we do <code>input.getAttribute('value')</code>, it would return <code>foo</code>, which was the attribute value we used to initialize the HTML.</p>
+</li>
+<li>
+<p>If we do <code>input.value</code>, we will get the current value of the DOM property, which is <code>bar</code>.</p>
+</li>
+</ul>
+
+<p>That is, the attribute value is used to boostrap and set the initial value of the HTML DOM element, but after that, it is the DOM property that drives the behavior. If you inspect the HTML, you will see that it is still the initial HTML we provided, and does not update either.</p>
+
+<p>In Angular, we thus bind to the DOM property, and not to the HTML attributes. Whenever we think about one-way binding from the component to the UI, we should always keep this in mind!</p>
+</div></aside>
+
+<p>Just like we did for the <code>class</code> property, depending on the use case, we can actually bind to other HTML properties like the <code>src</code> property of an <code>img</code> tag, or the <code>disabled</code> property of <code>input</code> and <code>button</code>. We will cover this in more depth in the next chapter. We will also cover a simpler and more specific way of binding CSS classes in the next chapter as well.<a data-type="indexterm" data-primary="DOM" data-secondary="binding DOM properties" data-startref="ix_DOMprop" id="idm139828143387904"></a><a data-type="indexterm" data-primary="property binding" data-startref="ix_propbi" id="idm139828143386656"></a><a data-type="indexterm" data-primary="components" data-secondary="property binding" data-startref="ix_compcrpb" id="idm139828143385712"></a></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Understanding Event Binding"><div class="sect2" id="idm139828143598464">
+<h2>Understanding Event Binding</h2>
+
+<p>So far, we have worked on using the data in our component to both render values and change the look and feel of our component.<a data-type="indexterm" data-primary="event binding" id="ix_eventbi"></a><a data-type="indexterm" data-primary="components" data-secondary="event binding" id="ix_compcreb"></a> In this section, we will start understanding how to handle user interactions, and work with events and event binding in Angular.</p>
+
+<p>Say we wanted to have a button that allows users to add the stock to their list of favorite stocks. Generally, with a button like this, when the user clicks it, we would want to make some server call and then process the result. So far, since we are working with very simple examples, let’s just say we wanted to handle this click and get a hook to it in our component. Let’s see how we might accomplish that.</p>
+
+<p>First, we can change our component code in <em>stock-item.component.ts</em> to add a function <code>toggleFavorite</code>, which should be triggered each time the click happens from the UI:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-item'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./stock-item.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./stock-item.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockItemComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">name</code>: <code class="kt">string</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">code</code>: <code class="kt">string</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">price</code>: <code class="kt">number</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">previousPrice</code>: <code class="kt">number</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">positiveChange</code>: <code class="kt">boolean</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">favorite</code>: <code class="kt">boolean</code><code class="p">;</code>
+
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{</code> <code class="p">}</code>
+
+  <code class="nx">ngOnInit() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">name</code> <code class="o">=</code> <code class="s1">'Test Stock Company'</code><code class="p">;</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">code</code> <code class="o">=</code> <code class="s1">'TSC'</code><code class="p">;</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">price</code> <code class="o">=</code> <code class="mi">85</code><code class="p">;</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">previousPrice</code> <code class="o">=</code> <code class="mi">80</code><code class="p">;</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">positiveChange</code> <code class="o">=</code> <code class="k">this</code><code class="p">.</code><code class="nx">price</code> <code class="o">&gt;=</code> <code class="k">this</code><code class="p">.</code><code class="nx">previousPrice</code><code class="p">;</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">favorite</code> <code class="o">=</code> <code class="kc">false</code><code class="p">;</code>
+  <code class="p">}</code>
+
+  <code class="nx">toggleFavorite() {</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'We are toggling the favorite state for this stock'</code><code class="p">);</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">favorite</code> <code class="o">=</code> <code class="o">!</code><code class="k">this</code><code class="p">.</code><code class="nx">favorite</code><code class="p">;</code>
+  <code class="p">}</code>
+
+<code class="p">}</code></pre>
+
+<p>We have added a new public boolean member variable called <code>favorite</code>, which is initialized with a <code>false</code> value. We then added a new function called <code>toggleFavorite()</code>, which simply flips the boolean value of <code>favorite</code>. We are also printing a log in the console to ensure this is getting triggered.</p>
+
+<p class="pagebreak-after">Now, let’s update the UI to use this concept of a <code>favorite</code> and also allow users to toggle the state:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-container"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"name"</code><code class="nt">&gt;</code>{{name + ' (' + code + ')'}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"price"</code>
+      <code class="err">[</code><code class="na">class</code><code class="err">]="</code><code class="na">positiveChange</code> <code class="err">?</code> <code class="err">'</code><code class="na">positive</code><code class="err">'</code> <code class="na">:</code> <code class="err">'</code><code class="na">negative</code><code class="err">'"</code><code class="nt">&gt;</code>$ {{price}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;button</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">toggleFavorite</code><code class="err">()"</code>
+          <code class="err">[</code><code class="na">disabled</code><code class="err">]="</code><code class="na">favorite</code><code class="err">"</code><code class="nt">&gt;</code>Add to Favorite<code class="nt">&lt;/button&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>We have added a new button in the <em>stock-item.component.html</em> file to allow users to click and add the stock to their favorite set. We are using the data-binding concept from the previous section on the <code>disabled</code> property. Thus, we are disabling the button based on the boolean value <code>favorite</code>. If <code>favorite</code> is <code>true</code>, the button will be disabled, and if it is <code>false</code>, the button will be enabled. Thus, by default, the button is enabled.</p>
+
+<p>The other major thing<a data-type="indexterm" data-primary="() (parentheses), event binding syntax" id="idm139828138059888"></a> we have on the element is this fragment:</p>
+
+<pre data-type="programlisting">(click)="toggleFavorite()"</pre>
+
+<p>This syntax is called <em>event binding</em> in Angular. The left part of the equals symbol refers to the event we are binding to. In this case, it is the <code>click</code> event. Just like how the square-bracket notation refers to data flowing from the component to the UI, the parentheses notation refers to events. And the name between the parentheses is the name of the event we care about.</p>
+
+<p>In this case, we are telling Angular that we are interested in the <code>click</code> event on this element. The right part of the equals symbol then refers to the template statement that Angular should execute whenever the event is triggered. In this case, we want it to execute the new function we created, <code>toggleFavorite</code>.</p>
+
+<p>When we run this application in our browser, we can see the new button. Clicking it would render something like <a data-type="xref" href="#fig0203">Figure 2-3</a>.</p>
+
+<p>Notice the other interesting thing, which is Angular data binding at play. When we click the button, our <code>toggleFavorite</code> function is executed. This flips the value of <code>favorite</code> from <code>false</code> to <code>true</code>. This in turn triggers the other Angular binding, which is the <code>disabled</code> property of the button, thus disabling the button after the first click. We don’t have to do anything extra to get these benefits, which is the beauty of data binding.</p>
+
+<figure><div id="fig0203" class="figure">
+<img src="images/auar_02in03.png" alt="Allow favoriting stocks" />
+<h6><span class="label">Figure 2-3. </span>Handling events in an Angular app</h6>
+</div></figure>
+
+<p>There are times when we might also care about the actual event triggered. In those cases, Angular gives you access to the underlying DOM event by giving access to a special variable <code>$event</code>. You can access it or even pass it to your function as follows:</p>
+
+<pre data-type="programlisting" data-code-language="html" class="pagebreak-before"><code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-container"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"name"</code><code class="nt">&gt;</code>{{name + ' (' + code + ')'}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"price"</code>
+      <code class="err">[</code><code class="na">class</code><code class="err">]="</code><code class="na">positiveChange</code> <code class="err">?</code> <code class="err">'</code><code class="na">positive</code><code class="err">'</code> <code class="na">:</code> <code class="err">'</code><code class="na">negative</code><code class="err">'"</code><code class="nt">&gt;</code>$ {{price}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;button</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">toggleFavorite</code><code class="err">($</code><code class="na">event</code><code class="err">)"</code>
+          <code class="err">[</code><code class="na">disabled</code><code class="err">]="</code><code class="na">favorite</code><code class="err">"</code><code class="nt">&gt;</code>Add to Favorite<code class="nt">&lt;/button&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>In the HTML, we simply add a reference to the variable <code>$event</code>, and pass it in as an argument to our <code>toggleFavorite</code> function. We can now refer to it in our component as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-item'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./stock-item.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./stock-item.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockItemComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">name</code>: <code class="kt">string</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">code</code>: <code class="kt">string</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">price</code>: <code class="kt">number</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">previousPrice</code>: <code class="kt">number</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">positiveChange</code>: <code class="kt">boolean</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">favorite</code>: <code class="kt">boolean</code><code class="p">;</code>
+
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{</code> <code class="p">}</code>
+
+  <code class="nx">ngOnInit() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">name</code> <code class="o">=</code> <code class="s1">'Test Stock Company'</code><code class="p">;</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">code</code> <code class="o">=</code> <code class="s1">'TSC'</code><code class="p">;</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">price</code> <code class="o">=</code> <code class="mi">85</code><code class="p">;</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">previousPrice</code> <code class="o">=</code> <code class="mi">80</code><code class="p">;</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">positiveChange</code> <code class="o">=</code> <code class="k">this</code><code class="p">.</code><code class="nx">price</code> <code class="o">&gt;=</code> <code class="k">this</code><code class="p">.</code><code class="nx">previousPrice</code><code class="p">;</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">favorite</code> <code class="o">=</code> <code class="kc">false</code><code class="p">;</code>
+  <code class="p">}</code>
+
+  <code class="nx">toggleFavorite</code><code class="p">(</code><code class="nx">event</code><code class="p">)</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'We are toggling the favorite state for this stock'</code><code class="p">,</code> <code class="nx">event</code><code class="p">);</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">favorite</code> <code class="o">=</code> <code class="o">!</code><code class="k">this</code><code class="p">.</code><code class="nx">favorite</code><code class="p">;</code>
+  <code class="p">}</code>
+
+<code class="p">}</code></pre>
+
+<p>When you run the application, you will see that when you click the button, your console log now appends the actual <code>MouseEvent</code> that was triggered, in addition to our previous code.</p>
+
+<p>In a similar manner, we can easily hook onto other standard DOM events that are triggered, like <code>focus</code>, <code>blur</code>, <code>submit</code>, and others like them.</p>
+<aside data-type="sidebar" epub:type="sidebar" class="pagebreak-before"><div class="sidebar" id="idm139828137736016">
+<h5>Why Angular Shifted to Property and Event Binding</h5>
+<p>Anyone who has worked on AngularJS would be wondering why the framework developers decided to do such a major breaking change when they created Angular. The binding syntax has changed drastically, as well as the directives and symbols used.<a data-type="indexterm" data-primary="property binding" data-secondary="Angular shift to" id="idm139828137733728"></a><a data-type="indexterm" data-primary="Angular" data-secondary="shift to property and event binding" id="idm139828137732752"></a> In AngularJS, we had <code>ng-bind</code>, <code>ng-src</code>, and the like for binding from our controllers to the UI, and directives like <code>ng-click</code> and <code>ng-submit</code> for handling events.</p>
+
+<p>This meant that any time there was a new event or property that we wanted to bind to in AngularJS, we would end up writing a wrapper directive that would do the work of translating from AngularJS to the inner workings and vice versa.</p>
+
+<p>The other problem with the AngularJS syntax was that there was no clear differentiation between data flowing from our controller to the UI or from the UI to the controller. Both follow the same syntax, which made understanding the HTML sometimes difficult, and required developers to understand each directive first.</p>
+
+<p>In Angular, we instead rely on core DOM properties and events for binding. This means that if a property or event exists as per the HTML standards, we can bind to it. This also makes it very easy to work with web components that expose proper properties and events, as Angular works with them simply out of the box, without needing to write any additional code. This has also made obsolete the tons of AngularJS directives from the past, such as <code>ng-click</code>, <code>ng-submit</code>, and so on, and makes it easier for any web developer to quickly understand and work with Angular. You don’t have to spend as much time learning Angular-specific knowledge.<a data-type="indexterm" data-primary="[] (square brackets), property binding syntax" id="idm139828137726720"></a><a data-type="indexterm" data-primary="() (parentheses), event binding syntax" id="idm139828137725920"></a></p>
+
+<p>Furthermore, the square bracket and parentheses notation also makes it very obvious about the flow of data. Any time you see the square bracket notation, you can be assured that it is data flowing from the component into the HTML. Any time you see the parentheses notation, you are guaranteed that it refers to an event and flows from a user action to the component.<a data-type="indexterm" data-primary="event binding" data-startref="ix_eventbi" id="idm139828137724512"></a><a data-type="indexterm" data-primary="components" data-secondary="event binding" data-startref="ix_compcreb" id="idm139828137723536"></a></p>
+</div></aside>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Using Models for Cleaner Code"><div class="sect2" id="idm139828143383712">
+<h2>Using Models for Cleaner Code</h2>
+
+<p>The last part of this chapter covers something that is more of a best practice, but it is worth adopting—especially as we aim to build large, maintainable web applications using Angular.<a data-type="indexterm" data-primary="interfaces" data-secondary="using for cleaner code" id="ix_interf"></a><a data-type="indexterm" data-primary="components" data-secondary="using interfaces for cleaner code" id="ix_compcrint"></a> We want to use encapsulation to ensure that our components don’t work with lower-level abstractions and properties, like we did previously where the stock widget gets an individual name, price, etc. At the same time, we want to leverage TypeScript to make it easier to understand and reason about our application and its behavior. To this extent, we should ideally model our stock itself as a type in TypeScript, and leverage that instead.</p>
+
+<p>The way we would do it in TypeScript is to define an interface or a class with the definition for what belongs in a stock, and use that consistently throughout our application.<a data-type="indexterm" data-primary="classes" data-secondary="generating TypeScript class on CLI" id="idm139828137717424"></a> In this case, since we might want additional logic in addition to just the values (calculating whether the price differential is positive or not, for example), we can use a class.</p>
+
+<p>We can use the Angular CLI to quickly generate<a data-type="indexterm" data-primary="command-line interface (CLI)" data-secondary="generating a skeleton class on" id="idm139828137715728"></a> a skeleton class for us, by running:</p>
+<pre>
+<strong>ng generate class model/stock</strong>
+</pre>
+
+<p>This will generate an empty skeleton file called <em>stock.ts</em> in a folder called <em>model</em>. We can go ahead and change it as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">export</code> <code class="kr">class</code> <code class="nx">Stock</code> <code class="p">{</code>
+  <code class="nx">favorite</code>: <code class="kt">boolean</code> <code class="o">=</code> <code class="kc">false</code><code class="p">;</code>
+
+  <code class="kr">constructor</code><code class="p">(</code><code class="kr">public</code> <code class="nx">name</code>: <code class="kt">string</code><code class="p">,</code>
+              <code class="kr">public</code> <code class="nx">code</code>: <code class="kt">string</code><code class="p">,</code>
+              <code class="kr">public</code> <code class="nx">price</code>: <code class="kt">number</code><code class="p">,</code>
+              <code class="kr">public</code> <code class="nx">previousPrice</code>: <code class="kt">number</code><code class="p">)</code> <code class="p">{}</code>
+
+  <code class="nx">isPositiveChange</code><code class="p">()</code><code class="o">:</code> <code class="kr">boolean</code> <code class="p">{</code>
+    <code class="k">return</code> <code class="k">this</code><code class="p">.</code><code class="nx">price</code> <code class="o">&gt;=</code> <code class="k">this</code><code class="p">.</code><code class="nx">previousPrice</code><code class="p">;</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>This gives us a nice encapsulation while we work with stocks across our application. Note that we didn’t actually define the variables <code>name</code>, <code>code</code>, and so on as properties of the class. This is because we are using TypeScript’s syntactic sugar to automatically create the corresponding properties based on the constructor arguments by using the <code>public</code> keyword.<a data-type="indexterm" data-primary="classes" data-secondary="documentation on TypeScript classes" id="idm139828137657808"></a> To learn more about TypeScript classes, refer to the <a href="https://www.typescriptlang.org/docs/handbook/classes.html">official documentation</a>. In short, we have created a class with five properties, four coming through the constructor and one autoinitialized. Let’s see how we might use this now in our component:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'../../model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-item'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./stock-item.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./stock-item.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockItemComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">;</code>
+
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{</code> <code class="p">}</code>
+
+  <code class="nx">ngOnInit() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code> <code class="o">=</code> <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Test Stock Company'</code><code class="p">,</code> <code class="s1">'TSC'</code><code class="p">,</code> <code class="mi">85</code><code class="p">,</code> <code class="mi">80</code><code class="p">);</code>
+  <code class="p">}</code>
+
+  <code class="nx">toggleFavorite</code><code class="p">(</code><code class="nx">event</code><code class="p">)</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'We are toggling the favorite state for this stock'</code><code class="p">,</code> <code class="nx">event</code><code class="p">);</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code> <code class="o">=</code> <code class="o">!</code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code><code class="p">;</code>
+  <code class="p">}</code>
+
+<code class="p">}</code></pre>
+
+<p>In <em>stock-item.component.ts</em>, we imported our new model definition at the top, and then replaced all the individual member variables with one variable of type <code>Stock</code>. This simplified the code in the component significantly, and encapsulated all the logic and underlying functionality within a proper TypeScript type. Now let’s see how <em>stock-item.component.html</em> changes to accommodate this change:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-container"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"name"</code><code class="nt">&gt;</code>{{stock.name + ' (' + stock.code + ')'}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"price"</code>
+        <code class="err">[</code><code class="na">class</code><code class="err">]="</code><code class="na">stock</code><code class="err">.</code><code class="na">isPositiveChange</code><code class="err">()</code> <code class="err">?</code> <code class="err">'</code><code class="na">positive</code><code class="err">'</code> <code class="na">:</code> <code class="err">'</code><code class="na">negative</code><code class="err">'"</code><code class="nt">&gt;</code>
+    $ {{stock.price}
+  <code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;button</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">toggleFavorite</code><code class="err">($</code><code class="na">event</code><code class="err">)"</code>
+          <code class="err">[</code><code class="na">disabled</code><code class="err">]="</code><code class="na">stock</code><code class="err">.</code><code class="na">favorite</code><code class="err">"</code><code class="nt">&gt;</code>Add to Favorite<code class="nt">&lt;/button&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>We have made a few changes in the HTML for our stock item. First, most of our references to the variable are now through the <code>stock</code> variable, instead of directly accessing the variables in the component. So <code>name</code> became <code>stock.name</code>, <code>code</code> became <code>stock.code</code>, and so on.</p>
+
+<p>Also, one more thing of note: our <code>class</code> property binding now refers to a function instead of a variable.<a data-type="indexterm" data-primary="property binding" data-secondary="class property (example)" id="idm139828137248912"></a> This is acceptable, as a function is also a valid expression. Angular will just evaluate the function and use its return value to determine the final expression value.<a data-type="indexterm" data-primary="interfaces" data-secondary="using for cleaner code" data-startref="ix_interf" id="idm139828137247648"></a><a data-type="indexterm" data-primary="components" data-secondary="using interfaces for cleaner code" data-startref="ix_compcrint" id="idm139828137246432"></a></p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Conclusion"><div class="sect1" id="idm139828137722064">
+<h1>Conclusion</h1>
+
+<p>In this chapter, we started building our very first Angular application. We learned how to bootstrap our Angular application, as well as understand the various pieces that the Angular skeleton application generates and their needs and uses. We then created our very first component, and looked at the steps involved in hooking it up to our application.</p>
+
+<p>Following that, we added some very basic data to our component, and then used that to understand how basic Angular data binding works, using both interpolation as well as property binding. We then looked at how event binding works, and handled user interactions through it. Finally, we encapsulated some information in a TypeScript class to make our code cleaner and modular.</p>
+
+<p>In the next chapter, we will go through some basic Angular directives that Angular provides out of the box and how it allows us to work with templates in an effective manner.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Exercise"><div class="sect1" id="idm139828137419168">
+<h1>Exercise</h1>
+
+<p>Each chapter will have an optional exercise at the end to reinforce some of the concepts covered in the chapter, as well as give you some time to experiment and try your hand at Angular code. Over the course of the book, we will build on the same exercise and keep adding more features to it.</p>
+
+<p>The finished source code for the exercise is available in the GitHub repository in each chapter’s folder. You can refer to it in case you are stuck or want to compare the final solution. Of course, there are multiple ways to solve every problem, so the solution in the repository is one possible way. You may arrive at a slightly different solution in the course of your attempts.</p>
+
+<p>For the first exercise, try to accomplish the following:</p>
+<ol>
+<li>
+<p>Start a new project to build an ecommerce website.</p>
+</li>
+<li>
+<p>Create a component to display a single product.</p>
+</li>
+<li>
+<p>The product component should display a name, price, and image for the product. You can initialize the component with some defaults for the same. Use any placeholder image you want.</p>
+</li>
+<li>
+<p>Highlight the entire element in a different color if the product is on sale. Whether the product is on sale can be an attribute of the product itself.</p>
+</li>
+<li>
+<p>Add buttons to increase and decrease the quantity of the product in the cart. The quantity in the cart should be visible in the UI. Disable the button if the quantity is already zero.</p>
+</li>
+
+</ol>
+
+<p>All of this can be accomplished using concepts covered in this chapter. You can check out the finished solution in <em>chapter2/exercise/ecommerce</em>.</p>
+</div></section>
+
+
+
+
+
+
+
+</div></section></div>
+</body>
+</html>

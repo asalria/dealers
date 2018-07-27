@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chapter 5. Bend, or Break</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><p><a id="ch05"></a><a id="page_137"></a></p>
+<h2 id="title-IDAOVU0" class="docChapterTitle">Chapter 5<br/><br/>Bend, or Break</h2>
+<p class="docText">Life doesn't stand still.</p>
+<p class="docText">Neither can the code that we write. In order to keep up with today's near-frantic pace of change, we need to make every effort to write code that's as loose—as flexible—as possible. Otherwise we may find our code quickly becoming outdated, or too brittle to fix, and may ultimately be left behind in the mad dash toward the future.</p>
+<p class="docText">In <a href="ch02.html#ch02lev1sec3"><em>Reversibility</em></a>, on page <a href="ch02.html#page_44">44</a>, we talked about the perils of irreversible decisions. In this chapter, we'll tell you how to make <em>reversible</em> decisions, so your code can stay flexible and adaptable in the face of an uncertain world.</p>
+<p class="docText">First we need to look at <em>coupling</em>—the dependencies among modules of code. In <em>Decoupling and the Law of Demeter</em> we'll show how to keep separate concepts separate, and decrease coupling.</p>
+<p class="docText">A good way to stay flexible is to write <em>less</em> code. Changing code leaves you open to the possibility of introducing new bugs. <em>Metaprogramming</em> will explain how to move details out of the code completely, where they can be changed more safely and easily.</p>
+<p class="docText">In <em>Temporal Coupling,</em> we'll look at two aspects of time as they relate to coupling. Do you depend on the "tick" coming before the "tock"? Not if you want to stay flexible.</p>
+<p class="docText">A key concept in creating flexible code is the separation of a data <em>model</em> from a <em>view,</em> or presentation, of that model. We'll decouple models from views in <em>It's Just a View.</em></p>
+<p class="docText"><a id="page_138"></a>Finally, there's a technique for decoupling modules even further by providing a meeting place where modules can exchange data anonymously and asynchronously. This is the topic of <em>Blackboards.</em></p>
+<p class="docText">Armed with these techniques, you can write code that will "roll with the punches."</p>
+<p class="docText"><a id="ch05lev1sec1"></a></p>
+<h3 id="title-IDAOXU0" class="docSection1Title">26. Decoupling and the Law of Demeter</h3>
+<p class="blockquote"><em>Good fences make good neighbors.</em></p>
+<p class="attribution">• <strong>Robert Frost, "Mending Wall"</strong></p>
+<p class="docText">In <a href="ch02.html#ch02lev1sec2"><em>Orthogonality</em></a>, page <a href="ch02.html#page_34">34</a>, and <a href="ch04.html#ch04lev1sec1"><em>Design by Contract</em></a>, page <a href="ch04.html#page_109">109</a>, we suggested that writing "shy" code is beneficial. But "shy" works two ways: don't reveal yourself to others, and don't interact with too many people.</p>
+<p class="docText">Spies, dissidents, revolutionaries, and such are often organized into small groups of people called <em>cells.</em> Although individuals in each cell may know each other, they have no knowledge of those in other cells. If one cell is discovered, no amount of truth serum will reveal the names of others outside the cell. Eliminating interactions between cells protects everyone.</p>
+<p class="docText">We feel that this is a good principle to apply to coding as well. Organize your code into cells (modules) and limit the interaction between them. If one module then gets compromised and has to be replaced, the other modules should be able to carry on.</p>
+<p class="docText"><a id="ch05lev2sec1"></a></p>
+<h4 id="title-IDAVYU0" class="docSection2Title">Minimize Coupling</h4>
+<p class="docText">What's wrong with having modules that know about each other? Nothing in principle—we don't need to be as paranoid as spies or dissidents. However, you do need to be careful about <em>how many</em> other modules you interact with and, more importantly, <em>how</em> you came to interact with them.</p>
+<p class="docText">Suppose you are remodeling your house, or building a house from scratch. A typical arrangement involves a "general contractor." You hire the contractor to get the work done, but the contractor may or may <a id="page_139"></a>not do the construction personally; the work may be offered to various subcontractors. But as the client, you are not involved in dealing with the subcontractors directly—the general contractor assumes that set of headaches on your behalf.</p>
+<p class="docText">We'd like to follow this same model in software. When we ask an object for a particular service, we'd like the service to be performed on our behalf. We <em>do not</em> want the object to give us a third-party object that we have to deal with to get the required service.</p>
+<p class="docText">For example, suppose you are writing a class that generates a graph of scientific recorder data. You have data recorders spread around the world; each recorder object contains a location object giving its position and time zone. You want to let your users select a recorder and plot its data, labeled with the correct time zone. You might write</p>
+<p class="progimage"><img src="images/p0139-01.jpg" alt="image" /></p>
+<p class="docText">But now the plotting routine is unnecessarily coupled to <em>three</em> classes—
+<code>Selection</code>, <code>Recorder</code>, and <code>Location</code>. This style of coding dramatically increases the number of classes on which our class depends. Why is this a bad thing? It increases the risk that an unrelated change somewhere else in the system will affect <em>your</em> code. For instance, if Fred makes a change to <code>Location</code> such that it no longer directly contains a <code>TimeZone,</code> you have to change your code as well.</p>
+<p class="docText">Rather than digging though a hierarchy yourself, just ask for what you need directly:</p>
+<p class="progimage"><img src="images/p0139-02.jpg" alt="image" /></p>
+<p class="docText">We added a method to <code>Selection</code> to get the time zone on our behalf: the plotting routine doesn't care whether the time zone comes from the <code>Recorder</code> directly, from some contained object within <code>Recorder</code>, or whether <code>Selection</code> makes up a different time zone entirely. The selection routine, in turn, should probably just ask the recorder for its time zone, leaving it up to the recorder to get it from its contained <code>Location</code> object.</p>
+<p class="docText"><a id="page_140"></a>Traversing relationships between objects directly can quickly lead to a combinatorial explosion<sup><a href="#ch05fn01">[1]</a></sup> of dependency relationships. You can see symptoms of this phenomenon in a number of ways:</p>
+<p class="docFootnote"><sup><a id="ch05fn01">[1]</a></sup> If <em>n</em> objects all know about each other, then a change to just one object can result in the other <em>n</em> – <strong>1</strong> objects needing changes.</p>
+<ol>
+<li>Large C or C++ projects where the command to link a unit test is longer than the test program itself</li>
+<li>"Simple" changes to one module that propagate through unrelated modules in the system</li>
+<li>Developers who are afraid to change code because they aren't sure what might be affected</li>
+</ol>
+<p class="docText">Systems with many unnecessary dependencies are very hard (and expensive) to maintain, and tend to be highly unstable. In order to keep the dependencies to a minimum, we'll use the <em>Law of Demeter</em> to design our methods and functions.</p>
+<p class="docText"><a id="ch05lev2sec2"></a></p>
+<h4 id="title-IDAW2U0" class="docSection2Title">The Law of Demeter for Functions</h4>
+<p class="docText">The Law of Demeter for functions [<a href="app01.html#lh89">LH89</a>] attempts to minimize coupling between modules in any given program. It tries to prevent you from reaching into an object to gain access to a third object's methods. The law is summarized in <a href="#ch05fig01">Figure 5.1</a> on the next page.</p>
+<p class="docText"><a id="ch05fig01"></a></p>
+<p class="docFigureTitle">Figure 5.1. Law of Demeter for functions</p>
+<p class="image"><img src="images/f05fig01.gif" alt="image" /></p>
+<p class="docText">By writing "shy" code that honors the Law of Demeter as much as possible, we can achieve our objective:</p>
+<p class="docNoteTitle">Tip 36</p>
+<p class="note"><a href="app03.html#id1e9044">Minimize Coupling Between Modules</a></p>
+<p class="docText"><a id="ch05lev2sec3"></a></p>
+<h4 id="title-IDAF4U0" class="docSection2Title">Does It Really Make a Difference?</h4>
+<p class="docText">While it sounds good in theory, does following the Law of Demeter really help to create more maintainable code?</p>
+<p class="docText">Studies have shown [<a href="app01.html#bbm96">BBM96</a>] that classes in C++ with larger <em>response sets</em> are more prone to error than classes with smaller response sets (a <a id="page_141"></a><em>response set</em> is defined to be the number of functions directly invoked by methods of the class).</p>
+<p class="docText">Because following the Law of Demeter reduces the size of the response set in the calling class, it follows that classes designed in this way will also tend to have fewer errors (see [<a href="app01.html#app01lev3sec56">URL 56</a>] for more papers and information on the Demeter project).</p>
+<p class="docText">Using The Law of Demeter will make your code more adaptable and robust, but at a cost: as a "general contractor," your module must delegate and manage any and all subcontractors directly, without involving clients of your module. In practice, this means that you will be writing a large number of wrapper methods that simply forward the request on to a delegate. These wrapper methods will impose both a runtime cost and a space overhead, which may be significant—even prohibitive—in some applications.</p>
+<p class="docText">As with any technique, you must balance the pros and cons for <em>your</em> particular application. In database schema design it is common practice to "denormalize" the schema for a performance improvement: to <a id="page_142"></a>violate the rules of normalization in exchange for speed. A similar tradeoff can be made here as well. In fact, by reversing the Law of Demeter and <em>tightly</em> coupling several modules, you may realize an important performance gain. As long as it is well known and acceptable for those modules to be coupled, your design is fine.</p>
+<div class="sidebar1">
+<p class="docSidebarTitle">Physical Decoupling</p>
+<p class="sidebar">In this section we're concerned largely with designing to keep things logically decoupled within systems. However, there is another kind of interdependence that becomes highly significant as systems grow larger. In his book <em>Large-Scale C++ Software Design</em> [<a href="app01.html#lak96">Lak96</a>], John Lakos addresses the issues surrounding the relationships among the files, directories, and libraries that make up a system. Large projects that ignore these <em>physical design</em> problems wind up with build cycles that are measured in days and unit tests that may drag in the entire system as support code, among other problems. Mr. Lakos argues convincingly that logical and physical design must proceed in tandem—that undoing the damage done to a large body of code by cyclic dependencies is extremely difficult. We recommend this book if you are involved in large-scale developments, even if C++ isn't your implementation language.</p>
+</div>
+<p class="docText">Otherwise, you may find yourself on the road to a brittle, inflexible future. Or no future at all.</p>
+<p class="docText"><a id="ch05lev3sec1"></a></p>
+<h5 id="title-IDALAV0" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch02.html#ch02lev1sec2"><em>Orthogonality</em></a>, page <a href="ch02.html#page_34">34</a></li>
+<li><a href="ch02.html#ch02lev1sec3"><em>Reversibility</em></a>, page <a href="ch02.html#page_44">44</a></li>
+<li><a href="ch04.html#ch04lev1sec1"><em>Design by Contract</em></a>, page <a href="ch04.html#page_109">109</a></li>
+<li><a href="ch04.html#ch04lev1sec5"><em>How to Balance Resources</em></a>, page <a href="ch04.html#page_129">129</a></li>
+<li><a href="ch05.html#ch05lev1sec4"><em>It's Just a View</em></a>, page <a href="ch05.html#page_157">157</a></li>
+<li><a href="ch08.html#ch08lev1sec1"><em>Pragmatic Teams</em></a>, page <a href="ch08.html#page_224">224</a></li>
+<li><a href="ch08.html#ch08lev1sec3"><em>Ruthless Testing</em></a>, page <a href="ch08.html#page_237">237</a></li>
+</ul>
+<p class="docText"><a id="ch05lev3sec2"></a></p>
+<h5 id="title-IDAECV0" class="docSection3Title">Challenges</h5>
+<ul>
+<li>We've discussed how using delegation makes it easier to obey the Law of Demeter and hence reduce coupling. However, writing all of the methods <a id="page_143"></a>needed to forward calls to delegated classes is boring and error prone. What are the advantages and disadvantages of writing a preprocessor that generates these calls automatically? Should this preprocessor be run only once, or should it be used as part of the build?</li>
+</ul>
+<p class="docText"><a id="ch05lev2sec4"></a></p>
+<h4 id="title-IDAXCV0" class="docSection2Title">Exercises</h4>
+<p class="docText1"><a id="ch05que01"></a><strong><a href="app02.html#ch05ans01">24</a>.</strong> We discussed the concept of physical decoupling in the box on on the facing page. Which of the following C++ header files is more tightly coupled to the rest of the system?</p>
+<p class="image1"><img src="images/143tab01.jpg" alt="image" /></p>
+<p class="docText1"><a id="ch05que02"></a><strong><a href="app02.html#ch05ans02">25</a>.</strong> For the example below and for those in Exercises 26 and 27, determine if the method calls shown are allowed according to the Law of Demeter. This first one is in Java.</p>
+<p class="progimage1"><img src="images/p0143-02.jpg" alt="image" /></p>
+<p class="docText1"><a id="ch05que03"></a><strong><a href="app02.html#ch05ans03">26</a>.</strong> This example is also in Java.</p>
+<p class="progimage1"><img src="images/p0143-03.jpg" alt="image" /></p>
+<p class="docText1"><a id="ch05que04"></a><strong><a href="app02.html#ch05ans04">27</a>.</strong> This example is in C++.</p>
+<p class="progimage1"><img src="images/p0143-04.jpg" alt="image" /></p>
+<p class="docText"><a id="ch05lev1sec2"></a><a id="page_144"></a></p>
+<h3 id="title-IDAVJV0" class="docSection1Title">27. Metaprogramming</h3>
+<p class="blockquote"><em>No amount of genius can overcome a preoccupation with detail</em></p>
+<p class="attribution">• <strong>Levy's Eighth Law</strong></p>
+<p class="docText">Details mess up our pristine code—especially if they change frequently. Every time we have to go in and change the code to accommodate some change in business logic, or in the law, or in management's personal tastes of the day, we run the risk of breaking the system—of introducing a new bug.</p>
+<p class="docText">So we say "out with the details!" Get them out of the code. While we're at it, we can make our code highly configurable and "soft"—that is, easily adaptable to changes.</p>
+<p class="docText"><a id="ch05lev2sec5"></a></p>
+<h4 id="title-IDAWKV0" class="docSection2Title">Dynamic Configuration</h4>
+<p class="docText">First, we want to make our systems highly configurable. Not just things such as screen colors and prompt text, but deeply ingrained items such as the choice of algorithms, database products, middleware technology, and user-interface style. These items should be implemented as configuration options, not through integration or engineering.</p>
+<p class="docNoteTitle">Tip 37</p>
+<p class="note"><a href="app03.html#id1e9366">Configure, Don't Integrate</a></p>
+<p class="docText">Use <em>metadata</em> to describe configuration options for an application: tuning parameters, user preferences, the installation directory, and so on.</p>
+<p class="docText">What exactly is metadata? Strictly speaking, metadata is data about data. The most common example is probably a database schema or data dictionary. A schema contains data that describes fields (columns) in terms of names, storage lengths, and other attributes. You should be able to access and manipulate this information just as you would any other data in the database.</p>
+<p class="docText">We use the term in its broadest sense. Metadata is any data that describes the application—how it should run, what resources it should use, and so on. Typically, metadata is accessed and used at runtime, not at compile time. You use metadata all the time—at least your programs do. Suppose you click on an option to hide the toolbar on your <a id="page_145"></a>Web browser. The browser will store that preference, as metadata, in some sort of internal database.</p>
+<p class="docText">This database might be in a proprietary format, or it might use a standard mechanism. Under Windows, either an initialization file (using the suffix <code>.ini</code>) or entries in the system Registry are typical. Under Unix, the X Window System provides similar functionality using Application Default files. Java uses Property files. In all of these environments, you specify a key to retrieve a value. Alternatively, more powerful and flexible implementations of metadata use an embedded scripting language (see <a href="ch02.html#ch02lev1sec6"><em>Domain Languages</em></a>, page <a href="ch02.html#page_57">57</a>, for details).</p>
+<p class="docText">The Netscape browser has actually implemented preferences using both of these techniques. In Version 3, preferences were saved as simple key/value pairs:</p>
+<p class="programlisting">          SHOW_TOOLBAR: False</p>
+<p class="docText">Later, Version 4 preferences looked more like JavaScript:</p>
+<p class="programlisting">          user_pref("custtoolbar.Browser.Navigation_Toolbar.open", false);<br/></p>
+<p class="docText"><a id="ch05lev2sec6"></a></p>
+<h4 id="title-IDATMV0" class="docSection2Title">Metadata-Driven Applications</h4>
+<p class="docText">But we want to go beyond using metadata for simple preferences. We want to configure and drive the application via metadata as much as possible. Our goal is to think declaratively (specifying <em>what</em> is to be done, not <em>how</em>) and create highly dynamic and adaptable programs. We do this by adopting a general rule: program for the general case, and put the specifics somewhere else—outside the compiled code base.</p>
+<p class="docNoteTitle">Tip 38</p>
+<p class="note"><a href="app03.html#id1e9425">Put Abstractions in Code, Details in Metadata</a></p>
+<p class="docText">There are several benefits to this approach:</p>
+<ul>
+<li>It forces you to decouple your design, which results in a more flexible and adaptable program.</li>
+<li>It forces you to create a more robust, abstract design by deferring details—deferring them all the way out of the program.</li>
+<li><a id="page_146"></a>You can customize the application without recompiling it. You can also use this level of customization to provide easy work-arounds for critical bugs in live production systems.</li>
+<li>Metadata can be expressed in a manner that's much closer to the problem domain than a general-purpose programming language might be (see <a href="ch02.html#ch02lev1sec6"><em>Domain Languages</em></a>, page <a href="ch02.html#page_57">57</a>).</li>
+<li>You may even be able to implement several different projects using the same application engine, but with different metadata.</li>
+</ul>
+<p class="docText">We want to defer definition of most details until the last moment, and leave the details as soft—as easy to change—as we can. By crafting a solution that allows us to make changes quickly, we stand a better chance of coping with the flood of directional shifts that swamp many projects (see <a href="ch02.html#ch02lev1sec3"><em>Reversibility</em></a>, page <a href="ch02.html#page_44">44</a>).</p>
+<p class="docText"><a id="ch05lev3sec3"></a></p>
+<h5 id="title-IDAZOV0" class="docSection3Title">Business Logic</h5>
+<p class="docText">So you've made the choice of database engine a configuration option, and provided metadata to determine the user-interface style. Can we do more? Definitely.</p>
+<p class="docText">Because business policy and rules are more likely to change than any other aspect of the project, it makes sense to maintain them in a very flexible format.</p>
+<p class="docText">For example, your purchasing application may include various corporate policies. Maybe you pay small suppliers in 45 days and large ones in 90 days. Make the definitions of the supplier types, as well as the time periods themselves, configurable. Take the opportunity to generalize.</p>
+<p class="docText">Maybe you are writing a system with horrendous workflow requirements. Actions start and stop according to complex (and changing) business rules. Consider encoding them in some kind of rule-based (or expert) system, embedded within your application. That way, you'll configure it by writing rules, not cutting code.</p>
+<p class="docText">Less complex logic can be expressed using a mini-language, removing the need to recompile and redeploy when the environment changes. Have a look at page <a href="ch02.html#page_58">58</a> for an example.</p>
+<p class="docText"><a id="page_147"></a></p>
+<div class="sidebar1">
+<p class="docSidebarTitle">When to Configure</p>
+<p class="sidebar">As mentioned in <a href="ch03.html#ch03lev1sec1"><em>The Power of Plain Text</em></a>, page <a href="ch03.html#page_73">73</a>, we recommend representing configuration metadata in plain text—it makes life that much easier.</p>
+<p class="sidebar">But when should a program read this configuration? Many programs will scan such things only at startup, which is unfortunate. If you need to change the configuration, this forces you to restart the application. A more flexible approach is to write programs that can reload their configuration while they're running. This flexibility comes at a cost: it is more complex to implement.</p>
+<p class="sidebar">So consider how your application will be used: if it is a long-running server process, you will want to provide some way to reread and apply metadata while the program is running. For a small client GUI application that restarts quickly, you may not need to.</p>
+<p class="sidebar">This phenomenon is not limited to application code. We've all been annoyed at operating systems that force us to reboot when we install some simple application or change an innocuous parameter.</p>
+</div>
+<p class="docText"><a id="ch05lev2sec7"></a></p>
+<h4 id="title-IDAHQV0" class="docSection2Title">An Example: Enterprise Java Beans</h4>
+<p class="docText">Enterprise Java Beans (EJB) is a framework for simplifying programming in a distributed, transaction-based environment. We mention it here because EJB illustrates how metadata can be used both to configure applications <em>and</em> to reduce the complexity of writing code.</p>
+<p class="docText">Suppose you want to create some Java software that will participate in transactions across different machines, between different database vendors, and with different thread and load-balancing models.</p>
+<p class="docText">The good news is, you don't have to worry about all that. You write a <em>bean</em>—a self-contained object that follows certain conventions—and place it in a <em>bean container</em> that manages much of the low-level detail on your behalf. You can write the code for a bean without including any transaction operations or thread management; EJB uses metadata to specify how transactions should be handled.</p>
+<p class="docText">Thread allocation and load balancing are specified as metadata to the underlying transaction service that the container uses. This separation <a id="page_148"></a>allows us great flexibility to configure the environment dynamically, at runtime.</p>
+<p class="docText">The bean's container can manage transactions on the bean's behalf in one of several different styles (including an option where you control your own commits and rollbacks). All of the parameters that affect the bean's behavior are specified in the bean's <em>deployment descriptor</em>—a serialized object that contains the metadata we need.</p>
+<p class="docText">Distributed systems such as EJB are leading the way into a new world of configurable, dynamic systems.</p>
+<p class="docText"><a id="ch05lev3sec4"></a></p>
+<h5 id="title-IDAPRV0" class="docSection3Title">Cooperative Configuration</h5>
+<p class="docText">We've talked about users and developers configuring dynamic applications. But what happens if you let applications configure each other—software that adapts itself to its environment? Unplanned, spur-of-the-moment configuration of existing software is a powerful concept.</p>
+<p class="docText">Operating systems already configure themselves to hardware as they boot, and Web browsers update themselves with new components automatically.</p>
+<p class="docText">Your larger applications probably already have issues with handling different versions of data and different releases of libraries and operating systems. Perhaps a more dynamic approach will help.</p>
+<p class="docText"><a id="ch05lev2sec8"></a></p>
+<h4 id="title-IDADSV0" class="docSection2Title">Don't Write Dodo-Code</h4>
+<p class="docText">Without metadata, your code is not as adaptable or flexible as it could be. Is this a bad thing? Well, out here in the real world, species that don't adapt die.</p>
+<p class="docText">The dodo didn't adapt to the presence of humans and their livestock on the island of Mauritius, and quickly became extinct.<sup><a href="#ch05fn02">[2]</a></sup> It was the first documented extinction of a species at the hand of man.</p>
+<p class="docFootnote"><sup><a id="ch05fn02">[2]</a></sup> It didn't help that the settlers beat the placid (read <em>stupid</em>) birds to death with clubs for sport.</p>
+<p class="docText">Don't let your project (or your career) go the way of the dodo.</p>
+<p class="docText"><a id="ch05lev3sec5"></a><a id="page_149"></a></p>
+<h5 id="title-IDA1SV0" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch02.html#ch02lev1sec2"><em>Orthogonality</em></a>, page <a href="ch02.html#page_34">34</a></li>
+<li><a href="ch02.html#ch02lev1sec3"><em>Reversibility</em></a>, page <a href="ch02.html#page_44">44</a></li>
+<li><a href="ch02.html#ch02lev1sec6"><em>Domain Languages</em></a>, page <a href="ch02.html#page_57">57</a></li>
+<li><a href="ch03.html#ch03lev1sec1"><em>The Power of Plain Text</em></a>, page <a href="ch03.html#page_73">73</a></li>
+</ul>
+<p class="docText"><a id="ch05lev3sec6"></a></p>
+<h5 id="title-IDACUV0" class="docSection3Title">Challenges</h5>
+<ul>
+<li>For your current project, consider how much of the application might be moved out of the program itself to metadata. What would the resultant "engine" look like? Would you be able to reuse that engine in the context of a different application?</li>
+</ul>
+<p class="docText"><a id="ch05lev2sec9"></a></p>
+<h4 id="title-IDAVUV0" class="docSection2Title">Exercises</h4>
+<p class="docText1"><a id="ch05que05"></a><strong><a href="app02.html#ch05ans05">28</a>.</strong> Which of the following things would be better represented as code within a program, and which externally as metadata?</p>
+<ol>
+<li>Communication port assignments</li>
+<li>An editor's support for highlighting the syntax of various languages</li>
+<li>An editor's support for different graphic devices</li>
+<li>A state machine for a parser or scanner</li>
+<li>Sample values and results for use in unit testing</li>
+</ol>
+<p class="docText"><a id="ch05lev1sec3"></a><a id="page_150"></a></p>
+<h3 id="title-IDAGWV0" class="docSection1Title">28. Temporal Coupling</h3>
+<p class="docText">What is <em>temporal coupling</em> all about, you may ask. It's about time.</p>
+<p class="docText">Time is an often ignored aspect of software architectures. The only time that preoccupies us is the time on the schedule, the time left until we ship—but this is not what we're talking about here. Instead, we are talking about the role of time as a design element of the software itself. There are two aspects of time that are important to us: concurrency (things happening at the same time) and ordering (the relative positions of things in time).</p>
+<p class="docText">We don't usually approach programming with either of these aspects in mind. When people first sit down to design an architecture or write a program, things tend to be linear. That's the way most people think—<em>do this</em> and then always <em>do that.</em> But thinking this way leads to <em>temporal coupling</em>: coupling in time. Method A must always be called before method B; only one report can be run at a time; you must wait for the screen to redraw before the button click is received. Tick must happen before tock.</p>
+<p class="docText">This approach is not very flexible, and not very realistic.</p>
+<p class="docText">We need to allow for concurrency<sup><a href="#ch05fn03">[3]</a></sup> and to think about decoupling any time or order dependencies. In doing so, we can gain flexibility and reduce any time-based dependencies in many areas of development: workflow analysis, architecture, design, and deployment.</p>
+<p class="docFootnote"><sup><a id="ch05fn03">[3]</a></sup> We won't go into the details of concurrent or parallel programming here; a good computer science textbook should cover the basics, including scheduling, deadlock, starvation, mutual exclusion/semaphores, and so on.</p>
+<p class="docText"><a id="ch05lev2sec10"></a></p>
+<h4 id="title-IDAPXV0" class="docSection2Title">Workflow</h4>
+<p class="docText">On many projects, we need to model and analyze the users' workflows as part of requirements analysis. We'd like to find out what <em>can</em> happen at the same time, and what must happen in a strict order. One way to do this is to capture their description of workflow using a notation such as the <em>UML activity diagram.</em><sup><a href="#ch05fn04">[4]</a></sup></p>
+<p class="docFootnote"><sup><a id="ch05fn04">[4]</a></sup> For more information on all of the UML diagram types, see [FS97].</p>
+<p class="docText"><a id="page_151"></a>An activity diagram consists of a set of actions drawn as rounded boxes. The arrow leaving an action leads to either another action (which can start once the first action completes) or to a thick line called a <em>synchronization bar.</em> Once <em>all</em> the actions leading into a synchronization bar are complete, you can then proceed along any arrows leaving the bar. An action with no arrows leading into it can be started at any time.</p>
+<p class="docText">You can use activity diagrams to maximize parallelism by identifying activities that <em>could be</em> performed in parallel, but aren't.</p>
+<p class="docNoteTitle">Tip 39</p>
+<p class="note"><a href="app03.html#id1e9736">Analyze Workflow to Improve Concurrency</a></p>
+<p class="docText">For instance, in our blender project (Exercise 17, page <a href="ch04.html#page_119">119</a>), users may initially describe their current workflow as follows.</p>
+<ol>
+<li>Open blender</li>
+<li>Open piña colada mix</li>
+<li>Put mix in blender</li>
+<li>Measure 1/2 cup white rum</li>
+<li>Pour in rum</li>
+<li>Add 2 cups of ice</li>
+<li>Close blender</li>
+<li>Liquefy for 2 minutes</li>
+<li>Open blender</li>
+<li>Get glasses</li>
+<li>Get pink umbrellas</li>
+<li>Serve</li>
+</ol>
+<p class="docText">Even though they describe these actions serially, and may even perform them serially, we notice that many of them could be performed in parallel, as we show in the activity diagram in <a href="#ch05fig02">Figure 5.2</a> on the next page.</p>
+<p class="docText"><a id="ch05fig02"></a></p>
+<p class="docFigureTitle">Figure 5.2. UML activity diagram: making a piña colada</p>
+<p class="image"><img src="images/f05fig02.gif" alt="image" /></p>
+<p class="docText">It can be eye-opening to see where the dependencies really exist. In this instance, the top-level tasks (1, 2, 4, 10, and 11) can all happen concurrently, up front. Tasks 3, 5, and 6 can happen in parallel later.</p>
+<p class="docText">If you were in a piña colada-making contest, these optimizations may make all the difference.</p>
+<p class="docText"><a id="ch05lev2sec11"></a><a id="page_152"></a></p>
+<h4 id="title-IDAU2V0" class="docSection2Title">Architecture</h4>
+<p class="docText">We wrote an On-Line Transaction Processing (OLTP) system a few years ago. At its simplest, all the system had to do was read a request and process the transaction against the database. But we wrote a three-tier, multiprocessing distributed application: each component was an independent entity that ran concurrently with all other components. While this sounds like more work, it wasn't: taking advantage of temporal decoupling made it <em>easier</em> to write. Let's take a closer look at this project.</p>
+<p class="docText">The system takes in requests from a large number of data communication lines and processes transactions against a back-end database.</p>
+<p class="docText">The design addresses the following constraints:</p>
+<ul>
+<li><a id="page_153"></a>Database operations take a relatively long time to complete.</li>
+<li>For each transaction, we must not block communication services while a database transaction is being processed.</li>
+<li>Database performance suffers with too many concurrent sessions.</li>
+<li>Multiple transactions are in progress concurrently on each data line.</li>
+</ul>
+<p class="docText">The solution that gave us the best performance and cleanest architecture looked something like <a href="#ch05fig03">Figure 5.3</a>.</p>
+<p class="docText"><a id="ch05fig03"></a></p>
+<p class="docFigureTitle">Figure 5.3. OLTP architecture overview</p>
+<p class="image"><img src="images/f05fig03.gif" alt="image" /></p>
+<p class="docText">Each box represents a separate process; processes communicate via work queues. Each input process monitors one incoming communication line, and makes requests to the application server. All requests are asynchronous: as soon as the input process makes its current request, it goes back to monitoring the line for more traffic. Similarly, the application server makes requests of the database process,<sup><a href="#ch05fn05">[5]</a></sup> and is notified when the individual transaction is complete.</p>
+<p class="docFootnote"><sup><a id="ch05fn05">[5]</a></sup> Even though we show the database as a single, monolithic entity, it is not. The database software is partitioned into several processes and client threads, but this is handled internally by the database software and isn't part of our example.</p>
+<p class="docText">This example also shows a way to get quick and dirty load balancing among multiple consumer processes: the <em>hungry consumer</em> model.</p>
+<p class="docText"><a id="page_154"></a>In a hungry consumer model, you replace the central scheduler with a number of independent consumer tasks and a centralized work queue. Each consumer task grabs a piece from the work queue and goes on about the business of processing it. As each task finishes its work, it goes back to the queue for some more. This way, if any particular task gets bogged down, the others can pick up the slack, and each individual component can proceed at its own pace. Each component is temporally decoupled from the others.</p>
+<p class="docNoteTitle">Tip 40</p>
+<p class="note"><a href="app03.html#id1e9887">Design Using Services</a></p>
+<p class="docText">Instead of components, we have really created <em>services</em>—independent, concurrent objects behind well-defined, consistent interfaces.</p>
+<p class="docText"><a id="ch05lev2sec12"></a></p>
+<h4 id="title-IDAQ5V0" class="docSection2Title">Design for Concurrency</h4>
+<p class="docText">The rising acceptance of Java as a platform has exposed more developers to multithreaded programming. But programming with threads imposes some design constraints—and that's a good thing. Those constraints are actually so helpful that we want to abide by them whenever we program. It will help us decouple our code and fight <a href="ch06.html#ch06lev1sec1"><em>programming by coincidence</em></a> (see page <a href="ch06.html#page_172">172</a>).</p>
+<p class="docText">With linear code, it's easy to make assumptions that lead to sloppy programming. But concurrency forces you to think through things a bit more carefully—you're not alone at the party anymore. Because things can now happen at the "same time," you may suddenly see some time-based dependencies.</p>
+<p class="docText">To begin with, any global or static variables must be protected from concurrent access. Now may be a good time to ask yourself <em>why</em> you need a global variable in the first place. In addition, you need to make sure that you present consistent state information, regardless of the order of calls. For example, when is it valid to query the state of your object? If your object is in an invalid state between certain calls, you may be relying on a coincidence that no one can call your object at that point in time.</p>
+<p class="docText"><a id="page_155"></a>Suppose you have a windowing subsystem where the widgets are first created and then shown on the display in two separate steps. You aren't allowed to set state in the widget until it is shown. Depending on how the code is set up, you may be relying on the fact that no other object can use the created widget until you've shown it on the screen.</p>
+<p class="docText">But this may not be true in a concurrent system. Objects must always be in a valid state when called, and they can be called at the most awkward times. You must ensure that an object is in a valid state <em>any</em> time it could possibly be called. Often this problem shows up with classes that define separate constructor and initialization routines (where the constructor doesn't leave the object in an initialized state). Using class invariants, discussed in <a href="ch04.html#ch04lev1sec1"><em>Design by Contract</em></a>, page <a href="ch04.html#page_109">109</a>, will help you avoid this trap.</p>
+<p class="docText"><a id="ch05lev3sec7"></a></p>
+<h5 id="title-IDA1AW0" class="docSection3Title">Cleaner Interfaces</h5>
+<p class="docText">Thinking about concurrency and time-ordered dependencies can lead you to design cleaner interfaces as well. Consider the C library routine <code>strtok</code>, which breaks a string into tokens.</p>
+<p class="docText">The design of <code>strtok</code> isn't thread safe,<sup><a href="#ch05fn06">[6]</a></sup> but that isn't the worst part: look at the time dependency. You must make the first call to <code>strtok</code> with the variable you want to parse, and all successive calls with a <code>NULL</code> instead. If you pass in a non-<code>NULL</code> value, it restarts the parse on that buffer instead. Without even considering threads, suppose you wanted to use <code>strtok</code> to parse two separate strings at the same time:</p>
+<p class="docFootnote"><sup><a id="ch05fn06">[6]</a></sup> It uses static data to maintain the current position in the buffer. The static data isn't protected against concurrent access, so it isn't thread safe. In addition, it clobbers the first argument you pass in, which can lead to some nasty surprises.</p>
+<p class="progimage"><img src="images/p0155-01.jpg" alt="image" /></p>
+<p class="docText"><a id="page_156"></a>The code as shown will not work: there is implicit state retained in <code>strtok</code> between calls. You have to use <code>strtok</code> on just one buffer at a time.</p>
+<p class="docText">Now in Java, the design of a string parser has to be different. It must be thread safe and present a consistent state.</p>
+<p class="progimage"><img src="images/p0156-01.jpg" alt="image" /></p>
+<p class="docText"><code>StringTokenizer</code> is a much cleaner, more maintainable, interface. It contains no surprises, and won't cause mysterious bugs in the future, as <code>strtok</code> might.</p>
+<p class="docNoteTitle">Tip 41</p>
+<p class="note"><a href="app03.html#id1e10035">Always Design for Concurrency</a></p>
+<p class="docText"><a id="ch05lev2sec13"></a></p>
+<h4 id="title-IDAJEW0" class="docSection2Title">Deployment</h4>
+<p class="docText">Once you've designed an architecture with an element of concurrency, it becomes easier to think about handling <em>many</em> concurrent services: the model becomes pervasive.</p>
+<p class="docText">Now you can be flexible as to how the application is deployed: standalone, client-server, or <em>n</em>-tier. By architecting your system as independent services, you can make the configuration dynamic as well. By planning for concurrency, and decoupling operations in time, you have all these options—including the stand-alone option, where you can choose <em>not</em> to be concurrent.</p>
+<p class="docText">Going the other way (trying to add concurrency to a nonconcurrent application) is <em>much</em> harder. If we design to allow for concurrency, we can more easily meet scalability or performance requirements when the time comes—and if the time never comes, we still have the benefit of a cleaner design.</p>
+<p class="docText">Isn't it about time?</p>
+<p class="docText"><a id="ch05lev3sec8"></a><a id="page_157"></a></p>
+<h5 id="title-IDAKFW0" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch04.html#ch04lev1sec1"><em>Design by Contract</em></a>, page <a href="ch04.html#page_109">109</a></li>
+<li><a href="ch06.html#ch06lev1sec1"><em>Programming by Coincidence</em></a>, page <a href="ch06.html#page_172">172</a></li>
+</ul>
+<p class="docText"><a id="ch05lev3sec9"></a></p>
+<h5 id="title-IDAFGW0" class="docSection3Title">Challenges</h5>
+<ul>
+<li>How many tasks do you perform in parallel when you get ready for work in the morning? Could you express this in a UML activity diagram? Can you find some way to get ready more quickly by increasing concurrency?</li>
+</ul>
+<p class="docText"><a id="ch05lev1sec4"></a></p>
+<h3 id="title-IDAZGW0" class="docSection1Title">29. It's Just a View</h3>
+<p class="blockquote"><em>Still, a man hears</em><br/><em>What he wants to hear</em><br/><em>And disregards the rest</em><br/><em>La la la...</em></p>
+<p class="attribution">• <strong>Simon and Garfunkel, "The Boxer"</strong></p>
+<p class="docText">Early on we are taught not to write a program as a single big chunk, but that we should "divide and conquer" and separate a program into modules. Each module has its own responsibilities; in fact, a good definition of a module (or class) is that it has a single, well-defined responsibility.</p>
+<p class="docText">But once you separate a program into different modules based on responsibility, you have a new problem. At runtime, how do the objects talk to each other? How do you manage the logical dependencies between them? That is, how do you synchronize changes in state (or updates to data values) in these different objects? It needs to be done in a clean, flexible manner—we don't want them to know too much about each other. We want each module to be like the man in the song and just hear what it wants to hear.</p>
+<p class="docText">We'll start off with the concept of an <em>event</em>. An event is simply a special message that says "something interesting just happened" (interesting, of course, lies in the eye of the beholder). We can use events to signal changes in one object that some other object may be interested in.</p>
+<p class="docText">Using events in this way minimizes coupling between those objects—the sender of the event doesn't need to have any explicit knowledge of <a id="page_158"></a>the receiver. In fact, there could be multiple receivers, each one focused on its own agenda (of which the sender is blissfully unaware).</p>
+<p class="docText">We need to exercise some care in using events, however. In an early version of Java, for example, one routine received <em>all</em> the events destined for a particular application. Not exactly the road to easy maintenance or evolution.</p>
+<p class="docText"><a id="ch05lev2sec14"></a></p>
+<h4 id="title-IDASIW0" class="docSection2Title">Publish/Subscribe</h4>
+<p class="docText">Why is it bad to push all the events through a single routine? It violates object encapsulation—that one routine now has to have intimate knowledge of the interactions among many objects. It also increases the coupling—and we're trying to <em>decrease</em> coupling. Because the objects themselves have to have knowledge of these events as well, you are probably going to violate the <em>DRY</em> principle, orthogonality, and perhaps even sections of the Geneva Convention. You may have seen this kind of code—it is usually dominated by a huge <code>case</code> statement or multiway <code>if-then.</code> We can do better.</p>
+<p class="docText">Objects should be able to register to receive only the events they need, and should never be sent events they don't need. We don't want to spam our objects! Instead, we can use a <em>publish/subscribe</em> protocol, illustrated using the <em>UML sequence diagram</em> in <a href="#ch05fig04">Figure 5.4</a> on the next page.<sup><a href="#ch05fn07">[7]</a></sup></p>
+<p class="docFootnote"><sup><a id="ch05fn07">[7]</a></sup> See also the Observer pattern in [<a href="app01.html#ghjv95">GHJV95</a>] for more information.</p>
+<p class="docText"><a id="ch05fig04"></a></p>
+<p class="docFigureTitle">Figure 5.4. Publish/subscribe protocol</p>
+<p class="image"><img src="images/f05fig04.gif" alt="image" /></p>
+<p class="docText">A sequence diagram shows the flow of messages among several objects, with objects arranged in columns. Each message is shown as a labeled arrow from the sender's column to the receiver's column. An asterisk in the label means that more than one message of this type can be sent.</p>
+<p class="docText">If we are interested in certain events generated by a <code>Publisher,</code> all we have to do is register ourselves. The <code>Publisher</code> keeps track of all interested <code>Subscriber</code> objects; when the <code>Publisher</code> generates an event of interest, it will call each <code>Subscriber</code> in turn and notify them that the event has occurred.</p>
+<p class="docText"><a id="page_159"></a>There are several variations on this theme—mirroring other communication styles. Objects may use publish/subscribe on a peer-to-peer basis (as we saw above); they may use a "software bus" where a centralized object maintains the database of listeners and dispatches messages appropriately. You might even have a scheme where critical events get broadcast to all listeners—registered or not. One possible implementation of events in a distributed environment is illustrated by the CORBA Event Service, described in the box on the following page.</p>
+<p class="docText">We can use this publish/subscribe mechanism to implement a very important design concept: the separation of a model from views of the model. Let's start with a GUI-based example, using the Smalltalk design in which this concept was born.</p>
+<p class="docText"><a id="ch05lev2sec15"></a></p>
+<h4 id="title-IDAQLW0" class="docSection2Title">Model-View-Controller</h4>
+<p class="docText">Suppose you have a spreadsheet application. In addition to the numbers in the spreadsheet itself, you also have a graph that displays the <a id="page_160"></a>numbers as a bar chart and a running total dialog box that shows the sum of a column in the spreadsheet.</p>
+<div class="sidebar1">
+<p class="docSidebarTitle">The CORBA Event Service</p>
+<p class="sidebar">The CORBA Event Service allows participating objects to send and receive event notifications via a common bus, the <em>event channel.</em> The event channel arbitrates event handling, and also decouples event producers from event consumers. It works in two basic ways: <em>push</em> and <em>pull.</em></p>
+<p class="sidebar">In push mode, event suppliers inform the event channel that an event has occurred. The channel then automatically distributes that event to all client objects that have registered interest.</p>
+<p class="sidebar">In pull mode, clients periodically poll the event channel, which in turn polls the supplier that offers event data corresponding to the request.</p>
+<p class="sidebar">Although the CORBA Event Service can be used to implement all of the event models discussed in this section, you can also view it as a different animal. CORBA facilitates communication among objects written in different programming languages running on geographically dispersed machines with different architectures. Sitting on top of CORBA, the event service gives you a decoupled way of interacting with applications around the world, written by people you've never met, using programming languages you'd rather not know about.</p>
+</div>
+<p class="docText">Obviously, we don't want to have three separate copies of the data. So we create a <em>model</em>—the data itself, with common operations to manipulate it. Then we can create separate <em>views</em> that display the data in different ways: as a spreadsheet, as a graph, or in a totals box. Each of these views may have its own <em>controller.</em> The graph view may have a controller that allows you to zoom in or out, or pan around the data, for example. None of this affects the data itself, just that view.</p>
+<p class="docText">This is the key concept behind the Model-View-Controller (MVC) idiom: separating the model from both the GUI that represents it <em>and</em> the controls that manage the view.<sup><a href="#ch05fn08">[8]</a></sup></p>
+<p class="docFootnote"><sup><a id="ch05fn08">[8]</a></sup> The view and controller are tightly coupled, and in some implementations of MVC the view and controller are a single component.</p>
+<p class="docText"><a id="page_161"></a>By doing so, you can take advantage of some interesting possibilities. You can support multiple views of the same data model. You can use common viewers on many different data models. You can even support multiple controllers to provide nontraditional input mechanisms.</p>
+<p class="docNoteTitle">Tip 42</p>
+<p class="note"><a href="app03.html#id1e10282">Separate Views from Models</a></p>
+<p class="docText">By loosening the coupling between the model and the view/controller, you buy yourself a lot of flexibility at low cost. In fact, this technique is one of the most important ways of maintaining reversibility (see <a href="ch02.html#ch02lev1sec3"><em>Reversibility</em></a>, page <a href="ch02.html#page_44">44</a>).</p>
+<p class="docText"><a id="ch05lev3sec10"></a></p>
+<h5 id="title-IDATNW0" class="docSection3Title">Java Tree View</h5>
+<p class="docText">A good example of an MVC design can be found in the Java tree widget. The tree widget (which displays a clickable, traversable tree) is actually a set of several different classes organized in an MVC pattern.</p>
+<p class="docText">To produce a fully functional tree widget, all you need to do is provide a data source that conforms to the <code>TreeModel</code> interface. Your code now becomes the model for the tree.</p>
+<p class="docText">The view is created by the <code>TreeCellRenderer</code> and <code>TreeCellEditor</code> classes, which can be inherited from and customized to provide different colors, fonts, and icons in the widget. <code>JTree</code> acts as the controller for the tree widget and provides some general viewing functionality.</p>
+<p class="docText">Because we have decoupled the model from the view, we simplify the programming a great deal. You don't have to think about programming a tree widget anymore. Instead, you just provide a data source.</p>
+<p class="docText">Suppose the vice president comes up to you and wants a quick application that lets her navigate the company's organizational chart, which is held in a legacy database on the mainframe. Just write a wrapper that takes the mainframe data, presents it as a <code>TreeModel</code>, and <em>voilà</em>: you have a fully navigable tree widget.</p>
+<p class="docText">Now you can get fancy and start using the viewer classes; you can change how nodes are rendered, and use special icons, fonts, or colors. When the VP comes back and says the new corporate standards dictate <a id="page_162"></a>the use of a Skull and Crossbones icon for certain employees, you can make the changes to <code>TreeCellRenderer</code> without touching any other code.</p>
+<p class="docText"><a id="ch05lev2sec16"></a></p>
+<h4 id="title-IDA5OW0" class="docSection2Title">Beyond GUIs</h4>
+<p class="docText">While MVC is typically taught in the context of GUI development, it is really a general-purpose programming technique. The view is an interpretation of the model (perhaps a subset)—it doesn't need to be graphical. The controller is more of a coordination mechanism, and doesn't have to be related to any sort of input device.</p>
+<ul>
+<li><a id="d1e10351"></a><strong>Model.</strong> The abstract data model representing the target object. The model has no direct knowledge of any views or controllers.</li>
+<li><a id="d1e10359"></a><strong>View.</strong> A way to interpret the model. It subscribes to changes in the model and logical events from the controller.</li>
+<li><a id="d1e10367"></a><strong>Controller.</strong> A way to control the view and provide the model with new data. It publishes events to both the model and the view.</li>
+</ul>
+<p class="docText">Let's look at a nongraphical example.</p>
+<p class="docText">Baseball is a unique institution. Where else can you learn such gems of trivia as "this has become the highest-scoring game played on a Tuesday, in the rain, under artificial lights, between teams whose names start with a vowel?" Suppose we were charged with developing software to support those intrepid announcers who must dutifully report on the scores, the statistics, and the trivia.</p>
+<p class="docText">Clearly we need information on the game in progress—the teams playing, the conditions, the player at bat, the score, and so on. These facts form our models; they will be updated as new information arrives (a pitcher is changed, a player strikes out, it starts raining...).</p>
+<p class="docText">We'll then have a number of view objects that use these models. One view might look for runs so it can update the current score. Another may receive notifications of new batters, and retrieve a brief summary of their year-to-date statistics. A third viewer may look at the data and check for new world records. We might even have a trivia viewer, responsible for coming up with those weird and useless facts that thrill the viewing public.</p>
+<p class="docText"><a id="page_163"></a>But we don't want to flood the poor announcer with all of these views directly. Instead, we'll have each view generate notifications of "interesting" events, and let some higher-level object schedule what gets shown.<sup><a href="#ch05fn09">[9]</a></sup></p>
+<p class="docFootnote"><sup><a id="ch05fn09">[9]</a></sup> The fact that a plane flies overhead probably isn't interesting unless it's the 100th plane to fly overhead that night.</p>
+<p class="docText">These viewer objects have suddenly become models for the higher-level object, which itself might then be a model for different formatting viewers. One formatting viewer might create the teleprompter script for the announcer, another might generate video captions directly on the satellite uplink, another might update the network's or team's Web pages (see <a href="#ch05fig05">Figure 5.5</a>).</p>
+<p class="docText"><a id="ch05fig05"></a></p>
+<p class="docFigureTitle">Figure 5.5. Baseball reporting. Viewers <em>subscribe to</em> models.</p>
+<p class="image"><img src="images/f05fig05.gif" alt="image" /></p>
+<p class="docText">This kind of model-viewer network is a common (and valuable) design technique. Each link decouples raw data from the events that created it—each new viewer is an abstraction. And because the relationships are a network (not just a linear chain), we have a lot of flexibility. Each <a id="page_164"></a>model may have <em>many</em> viewers, and one viewer may work with multiple models.</p>
+<p class="docText">In advanced systems such as this one, it can be handy to have <em>debugging views</em>—specialized views that show you in-depth details of the model. Adding a facility to trace individual events can be a great time saver as well.</p>
+<p class="docText"><a id="ch05lev2sec17"></a></p>
+<h4 id="title-IDAVSW0" class="docSection2Title">Still Coupled (After All These Years)</h4>
+<p class="docText">Despite the decrease in coupling we have achieved, listeners and event generators (subscribers and publishers) still have <em>some</em> knowledge of each other. In Java, for instance, they must agree on common interface definitions and calling conventions.</p>
+<p class="docText">In the next section, we'll look at ways of reducing coupling even further by using a form of publish and subscribe where <em>none</em> of the participants need know about each other, or call each other directly.</p>
+<p class="docText"><a id="ch05lev3sec11"></a></p>
+<h5 id="title-IDAHTW0" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch02.html#ch02lev1sec2"><em>Orthogonality</em></a>, page <a href="ch02.html#page_34">34</a></li>
+<li><a href="ch02.html#ch02lev1sec3"><em>Reversibility</em></a>, page <a href="ch02.html#page_44">44</a></li>
+<li><a href="ch05.html#ch05lev1sec1"><em>Decoupling and the Law of Demeter</em></a>, page <a href="ch05.html#page_138">138</a></li>
+<li><a href="ch05.html#ch05lev1sec5"><em>Blackboards</em></a>, page <a href="ch05.html#page_165">165</a></li>
+<li><a href="ch08.html#ch08lev1sec4"><em>It's All Writing</em></a>, page <a href="ch08.html#page_248">248</a></li>
+</ul>
+<p class="docText"><a id="ch05lev2sec18"></a></p>
+<h4 id="title-IDAVUW0" class="docSection2Title">Exercises</h4>
+<p class="docText1"><a id="ch05que06"></a><strong><a href="app02.html#ch05ans06">29</a>.</strong> Suppose you have an airline reservation system that includes the concept of a flight:</p>
+<p class="progimage1"><img src="images/p0164-01.jpg" alt="image" /></p>
+<p class="docText1">If you add a passenger to the wait list, they'll be put on the flight automatically when an opening becomes available.<br/><a id="page_165"></a>There's a massive reporting job that goes through looking for overbooked or full flights to suggest when additional flights might be scheduled. It works fine, but it takes hours to run.<br/>We'd like to have a little more flexibility in processing wait-list passengers, and we've got to do something about that big report—it takes too long to run. Use the ideas from this section to redesign this interface.</p>
+<p class="docText"><a id="ch05lev1sec5"></a></p>
+<h3 id="title-IDAWWW0" class="docSection1Title">30. Blackboards</h3>
+<p class="docText"><em>The writing is on the wall...</em></p>
+<p class="docText">You may not usually associate <em>elegance</em> with police detectives, picturing instead some sort of doughnut and coffee cliché. But consider how detectives might use a <em>blackboard</em> to coordinate and solve a murder investigation.</p>
+<p class="docText">Suppose the chief inspector starts off by setting up a large blackboard in the conference room. On it, he writes a single question:</p>
+<p class="blockquote">H. D<small>UMPTY</small> (M<small>ALE</small>, E<small>GG</small>): A<small>CCIDENT OR MURDER</small>?</p>
+<p class="docText">Did Humpty really fall, or was he pushed? Each detective may make contributions to this potential murder mystery by adding facts, statements from witnesses, any forensic evidence that might arise, and so on. As the data accumulates, a detective might notice a connection and post that observation or speculation as well. This process continues, across all shifts, with many different people and agents, until the case is closed. A sample blackboard is shown in <a href="#ch05fig06">Figure 5.6</a> on the next page.</p>
+<p class="docText"><a id="ch05fig06"></a></p>
+<p class="docFigureTitle">Figure 5.6. Someone found a connection between Humpty's gambling debts and the phone logs. Perhaps he was getting threatening phone calls.</p>
+<p class="image"><img src="images/f05fig06.gif" alt="image" /></p>
+<p class="docText">Some key features of the blackboard approach are:</p>
+<ul>
+<li>None of the detectives needs to know of the existence of any other detective—they watch the board for new information, and add their findings.</li>
+<li>The detectives may be trained in different disciplines, may have different levels of education and expertise, and may not even work in the same precinct. They share a desire to solve the case, but that's all.</li>
+<li><a id="page_166"></a>Different detectives may come and go during the course of the process, and may work different shifts.</li>
+<li>There are no restrictions on what may be placed on the blackboard. It may be pictures, sentences, physical evidence, and so on.</li>
+</ul>
+<p class="docText">We've worked on a number of projects that involved a workflow or distributed data gathering process. With each, designing a solution around a simple blackboard model gave us a solid metaphor to work with: all of the features listed above using detectives are just as applicable to objects and code modules.</p>
+<p class="docText">A blackboard system lets us decouple our objects from each other completely, providing a forum where knowledge consumers and producers can exchange data anonymously and asynchronously. As you might guess, it also cuts down on the amount of code we have to write.</p>
+<p class="docText"><a id="ch05lev2sec19"></a></p>
+<h4 id="title-IDA2ZW0" class="docSection2Title">Blackboard Implementations</h4>
+<p class="docText">Computer-based blackboard systems were originally invented for use in artificial intelligence applications where the problems to be solved were large and complex—speech recognition, knowledge-based reasoning systems, and so on.</p>
+<p class="docText">Modern distributed blackboard-like systems such as JavaSpaces and T Spaces [<a href="app01.html#app01lev3sec50">URL 50</a>, <a href="app01.html#app01lev3sec25">URL 25</a>] are based on a model of key/value pairs first <a id="page_167"></a>popularized in Linda [<a href="app01.html#cg90">CG90</a>], where the concept was known as <em>tuple space.</em></p>
+<p class="docText">With these systems, you can store active Java objects—not just data—on the blackboard, and retrieve them by partial matching of fields (via templates and wildcards) or by subtypes. For example, suppose you had a type <code>Author</code>, which is a subtype of <code>Person</code>. You could search a blackboard containing <code>Person</code> objects by using an <code>Author</code> template with a <code>lastName</code> value of "Shakespeare." You'd get Bill Shakespeare the author, but not Fred Shakespeare the gardener.</p>
+<p class="docText">The main operations in JavaSpaces are:</p>
+<p class="image1"><img src="images/t0167-01.gif" alt="image" /></p>
+<p class="docText">T Spaces supports a similar set of operations, but with different names and slightly different semantics. Both systems are built like a database product; they provide atomic operations and distributed transactions to ensure data integrity.</p>
+<p class="docText">Since we can store objects, we can use a blackboard to design algorithms based on a <em>flow of objects,</em> not just data. It's as if our detectives could pin people to the blackboard—witnesses themselves, not just their statements. Anyone can ask a witness questions in the pursuit of the case, post the transcript, and move that witness to another area of the blackboard, where he might respond differently (if you allow the witness to read the blackboard too).</p>
+<p class="docText">A big advantage of systems such as these is that you have a single, consistent interface to the blackboard. When building a conventional distributed application, you can spend a great deal of time crafting unique API calls for every distributed transaction and interaction in the system. With the combinatorial explosion of interfaces and interactions, the project can quickly become a nightmare.</p>
+<p class="docText"><a id="page_168"></a></p>
+<div class="sidebar1">
+<p class="docSidebarTitle">Organizing Your Blackboard</p>
+<p class="sidebar">When the detectives work on large cases, the blackboard may become cluttered, and it may become difficult to locate data on the board. The solution is to <em>partition</em> the blackboard and start to organize the data on the blackboard somehow.</p>
+<p class="sidebar">Different software systems handle this partitioning in different ways; some use fairly flat <em>zones</em> or <em>interest groups,</em> while others adopt a more hierarchical treelike structure.</p>
+</div>
+<p class="docText">The blackboard style of programming removes the need for so many interfaces, making for a more elegant and consistent system.</p>
+<p class="docText"><a id="ch05lev2sec20"></a></p>
+<h4 id="title-IDAU5W0" class="docSection2Title">Application Example</h4>
+<p class="docText">Suppose we are writing a program to accept and process mortgage or loan applications. The laws that govern this area are odiously complex, with federal, state, and local governments all having their say. The lender must prove they have disclosed certain things, and must ask for certain information—but must <em>not</em> ask certain other questions, and so on, and so on.</p>
+<p class="docText">Beyond the miasma of applicable law, we also have the following problems to contend with.</p>
+<ul>
+<li>There is no guarantee on the order in which data arrives. For instance, queries for a credit check or title search may take a substantial amount of time, while items such as name and address may be available immediately.</li>
+<li>Data gathering may be done by different people, distributed across different offices, in different time zones.</li>
+<li>Some data gathering may be done automatically by other systems. This data may arrive asynchronously as well.</li>
+<li>Nonetheless, certain data may still be dependent on other data. For instance, you may not be able to start the title search for a car until you get proof of ownership or insurance.</li>
+<li><a id="page_169"></a>Arrival of new data may raise new questions and policies. Suppose the credit check comes back with a less than glowing report; now you need these five extra forms and perhaps a blood sample.</li>
+</ul>
+<p class="docText">You can try to handle every possible combination and circumstance using a workflow system. Many such systems exist, but they can be complex and programmer intensive. As regulations change, the workflow must be reorganized: people may have to change their procedures and hard-wired code may have to be rewritten.</p>
+<p class="docText">A blackboard, in combination with a rules engine that encapsulates the legal requirements, is an elegant solution to the difficulties found here. Order of data arrival is irrelevant: when a fact is posted it can trigger the appropriate rules. Feedback is easily handled as well: the output of any set of rules can post to the blackboard and cause the triggering of yet more applicable rules.</p>
+<p class="docNoteTitle">Tip 43</p>
+<p class="note"><a href="app03.html#id1e10796">Use Blackboards to Coordinate Workflow</a></p>
+<p class="docText">We can use the blackboard to coordinate disparate facts and agents, while still maintaining independence and even isolation among participants.</p>
+<p class="docText">You can accomplish the same results with more brute-force methods, of course, but you'll have a more brittle system. When it breaks, all the king's horses and all the king's men might not get your program working again.</p>
+<p class="docText"><a id="ch05lev3sec12"></a></p>
+<h5 id="title-IDANBX0" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch03.html#ch03lev1sec1"><em>The Power of Plain Text</em></a>, page <a href="ch03.html#page_73">73</a></li>
+<li><a href="ch05.html#ch05lev1sec4"><em>It's Just a View</em></a>, page <a href="ch05.html#page_157">157</a></li>
+</ul>
+<p class="docText"><a id="ch05lev3sec13"></a></p>
+<h5 id="title-IDAICX0" class="docSection3Title">Challenges</h5>
+<ul>
+<li>Do you use blackboard systems in the real world—the message board by the refrigerator, or the big whiteboard at work? What makes them effective? Are messages ever posted with a consistent format? Does it matter?</li>
+</ul>
+<p class="docText"><a id="ch05lev2sec21"></a><a id="page_170"></a></p>
+<h4 id="title-IDA5CX0" class="docSection2Title">Exercises</h4>
+<p class="docText1"><a id="ch05que07"></a><strong><a href="app02.html#ch05ans07">30</a>.</strong> For each of the following applications, would a blackboard system be appropriate or not? Why?</p>
+<ol>
+<li><a id="d1e10861"></a><strong>Image processing.</strong> You'd like to have a number of parallel processes grab chunks of an image, process them, and put the completed chunk back.</li>
+<li><a id="d1e10869"></a><strong>Group calendaring.</strong> You've got people scattered across the globe, in different time zones, and speaking different languages, trying to schedule a meeting.</li>
+<li><a id="d1e10877"></a><strong>Network monitoring tool.</strong> The system gathers performance statistics and collects trouble reports. You'd like to implement some agents to use this information to look for trouble in the system.</li>
+</ol>
+</div>
+</body>
+</html>

@@ -1,0 +1,1215 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>4. Understanding and Using Angular Components</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><section data-type="chapter" epub:type="chapter" data-pdf-bookmark="Chapter 4. Understanding and Using Angular Components"><div class="chapter" id="chapter-4">
+<h1><span class="label">Chapter 4. </span>Understanding and Using <span class="keep-together">Angular Components</span></h1>
+
+
+<p>In the previous chapter, we did a deep dive into the built-in directives that Angular offers that allow us to perform common<a data-type="indexterm" data-primary="components" id="ix_comps"></a> functionality like hiding and showing elements, repeating templates, and so on. We worked with directives like <code>ngIf</code> and <code>ngForOf</code> and got a feel for how and when to use them.</p>
+
+<p>In this chapter, we will go a bit deeper into components, those elements we have been creating to render the UI and let users interact with the applications we build. We will cover some of the more useful attributes you can specify when creating components, how to think about the lifecycle of the component and the various hooks that Angular gives you, and finally, cover how to pass data into and out of your custom components. By the end of the chapter, you should be able to perform most common tasks related to components while understanding what you are doing and why.</p>
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Components—A Recap"><div class="sect1" id="idm139828135405904">
+<h1>Components—A Recap</h1>
+
+<p>In the previous chapter, we saw that Angular only has directives, and that directives are reused for multiple purposes.<a data-type="indexterm" data-primary="components" data-secondary="about" id="idm139828135404448"></a><a data-type="indexterm" data-primary="directives" id="idm139828135403472"></a> We dealt with attribute and structural directives, which allow us to change the behavior of an existing element or to change the structure of the template being rendered.</p>
+
+<p>The third kind of directives are components, which we have been using pretty much from the first chapter. To some extent, you can consider an Angular application to be nothing but a tree of components. Each component in turn has some behavior and a template that gets rendered. This template can then continue to use other components, thus forming a tree of components, which is the Angular application that gets rendered in the browser.</p>
+
+<p>At its very simplest, a component is nothing but a class that encapsulates behavior (what data to load, what data to render, and how to respond to user interactions) and a template (how the data is rendered). But there are multiple ways to define that as well, along with other options, which we will cover in the following sections.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Defining a Component"><div class="sect1" id="idm139828135400624">
+<h1>Defining a Component</h1>
+
+<p>We define a component using the TypeScript decorator <code>Component</code>. <a data-type="indexterm" data-primary="components" data-secondary="defining" id="ix_compsdef"></a><a data-type="indexterm" data-primary="@Component decorator" id="idm139828135397360"></a>This allows us to annotate any class with some metadata that teaches Angular how the component works, what to render, and so on. Let’s take a look again at the <code>stock-item</code> component we created to see what a simple component would look like, and we will build up from there:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-item'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./stock-item.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./stock-item.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockItemComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+   <code class="c1">// Code omitted here for clarity</code>
+<code class="p">}</code></pre>
+
+<p>The very basic component only needs a selector (to tell Angular how to find instances of the component being used) and a template (that Angular has to render when it finds the element). All other attributes in the <code>Component</code> decorator are optional. In the preceding example, we have defined that the <code>StockItemComponent</code> is to be rendered whenever Angular encounters the <code>app-stock-item</code> selector, and to render the <em>stock-item.component.html</em> file when it encounters the element. Let’s talk about the attributes of the decorator in a bit more detail.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Selector"><div class="sect2" id="idm139828135316848">
+<h2>Selector</h2>
+
+<p>The selector attribute, as we touched upon briefly in <a data-type="xref" href="ch02.html#chapter-2">Chapter 2</a>, allows us to define how Angular identifies when the component is used in HTML.<a data-type="indexterm" data-primary="selector attribute, components" id="idm139828135314656"></a><a data-type="indexterm" data-primary="components" data-secondary="defining" data-tertiary="selector" id="idm139828135313920"></a> The selector takes a string value, which is the CSS selector Angular will use to identify the element.<a data-type="indexterm" data-primary="CSS" data-secondary="selector for components" id="idm139828135312464"></a> The recommended practice when we create new components is to use element selectors (like we did with <code>app-stock-item</code>), but technically you could use any other selector as well. For example, here are a few ways you could specify the selector attribute and how you would use it in the HTML:</p>
+
+<ul>
+<li>
+<p><code>selector: 'app-stock-item'</code> would result in the component being used as <code>&lt;app-stock-item&gt;&lt;/app-stock-item&gt;</code> in the HTML.</p>
+</li>
+<li>
+<p><code>selector: '.app-stock-item'</code> would result in the component being used as a CSS class like <code>&lt;div class="app-stock-item"&gt;&lt;/div&gt;</code> in the HTML.</p>
+</li>
+<li>
+<p><code>selector: '[app-stock-item]'</code> would result in the component being used as an attribute on an existing element like <code>&lt;div app-stock-item&gt;&lt;/div&gt;</code> in the HTML.</p>
+</li>
+</ul>
+
+<p>You can make the selector as simple or complex as you want, but as a rule of thumb, try to stick to simple element selectors unless you have a very strong reason not to.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Template"><div class="sect2" id="idm139828135304192">
+<h2>Template</h2>
+
+<p>We have been using <code>templateUrl</code> so far to define what the template to be used along with a component is.<a data-type="indexterm" data-primary="templates" data-secondary="for components" id="idm139828135301920"></a><a data-type="indexterm" data-primary="components" data-secondary="defining" data-tertiary="template" id="idm139828135300944"></a><a data-type="indexterm" data-primary="templateUrl attribute" id="idm139828135299728"></a><a data-type="indexterm" data-primary="URLs" data-secondary="templateUrl" id="idm139828135299056"></a> The path you pass to the <code>templateUrl</code> attribute is relative to the path of the component. In the previous case, we can either specify the <code>templateUrl</code> as:</p>
+
+<pre data-type="programlisting">templateUrl: './stock.item.component.html'</pre>
+
+<p>or:</p>
+
+<pre data-type="programlisting">templateUrl: 'stock.item.component.html'</pre>
+
+<p>and it would work. But if you try to specify an absolute URL or anything else, your compilation would break. One interesting thing to note is that unlike AngularJS (1.x), the application Angular builds does not load the template by URL at runtime. Instead, Angular precompiles a build and ensures that the template is inlined as part of the build process.</p>
+
+<p>Instead of <code>templateUrl</code>, we could also specify the template inline in the component, using the <code>template</code> option.<a data-type="indexterm" data-primary="template attribute" id="idm139828135293312"></a> This allows us to have the component contain all the information instead of splitting it across HTML and TypeScript code.</p>
+<div data-type="tip"><h6>Tip</h6>
+<p>Only one of <code>template</code> and <code>templateUrl</code> can be specified in a component. You cannot use both, but at least one is essential.</p>
+</div>
+
+<p>There is no impact on the final generated application as Angular compiles the code into a single bundle. The only reason you might want to split your template code into a separate file is to get nicer IDE features such as syntax completion and the like, which are specific to file extensions. Generally, you might want to keep your templates separate if they are over three or four lines or have any complexity.</p>
+
+<p>Let’s see how our <code>stock-item</code> component might look with an inline template:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'../../model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-item'</code><code class="p">,</code>
+  <code class="nx">template</code><code class="o">:</code> <code class="err">`</code>
+	<code class="o">&lt;</code><code class="nx">div</code> <code class="kr">class</code><code class="o">=</code><code class="s2">"stock-container"</code><code class="o">&gt;</code>
+	  <code class="o">&lt;</code><code class="nx">div</code> <code class="kr">class</code><code class="o">=</code><code class="s2">"name"</code><code class="o">&gt;</code><code class="p">{{</code><code class="nx">stock</code><code class="p">.</code><code class="nx">name</code> <code class="o">+</code> <code class="s1">' ('</code> <code class="o">+</code> <code class="nx">stock</code><code class="p">.</code><code class="nx">code</code> <code class="o">+</code> <code class="s1">')'</code><code class="p">}}</code><code class="o">&lt;</code><code class="err">/div&gt;</code>
+	  <code class="o">&lt;</code><code class="nx">div</code> <code class="kr">class</code><code class="o">=</code><code class="s2">"price"</code>
+	      <code class="p">[</code><code class="kr">class</code><code class="p">]</code><code class="o">=</code><code class="s2">"stock.isPositiveChange() ? 'positive' : 'negative'"</code><code class="o">&gt;</code>
+	      <code class="nx">$</code> <code class="p">{{</code><code class="nx">stock</code><code class="p">.</code><code class="nx">price</code><code class="p">}}</code>
+   <code class="o">&lt;</code><code class="err">/div&gt;</code>
+	  <code class="o">&lt;</code><code class="nx">button</code> <code class="p">(</code><code class="nx">click</code><code class="p">)</code><code class="o">=</code><code class="s2">"toggleFavorite($event)"</code>
+	          <code class="o">*</code><code class="nx">ngIf</code><code class="o">=</code><code class="s2">"!stock.favorite"</code><code class="o">&gt;</code><code class="nx">Add</code> <code class="nx">to</code> <code class="nx">Favorite</code><code class="o">&lt;</code><code class="err">/button&gt;</code>
+	<code class="o">&lt;</code><code class="err">/div&gt;</code>
+  <code class="err">`</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./stock-item.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockItemComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+   <code class="c1">// Code omitted here for clarity</code>
+<code class="p">}</code></pre>
+<div data-type="tip"><h6>Tip</h6>
+<p>ECMAScript 2015 (and TypeScript) allows us to define multiline templates using the ` (backtick) symbol, instead of doing string concatenation across multiple lines using the + (plus) operator.<a data-type="indexterm" data-primary="templates" data-secondary="multiline, defining with backtick operator" id="idm139828135285984"></a> We leverage this usually when we define inline templates.</p>
+</div>
+
+<p>You can find the completed code in the <em>chapter4/component-template</em> folder in the GitHub repository.</p>
+
+<p>All we have done is taken the template and moved it into the <code>template</code> attribute of the <code>Component</code> decorator. In this particular case though, because there are more than a few lines with some amount of work being done, I would recommend not moving it inline. Note that as a result of moving it to <code>template</code>, we have removed the previous <code>templateUrl</code> attribute.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Styles"><div class="sect2" id="idm139828135303568">
+<h2>Styles</h2>
+
+<p>A given component can have multiple styles attached to it.<a data-type="indexterm" data-primary="components" data-secondary="defining" data-tertiary="styles" id="idm139828135164864"></a><a data-type="indexterm" data-primary="styles" data-secondary="defining for components" id="idm139828135163616"></a> This allows you to pull in component-specific CSS, as well as potentially any other common CSS that needs to be applied to it. Similar to templates, you can either inline your CSS using the <code>styles</code> attribute, or if there is a significant amount of CSS or you want to leverage your IDE, you can pull it out into a separate file and pull it into your component using the <code>styleUrls</code> attribute. Both of these take an array as an input.<a data-type="indexterm" data-primary="styleUrls attribute" id="idm139828135161344"></a><a data-type="indexterm" data-primary="styles attribute" id="idm139828135160640"></a></p>
+
+<p>One thing that Angular promotes out of the box is complete encapsulation and isolation of styles. That means by default, the styles you define and use in one component will not affect/impact any other parent or child component. This ensures that you can be confident that the CSS classes you define in any component will not unknowingly affect anything else, unless you explicitly pull in the necessary styles.</p>
+
+<p>Again, just like templates, Angular will not pull in these styles at runtime, but rather precompile and create a bundle with the necessary styles. Thus, the choice of using <code>styles</code> or <code>styleUrls</code> is a personal one, without any major impact at runtime.</p>
+<div data-type="warning" epub:type="warning"><h6>Warning</h6>
+<p>Do not use both <code>styles</code> and <code>styleUrls</code> together. Angular will end up picking one or the other and will lead to unexpected behavior.</p>
+</div>
+
+<p>Let’s quickly see how the component might look if we inlined the styles:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'../../model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-item'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'stock-item.component.html'</code><code class="p">,</code>
+  <code class="nx">styles</code><code class="o">:</code> <code class="p">[</code><code class="err">`</code>
+    <code class="p">.</code><code class="nx">stock</code><code class="o">-</code><code class="nx">container</code> <code class="p">{</code>
+      <code class="nx">border</code>: <code class="kt">1px</code> <code class="nx">solid</code> <code class="nx">black</code><code class="p">;</code>
+      <code class="nx">border</code><code class="o">-</code><code class="nx">radius</code>: <code class="kt">5px</code><code class="p">;</code>
+      <code class="nx">display</code>: <code class="kt">inline</code><code class="o">-</code><code class="nx">block</code><code class="p">;</code>
+      <code class="nx">padding</code>: <code class="kt">10px</code><code class="p">;</code>
+    <code class="p">}</code>
+
+    <code class="p">.</code><code class="nx">positive</code> <code class="p">{</code>
+      <code class="nx">color</code>: <code class="kt">green</code><code class="p">;</code>
+    <code class="p">}</code>
+
+    <code class="p">.</code><code class="nx">negative</code> <code class="p">{</code>
+      <code class="nx">color</code>: <code class="kt">red</code><code class="p">;</code>
+    <code class="p">}</code>
+  <code class="err">`</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockItemComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+   <code class="c1">// Code omitted here for clarity</code>
+<code class="p">}</code></pre>
+
+<p>You can find the completed code in the <em>chapter4/component-style</em> folder in the <span class="keep-together">GitHub</span> repository.</p>
+
+<p>You can of course choose to pass in multiple style strings to the attribute. The decision between using <code>styles</code> and <code>styleUrls</code> is one of personal preference and has no impact on the final performance of the application.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Style Encapsulation"><div class="sect2" id="idm139828135071584">
+<h2>Style Encapsulation</h2>
+
+<p>In the preceding section, we talked about how Angular encapsulates the styles to ensure that it doesn’t contaminate any of your other components.<a data-type="indexterm" data-primary="styles" data-secondary="encapsulation by Angular" id="idm139828135069472"></a><a data-type="indexterm" data-primary="components" data-secondary="defining" data-tertiary="style encapsulation" id="idm139828135068528"></a> In fact, you can actually tell Angular whether it needs to do this or not, or if the styles can be accessible globally. You can set this by using the <code>encapsulation</code> attribute<a data-type="indexterm" data-primary="encapsulation attribute, Component decorator" id="idm139828135066640"></a> on the <code>Component</code> decorator. <a data-type="indexterm" data-primary="ViewEncapsulation.Emulated" id="idm139828135065392"></a><a data-type="indexterm" data-primary="ViewEncapsulation.None" id="idm139828135064640"></a><a data-type="indexterm" data-primary="ViewEncapsulation.Native" id="idm139828135063968"></a>The <code>encapsulation</code> attribute takes one of three values:</p>
+<dl>
+<dt><code>ViewEncapsulation.Emulated</code></dt>
+<dd>
+<p>This the default, where Angular creates shimmed CSS to emulate the behavior that shadow DOMs and shadow roots provide.</p>
+</dd>
+<dt><code>ViewEncapsulation.Native</code></dt>
+<dd>
+<p>This is the ideal, where Angular will use shadow roots. This will only work on browsers and platforms that natively support it.</p>
+</dd>
+<dt><code>ViewEncapsulation.None</code></dt>
+<dd>
+<p>Uses global CSS, without any encapsulation.</p>
+</dd>
+</dl>
+<div data-type="note" epub:type="note"><h1>What Is the Shadow DOM?</h1>
+<p>HTML, CSS, and JavaScript have a default tendency to be global in the context of the current page. What this means is that an ID given to an element can easily clash with another element somewhere else on the page. Similarly, a CSS rule given to a button in one corner of the page might end up impacting another totally unrelated button. <a data-type="indexterm" data-primary="DOM" data-secondary="shadow DOM" id="idm139828135055968"></a><a data-type="indexterm" data-primary="shadow DOM" id="idm139828135054992"></a></p>
+
+<p>We end up having to come up with specific naming conventions, use CSS hacks like <code>!important</code>, and use many more techniques to work around this generally in our day-to-day development.</p>
+
+<p>Shadow DOM fixes this by scoping HTML DOM and CSS.<a data-type="indexterm" data-primary="CSS" data-secondary="scoping with shadow DOM" id="idm139828135052928"></a><a data-type="indexterm" data-primary="HTML" data-secondary="scoping with shadow DOM" id="idm139828135051952"></a> It provides the ability to have scoped styling to a component (thus preventing the styles from leaking out and affecting the rest of the application) and also the ability to isolate and make the DOM self-contained.</p>
+
+<p>You can read up on it more in the documentation for <a href="https://developers.google.com/web/fundamentals/web-components/shadowdom">self-contained web components</a>.</p>
+</div>
+
+<p>The best way to see how this impacts our application is to make a slight change and see how our application behaves under different circumstances.</p>
+
+<p>First, let’s add the following snippet of code to the <em>app.component.css</em> file. We are using the same base as the previous chapter, and the completed code is available in the <em>chapter4/component-style-encapsulation</em> folder:</p>
+
+<pre data-type="programlisting" data-code-language="css"><code class="nc">.name</code> <code class="p">{</code>
+  <code class="k">font-size</code><code class="o">:</code> <code class="m">50px</code><code class="p">;</code>
+<code class="p">}</code></pre>
+
+<p>If we run the application right now, there is no impact on our application. Now, let’s try changing the <code>encapsulation</code> property on the main <code>AppComponent</code>. We will change the component as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">ViewEncapsulation</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-root'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./app.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./app.component.css'</code><code class="p">],</code>
+  <code class="nx">encapsulation</code>: <code class="kt">ViewEncapsulation.None</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">AppComponent</code> <code class="p">{</code>
+  <code class="nx">title</code> <code class="o">=</code> <code class="s1">'app works!'</code><code class="p">;</code>
+<code class="p">}</code></pre>
+
+<p>We added the <code>encapsulation: ViewEncapsulation.None</code> line to our <code>Component</code> decorator (of course, after importing the <code>ViewEncapsulation</code> enum from Angular). Now if we refresh our application, you will see that the name of the stock has been blown up to 50px. This is because the styles applied on the <code>AppComponent</code> are not restricted to just the component but are now taking the global namespace. Thus, any element that adds the <code>name</code> class to itself will get this font-size applied to it.</p>
+
+<p><code>ViewEncapsulation.None</code> is a good way of applying common styles to all child components, but definitely adds the risk of polluting the global CSS namespace and having unintentional effects.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Others"><div class="sect2" id="idm139828135070960">
+<h2>Others</h2>
+
+<p>There are a lot more attributes than what we covered on the <code>Component</code> decorator. <a data-type="indexterm" data-primary="components" data-secondary="defining" data-tertiary="other attributes" id="idm139828134884384"></a>We will briefly review a few of those here, and will reserve discussion of others for later chapters when they become more relevant. Here is a quick highlight of some of the other major attributes and their uses:</p>
+<dl>
+<dt>Stripping white spaces</dt>
+<dd>
+<p>Angular allows you to strip any unnecessary white spaces from your template (as defined by Angular, including more than one space, space between elements, etc.).<a data-type="indexterm" data-primary="whitespaces, stripping or preserving in components" id="idm139828134880496"></a> This can help reduce the build size by compressing your HTML. You can set this feature (which is set to <code>false</code> by default) by using the <code>preserveWhitespaces</code> attribute on the component.<a data-type="indexterm" data-primary="preserveWhitespaces attribute" id="idm139828134878640"></a> You can read more about this feature in the <a href="https://angular.io/api/core/Component#preserveWhitespaces">official documentation</a>.</p>
+</dd>
+<dt>Animations</dt>
+<dd>
+<p>Angular gives you multiple triggers to control and animate each part of the component and its lifecycle.<a data-type="indexterm" data-primary="animations, controlling for components" id="idm139828134875872"></a> To accomplish this, it provides its own DSL, which allows Angular to animate on state changes within the element.</p>
+</dd>
+<dt>Interpolation</dt>
+<dd>
+<p>There are times when the default Angular interpolation markers (the double-curlies <code>{{</code> and <code>}}</code>) interfere with integrating with other frameworks or technologies.<a data-type="indexterm" data-primary="{{ }} (double curly braces), interpolation syntax" data-secondary="replacing in components" id="idm139828134872576"></a><a data-type="indexterm" data-primary="interpolation" data-secondary="controlling in components" id="idm139828134871504"></a> For those scenarios, Angular allows you to override the interpolation identifiers at a component level by specifying the start and end delimiters. You can do so by using the <code>interpolation</code> attribute, which takes an array of two strings, the opening and closing markers for the interpolation. By default, they are <code>['{{', '}}']</code>, but you override it by, say, providing <code>interpolation: ['&lt;&lt;', '&gt;&gt;']</code> to replace the interpolation symbols for just that component to <code>&lt;&lt;</code> and <code>&gt;&gt;</code>.</p>
+</dd>
+<dt>View providers</dt>
+<dd>
+<p>View providers allow you to define providers that inject classes/services into a component or any of its children.<a data-type="indexterm" data-primary="view providers" id="idm139828134814736"></a> Usually, you won’t need it, but if there are certain components where you want to override, or restrict the availability of a class or a service, you can specify an array of providers to a component using the <code>viewProviders</code> attribute. We will cover this in more detail in <a data-type="xref" href="ch08.html#chapter-8">Chapter 8</a>.</p>
+</dd>
+<dt>Exporting the component</dt>
+<dd>
+<p>We have been working so far by using the component class’s functions within the context of the template.<a data-type="indexterm" data-primary="exporting components" id="idm139828134810960"></a> But there are use cases (especially when we start dealing with directives and more complex components) for which we might want to allow the user of the component to call functions on the component from outside. A use case might be that we provide a carousel component, but want to provide functionality to allow the user of the component to control the next/previous functionality. In these cases, we can use the <code>exportAs</code> attribute of the <code>Component</code> decorator.<a data-type="indexterm" data-primary="exportAs attribute" id="idm139828134808864"></a></p>
+</dd>
+<dt><code>changeDetection</code></dt>
+<dd>
+<p>By default, Angular checks every binding in the UI to see if it needs to update any UI element whenever any value changes in our component. This is acceptable for most applications, but as our applications get larger in size and complexity, we might want control over how and when Angular updates the UI. Instead of Angular deciding when it needs to update the UI, we might want to be explicit and tell Angular when it needs to update the UI manually. To do this, we <a data-type="indexterm" data-primary="changeDetection attribute" id="idm139828134806016"></a>use the <code>changeDetection</code> attribute, where we can override the default value of <code>Change​DetectionStrategy.Default</code> to <code>ChangeDetectionStrategy.OnPush</code>.<a data-type="indexterm" data-primary="ChangeDetectionStrategy.OnPush" id="idm139828134803904"></a><a data-type="indexterm" data-primary="ChangeDetectionStrategy.Default" id="idm139828134803232"></a> This means that after the initial render, it will be up to us to let Angular know when the value changes. Angular will not check the component’s bindings automatically. We will cover this in more detail later in the chapter.</p>
+</dd>
+</dl>
+
+<p>There are a lot more attributes and features with regards to components that we don’t cover in this chapter. You should take a look at the <a href="https://angular.io/api/core/Component">official documentation for components</a> to get familiar with what else is possible, or dive deeper into the details.<a data-type="indexterm" data-primary="components" data-secondary="defining" data-startref="ix_compsdef" id="idm139828134801104"></a></p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Components and Modules"><div class="sect1" id="idm139828134799632">
+<h1>Components and Modules</h1>
+
+<p>Before we go into the details of the lifecycle of a component,<a data-type="indexterm" data-primary="components" data-secondary="and modules" id="idm139828134798096"></a><a data-type="indexterm" data-primary="modules" data-secondary="components and" id="idm139828134797120"></a> let’s quickly sidetrack into how components are linked to modules and what their relation is. In <a data-type="xref" href="ch02.html#chapter-2">Chapter 2</a>, we saw how any time we created a new component, we had to include it in a module. If you create a new component, and do not add it to a module, Angular will complain that you have components that are not part of any modules.</p>
+
+<p>For any component to be used within the context of a module, it has to be imported into your module declaration file and declared in the <code>declarations</code> array.<a data-type="indexterm" data-primary="declarations" data-secondary="components used within modules" id="idm139828134793936"></a> This ensures that the component is visible to all other components within the module.</p>
+
+<p>There are three specific attributes on the <code>NgModule</code> that directly impact components and their usage, which are important to know.<a data-type="indexterm" data-primary="NgModule, attributes affecting components" id="idm139828134791984"></a><a data-type="indexterm" data-primary="declarations attribute" id="idm139828134791184"></a> While only <code>declarations</code> is important initially, once you start working with multiple modules, or if you are either creating or importing other modules, the other two attributes become essential:</p>
+<dl>
+<dt><code>declarations</code></dt>
+<dd>
+<p>The <code>declarations</code> attribute ensures that components and directives are available to use within the scope of the module. The Angular CLI will automatically add your component or directive to the module when you create a component through it. When you first start out building Angular applications, you might easily forget to add your newly created components to the <code>declarations</code> attribute, so keep track of that (if you are not using the Angular CLI, that is!) in order to avoid this common mistake.</p>
+</dd>
+<dt><code>imports</code></dt>
+<dd>
+<p>The <code>imports</code> attribute allows you to specify modules that you want imported and accessible within your module.<a data-type="indexterm" data-primary="imports attribute" id="idm139828134784544"></a> This is mostly as a way to pull in third-party modules to make the components and services available within your application. If you want to use a component from other modules, make sure you import the relevant modules into the module you have declared and where the component exists.</p>
+</dd>
+<dt><code>exports</code></dt>
+<dd>
+<p>The <code>exports</code> attribute is relevant if you either have multiple modules or you need to create a <a data-type="indexterm" data-primary="exports attribute" id="idm139828134781552"></a>library that will be used by other developers. Unless you export a component, it cannot be accessed or used outside of the direct module where the component is declared. As a general rule of thumb, if you will need to use the component in another module, make sure you export it.</p>
+</dd>
+</dl>
+<div data-type="tip"><h6>Tip</h6>
+<p>If you are facing issues using a component, where Angular fails to recognize a component or says it does not recognize an element, it most likely is due to misconfigured modules.<a data-type="indexterm" data-primary="modules" data-secondary="issues using a component, checking configuration for" id="idm139828134779136"></a> Check, in order, the following:</p>
+
+<ul>
+<li>
+<p>Whether the component is added as a declaration in the <span class="keep-together">module</span>.</p>
+</li>
+<li>
+<p>In case it is not a component that you wrote, make sure that you have imported the module that provides/exports the <span class="keep-together">component</span>.</p>
+</li>
+<li>
+<p>If you created a new component that needs to be used in other components, make sure that you export the component in its module so that any application including the module will get access to your newly created component.</p>
+</li>
+</ul>
+</div>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Input and Output"><div class="sect1" id="idm139828134772928">
+<h1>Input and Output</h1>
+
+<p>One common use case when we start creating components is that we want to separate the content that a component uses from the component itself. A component is truly useful when it is reusable. One of the ways we can make a component reusable (rather than having default, hardcoded values inside it) is by passing in different inputs depending on the use case. Similarly, there might be cases where we want hooks from a component when a certain activity happens within its context.</p>
+
+<p>Angular provides hooks to specify each of these through decorators, aptly named <code>Input</code> and <code>Output</code>. These, unlike the <code>Component</code> and <code>NgModule</code> decorators, apply at a class member variable level.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Input"><div class="sect2" id="idm139828134768560">
+<h2>Input</h2>
+
+<p>When we add an <code>Input</code> decorator on a member variable, it automatically allows you to pass in values to <a data-type="indexterm" data-primary="components" data-secondary="input" id="idm139828134766384"></a><a data-type="indexterm" data-primary="Input decorator" id="idm139828134765408"></a>the component for that particular input via Angular’s data binding syntax.</p>
+
+<p>Let’s see how we can extend our <code>stock-item</code> component from the previous chapter to allow us to pass in the stock object, rather than hardcoding it within the component itself. The finished example is available in the GitHub repository in the <em>chapter4/component-input</em> folder. If you want to code along and don’t have the previous code, you can use the <em>chapter3/ng-if</em> codebase as the starter to code along from.</p>
+
+<p>We will first modify the <code>stock-item</code> component to mark the stock as an input to the component, but instead of initializing the stock object, we will mark it as an <code>Input</code> to the component. We do this by importing the decorator and using it for the <code>stock</code> variable. The code for the <em>stock-item.component.ts</em> file should look like the following:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code><code class="p">,</code> <code class="nx">Input</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'../../model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-item'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./stock-item.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./stock-item.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockItemComponent</code> <code class="p">{</code>
+
+  <code class="err">@</code><code class="nx">Input</code><code class="p">()</code> <code class="kr">public</code> <code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">;</code>
+
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{</code> <code class="p">}</code>
+
+  <code class="nx">toggleFavorite</code><code class="p">(</code><code class="nx">event</code><code class="p">)</code> <code class="p">{</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code> <code class="o">=</code> <code class="o">!</code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code><code class="p">;</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>We have removed all instantiation logic from the <code>app-stock-item</code> component, and marked the <code>stock</code> variable as an input. This means that the initialization logic has been moved out, and the component is only responsible for receiving the value of the stock from the parent component and just rendering the data.</p>
+
+<p>Next, let’s take a look at the <code>AppComponent</code> and how we can change that to now pass in the data to the <code>StockItemComponent</code>:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-root'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./app.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./app.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">AppComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+  <code class="nx">title</code> <code class="o">=</code> <code class="s1">'Stock Market App'</code><code class="p">;</code>
+
+  <code class="kr">public</code> <code class="nx">stockObj</code>: <code class="kt">Stock</code><code class="p">;</code>
+
+  <code class="nx">ngOnInit</code><code class="p">()</code><code class="o">:</code> <code class="k">void</code> <code class="p">{</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stockObj</code> <code class="o">=</code> <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Test Stock Company'</code><code class="p">,</code> <code class="s1">'TSC'</code><code class="p">,</code> <code class="mi">85</code><code class="p">,</code> <code class="mi">80</code><code class="p">);</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>We just moved the initialization of the stock object from the <code>StockItemComponent</code> to the <code>AppComponent</code>. Finally, let’s take a look at the template of the <code>AppComponent</code> to see how we can pass in the stock to the <code>StockItemComponent</code>:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;h1&gt;</code>
+  {{title}}
+<code class="nt">&lt;/h1&gt;</code>
+<code class="nt">&lt;app-stock-item</code> <code class="err">[</code><code class="na">stock</code><code class="err">]="</code><code class="na">stockObj</code><code class="err">"</code><code class="nt">&gt;&lt;/app-stock-item&gt;</code></pre>
+
+<p>We use Angular’s data binding to pass in the stock from the <code>AppComponent</code> to the <code>StockItemComponent</code>. The name of the attribute (<code>stock</code>) has to match the name of the variable in the component that has been marked as input.<a data-type="indexterm" data-primary="case-sensitive attributes" id="idm139828134568352"></a><a data-type="indexterm" data-primary="attributes, case sensitive" id="idm139828134567712"></a> The attribute name is case sensitive, so make sure it matches exactly with the input variable name. The value that we pass to it is the reference of the object in the <code>AppComponent</code> class, which is <code>stockObj</code>.</p>
+<div data-type="note" epub:type="note"><h1>HTML and Case-Sensitive Attributes?</h1>
+<p>You might wonder how this is even possible.<a data-type="indexterm" data-primary="HTML" data-secondary="and case-sensitive attributes" id="idm139828134564976"></a> Angular has its own HTML parser under the covers that parses the templates for Angular-specific syntax, and does not rely on the DOM API for some of these. This is why Angular attributes are and can be case-sensitive.</p>
+</div>
+
+<p>These inputs are data bound, so if you end up changing the value of the object in <code>AppComponent</code>, it will automatically be reflected in the child <code>StockItemComponent</code>.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Output"><div class="sect2" id="idm139828134767936">
+<h2>Output</h2>
+
+<p>Just like we can pass data into a component, we can also register and listen for events from a component.<a data-type="indexterm" data-primary="components" data-secondary="output" id="idm139828134560528"></a> We use data binding to pass data in, and we use event binding syntax to register for events.<a data-type="indexterm" data-primary="event binding" data-secondary="registering for events in components" id="idm139828134556640"></a><a data-type="indexterm" data-primary="Output decorator" id="idm139828134555728"></a> We use the <code>Output</code> decorator to accomplish this.</p>
+
+<p>We register an <code>EventEmitter</code> as an output from any component.<a data-type="indexterm" data-primary="EventEmitter" data-secondary="registering as output from a component" id="idm139828134553600"></a> We can then trigger the event using the <code>EventEmitter</code> object, which will allow any component bound to the event to get the notification and act accordingly.</p>
+
+<p>We can use the code from the previous example where we registered an <code>Input</code> decorator and continue on from there. Let’s now extend the <code>StockComponent</code> to trigger an event when it is favorited, and move the data manipulation out from the component to its parent. This makes sense as well because the parent component is responsible for the data and should be the single source of truth. Thus, we will let the parent <code>AppComponent</code> register for the <code>toggleFavorite</code> event and change the state of the stock when the event is triggered.</p>
+
+<p>The finished code for this is in the <em>chapter4/component-output</em> folder.</p>
+
+<p>Take a look at the <code>StockItemComponent</code> code in <em>src/app/stock/stock-item/stock-item.component.ts</em>:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code><code class="p">,</code> <code class="nx">Input</code><code class="p">,</code> <code class="nx">Output</code><code class="p">,</code> <code class="nx">EventEmitter</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'../../model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-item'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./stock-item.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./stock-item.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockItemComponent</code> <code class="p">{</code>
+
+  <code class="err">@</code><code class="nx">Input</code><code class="p">()</code> <code class="kr">public</code> <code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">;</code>
+  <code class="err">@</code><code class="nx">Output</code><code class="p">()</code> <code class="kr">private</code> <code class="nx">toggleFavorite</code>: <code class="kt">EventEmitter</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="o">&gt;</code><code class="p">;</code>
+
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">toggleFavorite</code> <code class="o">=</code> <code class="k">new</code> <code class="nx">EventEmitter</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="o">&gt;</code><code class="p">();</code>
+   <code class="p">}</code>
+
+  <code class="nx">onToggleFavorite</code><code class="p">(</code><code class="nx">event</code><code class="p">)</code> <code class="p">{</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">toggleFavorite</code><code class="p">.</code><code class="nx">emit</code><code class="p">(</code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">);</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>A few important things to note:</p>
+
+<ul>
+<li>
+<p>We imported the <code>Output</code> decorator as well as the <code>EventEmitter</code> from the Angular library.</p>
+</li>
+<li>
+<p>We created a new class member called <code>toggleFavorite</code> of type <code>EventEmitter</code>, and renamed our method to <code>onToggleFavorite</code>. The <code>EventEmitter</code> can be typed for additional type safety.</p>
+</li>
+<li>
+<p>We need to ensure that the <code>EventEmitter</code> instance is initialized, as it is <em>not</em> auto-initialized for us. Either do it inline or do it in the constructor as we did earlier.</p>
+</li>
+<li>
+<p>The <code>onToggleFavorite</code> now just calls a method on the <code>EventEmitter</code> to emit the entire stock object. This means that all listeners of the <code>toggleFavorite</code> event will get the current stock object as a parameter.</p>
+</li>
+</ul>
+
+<p>We will also change <em>stock-item.component.html</em> to call the <code>onToggleFavorite</code> method instead of <code>toggleFavorite</code>. The HTML markup remains pretty much the same otherwise:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-container"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"name"</code><code class="nt">&gt;</code>{{stock.name + ' (' + stock.code + ')'}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"price"</code>
+      <code class="err">[</code><code class="na">class</code><code class="err">]="</code><code class="na">stock</code><code class="err">.</code><code class="na">isPositiveChange</code><code class="err">()</code> <code class="err">?</code> <code class="err">'</code><code class="na">positive</code><code class="err">'</code> <code class="na">:</code> <code class="err">'</code><code class="na">negative</code><code class="err">'"</code><code class="nt">&gt;</code>
+      $ {{stock.price}}
+  <code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;button</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">onToggleFavorite</code><code class="err">($</code><code class="na">event</code><code class="err">)"</code>
+          <code class="err">*</code><code class="na">ngIf=</code><code class="s">"!stock.favorite"</code><code class="nt">&gt;</code>Add to Favorite<code class="nt">&lt;/button&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>Next, we add a method to the <code>AppComponent</code> that should be triggered whenever the <code>onToggleFavorite</code> method is triggered, which we will add event binding on:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-root'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./app.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./app.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">AppComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+  <code class="nx">title</code> <code class="o">=</code> <code class="s1">'app works!'</code><code class="p">;</code>
+
+  <code class="kr">public</code> <code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">;</code>
+
+  <code class="nx">ngOnInit</code><code class="p">()</code><code class="o">:</code> <code class="k">void</code> <code class="p">{</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code> <code class="o">=</code> <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Test Stock Company'</code><code class="p">,</code> <code class="s1">'TSC'</code><code class="p">,</code> <code class="mi">85</code><code class="p">,</code> <code class="mi">80</code><code class="p">);</code>
+  <code class="p">}</code>
+
+  <code class="nx">onToggleFavorite</code><code class="p">(</code><code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">)</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Favorite for stock '</code><code class="p">,</code> <code class="nx">stock</code><code class="p">,</code> <code class="s1">' was triggered'</code><code class="p">);</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code> <code class="o">=</code> <code class="o">!</code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code><code class="p">;</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>The only thing new is the <code>onToggleFavorite</code> method we have added, which takes a stock as an argument. In this particular case, we don’t use the stock passed to it other than for logging, but you could base any decision/work on that. Note also that the name of the function is not relevant, and you could name it whatever you want.</p>
+
+<p>Finally, let’s tie it all together by subscribing to the new output from our <span class="keep-together"><code>StockComponent</code></span> in the <em>app-component.html</em> file:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;h1&gt;</code>
+  {{title}}
+<code class="nt">&lt;/h1&gt;</code>
+<code class="nt">&lt;app-stock-item</code> <code class="err">[</code><code class="na">stock</code><code class="err">]="</code><code class="na">stock</code><code class="err">"</code>
+                <code class="err">(</code><code class="na">toggleFavorite</code><code class="err">)="</code><code class="na">onToggleFavorite</code><code class="err">($</code><code class="na">event</code><code class="err">)"</code><code class="nt">&gt;</code>
+<code class="nt">&lt;/app-stock-item&gt;</code></pre>
+
+<p>We just added an event binding using Angular’s event-binding syntax to the output declared in the <code>stock-item</code> component. Notice again that it is case sensitive and it has to exactly match what member variable we decorated with the <code>Output</code> decorator. Also, to get access to the value emitted by the component, we use the keyword <code>$event</code> as a parameter to the function. Without it, the function would still get triggered, but you would not get any arguments with it.</p>
+
+<p>With this, if you run the application (remember, <code>ng serve</code>), you should see the fully functional app, and when you click the Add to Favorite button, it should trigger the method in the <code>AppComponent</code>.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Change Detection"><div class="sect2" id="change-detection">
+<h2>Change Detection</h2>
+
+<p>We mentioned <code>changeDetection</code> as an attribute on the <code>Component</code> decorator.<a data-type="indexterm" data-primary="change detection for components" id="ix_chdet"></a><a data-type="indexterm" data-primary="components" data-secondary="input and output, change detection" id="ix_compschde"></a> Now that we have seen how <code>Input</code> and <code>Output</code> decorators work, let’s deep dive a little bit into how Angular performs its change detection at a component level.</p>
+
+<p>By default, Angular applies the <code>ChangeDetectionStrategy.Default</code> mechanism to the <code>changeDetection</code> attribute.<a data-type="indexterm" data-primary="ChangeDetectionStrategy.Default" id="idm139828134230160"></a> This means that every time Angular notices an event (say, a server response or a user interaction), it will go through each component in the component tree, and check each of the bindings individually to see if any of the values have changed and need to be updated in the view.</p>
+
+<p>For a very large application, you will have lots of bindings on a given page. When a user takes any action, you as a developer might know for sure that most of the page will not change. In such cases, you can actually give a hint to the Angular change detector to check or not check certain components as you see fit.<a data-type="indexterm" data-primary="ChangeDetectionStrategy.OnPush" id="idm139828134228224"></a> For any given component, we can accomplish this by changing the <code>ChangeDetectionStrategy</code> from the default to <code>ChangeDetectionStrategy.OnPush</code>. What this tells Angular is that the bindings for this particular component will need to be checked only based on the <code>Input</code> to this component.</p>
+
+<p>Let’s consider a few examples to see how this might play out. Say we have a component tree A → B → C. That is, we have a root component A, which uses a component B in its template, which in turn uses a component C. And let’s say component B passes in a composite object <code>compositeObj</code> to component C as input. Maybe something like:</p>
+
+<pre data-type="programlisting">&lt;c [inputToC]="compositeObj"&gt;&lt;/c&gt;</pre>
+
+<p>That is, <code>inputToC</code> is the input variable marked with the <code>Input</code> decorator in component C, and is passed the object <code>compositeObj</code> from component B. Now say we marked component C’s <code>changeDetection</code> attribute as <code>ChangeDetectionStrategy​.OnPush</code>. Here are the implications of that change:</p>
+
+<ul>
+<li>
+<p>If component C has bindings to any attributes of <code>compositeObj</code>, they will work as usual (no change from default behavior).</p>
+</li>
+<li>
+<p>If component C makes any changes to any of the attributes of <code>compositeObj</code>, they will also be updated immediately (no change from default behavior).</p>
+</li>
+<li>
+<p>If the parent component B creates a new <code>compositeObj</code> or changes the reference of <code>compositeObj</code> (think new operator, or assign from a server response), then component C would recognize the change and update its bindings for the new value (no change from default behavior, but internal behavior changes on how Angular recognizes the change).</p>
+</li>
+<li>
+<p>If the parent component B changes any attribute on the <code>compositeObj</code> directly (as a response to a user action outside component B), then these changes would not be updated in component C (major change from the default behavior).</p>
+</li>
+<li>
+<p>If the parent component B changes any attribute on response to an event emitter from component C, and then changes any attribute on the <code>compositeObj</code> (without changing the reference), this would still work and the bindings would get updated. This is because the change originates from component C (no change from default behavior).</p>
+</li>
+</ul>
+
+<p>Angular provides ways for us to signal when to check the bindings from within the component as well, to have absolute control on Angular’s data binding. We will cover these in <a data-type="xref" href="#change-detection">“Change Detection”</a>. For now, it is good to understand the difference between the two change detection strategies that Angular provides.</p>
+
+<p>Let’s now modify the example code to see this in action. First, modify the <em>stock-item.component.ts</em> file to change the <code>ChangeDetectionStrategy</code> in the child component:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code><code class="p">,</code> <code class="nx">Input</code><code class="p">,</code> <code class="nx">Output</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">EventEmitter</code><code class="p">,</code> <code class="nx">ChangeDetectionStrategy</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'../../model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-item'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./stock-item.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./stock-item.component.css'</code><code class="p">],</code>
+  <code class="nx">changeDetection</code>: <code class="kt">ChangeDetectionStrategy.OnPush</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockItemComponent</code> <code class="p">{</code>
+
+  <code class="err">@</code><code class="nx">Input</code><code class="p">()</code> <code class="kr">public</code> <code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">;</code>
+  <code class="err">@</code><code class="nx">Output</code><code class="p">()</code> <code class="kr">private</code> <code class="nx">toggleFavorite</code>: <code class="kt">EventEmitter</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="o">&gt;</code><code class="p">;</code>
+
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">toggleFavorite</code> <code class="o">=</code> <code class="k">new</code> <code class="nx">EventEmitter</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="o">&gt;</code><code class="p">();</code>
+   <code class="p">}</code>
+
+  <code class="nx">onToggleFavorite</code><code class="p">(</code><code class="nx">event</code><code class="p">)</code> <code class="p">{</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">toggleFavorite</code><code class="p">.</code><code class="nx">emit</code><code class="p">(</code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">);</code>
+  <code class="p">}</code>
+
+  <code class="nx">changeStockPrice() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">price</code> <code class="o">+=</code> <code class="mi">5</code><code class="p">;</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>In addition to changing the <code>ChangeDetectionStrategy</code>, we also added another function to <code>changeStockPrice()</code>. We will use these functions to demonstrate the behavior of the change detection in the context of our application.</p>
+
+<p>Next, let’s quickly modify <em>stock-item.component.html</em> to allow us to trigger the new function. We will simply add a new button to trigger and change the stock price when the button is clicked:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-container"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"name"</code><code class="nt">&gt;</code>{{stock.name + ' (' + stock.code + ')'}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"price"</code>
+      <code class="err">[</code><code class="na">class</code><code class="err">]="</code><code class="na">stock</code><code class="err">.</code><code class="na">isPositiveChange</code><code class="err">()</code> <code class="err">?</code> <code class="err">'</code><code class="na">positive</code><code class="err">'</code> <code class="na">:</code> <code class="err">'</code><code class="na">negative</code><code class="err">'"</code><code class="nt">&gt;</code>
+      $ {{stock.price}}
+  <code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;button</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">onToggleFavorite</code><code class="err">($</code><code class="na">event</code><code class="err">)"</code>
+          <code class="err">*</code><code class="na">ngIf=</code><code class="s">"!stock.favorite"</code><code class="nt">&gt;</code>Add to Favorite<code class="nt">&lt;/button&gt;</code>
+  <code class="nt">&lt;button</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">changeStockPrice</code><code class="err">()"</code><code class="nt">&gt;</code>Change Price<code class="nt">&lt;/button&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>There is no change to the HTML of the template other than adding a new button to change the stock price. Similarly, let’s quickly change the main <em>app.component.html</em> file to add another button to trigger the change of the price from the parent component (similar to component B in the earlier hypothetical example):</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;h1&gt;</code>
+  {{title}}
+<code class="nt">&lt;/h1&gt;</code>
+<code class="nt">&lt;app-stock-item</code> <code class="err">[</code><code class="na">stock</code><code class="err">]="</code><code class="na">stock</code><code class="err">"</code>
+                <code class="err">(</code><code class="na">toggleFavorite</code><code class="err">)="</code><code class="na">onToggleFavorite</code><code class="err">($</code><code class="na">event</code><code class="err">)"</code><code class="nt">&gt;</code>
+<code class="nt">&lt;/app-stock-item&gt;</code>
+<code class="nt">&lt;button</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">changeStockObject</code><code class="err">()"</code><code class="nt">&gt;</code>Change Stock<code class="nt">&lt;/button&gt;</code>
+<code class="nt">&lt;button</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">changeStockPrice</code><code class="err">()"</code><code class="nt">&gt;</code>Change Price<code class="nt">&lt;/button&gt;</code></pre>
+
+<p>We have added two new buttons to this template: one that will change the reference of the stock object directly, and another that will modify the existing reference of the stock object to change the price from the parent <code>AppComponent</code>. Now finally, we can see how all of this is hooked up in the <em>app.component.ts</em> file:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-root'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./app.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./app.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">AppComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+  <code class="nx">title</code> <code class="o">=</code> <code class="s1">'app works!'</code><code class="p">;</code>
+
+  <code class="kr">public</code> <code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">;</code>
+  <code class="kr">private</code> <code class="nx">counter</code>: <code class="kt">number</code> <code class="o">=</code> <code class="mi">1</code><code class="p">;</code>
+
+  <code class="nx">ngOnInit</code><code class="p">()</code><code class="o">:</code> <code class="k">void</code> <code class="p">{</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code> <code class="o">=</code> <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Test Stock Company - '</code> <code class="o">+</code> <code class="k">this</code><code class="p">.</code><code class="nx">counter</code><code class="o">++</code><code class="p">,</code>
+        <code class="s1">'TSC'</code><code class="p">,</code> <code class="mi">85</code><code class="p">,</code> <code class="mi">80</code><code class="p">);</code>
+  <code class="p">}</code>
+
+  <code class="nx">onToggleFavorite</code><code class="p">(</code><code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">)</code> <code class="p">{</code>
+    <code class="c1">// This will update the value in the stock item component</code>
+    <code class="c1">// Because it is triggered as a result of an event</code>
+    <code class="c1">// binding from the stock item component</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code> <code class="o">=</code> <code class="o">!</code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code><code class="p">;</code>
+  <code class="p">}</code>
+
+  <code class="nx">changeStockObject() {</code>
+    <code class="c1">// This will update the value in the stock item component</code>
+    <code class="c1">// Because we are creating a new reference for the stock input</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code> <code class="o">=</code> <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Test Stock Company - '</code> <code class="o">+</code> <code class="k">this</code><code class="p">.</code><code class="nx">counter</code><code class="o">++</code><code class="p">,</code>
+        <code class="s1">'TSC'</code><code class="p">,</code> <code class="mi">85</code><code class="p">,</code> <code class="mi">80</code><code class="p">);</code>
+  <code class="p">}</code>
+
+  <code class="nx">changeStockPrice() {</code>
+    <code class="c1">// This will not update the value in the stock item component</code>
+    <code class="c1">// because it is changing the same reference and angular will</code>
+    <code class="c1">// not check for it in the OnPush change detection strategy.</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">price</code> <code class="o">+=</code> <code class="mi">10</code><code class="p">;</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>The <em>app.component.ts</em> file has seen the most changes. The preceding code is also well annotated with comments to explain the expected behavior when each of these functions are triggered. We have added two new methods: <code>changeStockObject()</code>, which creates a new instance of the <code>stock</code> object in the <code>AppComponent</code>, and <code>changeStockPrice()</code>, which modifies the prices of the <code>stock</code> object in the <code>AppComponent</code>. We have also added a counter just to keep track of how many times we create a new stock object, but that is not strictly necessary.</p>
+
+<p>Now when you run this application, you should expect to see the following behavior:</p>
+
+<ul>
+<li>
+<p>Clicking Add to Favorite within the <code>StockItemComponent</code> still works as expected.</p>
+</li>
+<li>
+<p>Clicking Change Price within the <code>StockItemComponent</code> will increase the price of the stock by $5 each time.</p>
+</li>
+<li>
+<p>Clicking Change Stock outside the <code>StockItemComponent</code> will change the name of the stock with each click. (This is why we added the counter!)</p>
+</li>
+<li>
+<p>Clicking Change Price outside the <code>StockItemComponent</code> will have no impact (even though the actual value of the stock will jump if you click Change Price inside after this). This shows that the model is getting updated, but Angular is not updating the view.</p>
+</li>
+</ul>
+
+<p>You should also change back the <code>ChangeDetectionStrategy</code> to default to see the difference in action.<a data-type="indexterm" data-primary="change detection for components" data-startref="ix_chdet" id="idm139828133574640"></a><a data-type="indexterm" data-primary="components" data-secondary="input and output, change detection" data-startref="ix_compschde" id="idm139828133573600"></a></p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Component Lifecycle"><div class="sect1" id="idm139828134243104">
+<h1>Component Lifecycle</h1>
+
+<p>Components (and directives) in Angular have their own lifecycle, from creation, rendering, changing, to destruction. This lifecycle executes in preorder tree traversal order, from top to bottom.<a data-type="indexterm" data-primary="components" data-secondary="lifecycle" id="ix_compslife"></a> After Angular renders a component, it starts the lifecycle for each of its children, and so on until the entire application is rendered.</p>
+
+<p>There are times when these lifecycle events are useful to us in developing our application, so Angular provides hooks into this lifecycle so that we can observe and react as necessary. <a data-type="xref" href="#fig0401">Figure 4-1</a> shows the lifecycle hooks of a component, in the order in which they are invoked.</p>
+
+<figure><div id="fig0401" class="figure">
+<img src="images/auar_0401.png" alt="Angular Component Lifecycle" />
+<h6><span class="label">Figure 4-1. </span>Angular component lifecycle hooks (original from <a href="https://angular.io/guide/lifecycle-hooks"><em class="hyperlink">https://angular.io/guide/lifecycle-hooks</em></a>)</h6>
+</div></figure>
+
+<p>Angular will first call the constructor for any component, and then the various steps mentioned earlier in order. Some of them, like the <code>OnInit</code> and <code>AfterContentInit</code> (basically, any lifecycle hook ending with <code>Init</code>) is called only once, when a component is initialized, while the others are called whenever any content changes. The <code>OnDestroy</code> hook is also called only once for a component.</p>
+
+<p>Each of these lifecycle steps comes with an interface that should be implemented when a component cares about that particular lifecycle, and each interface provides a function starting with <code>ng</code> that needs to be implemented. For example, the <code>OnInit</code> lifecycle step needs a function called <code>ngOnInit</code> to be implemented in the component and so on.</p>
+
+<p>We will walk through each of the lifecycle steps here, and then use one example to see this all in action and the ordering of lifecycle steps within a component and across components.</p>
+
+<p>There is also one more concept to learn, which we will briefly touch upon in this chapter, and come back to later in more detail—the concept of <code>ViewChildren</code> and <code>ContentChildren</code>.</p>
+
+<p><code>ViewChildren</code> is any child component whose tags/selectors (mostly elements, as that is the recommendation for components) appear within the template of the component. So in our case, <code>app-stock-item</code> would be a <code>ViewChild</code> of the <code>AppComponent</code>.</p>
+
+<p><code>ContentChildren</code> is any child component that gets projected into the view of the component, but is not directly included in the template within the component. Imagine something like a carousel, where the functionality is encapsulated in the component, but the view, which could be images or pages of a book, comes from the user of the component. Those are generally achieved through <code>ContentChildren</code>. We will cover this in more depth later in this chapter.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Interfaces and Functions"><div class="sect2" id="idm139828133554240">
+<h2>Interfaces and Functions</h2>
+
+<p><a data-type="xref" href="#table0401">Table 4-1</a> shows the interfaces and functions in the order in which they are called, along with specific details about the step if there is anything to note.<a data-type="indexterm" data-primary="interfaces" data-secondary="in component lifecycle" id="ix_interfcomp"></a><a data-type="indexterm" data-primary="components" data-secondary="lifecycle" data-tertiary="interfaces and functions" id="ix_compslifeif"></a> Note that we are only covering component-specific lifecycle steps, and they are slightly different from a directive’s lifecycle.</p>
+<table id="table0401" style="width: 100%">
+<caption><span class="label">Table 4-1. </span>Angular lifecycle hooks and methods</caption>
+<thead>
+<tr>
+<th>Interface</th>
+<th>Method</th>
+<th>Applicable to</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p><code>OnChanges</code></p></td>
+<td><p><code>ngOnChanges(changes: SimpleChange)</code></p></td>
+<td><p>Components and directives</p></td>
+<td><p><code>ngOnChanges</code> is called both right after the constructor to set and then later every time the input properties to a directive change. It is called before the <code>ngOnInit</code> method.<a data-type="indexterm" data-primary="ngOnChanges function" id="idm139828133540336"></a><a data-type="indexterm" data-primary="OnChanges interface" id="idm139828133539600"></a></p></td>
+</tr>
+<tr>
+<td><p><code>OnInit</code></p></td>
+<td><p><code>ngOnInit()</code></p></td>
+<td><p>Components and directives</p></td>
+<td><p>This is your typical initialization hook, allowing you to do any one-time initialization specific to your component or directive. This is the ideal place to load data from the server and so on, rather than the constructor, both for separation of concerns as well as testability.<a data-type="indexterm" data-primary="OnInit interface" id="idm139828133535680"></a><a data-type="indexterm" data-primary="ngOnInit function" id="idm139828133534976"></a></p></td>
+</tr>
+<tr>
+<td><p><code>DoCheck</code></p></td>
+<td><p><code>ngDoCheck()</code></p></td>
+<td><p>Components and directives</p></td>
+<td><p><code>DoCheck</code> is Angular’s way of giving the component a way to check if there are any bindings or changes that Angular can’t or should not detect on its own.<a data-type="indexterm" data-primary="DoCheck interface" id="idm139828133530672"></a><a data-type="indexterm" data-primary="ngDoCheck function" id="idm139828133529968"></a> This is one of the ways we can use to notify Angular of a change in the component, when we override the default <code>ChangeDetectionStrategy</code> for a component from <code>Default</code> to <code>OnPush</code>.</p></td>
+</tr>
+<tr>
+<td><p><code>After​Con⁠tent​Init</code></p></td>
+<td><p><code>ngAfterContent​Init()</code></p></td>
+<td><p>Components only</p></td>
+<td><p>As mentioned, the <code>AfterContentInit</code> hook is triggered during component projection cases, and only once during initialization of the component.<a data-type="indexterm" data-primary="AfterContentInit interface" id="idm139828133524336"></a> If there is no projection, this is triggered immediately.<a data-type="indexterm" data-primary="ngAfterContentInit function" id="idm139828133523488"></a></p></td>
+</tr>
+<tr>
+<td><p><code>After​Con⁠tent​Checked</code></p></td>
+<td><p><code>ngAfterContent​Checked()</code></p></td>
+<td><p>Components only</p></td>
+<td><p><code>AfterContentChecked</code> is triggered each time Angular’s change detection cycle executes,<a data-type="indexterm" data-primary="AfterContentChecked interface" id="idm139828133519584"></a><a data-type="indexterm" data-primary="ngAfterContentChecked function" id="idm139828133518816"></a> and in case it is initialization, it is triggered right after the <code>AfterContentInit</code> hook.</p></td>
+</tr>
+<tr>
+<td><p><code>AfterView​Init</code></p></td>
+<td><p><code>ngAfterView​Init()</code></p></td>
+<td><p>Components only</p></td>
+<td><p><code>AfterViewInit</code> is the complement to <code>AfterContent​Init</code>, and is triggered after all the child components that are directly used in the template of the component are finished initializing and their views updated with bindings.<a data-type="indexterm" data-primary="AfterViewInit interface" id="idm139828133513680"></a><a data-type="indexterm" data-primary="ngAfterViewInit function" id="idm139828133512976"></a> This may not necessarily mean that the views are rendered into the browser, but that Angular has finished updating its internal views to render as soon as possible. <code>AfterViewInit</code> is triggered only once during the load of the component.</p></td>
+</tr>
+<tr>
+<td><p><code>AfterViewChecked</code></p></td>
+<td><p><code>ngAfterViewChecked()</code></p></td>
+<td><p>Components only</p></td>
+<td><p><code>AfterViewChecked</code> is triggered each time after all the child components have been checked and updated. Again, a good way to think about both this and <code>AfterContent​Checked</code> is like a depth-first tree traversal, in that it will execute only after all the children components’ <code>AfterViewChecked</code> hooks have finished executing.<a data-type="indexterm" data-primary="AfterViewChecked interface" id="idm139828133507232"></a><a data-type="indexterm" data-primary="ngAfterViewChecked function" id="idm139828133506464"></a></p></td>
+</tr>
+<tr>
+<td><p><code>OnDestroy</code></p></td>
+<td><p><code>ngOnDestroy()</code></p></td>
+<td><p>Components and directives</p></td>
+<td><p>The <code>OnDestroy</code> hook is called when a component is about to be destroyed and removed from the UI. It is a good place to do all cleanup, like unsubscribing any listeners you may have initialized and the like.<a data-type="indexterm" data-primary="OnDestroy interface" id="idm139828133502208"></a><a data-type="indexterm" data-primary="ngOnDestroy function" id="idm139828133501504"></a> It is generally good practice to clean up anything that you have registered (timers, observables, etc.) as part of the component.</p></td>
+</tr>
+</tbody>
+</table>
+
+<p>Let’s try to add all these hooks to our existing application to see the order of execution in a real-world scenario. We will add all of these hooks to both our <code>AppComponent</code> and the <code>StockItemComponent</code>, with a simple <code>console.log</code> to just see when and how these functions are executed. We will use the base from the output example to build from, so in case you are not coding along, you can take the example from <em>chapter4/component-output</em> to build from there.</p>
+
+<p>The final finished example is also available in <em>chapter4/component-lifecycle</em>.</p>
+
+<p>First, we can modify the <em>src/app/app.component.ts</em> file and add the hooks as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">SimpleChanges</code><code class="p">,</code> <code class="nx">OnInit</code><code class="p">,</code> <code class="nx">OnChanges</code><code class="p">,</code> <code class="nx">OnDestroy</code><code class="p">,</code>
+         <code class="nx">DoCheck</code><code class="p">,</code> <code class="nx">AfterViewChecked</code><code class="p">,</code> <code class="nx">AfterViewInit</code><code class="p">,</code> <code class="nx">AfterContentChecked</code><code class="p">,</code>
+         <code class="nx">AfterContentInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-root'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./app.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./app.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">AppComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code><code class="p">,</code> <code class="nx">OnChanges</code><code class="p">,</code> <code class="nx">OnDestroy</code><code class="p">,</code>
+                                     <code class="nx">DoCheck</code><code class="p">,</code> <code class="nx">AfterContentChecked</code><code class="p">,</code>
+                                     <code class="nx">AfterContentInit</code><code class="p">,</code> <code class="nx">AfterViewChecked</code><code class="p">,</code>
+                                     <code class="nx">AfterViewInit</code> <code class="p">{</code>
+  <code class="nx">title</code> <code class="o">=</code> <code class="s1">'app works!'</code><code class="p">;</code>
+
+  <code class="kr">public</code> <code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">;</code>
+
+  <code class="nx">onToggleFavorite</code><code class="p">(</code><code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">)</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Favorite for stock '</code><code class="p">,</code> <code class="nx">stock</code><code class="p">,</code> <code class="s1">' was triggered'</code><code class="p">);</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code> <code class="o">=</code> <code class="o">!</code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code><code class="p">;</code>
+  <code class="p">}</code>
+
+  <code class="nx">ngOnInit</code><code class="p">()</code><code class="o">:</code> <code class="k">void</code> <code class="p">{</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code> <code class="o">=</code> <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Test Stock Company'</code><code class="p">,</code> <code class="s1">'TSC'</code><code class="p">,</code> <code class="mi">85</code><code class="p">,</code> <code class="mi">80</code><code class="p">);</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'App Component - On Init'</code><code class="p">);</code>
+  <code class="p">}</code>
+
+  <code class="nx">ngAfterViewInit</code><code class="p">()</code><code class="o">:</code> <code class="k">void</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'App Component - After View Init'</code><code class="p">);</code>
+  <code class="p">}</code>
+  <code class="nx">ngAfterViewChecked</code><code class="p">()</code><code class="o">:</code> <code class="k">void</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'App Component - After View Checked'</code><code class="p">);</code>
+  <code class="p">}</code>
+  <code class="nx">ngAfterContentInit</code><code class="p">()</code><code class="o">:</code> <code class="k">void</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'App Component - After Content Init'</code><code class="p">);</code>
+  <code class="p">}</code>
+  <code class="nx">ngAfterContentChecked</code><code class="p">()</code><code class="o">:</code> <code class="k">void</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'App Component - After Content Checked'</code><code class="p">);</code>
+  <code class="p">}</code>
+  <code class="nx">ngDoCheck</code><code class="p">()</code><code class="o">:</code> <code class="k">void</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'App Component - Do Check'</code><code class="p">);</code>
+  <code class="p">}</code>
+  <code class="nx">ngOnDestroy</code><code class="p">()</code><code class="o">:</code> <code class="k">void</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'App Component - On Destroy'</code><code class="p">);</code>
+  <code class="p">}</code>
+  <code class="nx">ngOnChanges</code><code class="p">(</code><code class="nx">changes</code>: <code class="kt">SimpleChanges</code><code class="p">)</code><code class="o">:</code> <code class="k">void</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'App Component - On Changes - '</code><code class="p">,</code> <code class="nx">changes</code><code class="p">);</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>You can see that we have implemented the interfaces for <code>OnInit, OnChanges, OnDestroy, DoCheck, AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit</code> on the <code>AppComponent</code> class, and then went ahead and implemented the respective functions. Each of the methods simply prints out a log statement mentioning the component name and the trigger method name.</p>
+
+<p>Similarly, we can do the same for the <code>StockItemComponent</code>:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">SimpleChanges</code><code class="p">,</code> <code class="nx">OnInit</code><code class="p">,</code>
+         <code class="nx">OnChanges</code><code class="p">,</code> <code class="nx">OnDestroy</code><code class="p">,</code> <code class="nx">DoCheck</code><code class="p">,</code> <code class="nx">AfterViewChecked</code><code class="p">,</code>
+         <code class="nx">AfterViewInit</code><code class="p">,</code> <code class="nx">AfterContentChecked</code><code class="p">,</code>
+         <code class="nx">AfterContentInit</code><code class="p">,</code> <code class="nx">Input</code><code class="p">,</code>
+         <code class="nx">Output</code><code class="p">,</code> <code class="nx">EventEmitter</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'../../model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-item'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./stock-item.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./stock-item.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockItemComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code><code class="p">,</code> <code class="nx">OnChanges</code><code class="p">,</code>
+                                           <code class="nx">OnDestroy</code><code class="p">,</code> <code class="nx">DoCheck</code><code class="p">,</code>
+                                           <code class="nx">AfterContentChecked</code><code class="p">,</code>
+                                           <code class="nx">AfterContentInit</code><code class="p">,</code>
+                                           <code class="nx">AfterViewChecked</code><code class="p">,</code>
+                                           <code class="nx">AfterViewInit</code> <code class="p">{</code>
+
+  <code class="err">@</code><code class="nx">Input</code><code class="p">()</code> <code class="kr">public</code> <code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">;</code>
+  <code class="err">@</code><code class="nx">Output</code><code class="p">()</code> <code class="kr">private</code> <code class="nx">toggleFavorite</code>: <code class="kt">EventEmitter</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="o">&gt;</code><code class="p">;</code>
+
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">toggleFavorite</code> <code class="o">=</code> <code class="k">new</code> <code class="nx">EventEmitter</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="o">&gt;</code><code class="p">();</code>
+   <code class="p">}</code>
+
+  <code class="nx">onToggleFavorite</code><code class="p">(</code><code class="nx">event</code><code class="p">)</code> <code class="p">{</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">toggleFavorite</code><code class="p">.</code><code class="nx">emit</code><code class="p">(</code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">);</code>
+  <code class="p">}</code>
+
+  <code class="nx">ngOnInit</code><code class="p">()</code><code class="o">:</code> <code class="k">void</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Stock Item Component - On Init'</code><code class="p">);</code>
+  <code class="p">}</code>
+  <code class="nx">ngAfterViewInit</code><code class="p">()</code><code class="o">:</code> <code class="k">void</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Stock Item Component - After View Init'</code><code class="p">);</code>
+  <code class="p">}</code>
+  <code class="nx">ngAfterViewChecked</code><code class="p">()</code><code class="o">:</code> <code class="k">void</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Stock Item Component - After View Checked'</code><code class="p">);</code>
+  <code class="p">}</code>
+  <code class="nx">ngAfterContentInit</code><code class="p">()</code><code class="o">:</code> <code class="k">void</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Stock Item Component - After Content Init'</code><code class="p">);</code>
+  <code class="p">}</code>
+  <code class="nx">ngAfterContentChecked</code><code class="p">()</code><code class="o">:</code> <code class="k">void</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Stock Item Component - After Content Checked'</code><code class="p">);</code>
+  <code class="p">}</code>
+  <code class="nx">ngDoCheck</code><code class="p">()</code><code class="o">:</code> <code class="k">void</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Stock Item Component - Do Check'</code><code class="p">);</code>
+  <code class="p">}</code>
+  <code class="nx">ngOnDestroy</code><code class="p">()</code><code class="o">:</code> <code class="k">void</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Stock Item Component - On Destroy'</code><code class="p">);</code>
+  <code class="p">}</code>
+  <code class="nx">ngOnChanges</code><code class="p">(</code><code class="nx">changes</code>: <code class="kt">SimpleChanges</code><code class="p">)</code><code class="o">:</code> <code class="k">void</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Stock Item Component - On Changes - '</code><code class="p">,</code> <code class="nx">changes</code><code class="p">);</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>We have done exactly the same thing we did on the <code>AppComponent</code> with the <code>Stock​ItemComponent</code>. Now, we can run this application to see it in action.</p>
+
+<p>When you run it, open the JavaScript console in the browser. You should see, in order of execution:</p>
+<ol>
+<li>
+<p>First, the <code>AppComponent</code> gets created. Then the following hooks are triggered on the <code>AppComponent</code>:</p>
+
+<ul>
+<li>
+<p><code>On Init</code></p>
+</li>
+<li>
+<p><code>Do Check</code></p>
+</li>
+<li>
+<p><code>After Content Init</code></p>
+</li>
+<li>
+<p><code>After Content Checked</code></p>
+</li>
+</ul>
+
+<p>The preceding two immediately execute because we don’t have any content projection in our application so far.</p>
+</li>
+<li>
+<p>Next, the <code>StockItemComponent OnChanges</code> executes, with the input to the <code>Stock​ItemComponent</code> being recognized as the change, followed by the hooks listed here within the <code>StockItemComponent</code>:</p>
+
+<ul>
+<li>
+<p><code>On Init</code></p>
+</li>
+<li>
+<p><code>Do Check</code></p>
+</li>
+<li>
+<p><code>After Content Init</code></p>
+</li>
+<li>
+<p><code>After Content Checked</code></p>
+</li>
+<li>
+<p><code>After View Init</code></p>
+</li>
+<li>
+<p><code>After View Checked</code></p>
+</li>
+</ul>
+</li>
+<li>
+<p>Finally, there are no more subcomponents to traverse down on, so Angular steps back out to the parent <code>AppComponent</code>, and executes the following:</p>
+
+<ul>
+<li>
+<p><code>After View Init</code></p>
+</li>
+<li>
+<p><code>After View Checked</code></p>
+</li>
+</ul>
+</li>
+
+</ol>
+
+<p>This gives us a nice view of how and in which order Angular goes around initializing and the tree traversal it does under the covers. These hooks become very useful for certain trickier initialization logic, and are definitely essential for cleanup once your component is done and dusted, to avoid memory leaks.<a data-type="indexterm" data-primary="interfaces" data-secondary="in component lifecycle" data-startref="ix_interfcomp" id="idm139828133049584"></a><a data-type="indexterm" data-primary="components" data-secondary="lifecycle" data-tertiary="interfaces and functions" data-startref="ix_compslifeif" id="idm139828133048336"></a><a data-type="indexterm" data-primary="components" data-secondary="lifecycle" data-startref="ix_compslife" id="idm139828133046784"></a></p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="View Projection"><div class="sect1" id="idm139828133572240">
+<h1>View Projection</h1>
+
+<p>The last thing we will cover in this chapter is the concept of view projection.<a data-type="indexterm" data-primary="view projection" id="ix_viewpr"></a><a data-type="indexterm" data-primary="components" data-secondary="view projection" id="ix_compsvipr"></a> Projection is an important idea in Angular as it gives us more flexibility when we develop our components and again gives us another tool to make them truly reusable under different contexts.</p>
+
+<p>Projection is useful when we want to build components but set some parts of the UI of the component to not be an innate part of it. For example, say we were building a component for a carousel. A carousel has a few simple capabilities: it is able to display an item, and allow us to navigate to the next/previous element. Your carousel component might also have other features like lazy loading, etc. But one thing that is not the purview of the carousel component is the content it displays. A user of the component might want to display an image, a page of a book, or any other random thing.</p>
+
+<p>Thus, in these cases, the view would be controlled by the user of the component, and the functionality would be provided by the component itself. This is but one use case where we might want to use projection in our components.</p>
+
+<p>Let’s see how we might use content projection in our Angular application. We will use the base from the input example to build from, so in case you are not coding along, you can take the example from <em>chapter4/component-input</em> to build from there.</p>
+
+<p>The final finished example is available in <em>chapter4/component-projection</em>.</p>
+
+<p>First, we will modify our <code>StockItemComponent</code> to allow for content projection. There is no code change in our component class; we only need to modify the <em>src/app/stock/stock-item/stock-item.component.html</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-container"</code><code class="nt">&gt;</code><code>
+  </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"name"</code><code class="nt">&gt;</code><code>{{stock.name + ' (' + stock.code + ')'}}</code><code class="nt">&lt;/div&gt;</code><code>
+  </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"price"</code><code>
+      </code><code class="err">[</code><code class="na">class</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">stock</code><code class="err">.</code><code class="na">isPositiveChange</code><code class="err">(</code><code class="err">)</code><code> </code><code class="err">?</code><code> </code><code class="err">'</code><code class="na">positive</code><code class="err">'</code><code> </code><code class="na">:</code><code> </code><code class="err">'</code><code class="na">negative</code><code class="err">'</code><code class="err">"</code><code class="nt">&gt;</code><code>
+      $ {{stock.price}}
+  </code><code class="nt">&lt;/div&gt;</code><code>
+  </code><code class="nt">&lt;ng-content</code><code class="nt">&gt;</code><code class="nt">&lt;/ng-content&gt;</code><code>             </code><a class="co" id="co_understanding_and_using__span_class__keep_together__angular_components__span__CO1-1" href="#callout_understanding_and_using__span_class__keep_together__angular_components__span__CO1-1"><img src="images/1.png" alt="1" /></a><code>
+</code><code class="nt">&lt;/div&gt;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_understanding_and_using__span_class__keep_together__angular_components__span__CO1-1" href="#co_understanding_and_using__span_class__keep_together__angular_components__span__CO1-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>The new <code>ng-content</code> element for projection</p></dd>
+</dl>
+
+<p>We have simply removed the<a data-type="indexterm" data-primary="ng-content element" id="idm139828133016672"></a> buttons we previously had, and are going to let the user of the component decide what buttons are to be shown. To allow for this, we have replaced the buttons with an <code>ng-content</code> element. There is no other change required in the component.</p>
+
+<p>Next, we will make a change to the <code>AppComponent</code>, simply to add a method for testing purposes. Modify the <em>src/app/app.component.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** Imports and decorators skipped for brevity **/</code>
+
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">AppComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+  <code class="cm">/** Constructor and OnInit skipped for brevity **/</code>
+
+  <code class="nx">testMethod() {</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Test method in AppComponent triggered'</code><code class="p">);</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>We have simply added a method that will log to the console when it is triggered. With this in place, now let’s see how we can use our updated <code>StockItemComponent</code> and use the power of projection. Modify the <em>app.component.html</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;h1&gt;</code>
+  {{title}}
+<code class="nt">&lt;/h1&gt;</code>
+<code class="nt">&lt;app-stock-item</code> <code class="err">[</code><code class="na">stock</code><code class="err">]="</code><code class="na">stockObj</code><code class="err">"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;button</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">testMethod</code><code class="err">()"</code><code class="nt">&gt;</code>With Button 1<code class="nt">&lt;/button&gt;</code>
+<code class="nt">&lt;/app-stock-item&gt;</code>
+
+<code class="nt">&lt;app-stock-item</code> <code class="err">[</code><code class="na">stock</code><code class="err">]="</code><code class="na">stockObj</code><code class="err">"</code><code class="nt">&gt;</code>
+  No buttons for you!!
+<code class="nt">&lt;/app-stock-item&gt;</code></pre>
+
+<p>We have added two instances of the <code>app-stock-item</code> component in our HTML. And both of these now have some content inside them, as opposed to previously where these elements had no content. In one, we have a button that triggers the <code>testMethod</code> we added in the <code>AppComponent</code>, and the other simply has text content.</p>
+
+<p>When we run our Angular application and open it in the browser, we should see something like <a data-type="xref" href="#fig04in01">Figure 4-2</a>.</p>
+
+<p>Notice that the two stock item components on our browser, each with slightly different content, are based on what we provided. If you click the button in the first stock widget, you will see that the method in the <code>AppComponent</code> gets called and the <code>console.log</code> is triggered.</p>
+
+<p>Thus, users of the component now have the capability to change part of the UI of the component as they see fit. We can even access functionality from the parent component as well, which makes it truly flexible. It is also possible to project multiple different sections and content into our child component. While the official Angular documentation is spare on this topic, there is a <a href="http://bit.ly/2IFX237">great article</a> that can give you more insight on content projection.<a data-type="indexterm" data-primary="view projection" data-startref="ix_viewpr" id="idm139828132532416"></a><a data-type="indexterm" data-primary="components" data-secondary="view projection" data-startref="ix_compsvipr" id="idm139828132531440"></a></p>
+
+<figure><div id="fig04in01" class="figure">
+<img src="images/auar_04in01.png" alt="Angular Content Projection" />
+<h6><span class="label">Figure 4-2. </span>Angular app with view projection</h6>
+</div></figure>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Conclusion"><div class="sect1" id="idm139828133044976">
+<h1>Conclusion</h1>
+
+<p>In this chapter, we went into a lot more depth on components, and saw some of the more commonly used attributes when creating components. We took a detailed look at the <code>Component</code> decorator, talking about attributes like <code>template</code> versus <code>template​Url</code>, styles, and also covered at a high level how Angular’s change detection works and how we can override it.</p>
+
+<p>We then covered the lifecycle of a component, as well as the hooks that Angular provides for us to hook on to and react to some of these lifecycle events. Finally, we covered projection in components and how we can make some truly powerful components that allow the user of the component to decide parts of the UI.</p>
+
+<p>In the next chapter, we will do a quick detour to understand unit testing of components, and see how we can test both the logic that drives the component as well as the view that gets rendered.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Exercise"><div class="sect1" id="idm139828132523728">
+<h1>Exercise</h1>
+
+<p>For our third exercise, we can build on top of the previous exercise (<em>chapter3/exercise</em>) by including concepts from this chapter:</p>
+<ol>
+<li>
+<p>Create a <code>ProductListComponent</code>. Initialize an array of products there, instead of initializing a single product in the <code>ProductComponent</code>. Change its template to use <code>NgFor</code> to create a <code>ProductItemComponent</code> for each product.</p>
+</li>
+<li>
+<p>Use inline templates and styles on the <code>ProductListComponent</code>. Generate it using the Angular CLI with that setting rather than generating it and changing it <span class="keep-together">manually</span>.</p>
+</li>
+<li>
+<p>Change the <code>ProductItemComponent</code> to take the product as an input.</p>
+</li>
+<li>
+<p>Move the increment/decrement logic from the <code>ProductItem</code> to the <code>ProductListComponent</code>. Use an index or product ID to find the product and change its <span class="keep-together">quantity</span>.</p>
+</li>
+<li>
+<p>Move the <code>ProductItemComponent</code> to be optimal and move from the default <code>ChangeDetectionStrategy</code> to an <code>OnPush</code> <code>ChangeDetectionStrategy</code>.</p>
+</li>
+
+</ol>
+
+<p>All of this can be accomplished using concepts covered in this chapter.<a data-type="indexterm" data-primary="components" data-startref="ix_comps" id="idm139828132509568"></a> You can check out the finished solution in <em>chapter4/exercise/ecommerce</em>.</p>
+</div></section>
+
+
+
+
+
+
+
+</div></section></div>
+</body>
+</html>

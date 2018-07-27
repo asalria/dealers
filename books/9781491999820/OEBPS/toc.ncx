@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
+    <head>
+        <meta name="dtb:uid" content="9781491999820" />
+        <meta name="dtb:generator" content="epub-nicohaenggi"/>
+        <meta name="dtb:depth" content="1"/>
+        <meta name="dtb:totalPageCount" content="0"/>
+        <meta name="dtb:maxPageNumber" content="0"/>
+    </head>
+    <docTitle>
+        <text>Angular: Up and Running</text>
+    </docTitle>
+    <docAuthor>
+        <text>Shyam Seshadri</text>
+    </docAuthor>
+    <navMap>
+        
+                <navPoint id="tocxhtmlfile" playOrder="0" class="chapter">
+                    <navLabel>
+                        <text>Cover</text>
+                    </navLabel>
+                    <content src="cover.html"/>
+                </navPoint>
+        
+                <navPoint id="tocxhtmlfile" playOrder="0" class="chapter">
+                    <navLabel>
+                        <text>nav</text>
+                    </navLabel>
+                    <content src="toc01.html"/>
+                </navPoint>
+        
+                <navPoint id="tocxhtmlfile" playOrder="0" class="chapter">
+                    <navLabel>
+                        <text>Angular: Up and Running</text>
+                    </navLabel>
+                    <content src="titlepage01.html"/>
+                </navPoint>
+        
+                <navPoint id="tocxhtmlfile" playOrder="0" class="chapter">
+                    <navLabel>
+                        <text>Angular: Up and Running</text>
+                    </navLabel>
+                    <content src="copyright-page01.html"/>
+                </navPoint>
+        
+                <navPoint id="preface-idm139828148098976" playOrder="1" class="chapter">
+                    <navLabel>
+                        <text>Introduction</text>
+                    </navLabel>
+                    <content src="preface01.html"/>
+                </navPoint>
+        
+                <navPoint id="chapter-idm139828148098320" playOrder="12" class="chapter">
+                    <navLabel>
+                        <text>1. Introducing Angular</text>
+                    </navLabel>
+                    <content src="ch01.html"/>
+                </navPoint>
+        
+                <navPoint id="chapter-idm139828148019584" playOrder="21" class="chapter">
+                    <navLabel>
+                        <text>2. Hello Angular</text>
+                    </navLabel>
+                    <content src="ch02.html"/>
+                </navPoint>
+        
+                <navPoint id="chapter-idm139828147941216" playOrder="39" class="chapter">
+                    <navLabel>
+                        <text>3. Useful Built-In Angular Directives</text>
+                    </navLabel>
+                    <content src="ch03.html"/>
+                </navPoint>
+        
+                <navPoint id="chapter-idm139828135411776" playOrder="52" class="chapter">
+                    <navLabel>
+                        <text>4. Understanding and Using Angular Components</text>
+                    </navLabel>
+                    <content src="ch04.html"/>
+                </navPoint>
+        
+                <navPoint id="chapter-idm139828135411152" playOrder="70" class="chapter">
+                    <navLabel>
+                        <text>5. Testing Angular Components</text>
+                    </navLabel>
+                    <content src="ch05.html"/>
+                </navPoint>
+        
+                <navPoint id="chapter-idm139828132507296" playOrder="84" class="chapter">
+                    <navLabel>
+                        <text>6. Working with Template-Driven Forms</text>
+                    </navLabel>
+                    <content src="ch06.html"/>
+                </navPoint>
+        
+                <navPoint id="chapter-idm139828126631056" playOrder="95" class="chapter">
+                    <navLabel>
+                        <text>7. Working with Reactive Forms</text>
+                    </navLabel>
+                    <content src="ch07.html"/>
+                </navPoint>
+        
+                <navPoint id="chapter-idm139828126630592" playOrder="108" class="chapter">
+                    <navLabel>
+                        <text>8. Angular Services</text>
+                    </navLabel>
+                    <content src="ch08.html"/>
+                </navPoint>
+        
+                <navPoint id="chapter-idm139828120748864" playOrder="117" class="chapter">
+                    <navLabel>
+                        <text>9. Making HTTP Calls in Angular</text>
+                    </navLabel>
+                    <content src="ch09.html"/>
+                </navPoint>
+        
+                <navPoint id="chapter-idm139828116666768" playOrder="129" class="chapter">
+                    <navLabel>
+                        <text>10. Unit Testing Services</text>
+                    </navLabel>
+                    <content src="ch10.html"/>
+                </navPoint>
+        
+                <navPoint id="chapter-idm139828116666144" playOrder="139" class="chapter">
+                    <navLabel>
+                        <text>11. Routing in Angular</text>
+                    </navLabel>
+                    <content src="ch11.html"/>
+                </navPoint>
+        
+                <navPoint id="chapter-idm139828109423296" playOrder="157" class="chapter">
+                    <navLabel>
+                        <text>12. Productionizing an Angular App</text>
+                    </navLabel>
+                    <content src="ch12.html"/>
+                </navPoint>
+        
+                <navPoint id="index-idm139828106801904" playOrder="171" class="chapter">
+                    <navLabel>
+                        <text>Index</text>
+                    </navLabel>
+                    <content src="ix01.html"/>
+                </navPoint>
+        
+                <navPoint id="tocxhtmlfile" playOrder="0" class="chapter">
+                    <navLabel>
+                        <text>About the Author</text>
+                    </navLabel>
+                    <content src="colophon01.html"/>
+                </navPoint>
+        
+                <navPoint id="tocxhtmlfile" playOrder="0" class="chapter">
+                    <navLabel>
+                        <text>Colophon</text>
+                    </navLabel>
+                    <content src="colophon02.html"/>
+                </navPoint>
+        
+    </navMap>
+</ncx>

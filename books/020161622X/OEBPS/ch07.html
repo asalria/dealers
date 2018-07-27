@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chapter 7. Before the Project</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><p><a id="ch07"></a><a id="page_201"></a></p>
+<h2 id="title-IDABSZ0" class="docChapterTitle">Chapter 7<br/><br/>Before the Project</h2>
+<p class="docText">Do you ever get the feeling that your project is doomed, even before it starts? Sometimes it might be, unless you establish some basic ground rules first. Otherwise, you might as well suggest that it be shut down now, and save the sponsor some money.</p>
+<p class="docText">At the very beginning of a project, you'll need to determine the requirements. Simply listening to users is not enough: read <em>The Requirements Pit</em> to find out more.</p>
+<p class="docText">Conventional wisdom and constraint management are the topics of <em>Solving Impossible Puzzles.</em> Whether you are performing requirements, analysis, coding, or testing, difficult problems will crop up. Most of the time, they won't be as difficult as they first appear to be.</p>
+<p class="docText">When you think you've got the problems solved, you may still not feel comfortable with jumping in and starting. Is it simple procrastination, or is it something more? <em>Not Until You're Ready</em> offers advice on when it may be prudent to listen to that cautionary voice inside your head.</p>
+<p class="docText">Starting too soon is one problem, but waiting too long may be even worse. In <em>The Specification Trap,</em> we'll discuss the advantages of specification by example.</p>
+<p class="docText">Finally, we'll look at some of the pitfalls of formal development processes and methodologies in <em>Circles and Arrows.</em> No matter how well thought out it is, and regardless of which "best practices" it includes, no method can replace <em>thinking.</em></p>
+<p class="docText">With these critical issues sorted out <em>before</em> the project gets under way, you can be better positioned to avoid "analysis paralysis" and actually begin your successful project.</p>
+<p class="docText"><a id="ch07lev1sec1"></a><a id="page_202"></a></p>
+<h3 id="title-IDAKTZ0" class="docSection1Title">36. The Requirements Pit</h3>
+<p class="blockquote"><em>Perfection is achieved, not when there is nothing left to add, but when there is nothing left to take away....</em></p>
+<p class="attribution">• <strong>Antoine de St. Exupery,</strong> <strong><em>Wind, Sand, and Stars,</em></strong> <strong>1939</strong></p>
+<p class="docText">Many books and tutorials refer to <em>requirements gathering</em> as an early phase of the project. The word "gathering" seems to imply a tribe of happy analysts, foraging for nuggets of wisdom that are lying on the ground all around them while the Pastoral Symphony plays gently in the background. "Gathering" implies that the requirements are already there—you need merely find them, place them in your basket, and be merrily on your way.</p>
+<p class="docText">It doesn't quite work that way. Requirements rarely lie on the surface. Normally, they're buried deep beneath layers of assumptions, misconceptions, and politics.</p>
+<p class="docNoteTitle">Tip 51</p>
+<p class="note"><a href="app03.html#id1e13076">Don't Gather Requirements—Dig for Them</a></p>
+<p class="docText"><a id="ch07lev2sec1"></a></p>
+<h4 id="title-IDA4UZ0" class="docSection2Title">Digging for Requirements</h4>
+<p class="docText">How can you recognize a true requirement while you're digging through all the surrounding dirt? The answer is both simple and complex.</p>
+<p class="docText">The simple answer is that a requirement is a statement of something that needs to be accomplished. Good requirements might include the following:</p>
+<ul>
+<li>An employee record may be viewed only by a nominated group of people.</li>
+<li>The cylinder-head temperature must not exceed the critical value, which varies by engine.</li>
+<li>The editor will highlight keywords, which will be selected depending on the type of file being edited.</li>
+</ul>
+<p class="docText">However, very few requirements are as clear-cut, and that's what makes requirements analysis complex.</p>
+<p class="docText"><a id="page_203"></a>The first statement in the list above may have been stated by the users as "Only an employee's supervisors and the personnel department may view that employee's records." Is this statement truly a requirement? Perhaps today, but it embeds business policy in an absolute statement. Policies change regularly, so we probably don't want to hardwire them into our requirements. Our recommendation is to document these policies separately from the requirement, and hyperlink the two. Make the requirement the general statement, and give the developers the policy information as an example of the type of thing they'll need to support in the implementation. Eventually, policy may end up as metadata in the application.</p>
+<p class="docText">This is a relatively subtle distinction, but it's one that will have profound implications for the developers. If the requirement is stated as "Only personnel can view an employee record," the developer may end up coding an explicit test every time the application accesses these files. However, if the statement is "Only authorized users may access an employee record," the developer will probably design and implement some kind of access control system. When policy changes (and it will), only the metadata for that system will need to be updated. In fact, gathering requirements in this way naturally leads you to a system that is well factored to support metadata.</p>
+<p class="docText">The distinctions among requirements, policy, and implementation can get very blurred when user interfaces are discussed. "The system must let you choose a loan term" is a statement of requirement. "We need a list box to select the loan term" may or may not be. If the users absolutely must have a list box, then it is a requirement. If instead they are describing the ability to choose, but are using <em>listbox</em> as an example, then it may not be. The box on page <a href="ch07.html#page_205">205</a> discusses a project that went horribly wrong because the users' interface needs were ignored.</p>
+<p class="docText">It's important to discover the underlying reason <em>why</em> users do a particular thing, rather than just <em>the way</em> they currently do it. At the end of the day, your development has to solve their <em>business problem,</em> not just meet their stated requirements. Documenting the reasons behind requirements will give your team invaluable information when making daily implementation decisions.</p>
+<p class="docText">There's a simple technique for getting inside your users' requirements that isn't used often enough: become a user. Are you writing a system <a id="page_204"></a>for the help desk? Spend a couple of days monitoring the phones with an experienced support person. Are you automating a manual stock control system? Work in the warehouse for a week.<sup><a href="#ch07fn01">[1]</a></sup> As well as giving you insight into how the system will <em>really</em> be used, you'd be amazed at how the request "May I sit in for a week while you do your job?" helps build trust and establishes a basis for communication with your users. Just remember not to get in the way!</p>
+<p class="docFootnote"><sup><a id="ch07fn01">[1]</a></sup> Does a week sound like a long time? It really isn't, particularly when you're looking at processes in which management and workers occupy different worlds. Management will give you one view of how things operate, but when you get down on the floor, you'll find a very different reality—one that will take time to assimilate.</p>
+<p class="docNoteTitle">Tip 52</p>
+<p class="note"><a href="app03.html#id1e13148">Work with a User to Think Like a User</a></p>
+<p class="docText">The requirements mining process is also the time to start to build a rapport with your user base, learning their expectations and hopes for the system you are building. See <a href="ch08.html#ch08lev1sec5"><em>Great Expectations</em></a>, page <a href="ch08.html#page_255">255</a>, for more.</p>
+<p class="docText"><a id="ch07lev2sec2"></a></p>
+<h4 id="title-IDALXZ0" class="docSection2Title">Documenting Requirements</h4>
+<p class="docText">So you are sitting down with the users and prying genuine requirements from them. You come across a few likely scenarios that describe what the application needs to do. Ever the professional, you want to write these down and publish a document that everyone can use as a basis for discussions—the developers, the end users, and the project sponsors.</p>
+<p class="docText">That's a pretty wide audience.</p>
+<p class="docText">Ivar Jacobson [<a href="app01.html#jac94">Jac94</a>] proposed the concept of <em>use cases</em> to capture requirements. They let you describe a particular <em>use</em> of the system—not in terms of user interface, but in a more abstract fashion. Unfortunately, Jacobson's book was a little vague on details, so there are now many different opinions on what a use case should be. Is it formal or informal, simple prose or a structured document (like a form)? What level of detail is appropriate (remember we have a wide audience)?</p>
+<p class="docText"><a id="page_205"></a></p>
+<div class="sidebar1">
+<p class="docSidebarTitle">Sometimes the Interface Is the System</p>
+<p class="sidebar">In an article in <em>Wired</em> magazine (January 1999, page <a href="ch06.html#page_176">176</a>), producer and musician Brian Eno described an incredible piece of technology—the ultimate mixing board. It does anything to sound that can be done. And yet, instead of letting musicians make better music, or produce a recording faster or less expensively, it gets in the way; it disrupts the creative process.</p>
+<p class="sidebar">To see why, you have to look at how recording engineers work. They balance sounds intuitively. Over the years, they develop an innate feedback loop between their ears and their fingertips—sliding faders, rotating knobs, and so on. However, the interface to the new mixer didn't leverage off those abilities. Instead, it forced its users to type on a keyboard or click a mouse. The functions it provided were comprehensive, but they were packaged in unfamiliar and exotic ways. The functions the engineers needed were sometimes hidden behind obscure names, or were achieved with nonintuitive combinations of basic facilities.</p>
+<p class="sidebar">That environment has a requirement to leverage existing skill sets. While slavishly duplicating what already exists doesn't allow for progress, we must be able to provide a <em>transition</em> to the future.</p>
+<p class="sidebar">For example, the recording engineers may have been better served by some sort of touchscreen interface—still tactile, still mounted as a traditional mixing board might be, yet allowing the software to go beyond the realm of fixed knobs and switches. Providing a comfortable transition through familiar metaphors is one way to help get buy-in.</p>
+<p class="sidebar">This example also illustrates our belief that successful tools adapt to the hands that use them. In this case, it is the tools that you build for others that must be adaptable.</p>
+</div>
+<p class="docText">One way of looking at use cases is to emphasize their goal-driven nature. Alistair Cockburn has a paper that describes this approach, as well as templates that can be used (strictly or not) as a starting place ([<a href="app01.html#coc97a">Coc97a</a>], also online at [<a href="app01.html#app01lev3sec46">URL 46</a>]). <a href="#ch07fig01">Figure 7.1</a> on the following page shows an abbreviated example of his template, while <a href="#ch07fig02">Figure 7.2</a> shows his sample use case.</p>
+<p class="docText"><a id="ch07fig01"></a></p>
+<p class="docFigureTitle">Figure 7.1. Cockburn's use case template</p>
+<p class="image"><img src="images/f07fig01.gif" alt="image" /></p>
+<p class="docText"><a id="ch07fig02"></a></p>
+<p class="docFigureTitle">Figure 7.2. A sample use case</p>
+<p class="image"><img src="images/f07fig02.gif" alt="image" /></p>
+<p class="docText">By using a formal template as an <em>aide-mémoire,</em> you can be sure that you include all the information you need in a use case: performance <a id="page_206"></a>characteristics, other involved parties, priority, frequency, and various errors and exceptions that can crop up ("nonfunctional requirements"). This is also a great place to record user comments such as "oh, except if we get a <em>xxx</em> condition, then we have to do <em>yyy</em> instead." The template also serves as a ready-made agenda for meetings with your users.</p>
+<p class="docText">This sort of organization supports the hierarchical structuring of use cases—nesting more detailed use cases inside higher-level ones. For example, <em>post debit</em> and <em>post credit</em> both elaborate on <em>post transaction.</em></p>
+<p class="docText"><a id="ch07lev3sec1"></a></p>
+<h5 id="title-IDA31Z0" class="docSection3Title">Use Case Diagrams</h5>
+<p class="docText">Workflow can be captured with UML activity diagrams, and conceptual-level class diagrams can sometimes be useful for modeling the business <a id="page_207"></a><a id="page_208"></a>at hand. But true use cases are textual descriptions, with a hierarchy and cross-links. Use cases can contain hyperlinks to other use cases, and they can be nested within each other.</p>
+<p class="docText">It seems incredible to us that anyone would seriously consider documenting information this dense using only simplistic stick people such as <a href="#ch07fig03">Figure 7.3</a>. Don't be a slave to any notation; use whatever method best communicates the requirements with your audience.</p>
+<p class="docText"><a id="ch07fig03"></a></p>
+<p class="docFigureTitle">Figure 7.3. UML use cases—so simple a child could do it!</p>
+<p class="image"><img src="images/f07fig03.gif" alt="image" /></p>
+<p class="docText"><a id="ch07lev2sec3"></a></p>
+<h4 id="title-IDAF3Z0" class="docSection2Title">Overspecifying</h4>
+<p class="docText">A big danger in producing a requirements document is being too specific. Good requirements documents remain abstract. Where requirements are concerned, the simplest statement that accurately reflects the business need is best. This doesn't mean you can be vague—you must capture the underlying semantic invariants as requirements, and document the specific or current work practices as policy.</p>
+<p class="docText">Requirements are not architecture. Requirements are not design, nor are they the user interface. Requirements are <em>need.</em></p>
+<p class="docText"><a id="ch07lev2sec4"></a></p>
+<h4 id="title-IDAY3Z0" class="docSection2Title">Seeing Further</h4>
+<p class="docText">The Year 2000 problem is often blamed on short-sighted programmers, desperate to save a few bytes in the days when mainframes had less memory than a modern TV remote control.</p>
+<p class="docText">But it wasn't the programmers' doing, and it wasn't really a memory usage issue. If anything, it was the system analysts' and designers' fault. The Y2K problem came about from two main causes: a failure to see beyond current business practice, and a violation of the <em>DRY</em> principle.</p>
+<p class="docText"><a id="page_209"></a>Businesses were using the two-digit shortcut long before computers came on the scene. It was common practice. The earliest data processing applications merely automated existing business processes, and simply repeated the mistake. Even if the architecture required two-digit years for data input, reporting, and storage, there should have been an abstraction of a <code>DATE</code> that "knew" the two digits were an abbreviated form of the real date.</p>
+<p class="docNoteTitle">Tip 53</p>
+<p class="note"><a href="app03.html#id1e13320">Abstractions Live Longer than Details</a></p>
+<p class="docText">Does "seeing further" require you to predict the future? No. It means generating statements such as</p>
+<p class="blockquote"><em>The system makes active use of an abstraction of DATEs. The system will implement DATE services, such as formatting, storage, and math operations, consistently and universally.</em></p>
+<p class="docText">The requirements will specify only that dates are used. It may hint that some math may be done on dates. It may tell you that dates will be stored on various forms of secondary storage. These are genuine requirements for a <code>DATE</code> module or class.</p>
+<p class="docText"><a id="ch07lev2sec5"></a></p>
+<h4 id="title-IDA54Z0" class="docSection2Title">Just One More Wafer-Thin Mint...</h4>
+<p class="docText">Many projects failures are blamed on an increase in scope—also known as feature bloat, creeping featurism, or requirements creep. This is an aspect of the boiled-frog syndrome from <a href="ch01.html#ch01lev1sec3"><em>Stone Soup and Boiled Frogs</em></a>, page <a href="ch01.html#page_7">7</a>. What can we do to prevent requirements from creeping up on us?</p>
+<p class="docText">In the literature, you will find descriptions of many metrics, such as bugs reported and fixed, defect density, cohesion, coupling, function points, lines of code, and so on. These metrics may be tracked by hand or with software.</p>
+<p class="docText">Unfortunately, not many projects seem to track requirements actively. This means that they have no way to report on changes of scope—who requested a feature, who approved it, total number of requests approved, and so on.</p>
+<p class="docText"><a id="page_210"></a>The key to managing growth of requirements is to point out each new feature's impact on the schedule to the project sponsors. When the project is a year late from initial estimates and accusations start flying, it can be helpful to have an accurate, complete picture of how, and when, requirements growth occurred.</p>
+<p class="docText">It's easy to get sucked into the "just one more feature" maelstrom, but by tracking requirements you can get a clearer picture that "just one more feature" is really the fifteenth new feature added this month.</p>
+<p class="docText"><a id="ch07lev2sec6"></a></p>
+<h4 id="title-IDADA00" class="docSection2Title">Maintain a Glossary</h4>
+<p class="docText">As soon as you start discussing requirements, users and domain experts will use certain terms that have specific meaning to them. They may differentiate between a "client" and a "customer," for example. It would then be inappropriate to use either word casually in the system.</p>
+<p class="docText">Create and maintain a <em>project glossary</em>—one place that defines all the specific terms and vocabulary used in a project. All participants in the project, from end users to support staff, should use the glossary to ensure consistency. This implies that the glossary needs to be widely accessible—a good argument for Web-based documentation (more on that in a moment).</p>
+<p class="docNoteTitle">Tip 54</p>
+<p class="note"><a href="app03.html#id1e13381">Use a Project Glossary</a></p>
+<p class="docText">It's very hard to succeed on a project where the users and developers refer to the same thing by different names or, even worse, refer to different things by the same name.</p>
+<p class="docText"><a id="ch07lev2sec7"></a></p>
+<h4 id="title-IDABB00" class="docSection2Title">Get the Word Out</h4>
+<p class="docText">In <a href="ch08.html#ch08lev1sec4"><em>It's All Writing</em></a>, page <a href="ch08.html#page_248">248</a>, we discuss publishing of project documents to internal Web sites for easy access by all participants. This method of distribution is particularly useful for requirements documents.</p>
+<p class="docText">By presenting requirements as a hypertext document, we can better address the needs of a diverse audience—we can give each reader what <a id="page_211"></a>they want. Project sponsors can cruise along at a high level of abstraction to ensure that business objectives are met. Programmers can use hyperlinks to "drill down" to increasing levels of detail (even referencing appropriate definitions or engineering specifications).</p>
+<p class="docText">Web-based distribution also avoids the typical two-inch-thick binder entitled <em>Requirements Analysis</em> that no one ever reads and that becomes outdated the instant ink hits paper.</p>
+<p class="docText">If it's on the Web, the programmers may even read it.</p>
+<p class="docText"><a id="ch07lev3sec2"></a></p>
+<h5 id="title-IDA3B00" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch01.html#ch01lev1sec3"><em>Stone Soup and Boiled Frogs</em></a>, page <a href="ch01.html#page_7">7</a></li>
+<li><a href="ch01.html#ch01lev1sec4"><em>Good-Enough Software</em></a>, page <a href="ch01.html#page_9">9</a></li>
+<li><a href="ch07.html#ch07lev1sec5"><em>Circles and Arrows</em></a>, page <a href="ch07.html#page_220">220</a></li>
+<li><a href="ch08.html#ch08lev1sec4"><em>It's All Writing</em></a>, page <a href="ch08.html#page_248">248</a></li>
+<li><a href="ch08.html#ch08lev1sec5"><em>Great Expectations</em></a>, page <a href="ch08.html#page_255">255</a></li>
+</ul>
+<p class="docText"><a id="ch07lev3sec3"></a></p>
+<h5 id="title-IDAKD00" class="docSection3Title">Challenges</h5>
+<ul>
+<li>Can you use the software you are writing? Is it possible to have a good feel for requirements <em>without</em> being able to use the software yourself?</li>
+<li>Pick a non-computer-related problem you currently need to solve. Generate requirements for a noncomputer solution.</li>
+</ul>
+<p class="docText"><a id="ch07lev2sec8"></a></p>
+<h4 id="title-IDADE00" class="docSection2Title">Exercises</h4>
+<p class="docText1"><a id="ch07que01"></a><strong><a href="app02.html#ch07ans01">42</a>.</strong> Which of the following are probably genuine requirements? Restate those that are not to make them more useful (if possible).</p>
+<ol>
+<li>The response time must be less than 500 ms.</li>
+<li>Dialog boxes will have a gray background.</li>
+<li>The application will be organized as a number of front-end processes and a back-end server.</li>
+<li>If a user enters non-numeric characters in a numeric field, the system will beep and not accept them.</li>
+<li>The application code and data must fit within 256kB.</li>
+</ol>
+<p class="docText"><a id="ch07lev1sec2"></a><a id="page_212"></a></p>
+<h3 id="title-IDAVF00" class="docSection1Title">37. Solving Impossible Puzzles</h3>
+<p class="docText"><em>Gordius, the King of Phrygia, once tied a knot that no one could untie. It was said that he who solved the riddle of the Gordian Knot would rule all of Asia. So along comes Alexander the Great, who chops the knot to bits with his sword. Just a little different interpretation of the requirements, that's all... and he did end up ruling most of Asia.</em></p>
+<p class="docText">Every now and again, you will find yourself embroiled in the middle of a project when a really tough puzzle comes up: some piece of engineering that you just can't get a handle on, or perhaps some bit of code that is turning out to be much harder to write than you thought. Maybe it looks impossible. But is it really as hard as it seems?</p>
+<p class="docText">Consider real-world puzzles—those devious little bits of wood, wrought iron, or plastic that seem to turn up as Christmas presents or at garage sales. All you have to do is remove the ring, or fit the T-shaped pieces in the box, or whatever.</p>
+<p class="docText">So you pull on the ring, or try to put the T's in the box, and quickly discover that the obvious solutions just don't work. The puzzle can't be solved that way. But even though it's obvious, that doesn't stop people from trying the same thing—over and over—thinking there must be a way.</p>
+<p class="docText">Of course, there isn't. The solution lies elsewhere. The secret to solving the puzzle is to identify the real (not imagined) constraints, and find a solution therein. Some constraints are <em>absolute;</em> others are merely <em>preconceived notions.</em> Absolute constraints <em>must</em> be honored, however distasteful or stupid they may appear to be. On the other hand, some apparent constraints may not be real constraints at all. For example, there's that old bar trick where you take a brand new, unopened champagne bottle and bet that you can drink beer out of it. The trick is to turn the bottle upside down, and pour a small quantity of beer in the hollow in the bottom of the bottle. Many software problems can be just as sneaky.</p>
+<p class="docText"><a id="ch07lev2sec9"></a></p>
+<h4 id="title-IDA4G00" class="docSection2Title">Degrees of Freedom</h4>
+<p class="docText">The popular buzz-phrase "thinking outside the box" encourages us to recognize constraints that might not be applicable and to ignore them.</p>
+<p class="docText"><a id="page_213"></a>But this phrase isn't entirely accurate. If the "box" is the boundary of constraints and conditions, then the trick is to <em>find</em> the box, which may be considerably larger than you think.</p>
+<p class="docText">The key to solving puzzles is both to recognize the constraints placed on you and to recognize the degrees of freedom you <em>do</em> have, for in those you'll find your solution. This is why some puzzles are so effective; you may dismiss potential solutions too readily.</p>
+<p class="docText">For example, can you connect all of the dots in the following puzzle and return to the starting point with just three straight lines—without lifting your pen from the paper or retracing your steps [<a href="app01.html#hol78">Hol78</a>]?</p>
+<p class="image"><img src="images/puzzles.gif" alt="image" /></p>
+<p class="docText">You must challenge any preconceived notions and evaluate whether or not they are real, hard-and-fast constraints.</p>
+<p class="docText">It's not whether you think inside the box or outside the box. The problem lies in <em>finding</em> the box—identifying the real constraints.</p>
+<p class="docNoteTitle">Tip 55</p>
+<p class="note"><a href="app03.html#id1e13582">Don't Think Outside the Box—<em>Find</em> the Box</a></p>
+<p class="docText">When faced with an intractable problem, enumerate <em>all</em> the possible avenues you have before you. Don't dismiss anything, no matter how unusable or stupid it sounds. Now go through the list and explain why a certain path cannot be taken. Are you sure? Can you <em>prove</em> it?</p>
+<p class="docText">Consider the Trojan horse—a novel solution to an intractable problem. How do you get troops into a walled city without being discovered? You can bet that "through the front door" was initially dismissed as suicide.</p>
+<p class="docText">Categorize and prioritize your constraints. When woodworkers begin a project, they cut the longest pieces first, then cut the smaller pieces out of the remaining wood. In the same manner, we want to identify the most restrictive constraints first, and fit the remaining constraints within them.</p>
+<p class="docText">By the way, a solution to the Four Posts puzzle is shown on page <a href="app02.html#page_307">307</a>.</p>
+<p class="docText"><a id="ch07lev2sec10"></a><a id="page_214"></a></p>
+<h4 id="title-IDAPJ00" class="docSection2Title">There Must Be an Easier Way!</h4>
+<p class="docText">Sometimes you will find yourself working on a problem that seems much harder than you thought it should be. Maybe it feels like you're going down the wrong path—that there must be an easier way than this! Perhaps you are running late on the schedule now, or even despair of ever getting the system to work because this particular problem is "impossible."</p>
+<p class="docText">That's when you step back a pace and ask yourself these questions:</p>
+<ul>
+<li><em>Is</em> there an easier way?</li>
+<li>Are you trying to solve the right problem, or have you been distracted by a peripheral technicality?</li>
+<li><em>Why</em> is this thing a problem?</li>
+<li>What is it that's making it so hard to solve?</li>
+<li>Does it have to be done this way?</li>
+<li>Does it have to be done at all?</li>
+</ul>
+<p class="docText">Many times a surprising revelation will come to you as you try to answer one of these questions. Many times a reinterpretation of the requirements can make a whole set of problems go away—just like the Gordian knot.</p>
+<p class="docText">All you need are the real constraints, the misleading constraints, and the wisdom to know the difference.</p>
+<p class="docText"><a id="ch07lev2sec11"></a></p>
+<h4 id="title-IDAEL00" class="docSection2Title">Challenges</h4>
+<ul>
+<li>Take a hard look at whatever difficult problem you are embroiled in today. Can you cut the Gordian knot? Ask yourself the key questions we outlined above, especially <em>"Does it have to be done this way?"</em></li>
+<li>Were you handed a set of constraints when you signed on to your current project? Are they all still applicable, and is the interpretation of them still valid?</li>
+</ul>
+<p class="docText"><a id="ch07lev1sec3"></a><a id="page_215"></a></p>
+<h3 id="title-IDA2L00" class="docSection1Title">38. Not Until You're Ready</h3>
+<p class="blockquote"><em>He who hesitates is sometimes saved.</em></p>
+<p class="attribution">• <strong>James Thurber,</strong> <strong><em>The Glass in the Field</em></strong></p>
+<p class="docText">Great performers share a trait: they know when to start and when to wait. The diver stands on the high-board, waiting for the perfect moment to jump. The conductor stands before the orchestra, arms raised, until she senses that the moment is right to start the piece.</p>
+<p class="docText">You are a great performer. You too need to listen to the voice that whispers "wait." If you sit down to start typing and there's some nagging doubt in your mind, heed it.</p>
+<p class="docNoteTitle">Tip 56</p>
+<p class="note"><a href="app03.html#id1e13701">Listen to Nagging Doubts—Start When You're Ready</a></p>
+<p class="docText">There used to be a style of tennis coaching called "inner tennis." You'd spend hours hitting balls over the net, not particularly trying for accuracy, but instead verbalizing just where the ball hit relative to some target (often a chair). The idea was that the feedback would train your subconscious and reflexes, so that you improved without consciously knowing how or why.</p>
+<p class="docText">As a developer, you've been doing the same kind of thing during your entire career. You've been trying things and seeing which worked and which didn't. You've been accumulating experience and wisdom. When you feel a nagging doubt, or experience some reluctance when faced with a task, heed it. You may not be able to put your finger on exactly what's wrong, but give it time and your doubts will probably crystallize into something more solid, something you can address. Software development is still not a science. Let your instincts contribute to your performance.</p>
+<p class="docText"><a id="ch07lev2sec12"></a></p>
+<h4 id="title-IDAGN00" class="docSection2Title">Good Judgment or Procrastination?</h4>
+<p class="docText">Everyone fears the blank sheet of paper. Starting a new project (or even a new module in an existing project) can be an unnerving experience. Many of us would prefer to put off making the initial commitment of <a id="page_216"></a>starting. So how can you tell when you're simply procrastinating, rather than responsibly waiting for all the pieces to fall into place?</p>
+<p class="docText">A technique that has worked for us in these circumstances is to start prototyping. Choose an area that you feel will be difficult and begin producing some kind of proof of concept. One of two things will typically happen. Shortly after starting, you may feel that you're wasting your time. This boredom is probably a good indication that your initial reluctance was just a desire to put off the commitment to start. Give up on the prototype, and hack into the real development.</p>
+<p class="docText">On the other hand, as the prototype progresses you may have one of those moments of revelation when you suddenly realize that some basic premise was wrong. Not only that, but you'll see clearly how you can put it right. You'll feel comfortable abandoning the prototype and launching into the project proper. Your instincts were right, and you've just saved yourself and your team a considerable amount of wasted effort.</p>
+<p class="docText">When you make the decision to prototype as a way of investigating your unease, be sure to remember why you're doing it. The last thing you want is to find yourself several weeks into serious development before remembering that you started out writing a prototype.</p>
+<p class="docText">Somewhat cynically, starting work on a prototype might also be more politically acceptable than simply announcing that "I don't feel right about starting" and firing up <code>solitaire</code>.</p>
+<p class="docText"><a id="ch07lev3sec4"></a></p>
+<h5 id="title-IDA1N00" class="docSection3Title">Challenges</h5>
+<ul>
+<li>Discuss the fear-of-starting syndrome with your colleagues. Do others experience the same thing? Do they heed it? What tricks do they use to overcome it? Can a group help overcome an individual's reluctance, or is that just peer pressure?</li>
+</ul>
+<p class="docText"><a id="ch07lev1sec4"></a><a id="page_217"></a></p>
+<h3 id="title-IDAPO00" class="docSection1Title">39. The Specification Trap</h3>
+<p class="blockquote"><em>The Landing Pilot is the Non-Handling Pilot until the 'decision altitude' call, when the Handling Non-Landing Pilot hands the handling to the Non-Handling Landing Pilot, unless the latter calls 'go-around,' in which case the Handling Non-Landing Pilot continues handling and the Non-Handling Landing Pilot continues non-handling until the next call of 'land' or 'go-around' as appropriate. In view of recent confusions over these rules, it was deemed necessary to restate them clearly.</em></p>
+<p class="attribution">• <strong>British Airways memorandum, quoted in</strong> <strong><em>Pilot Magazine,</em></strong> <strong>December 1996</strong></p>
+<p class="docText">Program specification is the process of taking a requirement and reducing it down to the point where a programmer's skill can take over. It is an act of communication, explaining and clarifying the world in such a way as to remove major ambiguities. As well as talking to the developer who will be performing the initial implementation, the specification is a record for future generations of programmers who will be maintaining and enhancing the code. The specification is also an agreement with the user—a codification of their needs and an implicit contract that the final system will be in line with that requirement.</p>
+<p class="docText">Writing a specification is quite a responsibility.</p>
+<p class="docText">The problem is that many designers find it difficult to stop. They feel that unless every little detail is pinned down in excruciating detail they haven't earned their daily dollar.</p>
+<p class="docText">This is a mistake for several reasons. First, it's naive to assume that a specification will ever capture every detail and nuance of a system or its requirement. In restricted problem domains, there are formal methods that can describe a system, but they still require the designer to explain the meaning of the notation to the end users—there is still a human interpretation going on to mess things up. Even without the problems inherent in this interpretation, it is very unlikely that the average user knows going in to a project exactly what they need. They may say they have an understanding of the requirement, and they may sign off on the 200-page document you produce, but you can guarantee that once they see the running system you'll be inundated with change requests.</p>
+<p class="docText">Second, there is a problem with the expressive power of language itself. All the diagramming techniques and formal methods still rely on <a id="page_218"></a>natural language expressions of the operations to be performed.<sup><a href="#ch07fn02">[2]</a></sup> And natural language is really not up to the job. Look at the wording of any contract: in an attempt to be precise, lawyers have to bend the language in the most unnatural ways.</p>
+<p class="docFootnote"><sup><a id="ch07fn02">[2]</a></sup> There are some formal techniques that attempt to express operations algebraically, but these techniques are rarely used in practice. They still require that the analysts explain the meaning to the end users.</p>
+<p class="docText">Here's a challenge for you. Write a short description that tells someone how to tie bows in their shoelaces. Go on, try it!</p>
+<p class="docText">If you are anything like us, you probably gave up somewhere around "now roll your thumb and forefinger so that the free end passes under and inside the left lace...." It is a phenomenally difficult thing to do. And yet most of us can tie our shoes without conscious thought.</p>
+<p class="docNoteTitle">Tip 57</p>
+<p class="note"><a href="app03.html#id1e13789">Some Things Are Better Done than Described</a></p>
+<p class="docText">Finally, there is the straightjacket effect. A design that leaves the coder no room for interpretation robs the programming effort of any skill and art. Some would say this is for the best, but they're wrong. Often, it is only during coding that certain options become apparent. While coding, you may think <em>"Look at that. Because of the particular way I coded this routine, I could add this additional functionality with almost no effort"</em> or <em>"The specification says to do this, but I could achieve an almost identical result by doing it a different way, and I could do it in half the time."</em> Clearly, you shouldn't just hack in and make the changes, but you wouldn't even have spotted the opportunity if you were constrained by an overly prescriptive design.</p>
+<p class="docText">As a Pragmatic Programmer, you should tend to view requirements gathering, design, and implementation as different facets of the same process—the delivery of a quality system. Distrust environments where requirements are gathered, specifications are written, and then coding starts, all in isolation. Instead, try to adopt a seamless approach: specification and implementation are simply different aspects of the same process—an attempt to capture and codify a requirement. Each should <a id="page_219"></a>flow directly into the next, with no artificial boundaries. You'll find that a healthy development process encourages feedback from implementation and testing into the specification process.</p>
+<p class="docText">Just to be clear, we are not against generating specifications. Indeed, we recognize that there are times where incredibly detailed specifications are demanded—for contractual reasons, because of the environment where you work, or because of the nature of the product you are developing.<sup><a href="#ch07fn03">[3]</a></sup> Just be aware that you reach a point of diminishing, or even negative, returns as the specifications get more and more detailed. Also be careful about building specifications layered on top of specifications, without any supporting implementation or prototyping; it's all too easy to specify something that can't be built.</p>
+<p class="docFootnote"><sup><a id="ch07fn03">[3]</a></sup> Detailed specifications are clearly appropriate for life-critical systems. We feel they should also be produced for interfaces and libraries used by others. When your entire output is seen as a set of routine calls, you'd better make sure those calls are well specified.</p>
+<p class="docText">The longer you allow specifications to be security blankets, protecting developers from the scary world of writing code, the harder it will be to move on to hacking out code. Don't fall into this specification spiral: at some point, you need to start coding! If you find your team all wrapped up in warm, comfy specifications, break them out. Look at prototyping, or consider a tracer bullet development.</p>
+<p class="docText"><a id="ch07lev3sec5"></a></p>
+<h4 id="title-IDATR00" class="docSection2Title">Related sections include:</h4>
+<ul>
+<li><a href="ch02.html#ch02lev1sec4"><em>Tracer Bullets</em></a>, page <a href="ch02.html#page_48">48</a></li>
+</ul>
+<p class="docText"><a id="ch07lev3sec6"></a></p>
+<h4 id="title-IDAIS00" class="docSection2Title">Challenges</h4>
+<ul>
+<li>The shoelace example mentioned in the text is an interesting illustration of the problems of written descriptions. Did you consider describing the process using diagrams rather than words? Photographs? Some formal notation from topology? Models with wire laces? How would you teach a toddler?<br/>Sometimes a picture is worth more than any number of words. Sometimes it is worthless. If you find yourself overspecifying, would pictures or special notations help? How detailed do they have to be? When is a drawing tool better than a whiteboard?</li>
+</ul>
+<p class="docText"><a id="ch07lev1sec5"></a><a id="page_220"></a></p>
+<h3 id="title-IDA3S00" class="docSection1Title">40. Circles and Arrows</h3>
+<p class="blockquote"><em>[photographs] with circles and arrows and a paragraph on the back of each one explaining what each one was, to be used as evidence against us...</em></p>
+<p class="attribution">• <strong>Arlo Guthrie, "Alice's Restaurant"</strong></p>
+<p class="docText">From structured programming, through chief programmer teams, CASE tools, waterfall development, the spiral model, Jackson, ER diagrams, Booch clouds, OMT, Objectory, and Coad/Yourdon, to today's UML, computing has never been short of methods intended to make programming more like engineering. Each method gathers its disciples, and each enjoys a period of popularity. Then each is replaced by the next. Of all of them, perhaps only the first—structured programming—has enjoyed a long life.</p>
+<p class="docText">Yet some developers, adrift in a sea of sinking projects, keep clinging to the latest fad just as shipwreck victims latch onto passing driftwood. As each new piece floats by they painfully swim over, hoping it will be better. At the end of the day, though, it doesn't matter how good the flotsam is, the developers are still aimlessly adrift.</p>
+<p class="docText">Don't get us wrong. We like (some) formal techniques and methods. But we believe that blindly adopting any technique without putting it into the context of your development practices and capabilities is a recipe for disappointment.</p>
+<p class="docNoteTitle">Tip 58</p>
+<p class="note"><a href="app03.html#id1e13872">Don't Be a Slave to Formal Methods</a></p>
+<p class="docText">Formal methods have some serious shortcomings.</p>
+<ul>
+<li>Most formal methods capture requirements using a combination of diagrams and some supporting words. These pictures represent the designers' understanding of the requirements. However in many cases these diagrams are meaningless to the end users, so the designers have to interpret them. Therefore, there is no real formal checking of the requirements by the actual user of the system—everything is based on the designers' explanations, just as in old-fashioned written requirements. We see some benefit in capturing requirements this way, but we prefer, where possible, to show the user a prototype and let them play with it.</li>
+<li><a id="page_221"></a>Formal methods seem to encourage specialization. One group of people works on a data model, another looks at the architecture, while requirements gatherers collect use cases (or their equivalent). We've seen this lead to poor communication and wasted effort. There is also a tendency to fall back into the <em>us versus them</em> mentality of designers against coders. We prefer to understand the whole of the system we're working on. It may not be possible to have an in-depth grasp of every aspect of a system, but you should know how the components interact, where the data lives, and what the requirements are.</li>
+<li>We like to write adaptable, dynamic systems, using metadata to allow us to change the character of applications at runtime. Most current formal methods combine a static object or data model with some kind of event- or activity-charting mechanism. We haven't yet come across one that allows us to illustrate the kind of dynamism we feel systems should exhibit. In fact, most formal methods will lead you astray, encouraging you to set up static relationships between objects that really should be knitted together dynamically.</li>
+</ul>
+<p class="docText"><a id="ch07lev2sec13"></a></p>
+<h4 id="title-IDA4U00" class="docSection2Title">Do Methods Pay Off?</h4>
+<p class="docText">In a 1999 CACM article [<a href="app01.html#gla99b">Gla99b</a>], Robert Glass reviews the research into the productivity and quality improvements gained using seven different software development technologies (4GLs, structured techniques, CASE tools, formal methods, clean room methodology, process models, and object orientation). He reports that the initial hype surrounding all of these methods was overblown. Although there is an indication that some methods have benefits, these benefits start to manifest themselves only after a significant productivity and quality drop while the technique is adopted and its users train themselves. Never underestimate the cost of adopting new tools and methods. Be prepared to treat the first projects using these techniques as a learning experience.</p>
+<p class="docText"><a id="ch07lev2sec14"></a></p>
+<h4 id="title-IDAOV00" class="docSection2Title">Should We Use Formal Methods?</h4>
+<p class="docText">Absolutely. But always remember that formal development methods are just one more tool in the toolbox. If, after careful analysis, you feel you need to use a formal method, then embrace it—but remember who is in charge. Never become a slave to a methodology: circles and <a id="page_222"></a>arrows make poor masters. Pragmatic Programmers look at methodologies critically, then extract the best from each and meld them into a set of working practices that gets better each month. This is crucial. You should work constantly to refine and improve your processes. Never accept the rigid confines of a methodology as the limits of your world.</p>
+<p class="docText">Don't give in to the false authority of a method. People may walk into meetings with an acre of class diagrams and 150 use cases, but all that paper is still just their fallible interpretation of requirements and design. Try not to think about how much a tool cost when you look at its output.</p>
+<p class="docNoteTitle">Tip 59</p>
+<p class="note"><a href="app03.html#id1e13923">Expensive Tools Do Not Produce Better Designs</a></p>
+<p class="docText">Formal methods certainly have their place in development. However, if you come across a project where the philosophy is "the class diagram <em>is</em> the application, the rest is mechanical coding," you know you're looking at a waterlogged project team and a long paddle home.</p>
+<p class="docText"><a id="ch07lev3sec7"></a></p>
+<h5 id="title-IDAHW00" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch07.html#ch07lev1sec1"><em>The Requirements Pit</em></a>, page <a href="ch07.html#page_202">202</a></li>
+</ul>
+<p class="docText"><a id="ch07lev3sec8"></a></p>
+<h5 id="title-IDA2W00" class="docSection3Title">Challenges</h5>
+<ul>
+<li>Use case diagrams are part of the UML process for gathering requirements (see <a href="ch07.html#ch07lev1sec1"><em>The Requirements Pit</em></a>, page <a href="ch07.html#page_202">202</a>). Are they an effective way of communicating with your users? If not, why are you using them?</li>
+<li>How can you tell if a formal method is bringing your team benefits? What can you measure? What constitutes an improvement? Can you distinguish between benefits of the tool and increased experience on the part of team members?</li>
+<li>Where is the break-even point for introducing new methods to your team? How do you evaluate the trade-off between future benefits and current losses of productivity as the tool is introduced?</li>
+<li>Are tools that work for large projects good for small ones? How about the other way around?</li>
+</ul>
+</div>
+</body>
+</html>

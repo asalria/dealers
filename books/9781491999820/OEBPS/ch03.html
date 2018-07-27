@@ -1,0 +1,774 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>3. Useful Built-In Angular Directives</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><section data-type="chapter" epub:type="chapter" data-pdf-bookmark="Chapter 3. Useful Built-In Angular Directives"><div class="chapter" id="chapter-3">
+<h1><span class="label">Chapter 3. </span>Useful Built-In Angular Directives</h1>
+
+
+<p>In the previous chapter, we got started with our very first Angular application, and got a feel for using the Angular CLI to begin a new project and create components in it. We got a basic sense of how to use Angular’s data and event binding mechanisms as well.<a data-type="indexterm" data-primary="directives" id="ix_dir"></a></p>
+
+<p>In this chapter, we will first understand what directives are in Angular and how they are different from components. We will then cover some basic directives that Angular provides out of the box and the use cases where they’re applicable. By the end of the chapter, you should be comfortable using most of the out-of-the-box directives that Angular provides and understand when and where to use them.</p>
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Directives and Components"><div class="sect1" id="idm139828137405776">
+<h1>Directives and Components</h1>
+
+<p>A directive in Angular allows you to attach some custom functionality to elements in your HTML.<a data-type="indexterm" data-primary="components" data-secondary="directives and" id="idm139828137404320"></a><a data-type="indexterm" data-primary="directives" data-secondary="and components" id="idm139828137403344"></a> A component in Angular, like the one we built in the previous chapter, is a direcive that provides both functionality and UI logic. It is fundamentally an element that encapsulates its behavior and rendering logic.</p>
+
+<p>Noncomponent directives, on the other hand, usually work on and modify existing elements. These can be further classified into two types:</p>
+<dl>
+<dt>Attribute directives</dt>
+<dd>
+<p>Attribute directives change the look and feel, or the behavior, of an existing element or component that it is applied on. <code>NgClass</code> and <code>NgStyle</code>, which we will see later in this chapter, are examples of attribute directives.<a data-type="indexterm" data-primary="structural directives" id="idm139828137398992"></a><a data-type="indexterm" data-primary="attribute directives" id="idm139828137398288"></a></p>
+</dd>
+<dt>Structural directives</dt>
+<dd>
+<p>Structural directives change the DOM layout by adding or removing elements from the view. <code>NgIf</code> and <code>NgFor</code> are examples of structural directives that we will see later in this chapter.</p>
+</dd>
+</dl>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Built-In Attribute Directives"><div class="sect1" id="idm139828137394848">
+<h1>Built-In Attribute Directives</h1>
+
+<p>We will first explore attribute directives.<a data-type="indexterm" data-primary="attribute directives" data-secondary="built-in" id="ix_attrdir"></a><a data-type="indexterm" data-primary="directives" data-secondary="built-in attribute directives" id="ix_dirattrbi"></a> There are two basic attribute directives that Angular provides out of the box, which are the <code>NgClass</code> and the <code>NgStyle</code> directives. Both of these are alternatives for the class and style bindings, of which we saw the class binding in the previous chapter.</p>
+<div data-type="tip"><h6>Tip</h6>
+<p>We generally refer to the directive with the name of its class, which is why we call the directive <code>NgClass</code> or <code>NgIf</code>. But the same directive, when used as an HTML attribute, is usually in camel-case, like <code>ngClass</code> or <code>ngIf</code>. Keep this in mind as we go along.</p>
+</div>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="NgClass"><div class="sect2" id="idm139828137386288">
+<h2>NgClass</h2>
+
+<p>The <code>NgClass</code> directive allows us to apply or remove multiple CSS classes simultaneously from an element in our HTML.<a data-type="indexterm" data-primary="CSS" data-secondary="classes, applying/removing with NgClass directive" id="ix_CSScl"></a><a data-type="indexterm" data-primary="classes" data-secondary="CSS" data-tertiary="applying/removing with NgClass directive" id="ix_classCSSNGC"></a><a data-type="indexterm" data-primary="attribute directives" data-secondary="built-in" data-tertiary="NgClass" id="ix_attrdirbiNGC"></a><a data-type="indexterm" data-primary="directives" data-secondary="built-in attribute directives" data-tertiary="NgClass" id="ix_dirattrbiNGC"></a><a data-type="indexterm" data-primary="NgClass directive" id="ix_NGCl"></a> Previously, we applied a single class to our element to highlight whether it was a positive or a negative change as follows:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code> <code class="err">[</code><code class="na">class</code><code class="err">]="</code><code class="na">stock</code><code class="err">.</code><code class="na">isPositiveChange</code><code class="err">()</code> <code class="err">?</code> <code class="err">'</code><code class="na">positive</code><code class="err">'</code> <code class="na">:</code> <code class="err">'</code><code class="na">negative</code><code class="err">'"</code><code class="nt">&gt;</code>
+  $ {{stock.price}}
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>In this example, we simply look at a boolean value, and then decide whether to apply the class <code>positive</code> or <code>negative</code> based on that. But what if we had to apply multiple CSS classes? And they were all (or a lot of them) conditional? You would end up having to write code that does string generation based on these multiple conditions, so that you could have one string that represents all the classes that need to be applied.</p>
+
+<p>This is cruft code that is not worth writing or maintaining. So for these kinds of situations, Angular provides the <code>NgClass</code> directive, which can take a JavaScript object as input. For each key in the object that has a truthy value, Angular will add that key (the key itself, not the value of the key!) as a class to the element. Similarly, each key in the object that has a falsy value will be removed as a class from that element.</p>
+<div data-type="note" epub:type="note"><h1>Truthy and Falsy in JavaScript</h1>
+<p>JavaScript allows us to use non-<code>boolean</code> values in conditional statements. Thus, instead of just <code>true</code> and <code>false</code>, a whole <a data-type="indexterm" data-primary="truthy and falsy in JavaScript" id="idm139828137352544"></a><a data-type="indexterm" data-primary="JavaScript" data-secondary="truthy and falsy values in" id="idm139828137351840"></a>set of values are equivalent to true and false.<a data-type="indexterm" data-primary="falsy values in JavaScript" id="idm139828137350800"></a> In JavaScript, the following values are treated as <code>falsy</code>:</p>
+
+<ul>
+<li>
+<p><code>undefined</code></p>
+</li>
+<li>
+<p><code>null</code></p>
+</li>
+<li>
+<p><code>NaN</code></p>
+</li>
+<li>
+<p><code>0</code></p>
+</li>
+<li>
+<p><code>""</code> (any empty string)</p>
+</li>
+<li>
+<p><code>false</code> (the boolean value)</p>
+</li>
+</ul>
+
+<p>Any other value is treated as <code>truthy</code>, including, but not limited to:</p>
+
+<ul>
+<li>
+<p>Any nonzero number</p>
+</li>
+<li>
+<p>Any nonempty string</p>
+</li>
+<li>
+<p>Any nonnull object or array</p>
+</li>
+<li>
+<p><code>true</code> (the boolean value)</p>
+</li>
+</ul>
+
+<p>Another way to easily remember is that any non-falsy value is truthy. We end up using these concepts quite often in conditionals in our applications.</p>
+</div>
+
+<p>Let’s take an example to see this in action. Say we want to extend our example from before, where instead of just a positive and a negative class, we want to add another class that dictates whether it is a large or a small change. We want it to be a small change (denoted by the CSS class <code>small-change</code>) if the change percentage is less than 1%; otherwise it would be a large change (denoted by the CSS class <code>large-change</code>).</p>
+
+<p>We will build on the example from the previous chapter, so if you don’t have it, feel free to grab the final code we were working with from the <a href="https://github.com/shyamseshadri/angular-up-and-running">GitHub repository</a>. The codebase is in <em>chapter2/stock-market</em>, which is the base for the code in this chapter.</p>
+
+<p>First, we can add the new classes to the <em>src/app/stock/stock-item/stock-item.component.css</em> file:</p>
+
+<pre data-type="programlisting" data-code-language="css"><code class="nc">.stock-container</code> <code class="p">{</code>
+  <code class="k">border</code><code class="o">:</code> <code class="m">1px</code> <code class="nb">solid</code> <code class="nb">black</code><code class="p">;</code>
+  <code class="k">border-radius</code><code class="o">:</code> <code class="m">5px</code><code class="p">;</code>
+  <code class="k">display</code><code class="o">:</code> <code class="nb">inline-block</code><code class="p">;</code>
+  <code class="k">padding</code><code class="o">:</code> <code class="m">10px</code><code class="p">;</code>
+<code class="p">}</code>
+
+<code class="nc">.positive</code> <code class="p">{</code>
+  <code class="k">color</code><code class="o">:</code> <code class="nb">green</code><code class="p">;</code>
+<code class="p">}</code>
+
+<code class="nc">.negative</code> <code class="p">{</code>
+  <code class="k">color</code><code class="o">:</code> <code class="nb">red</code><code class="p">;</code>
+<code class="p">}</code>
+
+<code class="nc">.large-change</code> <code class="p">{</code>
+  <code class="k">font-size</code><code class="o">:</code> <code class="m">1.2em</code><code class="p">;</code>
+<code class="p">}</code>
+
+<code class="nc">.small-change</code> <code class="p">{</code>
+  <code class="k">font-size</code><code class="o">:</code> <code class="m">0.8em</code><code class="p">;</code>
+<code class="p">}</code></pre>
+
+<p>Next, we can change our component class to calculate and keep the JSON object ready with the classes to apply. We modify the <em>src/app/stock/stock-item/stock-item.component.ts</em> file to first calculate the difference between the current and the previous price, and then create an object that holds all the classes we need to apply:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'../../model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-item'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./stock-item.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./stock-item.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockItemComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">stockClasses</code><code class="p">;</code>
+
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{</code> <code class="p">}</code>
+
+  <code class="nx">ngOnInit() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code> <code class="o">=</code> <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Test Stock Company'</code><code class="p">,</code> <code class="s1">'TSC'</code><code class="p">,</code> <code class="mi">85</code><code class="p">,</code> <code class="mi">80</code><code class="p">);</code>
+    <code class="kd">let</code> <code class="nx">diff</code> <code class="o">=</code> <code class="p">(</code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">price</code> <code class="o">/</code> <code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">previousPrice</code><code class="p">)</code> <code class="o">-</code> <code class="mi">1</code><code class="p">;</code>
+    <code class="kd">let</code> <code class="nx">largeChange</code> <code class="o">=</code> <code class="nb">Math</code><code class="p">.</code><code class="nx">abs</code><code class="p">(</code><code class="nx">diff</code><code class="p">)</code> <code class="o">&gt;</code> <code class="mf">0.01</code><code class="p">;</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stockClasses</code> <code class="o">=</code> <code class="p">{</code>
+      <code class="s2">"positive"</code><code class="o">:</code> <code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">isPositiveChange</code><code class="p">(),</code>
+      <code class="s2">"negative"</code><code class="o">:</code> <code class="o">!</code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">isPositiveChange</code><code class="p">(),</code>
+      <code class="s2">"large-change"</code><code class="o">:</code> <code class="nx">largeChange</code><code class="p">,</code>
+      <code class="s2">"small-change"</code><code class="o">:</code> <code class="o">!</code><code class="nx">largeChange</code>
+    <code class="p">};</code>
+  <code class="p">}</code>
+
+  <code class="nx">toggleFavorite</code><code class="p">(</code><code class="nx">event</code><code class="p">)</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'We are toggling the favorite state for this stock'</code><code class="p">,</code> <code class="nx">event</code><code class="p">);</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code> <code class="o">=</code> <code class="o">!</code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code><code class="p">;</code>
+  <code class="p">}</code>
+
+<code class="p">}</code></pre>
+
+<p>In the component code, we created a <code>stockClasses</code> object with four keys: <code>positive</code>, <code>negative</code>, <code>large-change</code>, and <code>small-change</code>. Based on the current price and previous prices, each of these keys will have a value of <code>true</code> or <code>false</code>.</p>
+
+<p>Now, let’s see how we can use the <code>NgClass</code> directive to use this instead of the <code>class</code> binding we were previously using in the <em>src/app/stock/stock-item/stock-⁠item.component​.html</em> file:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-container"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"name"</code><code class="nt">&gt;</code>{{stock.name + ' (' + stock.code + ')'}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"price"</code>
+       <code class="err">[</code><code class="na">ngClass</code><code class="err">]="</code><code class="na">stockClasses</code><code class="err">"</code><code class="nt">&gt;</code>$ {{stock.price}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;button</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">toggleFavorite</code><code class="err">($</code><code class="na">event</code><code class="err">)"</code>
+          <code class="err">[</code><code class="na">disabled</code><code class="err">]="</code><code class="na">stock</code><code class="err">.</code><code class="na">favorite</code><code class="err">"</code><code class="nt">&gt;</code>Add to Favorite<code class="nt">&lt;/button&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>We primarily replaced the</p>
+
+<pre data-type="programlisting">[class]="stock.isPositiveChange() ? 'positive' : 'negative'"</pre>
+
+<p>line with the following:</p>
+
+<pre data-type="programlisting">[ngClass]="stockClasses"</pre>
+
+<p>Now if you run this application in your browser (<code>ng serve</code>, in case you have forgotten), you can see the impact of your changes. The price is now shown in green, as well as in slightly larger font, since it has applied both the <code>positive</code> and the <code>large-change</code> classes. You can play around with the values of price and previous price in the component class to see the different combinations reflected.</p>
+
+<p>Another thing to note is that unlike before, where the <code>class</code> binding was overwriting our initial class from the element, the <code>NgClass</code> directive retains the classes on the <span class="keep-together">element</span>.</p>
+
+<p>The finished code for the preceding example is available in the <em>chapter3/ng-class</em> folder in the GitHub repository.</p>
+
+<p>You should consider using the <code>NgClass</code> directive if you have the use case of having to apply various different CSS classes on an element conditionally. It makes it easy to reason and understand how and what classes are applied, and it also makes it easy to unit test the logic of selecting classes separate from the logic of applying classes to the elements.<a data-type="indexterm" data-primary="CSS" data-secondary="classes, applying/removing with NgClass directive" data-startref="ix_CSScl" id="idm139828136805184"></a><a data-type="indexterm" data-primary="classes" data-secondary="CSS" data-tertiary="applying/removing with NgClass directive" data-startref="ix_classCSSNGC" id="idm139828136803840"></a><a data-type="indexterm" data-primary="attribute directives" data-secondary="built-in" data-tertiary="NgClass" data-startref="ix_attrdirbiNGC" id="idm139828136802320"></a><a data-type="indexterm" data-primary="directives" data-secondary="built-in attribute directives" data-tertiary="NgClass" data-startref="ix_dirattrbiNGC" id="idm139828136800832"></a><a data-type="indexterm" data-primary="NgClass directive" data-startref="ix_NGCl" id="idm139828136968688"></a></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="NgStyle"><div class="sect2" id="idm139828137385344">
+<h2>NgStyle</h2>
+
+<p>The <code>NgStyle</code> directive is the lower-level equivalent of the <code>NgClass</code> directive.<a data-type="indexterm" data-primary="directives" data-secondary="built-in attribute directives" data-tertiary="NgStyle" id="ix_dirattrbiNGS"></a><a data-type="indexterm" data-primary="attribute directives" data-secondary="built-in" data-tertiary="NgStyle" id="ix_attrdirbiNGS"></a><a data-type="indexterm" data-primary="NgStyle directive" id="ix_NGSt"></a><a data-type="indexterm" data-primary="CSS" data-secondary="styles/properties, manipulating with NgStyle directive" id="ix_CSSNGS"></a> It operates in a manner similar to the <code>NgClass</code> in that it takes a JSON object and applies it based on the values of the keys. But the <code>NgStyle</code> directive works at a CSS style/properties level. The keys and values it expects are CSS properties and attributes rather than class names.</p>
+
+<p>Considering that our example with <code>NgClass</code> was using simple CSS classes each affecting only one CSS property, let’s see how we can translate the same example using the <code>NgStyle</code> directive instead. First, we need to make a change to the <em>src/app/stock/stock-item/stock-item.component.ts</em> file to create the style object based on the stock properties:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'../../model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-item'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./stock-item.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./stock-item.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockItemComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">stockStyles</code><code class="p">;</code>
+
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{</code> <code class="p">}</code>
+
+  <code class="nx">ngOnInit() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code> <code class="o">=</code> <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Test Stock Company'</code><code class="p">,</code> <code class="s1">'TSC'</code><code class="p">,</code> <code class="mi">85</code><code class="p">,</code> <code class="mi">80</code><code class="p">);</code>
+    <code class="kd">let</code> <code class="nx">diff</code> <code class="o">=</code> <code class="p">(</code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">price</code> <code class="o">/</code> <code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">previousPrice</code><code class="p">)</code> <code class="o">-</code> <code class="mi">1</code><code class="p">;</code>
+    <code class="kd">let</code> <code class="nx">largeChange</code> <code class="o">=</code> <code class="nb">Math</code><code class="p">.</code><code class="nx">abs</code><code class="p">(</code><code class="nx">diff</code><code class="p">)</code> <code class="o">&gt;</code> <code class="mf">0.01</code><code class="p">;</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stockStyles</code> <code class="o">=</code> <code class="p">{</code>
+      <code class="s2">"color"</code><code class="o">:</code> <code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">isPositiveChange</code><code class="p">()</code> <code class="o">?</code> <code class="s2">"green"</code> <code class="o">:</code> <code class="s2">"red"</code><code class="p">,</code>
+      <code class="s2">"font-size"</code><code class="o">:</code> <code class="nx">largeChange</code> <code class="o">?</code> <code class="s2">"1.2em"</code> <code class="o">:</code> <code class="s2">"0.8em"</code>
+    <code class="p">};</code>
+  <code class="p">}</code>
+
+  <code class="nx">toggleFavorite</code><code class="p">(</code><code class="nx">event</code><code class="p">)</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'We are toggling the favorite state for this stock'</code><code class="p">,</code> <code class="nx">event</code><code class="p">);</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code> <code class="o">=</code> <code class="o">!</code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code><code class="p">;</code>
+  <code class="p">}</code>
+
+<code class="p">}</code></pre>
+
+<p>Similar to the previous section, we have created a <code>stockStyles</code> object. In the initialization code, we have initialized the <code>stockStyles</code> object with the keys <code>color</code> and <code>font-size</code>. Its values are CSS attributes that are generated based on the stock properties. We can then use this <code>stockStyles</code> object as an input to the <code>NgStyle</code> directive for binding.</p>
+
+<p>We can now change our HTML to use this information by editing the <em>src/app/stock/stock-item/stock-item.component.html</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-container"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"name"</code><code class="nt">&gt;</code>{{stock.name + ' (' + stock.code + ')'}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"price"</code>
+       <code class="err">[</code><code class="na">ngStyle</code><code class="err">]="</code><code class="na">stockStyles</code><code class="err">"</code><code class="nt">&gt;</code>$ {{stock.price}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;button</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">toggleFavorite</code><code class="err">($</code><code class="na">event</code><code class="err">)"</code>
+          <code class="err">[</code><code class="na">disabled</code><code class="err">]="</code><code class="na">stock</code><code class="err">.</code><code class="na">favorite</code><code class="err">"</code><code class="nt">&gt;</code>Add to Favorite<code class="nt">&lt;/button&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>We have added a binding for the <code>NgStyle</code> directive:</p>
+
+<pre data-type="programlisting">[ngStyle]="stockStyles"</pre>
+
+<p>Angular will look at the keys and values of the <code>stockStyles</code> object and add those particular styles to the HTML element. You can again run the application and try changing the values of the price and previous price to see this in action.</p>
+
+<p>The finished code for the preceding example is available in the <em>chapter3/ng-style</em> folder in the GitHub repository.</p>
+
+<p>It is generally preferable to use the class or <code>NgClass</code> bindings to change the look and feel of your application, but the <code>NgStyle</code> does give you another tool in your toolkit, in case you have the use case of changing the CSS style of elements and cannot (for whatever reasons) use classes to perform the same.<a data-type="indexterm" data-primary="CSS" data-secondary="styles/properties, manipulating with NgStyle directive" data-startref="ix_CSSNGS" id="idm139828136484352"></a><a data-type="indexterm" data-primary="directives" data-secondary="built-in attribute directives" data-tertiary="NgStyle" data-startref="ix_dirattrbiNGS" id="idm139828136483008"></a><a data-type="indexterm" data-primary="attribute directives" data-secondary="built-in" data-tertiary="NgStyle" data-startref="ix_attrdirbiNGS" id="idm139828136481552"></a><a data-type="indexterm" data-primary="NgStyle directive" data-startref="ix_NGSt" id="idm139828136480064"></a></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Alternative Class and Style Binding Syntax"><div class="sect2" id="idm139828136967488">
+<h2>Alternative Class and Style Binding Syntax</h2>
+
+<p>We covered using the <code>[class]</code> binding syntax in the previous chapter, as well as the <code>NgClass</code> alternative to dynamically add classes to our elements using Angular.<a data-type="indexterm" data-primary="CSS" data-secondary="alternative class and style binding syntax" id="idm139828136643216"></a><a data-type="indexterm" data-primary="attribute directives" data-secondary="built-in" data-tertiary="alternative class and style binding syntax" id="idm139828136642144"></a><a data-type="indexterm" data-primary="directives" data-secondary="built-in attribute directives" data-tertiary="alternative class and style binding syntax" id="idm139828136640896"></a><a data-type="indexterm" data-primary="classes" data-secondary="CSS" data-tertiary="alternative class binding syntax" id="idm139828136639680"></a> There is a third alternative for both classes and styles, which is to use a singular version of the class and style binding that adds and removes one particular class/style, instead of the all-or-nothing approach of the <code>[class]</code> binding.</p>
+
+<p>We can add or remove individual classes based on evaluating a truthy expression in Angular with the following syntax:</p>
+
+<pre data-type="programlisting">[class.class-name]="expression"</pre>
+
+<p>We would replace <code>class-name</code> with the particular CSS class we want to apply/remove on our element, and replace <code>expression</code> in the syntax with a valid JavaScript expression that would either return a truthy or falsy value.</p>
+
+<p>Let’s modify our stock example to apply and remove the <code>positive</code> and <code>negative</code> CSS classes using this syntax instead. We don’t have to make any changes in the component or the CSS, and only make the following changes to the <em>src/app/stock/stock-item/stock-item.component.html</em> file:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-container"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"name"</code><code class="nt">&gt;</code>{{stock.name + ' (' + stock.code + ')'}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"price"</code>
+       <code class="err">[</code><code class="na">class</code><code class="err">.</code><code class="na">positive</code><code class="err">]="</code><code class="na">stock</code><code class="err">.</code><code class="na">isPositiveChange</code><code class="err">()"</code>
+       <code class="err">[</code><code class="na">class</code><code class="err">.</code><code class="na">negative</code><code class="err">]="!</code><code class="na">stock</code><code class="err">.</code><code class="na">isPositiveChange</code><code class="err">()"</code><code class="nt">&gt;</code>$ {{stock.price}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;button</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">toggleFavorite</code><code class="err">($</code><code class="na">event</code><code class="err">)"</code>
+          <code class="err">[</code><code class="na">disabled</code><code class="err">]="</code><code class="na">stock</code><code class="err">.</code><code class="na">favorite</code><code class="err">"</code><code class="nt">&gt;</code>Add to Favorite<code class="nt">&lt;/button&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>Notice the two new lines:</p>
+
+<pre data-type="programlisting">[class.positive]="stock.isPositiveChange()"
+[class.negative]="!stock.isPositiveChange()"</pre>
+
+<p>We are telling Angular to apply the CSS class <code>positive</code> if there is a positive change (based on the call to <code>stock.isPositiveChange()</code>), and remove it if this is falsy. Similarly, we are doing the negation of that for <code>negative</code>. This is a nice simple way to deal with CSS classes if you only have to add/remove one or two classes. Note that this also works if the class name has dashes and so on. For example, you could do:</p>
+
+<pre data-type="programlisting">[class.large-change]="someExpressionHere"</pre>
+
+<p>and this would apply the class <code>large-change</code> if <code>someExpressionHere</code> evaluated to true. Also note that this keeps the original class from the element intact (the <code>price</code> class), which the basic <code>[class]</code> binding does not. That is yet another advantage of this syntax.</p>
+
+<p>It is, though, preferred to use the <code>NgClass</code> directive any time you have to deal with more than one or two classes, as it makes it more manageable and easier to test.<a data-type="indexterm" data-primary="style binding" data-secondary="alternative syntax for" id="idm139828136351488"></a></p>
+
+<p>The style binding is also something similar, and can be done like follows:</p>
+
+<pre data-type="programlisting">[style.background-color]="stock.isPositiveChange() ? 'green' : 'red'"</pre>
+
+<p>You can read more about the style binding in the <a href="https://angular.io/guide/template-syntax#style-binding">official Angular documentation</a>.<a data-type="indexterm" data-primary="style binding" data-secondary="documentation on" id="idm139828136348128"></a><a data-type="indexterm" data-primary="directives" data-secondary="built-in attribute directives" data-startref="ix_dirattrbi" id="idm139828136347152"></a><a data-type="indexterm" data-primary="attribute directives" data-secondary="built-in" data-startref="ix_attrdir" id="idm139828136345872"></a></p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Built-In Structural Directives"><div class="sect1" id="idm139828136478528">
+<h1>Built-In Structural Directives</h1>
+
+<p>Structural directives, as discussed earlier, are responsible for changing the layout of the HTML by adding, removing, or modifying elements from the DOM.<a data-type="indexterm" data-primary="structural directives" id="ix_strdir"></a><a data-type="indexterm" data-primary="directives" data-secondary="built-in structural directives" id="ix_dirbistr"></a> Just like other directives that are not components, structural directives are applied on a pre-existing element, and the directive then operates on the content of that element.</p>
+
+<p>Structural directives in Angular follow a very particular syntax, which makes it easy to recognize when a directive is a structural directive versus a normal one.<a data-type="indexterm" data-primary="* (asterisk), beginning structural directives" id="idm139828136339728"></a> All structural directives in Angular start with an asterisk (<strong>*</strong>), like:</p>
+
+<pre data-type="programlisting">&lt;div *ngIf="stock.favorite"&gt;&lt;/div&gt;</pre>
+
+<p>Unlike the data- or event-binding syntaxes, there are no square brackets or parentheses. Just a plain <code>*ngIf</code> followed by the expression. Angular understands the expression and translates it into the final HTML. To understand this process a bit more, refer to the following sidebar.</p>
+<aside data-type="sidebar" epub:type="sidebar"><div class="sidebar" id="idm139828136336560">
+<h5>Syntax and Reasoning</h5>
+<p>You might be curious about the asterisk syntax, and rightfully so. The star syntax is syntactic sugar that is replaced underneath by Angular to a series of steps, resulting in the final view you get. In fact, unlike the rest of the directives where you can use data/event binding correctly with expressions, with the structural directives, what you instead use is a microsyntax, a mini-language of sorts that Angular uses to accomplish certain things.</p>
+
+<p>You can skip this section if you don’t want to dive into the innards of how exactly Angular works with these expressions.</p>
+
+<p>Let’s walk through a simple lifecycle of how Angular translates a simple expression into its final state. Say we started with:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code> <code class="err">*</code><code class="na">ngIf=</code><code class="s">"stock.favorite"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;button&gt;</code>Remove from favorite<code class="nt">&lt;/button&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>Angular will recognize the structural directive and transform it into a template directive, to create something along the lines of the following:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code> <code class="na">template=</code><code class="s">"ngIf stock.favorite"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;button&gt;</code>Remove from favorite<code class="nt">&lt;/button&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>This template directive is using the microsyntax that Angular recognizes and then translates it into an Angular template that surrounds this particular element, to something like:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;ng-template</code> <code class="err">[</code><code class="na">ngIf</code><code class="err">]="</code><code class="na">stock</code><code class="err">.</code><code class="na">favorite</code><code class="err">"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;div&gt;</code>
+    <code class="nt">&lt;button&gt;</code>Remove from favorite<code class="nt">&lt;/button&gt;</code>
+  <code class="nt">&lt;/div&gt;</code>
+<code class="nt">&lt;/ng-template&gt;</code></pre>
+
+<p>Finally, based on the value of <code>stock.favorite</code>, the inner div would get rendered to the DOM, or removed from it. You can technically use any of these syntaxes to achieve the same effect, but it is recommended for consistency and ease of readability.</p>
+</div></aside>
+
+
+
+
+
+
+
+
+<section data-type="sect2" class="pagebreak-before" data-pdf-bookmark="NgIf"><div class="sect2" id="idm139828136335936">
+<h2>NgIf</h2>
+
+<p>We will first take a look at the trusty and often used structural directive <code>NgIf</code>.<a data-type="indexterm" data-primary="directives" data-secondary="built-in structural directives" data-tertiary="NgIf" id="ix_dirbistrNgI"></a><a data-type="indexterm" data-primary="NgIf directive" id="ix_NgIf"></a><a data-type="indexterm" data-primary="structural directives" data-secondary="NgIf" id="ix_stdirNgI"></a> The <code>NgIf</code> directive allows you to conditionally hide or show elements in your UI. The syntax, as mentioned earlier, starts with an asterisk as it is a structural directive that can conditionally remove or add elements to our rendered HTML.</p>
+
+<p>The <code>NgIf</code> uses one of the simplest microsyntaxes of all the structural directives, as it simply expects the expression provided to it to evaluate to a truthy value. This is the JavaScript concept of truthiness (as explained previously), so the boolean true value, a nonzero number, a nonempty string, and a nonnull object would all be treated as true. This also makes it convenient to have templates that show up if certain objects are present and nonnull.</p>
+
+<p>We will build on the examples from the previous chapter, so if you don’t have it, feel free to grab the final code we were working with from the <a href="https://github.com/shyamseshadri/angular-up-and-running">GitHub repository</a>. The codebase is in <em>chapter2/stock-market</em>, which is the base for the code in this chapter.</p>
+
+<p>Let’s modify the Add to Favorite button such that instead of getting disabled, we hide the button if the stock is already favorited. We don’t need to make any changes to the component or CSS code, but instead just to the <em>src/app/stock/stock-item/stock-item.component.html</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-container"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"name"</code><code class="nt">&gt;</code>{{stock.name + ' (' + stock.code + ')'}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"price"</code>
+      <code class="err">[</code><code class="na">class</code><code class="err">]="</code><code class="na">stock</code><code class="err">.</code><code class="na">isPositiveChange</code><code class="err">()</code> <code class="err">?</code> <code class="err">'</code><code class="na">positive</code><code class="err">'</code> <code class="na">:</code> <code class="err">'</code><code class="na">negative</code><code class="err">'"</code><code class="nt">&gt;</code>
+      $ {{stock.price}}
+  <code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;button</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">toggleFavorite</code><code class="err">($</code><code class="na">event</code><code class="err">)"</code>
+          <code class="err">*</code><code class="na">ngIf=</code><code class="s">"!stock.favorite"</code><code class="nt">&gt;</code>Add to Favorite<code class="nt">&lt;/button&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>On the <code>button</code>, we added the conditionality with <code>*ngIf="!stock.favorite"</code>. This tells Angular to add the element if the stock is not favorited, and remove it from the DOM if it is currently a favorite stock. Now when you load the page, you will see the button by default. Once you click the Add to Favorite button, the boolean will flip and the stock will now be favorited. Angular will automatically at this point hide the button from the UI.</p>
+
+<p>If you inspect the HTML of the page, you will see that the element is actually removed from the rendered DOM.<a data-type="indexterm" data-primary="HTML elements, removing vs. hiding" id="idm139828136587376"></a></p>
+<aside data-type="sidebar" epub:type="sidebar" class="pagebreak-before"><div class="sidebar" id="idm139828136586608">
+<h5>Why Remove Versus Hide Element?</h5>
+<p>Why does <code>*ngIf</code> remove the element, instead of hiding it via CSS? The reason comes down to performance and the implications thereof. Angular continues to listen and watch for events on all elements in the DOM. Removing the element from the DOM is a good way to ensure that it reduces any impact on performance, especially when the element being removed is a resource-intensive component (think a graph, or an autoupdating widget). This does mean that it is slightly less efficient when the condition toggles (since it involves a DOM addition/removal), but in the grand context of things, it is more efficient.</p>
+</div></aside>
+
+<p>The <code>NgIf</code> directive, along with the <code>NgFor</code>, which we will cover in the following sections, are work-horse directives. They do a lot of the heavy lifting and are commonly used in most applications you will develop.<a data-type="indexterm" data-primary="structural directives" data-secondary="NgIf" data-startref="ix_stdirNgI" id="idm139828136582368"></a><a data-type="indexterm" data-primary="NgIf directive" data-startref="ix_NgIf" id="idm139828136581120"></a><a data-type="indexterm" data-primary="directives" data-secondary="built-in structural directives" data-tertiary="NgIf" data-startref="ix_dirbistrNgI" id="idm139828136580176"></a></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="NgFor"><div class="sect2" id="idm139828136289872">
+<h2>NgFor</h2>
+
+<p>While the <code>NgIf</code> directive is used for conditionally showing/hiding elements, the <code>NgFor</code> directive is used for creating multiple elements, usually one for each instance of some or the other object in an array.<a data-type="indexterm" data-primary="directives" data-secondary="built-in structural directives" data-tertiary="NgFor" id="ix_dirstrNgF"></a><a data-type="indexterm" data-primary="structural directives" data-secondary="NgFor" id="ix_strdirNgF"></a><a data-type="indexterm" data-primary="NgFor directive" id="ix_NgFor"></a> It is a common practice to have a template, and then create an instance of that template for each instance of our object.</p>
+<div data-type="note" epub:type="note"><h1>NgFor or NgForOf</h1>
+<p>In this book, we use <code>NgFor</code> to refer to the <code>*ngFor</code> directive. But technically, the <code>*ngFor</code> directive uses the class called <code>NgForOf</code> under the hood.<a data-type="indexterm" data-primary="NgForOf class" id="idm139828136568416"></a> Thus, you might see people use <code>NgFor</code> and <code>NgForOf</code> interchangeably when referring to the <code>*ngFor</code> directive in Angular.</p>
+</div>
+
+<p><code>NgFor</code> uses a special microsyntax that comes with a set of mandatory and optional segments. Let’s modify our example from <a data-type="xref" href="ch02.html#chapter-2">Chapter 2</a> to now show a list of stocks, instead of one individual stock.</p>
+
+<p>First, we will modify the <em>src/app/stock/stock-item.component.ts</em> file, just for the sake of demonstration, to have an array of stocks instead of one stock:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'../../model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-item'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./stock-item.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./stock-item.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockItemComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">stocks</code>: <code class="kt">Array</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="o">&gt;</code><code class="p">;</code>
+
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{</code> <code class="p">}</code>
+
+  <code class="nx">ngOnInit() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stocks</code> <code class="o">=</code> <code class="p">[</code>
+      <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Test Stock Company'</code><code class="p">,</code> <code class="s1">'TSC'</code><code class="p">,</code> <code class="mi">85</code><code class="p">,</code> <code class="mi">80</code><code class="p">),</code>
+      <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Second Stock Company'</code><code class="p">,</code> <code class="s1">'SSC'</code><code class="p">,</code> <code class="mi">10</code><code class="p">,</code> <code class="mi">20</code><code class="p">),</code>
+      <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Last Stock Company'</code><code class="p">,</code> <code class="s1">'LSC'</code><code class="p">,</code> <code class="mi">876</code><code class="p">,</code> <code class="mi">765</code><code class="p">)</code>
+    <code class="p">];</code>
+  <code class="p">}</code>
+
+  <code class="nx">toggleFavorite</code><code class="p">(</code><code class="nx">event</code><code class="p">,</code> <code class="nx">index</code><code class="p">)</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'We are toggling the favorite state for stock'</code><code class="p">,</code> <code class="nx">index</code><code class="p">,</code> <code class="nx">event</code><code class="p">);</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stocks</code><code class="p">[</code><code class="nx">index</code><code class="p">].</code><code class="nx">favorite</code> <code class="o">=</code> <code class="o">!</code><code class="k">this</code><code class="p">.</code><code class="nx">stocks</code><code class="p">[</code><code class="nx">index</code><code class="p">].</code><code class="nx">favorite</code><code class="p">;</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>Generally, we want to keep a <code>stock-item</code> for one particular stock only, but we will circumvent that for this particular example. We changed <code>stock</code> to be <code>stocks</code>, an array of stock objects. We then created some dummy stocks in our initialization. Finally, we changed the <code>toggleFavorite</code> to take in an <code>index</code> as a parameter, instead of working with the current stock.</p>
+
+<p>Next, let’s see how we can now modify our HTML in <em>src/app/stock/stock-item.component.html</em> to leverage the power of the <code>NgFor</code> directive:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-container"</code> <code class="err">*</code><code class="na">ngFor=</code><code class="s">"let stock of stocks; index as i"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"name"</code><code class="nt">&gt;</code>{{stock.name + ' (' + stock.code + ')'}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"price"</code>
+      <code class="err">[</code><code class="na">class</code><code class="err">]="</code><code class="na">stock</code><code class="err">.</code><code class="na">isPositiveChange</code><code class="err">()</code> <code class="err">?</code> <code class="err">'</code><code class="na">positive</code><code class="err">'</code> <code class="na">:</code> <code class="err">'</code><code class="na">negative</code><code class="err">'"</code><code class="nt">&gt;</code>
+      $ {{stock.price}}
+  <code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;button</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">toggleFavorite</code><code class="err">($</code><code class="na">event</code><code class="err">,</code> <code class="na">i</code><code class="err">)"</code>
+          <code class="err">[</code><code class="na">disabled</code><code class="err">]="</code><code class="na">stock</code><code class="err">.</code><code class="na">favorite</code><code class="err">"</code><code class="nt">&gt;</code>Add to Favorite<code class="nt">&lt;/button&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>We updated our parent container with the <code>NgFor</code> directive. Let’s explore how we have used it in a bit more detail:</p>
+
+<pre data-type="programlisting">*ngFor="let stock of stocks; index as i"</pre>
+
+<p>The first part of the microsyntax is basically our <code>for</code> loop. We create a template instance variable named <code>stock</code>, which will be available within the scope of the element created. This can be equated to a standard <code>for-each</code> loop, with the variable <code>stock</code> referring to each individual item in the array. The second part after the semicolon is creating another template instance variable <code>i</code>, which holds the current index value. We will talk about the other properties in just a bit.</p>
+
+<p>With this statement, Angular will repeat the <code>stock-container</code> div element once for each item in the <code>stocks</code> array, thus creating three elements in our final rendered HTML. You should see something like <a data-type="xref" href="#fig0301">Figure 3-1</a> on your screen.</p>
+
+<figure><div id="fig0301" class="figure">
+<img src="images/auar_03in01.png" alt="NgFor in action" />
+<h6><span class="label">Figure 3-1. </span>Angular app using *ngFor</h6>
+</div></figure>
+
+<p>Angular encapsulates the <code>stock</code> and <code>i</code> variables such that each instance of the template has its own copy of them. Thus, when we refer to <code>stock.name</code> inside the element, Angular correctly picks up the relevant stock and displays its name. When we click the Add to Favorite button, the correct index is passed and only that particular button is disabled.</p>
+
+<p>Similar to index, there are other local values that are available within the context of an <code>NgFor</code> directive that you can assign to a local variable name (like we did with <code>i</code>) and bind them to different values:</p>
+<dl>
+<dt><code>index</code></dt>
+<dd>
+<p>This refers to the current element index</p>
+</dd>
+<dt><code>even</code></dt>
+<dd>
+<p>This is <code>true</code> when the item has an even index</p>
+</dd>
+<dt><code>odd</code></dt>
+<dd>
+<p>This is <code>true</code> when the item has an odd index</p>
+</dd>
+<dt><code>first</code></dt>
+<dd>
+<p>This is <code>true</code> when the item is the first item in the array</p>
+</dd>
+<dt><code>last</code></dt>
+<dd>
+<p>This is <code>true</code> when the item is the last item in the array</p>
+</dd>
+</dl>
+
+<p>You can then use these variables to bind to CSS classes, or display them in the UI, or run any other calculations you might want to. For instance, you might want to add the CSS class <code>even-item</code> to each even index item, which you can accomplish with a binding like:</p>
+
+<pre data-type="programlisting">[css.even-item]="isEven"</pre>
+
+<p>where <code>even</code> is assigned to the <code>isEven</code> variable in the <code>NgFor</code> microsyntax like:</p>
+
+<pre data-type="programlisting">*ngFor="let stock of stocks; even as isEven; index as i"</pre>
+
+<p>The last major capability that the <code>NgFor</code> directive provides is a hook into how Angular recognizes elements and avoids re-creating element instances unnecessarily. By default, Angular uses object identity to track additions, removals, and modifications to an array. That is, as long as the object reference does not change, Angular will not create new elements for it, and reuse the old element reference. This is mostly for performance reasons, as element creation/removal are two of the more costly operations in the browser.</p>
+
+<p>There are cases when the element reference might change, but you still want to continue using the same element. For example, when you fetch new data from the server, you don’t want to blow away your list and re-create it unless the data has fundamentally changed. This is where the <code>trackBy</code> capability of the <code>NgFor</code> directive comes into play.<a data-type="indexterm" data-primary="trackBy option, NgFor directive" id="idm139828135993904"></a></p>
+
+<p>The <code>trackBy</code> option takes a function that has two arguments: an index and the item. If the <code>trackBy</code> function is provided to the <code>NgFor</code> directive, then it will use the return value of the function to decide how to identify individual elements. For example, in our particular case, we might want to use the stock’s code as an identifier, instead of the object reference.</p>
+
+<p>First, we will add the function used to track individual items in <em>src/app/stock/stock-item.component.ts</em>:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'../../model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-item'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./stock-item.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./stock-item.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockItemComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">stocks</code>: <code class="kt">Array</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="o">&gt;</code><code class="p">;</code>
+
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{</code> <code class="p">}</code>
+
+  <code class="nx">ngOnInit() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stocks</code> <code class="o">=</code> <code class="p">[</code>
+      <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Test Stock Company'</code><code class="p">,</code> <code class="s1">'TSC'</code><code class="p">,</code> <code class="mi">85</code><code class="p">,</code> <code class="mi">80</code><code class="p">),</code>
+      <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Second Stock Company'</code><code class="p">,</code> <code class="s1">'SSC'</code><code class="p">,</code> <code class="mi">10</code><code class="p">,</code> <code class="mi">20</code><code class="p">),</code>
+      <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Last Stock Company'</code><code class="p">,</code> <code class="s1">'LSC'</code><code class="p">,</code> <code class="mi">876</code><code class="p">,</code> <code class="mi">765</code><code class="p">)</code>
+    <code class="p">];</code>
+  <code class="p">}</code>
+
+  <code class="nx">toggleFavorite</code><code class="p">(</code><code class="nx">event</code><code class="p">,</code> <code class="nx">index</code><code class="p">)</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'We are toggling the favorite state for stock'</code><code class="p">,</code> <code class="nx">index</code><code class="p">,</code> <code class="nx">event</code><code class="p">);</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stocks</code><code class="p">[</code><code class="nx">index</code><code class="p">].</code><code class="nx">favorite</code> <code class="o">=</code> <code class="o">!</code><code class="k">this</code><code class="p">.</code><code class="nx">stocks</code><code class="p">[</code><code class="nx">index</code><code class="p">].</code><code class="nx">favorite</code><code class="p">;</code>
+  <code class="p">}</code>
+
+  <code class="nx">trackStockByCode</code><code class="p">(</code><code class="nx">index</code><code class="p">,</code> <code class="nx">stock</code><code class="p">)</code> <code class="p">{</code>
+    <code class="k">return</code> <code class="nx">stock</code><code class="p">.</code><code class="nx">code</code><code class="p">;</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>The last function (<code>trackStockByCode</code>) is the one we just added. We are taking both the index and the stock, and returning the <code>stock.code</code>. Angular will use this value to identify each element.</p>
+
+<p>Next, we can change the HTML to pass this function to the <code>NgFor</code> directive by changing the <em>src/app/stock/stock-item/stock-item.component.html</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-container"</code>
+     <code class="err">*</code><code class="na">ngFor=</code><code class="s">"let stock of stocks; index as i; trackBy: trackStockByCode"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"name"</code><code class="nt">&gt;</code>{{stock.name + ' (' + stock.code + ')'}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"price"</code>
+      <code class="err">[</code><code class="na">class</code><code class="err">]="</code><code class="na">stock</code><code class="err">.</code><code class="na">isPositiveChange</code><code class="err">()</code> <code class="err">?</code> <code class="err">'</code><code class="na">positive</code><code class="err">'</code> <code class="na">:</code> <code class="err">'</code><code class="na">negative</code><code class="err">'"</code><code class="nt">&gt;</code>
+      $ {{stock.price}}
+  <code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;button</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">toggleFavorite</code><code class="err">($</code><code class="na">event</code><code class="err">,</code> <code class="na">i</code><code class="err">)"</code>
+          <code class="err">[</code><code class="na">disabled</code><code class="err">]="</code><code class="na">stock</code><code class="err">.</code><code class="na">favorite</code><code class="err">"</code><code class="nt">&gt;</code>Add to Favorite<code class="nt">&lt;/button&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>We just modified the <code>*ngFor</code> to pass in an additional attribute in the microsyntax, which is <code>trackBy: trackStockByCode</code>. This will ensure that Angular calls this function to figure out how to identify individual items, instead of using the object <span class="keep-together">reference</span>.</p>
+
+<p>This ensures that even if we reload all the stocks from the server (thus changing all the object references), Angular will still look at the stock code to decide whether or not to reuse the elements present in the DOM.</p>
+<div data-type="tip"><h6>Tip</h6>
+<p>Use the <code>trackBy</code> option in the <code>NgFor</code> directive whenever you know that you are going to reload the list (for example, loading it from an observable that makes a server call). It will definitely help in <span class="keep-together">performance</span>.<a data-type="indexterm" data-primary="directives" data-secondary="built-in structural directives" data-tertiary="NgFor" data-startref="ix_dirstrNgF" id="idm139828135707056"></a><a data-type="indexterm" data-primary="structural directives" data-secondary="NgFor" data-startref="ix_strdirNgF" id="idm139828135705536"></a><a data-type="indexterm" data-primary="NgFor directive" data-startref="ix_NgFor" id="idm139828135704320"></a></p>
+</div>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="NgSwitch"><div class="sect2" id="idm139828136577712">
+<h2>NgSwitch</h2>
+
+<p>The last built-in directive is actually a set of multiple directives.<a data-type="indexterm" data-primary="directives" data-secondary="built-in structural directives" data-tertiary="NgSwitchCase and NgSwitchDefault" id="idm139828135701840"></a><a data-type="indexterm" data-primary="structural directives" data-secondary="NgSwitchCase and NgSwitchDefault" id="idm139828135700656"></a><a data-type="indexterm" data-primary="NgSwitch directive" id="idm139828135699744"></a> <code>NgSwitch</code> by itself is not a structural directive, but rather an attribute directive. You would use it with normal data-binding syntax with the square-bracket notation. It is the <code>NgSwitchCase</code> and the <code>NgSwitchDefault</code> directives that are, in fact, structural directives, as they would add or remove elements depending on the case.<a data-type="indexterm" data-primary="NgSwitchDefault directive" id="idm139828135697344"></a><a data-type="indexterm" data-primary="NgSwitchCase directive" id="idm139828135696672"></a></p>
+
+<p>Let’s take a hypothetical example to see how this might look in action. Let’s assume that instead of just stocks, we were dealing with all kinds of securities, like stocks, options, derivatives, and mutual funds. And we had built components to render each one of these. Now, given a security we want to render the right kind of component based on its type. This would be a great example of using an <code>NgSwitch</code>, which might look something like follows:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code> <code class="err">[</code><code class="na">ngSwitch</code><code class="err">]="</code><code class="na">security</code><code class="err">.</code><code class="na">type</code><code class="err">"</code><code class="nt">&gt;</code>
+    <code class="nt">&lt;stock-item</code> <code class="err">*</code><code class="na">ngSwitchCase=</code><code class="s">"'stock'"</code> <code class="err">[</code><code class="na">item</code><code class="err">]="</code><code class="na">security</code><code class="err">"</code><code class="nt">&gt;</code>
+    <code class="nt">&lt;/stock-item&gt;</code>
+    <code class="nt">&lt;option-item</code> <code class="err">*</code><code class="na">ngSwitchCase=</code><code class="s">"'option'"</code> <code class="err">[</code><code class="na">item</code><code class="err">]="</code><code class="na">security</code><code class="err">"</code><code class="nt">&gt;</code>
+    <code class="nt">&lt;/option-item&gt;</code>
+    <code class="nt">&lt;derivative-item</code> <code class="err">*</code><code class="na">ngSwitchCase=</code><code class="s">"'derivative'"</code> <code class="err">[</code><code class="na">item</code><code class="err">]="</code><code class="na">security</code><code class="err">"</code><code class="nt">&gt;</code>
+    <code class="nt">&lt;/derivative-item&gt;</code>
+    <code class="nt">&lt;mutual-fund-item</code> <code class="err">*</code><code class="na">ngSwitchCase=</code><code class="s">"'mutual-fund'"</code> <code class="err">[</code><code class="na">item</code><code class="err">]="</code><code class="na">security</code><code class="err">"</code><code class="nt">&gt;</code>
+    <code class="nt">&lt;/mutual-fund-item&gt;</code>
+    <code class="nt">&lt;unknown-item</code> <code class="err">*</code><code class="na">ngSwitchDefault</code> <code class="err">[</code><code class="na">item</code><code class="err">]="</code><code class="na">security</code><code class="err">"</code><code class="nt">&gt;</code>
+    <code class="nt">&lt;/unknown-item&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>A few interesting things of note in the example:</p>
+
+<ul>
+<li>
+<p>We use normal data binding using square brackets with the <code>ngSwitch</code> directive, as we want it to understand and interpret the value underneath the expression. It is not a structural directive, as we mentioned previously.</p>
+</li>
+<li>
+<p>Each <code>*ngSwitchCase</code> is again taking an expression, and in this case, we are passing string constants like <code>'stock'</code>, <code>'option'</code>, and so on. If the value of <code>security.type</code> matches any one of these string constants, then that particular element will get rendered, and all other sibling elements will be removed.</p>
+</li>
+<li>
+<p>If none of the sibling <code>*ngSwitchCase</code> statements matches, then the <code>*ngSwitch​Default</code> will get triggered and in the example, the <code>unknown-item</code> component will get rendered.</p>
+</li>
+</ul>
+
+<p>The <code>NgSwitch</code> family of directives is great when you have multiple elements/templates, of which one has to be rendered based on conditions.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Multiple Sibling Structural Directives"><div class="sect2" id="idm139828135457488">
+<h2>Multiple Sibling Structural Directives</h2>
+
+<p>You might run into a case at some point where you want to run an <code>*ngFor</code> on a template, but only if some condition is met.<a data-type="indexterm" data-primary="directives" data-secondary="built-in structural directives" data-tertiary="multiple sibling" id="idm139828135455312"></a><a data-type="indexterm" data-primary="structural directives" data-secondary="multiple sibling directives" id="idm139828135454096"></a><a data-type="indexterm" data-primary="NgFor directive" data-secondary="running NgIf with" id="idm139828135453184"></a><a data-type="indexterm" data-primary="NgIf directive" data-secondary="running with NgFor" id="idm139828135452240"></a> Your instinctive reaction in that case might be to add both <code>*ngFor</code> and <code>*ngIf</code> on the same element. Angular will not let you.</p>
+
+<p>For example, consider the following code:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code> <code class="err">*</code><code class="na">ngFor=</code><code class="s">"let stock of stocks"</code> <code class="err">*</code><code class="na">ngIf=</code><code class="s">"stock.active"</code><code class="nt">&gt;</code>
+ <code class="c">&lt;!-- Show stock details here if stock is active --&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>Here, we want to run the <code>*ngFor</code>, and then decide if the stock is active before we display it. Now consider the following code:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code> <code class="err">*</code><code class="na">ngFor=</code><code class="s">"let stock of stocks"</code> <code class="err">*</code><code class="na">ngIf=</code><code class="s">"stocks.length &gt; 2"</code><code class="nt">&gt;</code>
+  <code class="c">&lt;!-- Show stock details here if more than 2 stocks present --&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>Both of these cases look very similar, but the intent and expectation is very different. In the first case, we expect the <code>*ngFor</code> to execute first followed by the <code>*ngIf</code>, and vice versa in the second case.</p>
+
+<p>It is not immediately obvious which one between the two should run first. Rather than creating some innate order that one directive runs before the other, Angular simplifies it by not allowing it on the same element.</p>
+
+<p>When you run into such a case, it is recommended to just use wrapping elements so that you can be explicit about the order in which these structural directives are <span class="keep-together">executed</span>.<a data-type="indexterm" data-primary="structural directives" data-startref="ix_strdir" id="idm139828135423696"></a><a data-type="indexterm" data-primary="directives" data-secondary="built-in structural directives" data-startref="ix_dirbistr" id="idm139828135422688"></a></p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Conclusion"><div class="sect1" id="idm139828136344064">
+<h1>Conclusion</h1>
+
+<p>In this chapter, we covered what the built-in directives are, and then went over some common directives that you will need and use for your Angular application, such as <code>NgFor</code>, <code>NgIf</code>, and more. We looked at examples of how we could use them for various functionality and saw a little bit of some more complex use cases for <code>NgSwitch</code> as well as advanced usage of <code>NgFor</code>. Of course, Angular does allow you to extend and create your own directives, and you can read up on it <a href="https://angular.io/guide/attribute-directives">in the documentation</a>.</p>
+
+<p>In the next chapter, we will dive deep into Angular components and understand the various options we have for configuring them as well as the lifecycle of an Angular component.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" class="pagebreak-before" data-pdf-bookmark="Exercise"><div class="sect1" id="idm139828135427136">
+<h1>Exercise</h1>
+
+<p>For our second exercise, try to change the exercise code from the previous chapter to perform the following:</p>
+<ol>
+<li>
+<p>Move from using simple class binding to using either <code>ngClass</code> or the specific class binding from this chapter to highlight on-sale items. Have a combination of some on sale and some not on sale.</p>
+</li>
+<li>
+<p>Instead of disabling the decrease quantity button when the quantity is zero, use <code>*ngIf</code> to show the button only if it can be clicked.</p>
+</li>
+<li>
+<p>Add a drop-down with quantity selection from 1 to 20 (generated via <code>*ngFor</code>). Don’t worry about the action/update of data on selection of a quantity; we will get to that in one of the following chapters.</p>
+</li>
+
+</ol>
+
+<p>All of this can be accomplished using concepts covered in this chapter.<a data-type="indexterm" data-primary="directives" data-startref="ix_dir" id="idm139828135413344"></a> You can check out the finished solution in <em>chapter3/exercise/ecommerce</em>.</p>
+</div></section>
+
+
+
+
+
+
+
+</div></section></div>
+</body>
+</html>

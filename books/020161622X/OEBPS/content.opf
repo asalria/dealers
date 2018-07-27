@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns="http://www.idpf.org/2007/opf"
+         version="3.0"
+         unique-identifier="BookId"
+         xmlns:dc="http://purl.org/dc/elements/1.1/"
+         xmlns:dcterms="http://purl.org/dc/terms/"
+         xml:lang="en"
+         xmlns:media="http://www.idpf.org/epub/vocab/overlays/#"
+         prefix="ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/">
+
+    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/"
+              xmlns:opf="http://www.idpf.org/2007/opf">
+
+        <dc:identifier id="BookId">020161622X</dc:identifier>
+        <meta refines="#BookId" property="identifier-type" scheme="onix:codelist5">22</meta>
+        <meta property="dcterms:identifier" id="meta-identifier">BookId</meta>
+        <dc:title>The Pragmatic Programmer: From Journeyman to Master</dc:title>
+        <meta property="dcterms:title" id="meta-title">The Pragmatic Programmer: From Journeyman to Master</meta>
+        <dc:language>en</dc:language>
+        <meta property="dcterms:language" id="meta-language">en</meta>
+        <meta property="dcterms:modified">2018-07-27T10:45:25Z</meta>
+        <dc:creator id="creator">David Thomas, Andrew Hunt</dc:creator>
+        <meta refines="#creator" property="file-as">David Thomas, Andrew Hunt</meta>
+        <meta property="dcterms:publisher">Addison-Wesley Professional</meta>
+        <dc:publisher>Addison-Wesley Professional</dc:publisher>
+        
+        <meta property="dcterms:date">2018-7-27</meta>
+        <dc:date>2018-7-27</dc:date>
+        <meta property="dcterms:rights">All rights reserved</meta>
+        <dc:rights>Copyright &#x00A9; 2018 by Addison-Wesley Professional</dc:rights>
+        <meta name="cover" content="image_cover"/>
+        <meta name="generator" content="epub-nicohaenggi" />
+        <meta property="ibooks:specified-fonts">true</meta>
+
+    </metadata>
+
+    <manifest>
+        <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml" />
+        <item id="css" href="style.css" media-type="text/css" />
+        
+        <item id="css" href="core.css" media-type="text/css" />
+        
+
+        <item id="image_cover" href="images/cover.jpg" media-type="image/jpg" />
+
+        
+        <item id="image_0" href="images/9780132119177.jpg" media-type="image/jpeg" />
+        <item id="image_1" href="images/pub.jpg" media-type="image/jpeg" />
+        <item id="image_2" href="images/prefaceinline.gif" media-type="image/gif" />
+        <item id="image_3" href="images/f01fig01.gif" media-type="image/gif" />
+        <item id="image_4" href="images/send.gif" media-type="image/gif" />
+        <item id="image_5" href="images/p0030-01.jpg" media-type="image/jpeg" />
+        <item id="image_6" href="images/p0031-01.jpg" media-type="image/jpeg" />
+        <item id="image_7" href="images/p0031-02.jpg" media-type="image/jpeg" />
+        <item id="image_8" href="images/orthogonality.gif" media-type="image/gif" />
+        <item id="image_9" href="images/f02fig01.gif" media-type="image/gif" />
+        <item id="image_10" href="images/p0040-01.jpg" media-type="image/jpeg" />
+        <item id="image_11" href="images/p0043-01.jpg" media-type="image/jpeg" />
+        <item id="image_12" href="images/p0058-01.jpg" media-type="image/jpeg" />
+        <item id="image_13" href="images/f02fig02.gif" media-type="image/gif" />
+        <item id="image_14" href="images/p0061-02.jpg" media-type="image/jpeg" />
+        <item id="image_15" href="images/p0063-01.jpg" media-type="image/jpeg" />
+        <item id="image_16" href="images/t0065-01.gif" media-type="image/gif" />
+        <item id="image_17" href="images/079tab01.jpg" media-type="image/jpeg" />
+        <item id="image_18" href="images/079tab02.jpg" media-type="image/jpeg" />
+        <item id="image_19" href="images/079tab03.jpg" media-type="image/jpeg" />
+        <item id="image_20" href="images/079tab04.jpg" media-type="image/jpeg" />
+        <item id="image_21" href="images/p0080-01.jpg" media-type="image/jpeg" />
+        <item id="image_22" href="images/arrow.gif" media-type="image/gif" />
+        <item id="image_23" href="images/backspace.gif" media-type="image/gif" />
+        <item id="image_24" href="images/a.gif" media-type="image/gif" />
+        <item id="image_25" href="images/home.gif" media-type="image/gif" />
+        <item id="image_26" href="images/zero.gif" media-type="image/gif" />
+        <item id="image_27" href="images/f03fig01.gif" media-type="image/gif" />
+        <item id="image_28" href="images/085tab01.jpg" media-type="image/jpeg" />
+        <item id="image_29" href="images/undo.gif" media-type="image/gif" />
+        <item id="image_30" href="images/f03fig02.gif" media-type="image/gif" />
+        <item id="image_31" href="images/f03fig03.gif" media-type="image/gif" />
+        <item id="image_32" href="images/f03fig04.gif" media-type="image/gif" />
+        <item id="image_33" href="images/p0110-01.jpg" media-type="image/jpeg" />
+        <item id="image_34" href="images/p0114-01.jpg" media-type="image/jpeg" />
+        <item id="image_35" href="images/p0116-01.jpg" media-type="image/jpeg" />
+        <item id="image_36" href="images/p0118-01.jpg" media-type="image/jpeg" />
+        <item id="image_37" href="images/p0119-01.jpg" media-type="image/jpeg" />
+        <item id="image_38" href="images/p0119-02.jpg" media-type="image/jpeg" />
+        <item id="image_39" href="images/p0119-03.jpg" media-type="image/jpeg" />
+        <item id="image_40" href="images/p0121-01.jpg" media-type="image/jpeg" />
+        <item id="image_41" href="images/p0125-01.jpg" media-type="image/jpeg" />
+        <item id="image_42" href="images/p0126-01.jpg" media-type="image/jpeg" />
+        <item id="image_43" href="images/p0126-02.jpg" media-type="image/jpeg" />
+        <item id="image_44" href="images/p0127-01.jpg" media-type="image/jpeg" />
+        <item id="image_45" href="images/p0129-01.jpg" media-type="image/jpeg" />
+        <item id="image_46" href="images/p0130-01.jpg" media-type="image/jpeg" />
+        <item id="image_47" href="images/p0130-02.jpg" media-type="image/jpeg" />
+        <item id="image_48" href="images/p0131-01.jpg" media-type="image/jpeg" />
+        <item id="image_49" href="images/p0132-01.jpg" media-type="image/jpeg" />
+        <item id="image_50" href="images/p0133-01.jpg" media-type="image/jpeg" />
+        <item id="image_51" href="images/p0133-02.jpg" media-type="image/jpeg" />
+        <item id="image_52" href="images/p0134-01.jpg" media-type="image/jpeg" />
+        <item id="image_53" href="images/p0134-02.jpg" media-type="image/jpeg" />
+        <item id="image_54" href="images/p0139-01.jpg" media-type="image/jpeg" />
+        <item id="image_55" href="images/p0139-02.jpg" media-type="image/jpeg" />
+        <item id="image_56" href="images/f05fig01.gif" media-type="image/gif" />
+        <item id="image_57" href="images/143tab01.jpg" media-type="image/jpeg" />
+        <item id="image_58" href="images/p0143-02.jpg" media-type="image/jpeg" />
+        <item id="image_59" href="images/p0143-03.jpg" media-type="image/jpeg" />
+        <item id="image_60" href="images/p0143-04.jpg" media-type="image/jpeg" />
+        <item id="image_61" href="images/f05fig02.gif" media-type="image/gif" />
+        <item id="image_62" href="images/f05fig03.gif" media-type="image/gif" />
+        <item id="image_63" href="images/p0155-01.jpg" media-type="image/jpeg" />
+        <item id="image_64" href="images/p0156-01.jpg" media-type="image/jpeg" />
+        <item id="image_65" href="images/f05fig04.gif" media-type="image/gif" />
+        <item id="image_66" href="images/f05fig05.gif" media-type="image/gif" />
+        <item id="image_67" href="images/p0164-01.jpg" media-type="image/jpeg" />
+        <item id="image_68" href="images/f05fig06.gif" media-type="image/gif" />
+        <item id="image_69" href="images/t0167-01.gif" media-type="image/gif" />
+        <item id="image_70" href="images/p0176-01.jpg" media-type="image/jpeg" />
+        <item id="image_71" href="images/p0177-01.jpg" media-type="image/jpeg" />
+        <item id="image_72" href="images/f06fig01.gif" media-type="image/gif" />
+        <item id="image_73" href="images/p0183-01.jpg" media-type="image/jpeg" />
+        <item id="image_74" href="images/p0188-01.jpg" media-type="image/jpeg" />
+        <item id="image_75" href="images/p0189-01.jpg" media-type="image/jpeg" />
+        <item id="image_76" href="images/p0189-02.jpg" media-type="image/jpeg" />
+        <item id="image_77" href="images/p0190-01.jpg" media-type="image/jpeg" />
+        <item id="image_78" href="images/p0191-01.jpg" media-type="image/jpeg" />
+        <item id="image_79" href="images/p0191-02.jpg" media-type="image/jpeg" />
+        <item id="image_80" href="images/p0193-01.jpg" media-type="image/jpeg" />
+        <item id="image_81" href="images/p0195-01.jpg" media-type="image/jpeg" />
+        <item id="image_82" href="images/send.gif" media-type="image/gif" />
+        <item id="image_83" href="images/f07fig01.gif" media-type="image/gif" />
+        <item id="image_84" href="images/f07fig02.gif" media-type="image/gif" />
+        <item id="image_85" href="images/f07fig03.gif" media-type="image/gif" />
+        <item id="image_86" href="images/puzzles.gif" media-type="image/gif" />
+        <item id="image_87" href="images/p0231-01.jpg" media-type="image/jpeg" />
+        <item id="image_88" href="images/p0232-01.jpg" media-type="image/jpeg" />
+        <item id="image_89" href="images/p0245-01.jpg" media-type="image/jpeg" />
+        <item id="image_90" href="images/U012B.gif" media-type="image/gif" />
+        <item id="image_91" href="images/p0250-01.jpg" media-type="image/jpeg" />
+        <item id="image_92" href="images/tex.gif" media-type="image/gif" />
+        <item id="image_93" href="images/latex.gif" media-type="image/gif" />
+        <item id="image_94" href="images/p0279-01.jpg" media-type="image/jpeg" />
+        <item id="image_95" href="images/p0280-01.jpg" media-type="image/jpeg" />
+        <item id="image_96" href="images/p0281-01.jpg" media-type="image/jpeg" />
+        <item id="image_97" href="images/p0281-02.jpg" media-type="image/jpeg" />
+        <item id="image_98" href="images/p0281-03.jpg" media-type="image/jpeg" />
+        <item id="image_99" href="images/p0281-04.jpg" media-type="image/jpeg" />
+        <item id="image_100" href="images/p0282-01.jpg" media-type="image/jpeg" />
+        <item id="image_101" href="images/p0282-02.jpg" media-type="image/jpeg" />
+        <item id="image_102" href="images/p0283-01.jpg" media-type="image/jpeg" />
+        <item id="image_103" href="images/p0283-02.jpg" media-type="image/jpeg" />
+        <item id="image_104" href="images/p0284-01.jpg" media-type="image/jpeg" />
+        <item id="image_105" href="images/p0284-02.jpg" media-type="image/jpeg" />
+        <item id="image_106" href="images/p0284-03.jpg" media-type="image/jpeg" />
+        <item id="image_107" href="images/p0285-01.jpg" media-type="image/jpeg" />
+        <item id="image_108" href="images/p0285-02.jpg" media-type="image/jpeg" />
+        <item id="image_109" href="images/p0286-01.jpg" media-type="image/jpeg" />
+        <item id="image_110" href="images/p0286-02.jpg" media-type="image/jpeg" />
+        <item id="image_111" href="images/p0287-01.jpg" media-type="image/jpeg" />
+        <item id="image_112" href="images/p0287-02.jpg" media-type="image/jpeg" />
+        <item id="image_113" href="images/p0288-01.jpg" media-type="image/jpeg" />
+        <item id="image_114" href="images/p0288-02.jpg" media-type="image/jpeg" />
+        <item id="image_115" href="images/p0289-01.jpg" media-type="image/jpeg" />
+        <item id="image_116" href="images/p0289-02.jpg" media-type="image/jpeg" />
+        <item id="image_117" href="images/p0289-03.jpg" media-type="image/jpeg" />
+        <item id="image_118" href="images/p0290-01.jpg" media-type="image/jpeg" />
+        <item id="image_119" href="images/p0291-01.jpg" media-type="image/jpeg" />
+        <item id="image_120" href="images/293tab01.jpg" media-type="image/jpeg" />
+        <item id="image_121" href="images/p0293-02.jpg" media-type="image/jpeg" />
+        <item id="image_122" href="images/p0293-03.jpg" media-type="image/jpeg" />
+        <item id="image_123" href="images/p0294-01.jpg" media-type="image/jpeg" />
+        <item id="image_124" href="images/p0294-02.jpg" media-type="image/jpeg" />
+        <item id="image_125" href="images/p0296-01.jpg" media-type="image/jpeg" />
+        <item id="image_126" href="images/p0296-02.jpg" media-type="image/jpeg" />
+        <item id="image_127" href="images/p0298-01.jpg" media-type="image/jpeg" />
+        <item id="image_128" href="images/p0299-01.jpg" media-type="image/jpeg" />
+        <item id="image_129" href="images/p0300-01.jpg" media-type="image/jpeg" />
+        <item id="image_130" href="images/p0300-02.jpg" media-type="image/jpeg" />
+        <item id="image_131" href="images/p0301-01.jpg" media-type="image/jpeg" />
+        <item id="image_132" href="images/p0301-02.jpg" media-type="image/jpeg" />
+        <item id="image_133" href="images/p0302-01.jpg" media-type="image/jpeg" />
+        <item id="image_134" href="images/p0302-02.jpg" media-type="image/jpeg" />
+        <item id="image_135" href="images/p0303-01.jpg" media-type="image/jpeg" />
+        <item id="image_136" href="images/p0303-02.jpg" media-type="image/jpeg" />
+        <item id="image_137" href="images/p0304-01.jpg" media-type="image/jpeg" />
+        <item id="image_138" href="images/p0305-01.jpg" media-type="image/jpeg" />
+        <item id="image_139" href="images/p0306-01.jpg" media-type="image/jpeg" />
+        <item id="image_140" href="images/bfig01.gif" media-type="image/gif" />
+        <item id="image_141" href="images/undo.gif" media-type="image/gif" />
+        <item id="image_142" href="images/check.jpg" media-type="image/jpeg" />
+        <item id="image_143" href="images/f01fig01.gif" media-type="image/gif" />
+
+        
+        <item id="tocxhtmlfile" href="cover.html" media-type="application/xhtml+xml" />
+        <item id="pref01a" href="pref01a.html" media-type="application/xhtml+xml" />
+        <item id="title" href="title.html" media-type="application/xhtml+xml" />
+        <item id="copyright" href="copyright.html" media-type="application/xhtml+xml" />
+        <item id="tocxhtmlfile" href="ded01.html" media-type="application/xhtml+xml" />
+        <item id="toc" href="toc.html" media-type="application/xhtml+xml" />
+        <item id="pref01" href="pref01.html" media-type="application/xhtml+xml" />
+        <item id="pref02" href="pref02.html" media-type="application/xhtml+xml" />
+        <item id="ch01" href="ch01.html" media-type="application/xhtml+xml" />
+        <item id="ch02" href="ch02.html" media-type="application/xhtml+xml" />
+        <item id="ch03" href="ch03.html" media-type="application/xhtml+xml" />
+        <item id="ch04" href="ch04.html" media-type="application/xhtml+xml" />
+        <item id="ch05" href="ch05.html" media-type="application/xhtml+xml" />
+        <item id="ch06" href="ch06.html" media-type="application/xhtml+xml" />
+        <item id="ch07" href="ch07.html" media-type="application/xhtml+xml" />
+        <item id="ch08" href="ch08.html" media-type="application/xhtml+xml" />
+        <item id="app01" href="app01.html" media-type="application/xhtml+xml" />
+        <item id="app02" href="app02.html" media-type="application/xhtml+xml" />
+        <item id="index" href="index.html" media-type="application/xhtml+xml" />
+        <item id="app03" href="app03.html" media-type="application/xhtml+xml" />
+
+    </manifest>
+
+    <spine toc="ncx">
+      
+      <itemref idref="tocxhtmlfile"/>
+      <itemref idref="pref01a"/>
+      <itemref idref="title"/>
+      <itemref idref="copyright"/>
+      <itemref idref="tocxhtmlfile"/>
+      <itemref idref="toc"/>
+      <itemref idref="pref01"/>
+      <itemref idref="pref02"/>
+      <itemref idref="ch01"/>
+      <itemref idref="ch02"/>
+      <itemref idref="ch03"/>
+      <itemref idref="ch04"/>
+      <itemref idref="ch05"/>
+      <itemref idref="ch06"/>
+      <itemref idref="ch07"/>
+      <itemref idref="ch08"/>
+      <itemref idref="app01"/>
+      <itemref idref="app02"/>
+      <itemref idref="index"/>
+      <itemref idref="app03"/>
+
+    </spine>
+    <guide>
+      
+      <reference type="text" title="Table of Content" href="cover.html"/>
+      
+    </guide>
+</package>

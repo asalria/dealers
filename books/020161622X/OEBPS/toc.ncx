@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
+    <head>
+        <meta name="dtb:uid" content="020161622X" />
+        <meta name="dtb:generator" content="epub-nicohaenggi"/>
+        <meta name="dtb:depth" content="1"/>
+        <meta name="dtb:totalPageCount" content="0"/>
+        <meta name="dtb:maxPageNumber" content="0"/>
+    </head>
+    <docTitle>
+        <text>The Pragmatic Programmer: From Journeyman to Master</text>
+    </docTitle>
+    <docAuthor>
+        <text>David Thomas, Andrew Hunt</text>
+    </docAuthor>
+    <navMap>
+        
+                <navPoint id="tocxhtmlfile" playOrder="0" class="chapter">
+                    <navLabel>
+                        <text>Cover Page</text>
+                    </navLabel>
+                    <content src="cover.html"/>
+                </navPoint>
+        
+                <navPoint id="pref01a" playOrder="4" class="chapter">
+                    <navLabel>
+                        <text>What others in the trenches say about: The Pragmatic Programmer</text>
+                    </navLabel>
+                    <content src="pref01a.html"/>
+                </navPoint>
+        
+                <navPoint id="title" playOrder="1" class="chapter">
+                    <navLabel>
+                        <text>Title Page</text>
+                    </navLabel>
+                    <content src="title.html"/>
+                </navPoint>
+        
+                <navPoint id="copyright" playOrder="2" class="chapter">
+                    <navLabel>
+                        <text>Copyright Page</text>
+                    </navLabel>
+                    <content src="copyright.html"/>
+                </navPoint>
+        
+                <navPoint id="tocxhtmlfile" playOrder="0" class="chapter">
+                    <navLabel>
+                        <text>Dedication</text>
+                    </navLabel>
+                    <content src="ded01.html"/>
+                </navPoint>
+        
+                <navPoint id="toc" playOrder="3" class="chapter">
+                    <navLabel>
+                        <text>Contents</text>
+                    </navLabel>
+                    <content src="toc.html"/>
+                </navPoint>
+        
+                <navPoint id="pref01" playOrder="5" class="chapter">
+                    <navLabel>
+                        <text>Foreword</text>
+                    </navLabel>
+                    <content src="pref01.html"/>
+                </navPoint>
+        
+                <navPoint id="pref02" playOrder="6" class="chapter">
+                    <navLabel>
+                        <text>Preface</text>
+                    </navLabel>
+                    <content src="pref02.html"/>
+                </navPoint>
+        
+                <navPoint id="ch01" playOrder="7" class="chapter">
+                    <navLabel>
+                        <text>Chapter 1. A Pragmatic Philosophy</text>
+                    </navLabel>
+                    <content src="ch01.html"/>
+                </navPoint>
+        
+                <navPoint id="ch02" playOrder="8" class="chapter">
+                    <navLabel>
+                        <text>Chapter 2. A Pragmatic Approach</text>
+                    </navLabel>
+                    <content src="ch02.html"/>
+                </navPoint>
+        
+                <navPoint id="ch03" playOrder="9" class="chapter">
+                    <navLabel>
+                        <text>Chapter 3. The Basic Tools</text>
+                    </navLabel>
+                    <content src="ch03.html"/>
+                </navPoint>
+        
+                <navPoint id="ch04" playOrder="10" class="chapter">
+                    <navLabel>
+                        <text>Chapter 4. Pragmatic Paranoia</text>
+                    </navLabel>
+                    <content src="ch04.html"/>
+                </navPoint>
+        
+                <navPoint id="ch05" playOrder="11" class="chapter">
+                    <navLabel>
+                        <text>Chapter 5. Bend, or Break</text>
+                    </navLabel>
+                    <content src="ch05.html"/>
+                </navPoint>
+        
+                <navPoint id="ch06" playOrder="12" class="chapter">
+                    <navLabel>
+                        <text>Chapter 6. While You Are Coding</text>
+                    </navLabel>
+                    <content src="ch06.html"/>
+                </navPoint>
+        
+                <navPoint id="ch07" playOrder="13" class="chapter">
+                    <navLabel>
+                        <text>Chapter 7. Before the Project</text>
+                    </navLabel>
+                    <content src="ch07.html"/>
+                </navPoint>
+        
+                <navPoint id="ch08" playOrder="14" class="chapter">
+                    <navLabel>
+                        <text>Chapter 8. Pragmatic Projects</text>
+                    </navLabel>
+                    <content src="ch08.html"/>
+                </navPoint>
+        
+                <navPoint id="app01" playOrder="15" class="chapter">
+                    <navLabel>
+                        <text>Appendix A. Resources</text>
+                    </navLabel>
+                    <content src="app01.html"/>
+                </navPoint>
+        
+                <navPoint id="app02" playOrder="16" class="chapter">
+                    <navLabel>
+                        <text>Appendix B. Answers to Exercises</text>
+                    </navLabel>
+                    <content src="app02.html"/>
+                </navPoint>
+        
+                <navPoint id="index" playOrder="17" class="chapter">
+                    <navLabel>
+                        <text>Index</text>
+                    </navLabel>
+                    <content src="index.html"/>
+                </navPoint>
+        
+                <navPoint id="app03" playOrder="18" class="chapter">
+                    <navLabel>
+                        <text>Inside Front Cover</text>
+                    </navLabel>
+                    <content src="app03.html"/>
+                </navPoint>
+        
+    </navMap>
+</ncx>

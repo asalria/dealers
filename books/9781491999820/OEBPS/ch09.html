@@ -1,0 +1,1348 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>9. Making HTTP Calls in Angular</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><section data-type="chapter" epub:type="chapter" data-pdf-bookmark="Chapter 9. Making HTTP Calls in Angular"><div class="chapter" id="chapter-9">
+<h1><span class="label">Chapter 9. </span>Making HTTP Calls in Angular</h1>
+
+
+<p>In the previous chapter, we started our groundwork on Angular services.<a data-type="indexterm" data-primary="HTTP calls in Angular" id="ix_HTTP"></a> In particular, we took a look at what Angular services are and when to use them. We then dealt with creating Angular services and using them in our application, followed by a very cursory glance at dealing with asynchronous behavior in Angular using observables.</p>
+
+<p>In this chapter, we will build on that base and start using the built-in Angular modules and services to make and parse HTTP calls to a server. We will use that to explore common paradigms, the API options, and how to chain and really use the power of observables in our application.</p>
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Introducing HttpClient"><div class="sect1" id="idm139828120744864">
+<h1>Introducing HttpClient</h1>
+
+<p>In this section, we will start using Angular’s <code>HttpClient</code> to make GET and POST calls to a server.<a data-type="indexterm" data-primary="HttpClient" data-secondary="introduction to" id="ix_HttpCl"></a><a data-type="indexterm" data-primary="HTTP calls in Angular" data-secondary="HttpClient" id="ix_HTTPcli"></a> Through this, we will see how to set up our application so that we can make the calls, walk through the process of actually making the calls and dealing with the response, and then go into the API signature and all the various options that we have to tweak it to our needs.</p>
+
+<p>As for the server, we won’t be spending any time building it out, but rather using a prebuilt server for this application. It is a Node.js server, and available in the repository in case you are interested in digging deeper into it, but it is not required to understand this part of the book.</p>
+<div data-type="warning" epub:type="warning"><h1>HttpClient Versus Http</h1>
+<p>If you happened upon some older tutorials and examples, you might encounter a slightly different way of making HTTP calls, by directly importing from <code><em>@angular/http</em></code> and then making calls. This was the old way of working with HTTP in Angular, before <code>HttpClient</code> was introduced in Angular version 4.3. In version 5 of Angular, the old <code>http</code> service was deprecated in favor of <code>HttpClient</code>, so just use the method described in this chapter in your applications.<a data-type="indexterm" data-primary="http service (deprecated)" id="idm139828120736016"></a></p>
+</div>
+
+<p>We will continue building on our application, and try to move it over to communicate with a real server instead of our mock data that it was working with so far. In particular, in this section, we will switch over all three service calls (getting a list of stocks, creating a stock, and toggling the favorite on a stock level) to server calls using HTTP GET/POST. By the end of this section, we should not be operating with any mock data on our client side.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Server Setup"><div class="sect2" id="idm139828120734128">
+<h2>Server Setup</h2>
+
+<p>As mentioned, the server we will be working with is already developed and available in the repository<a data-type="indexterm" data-primary="servers" data-secondary="setup for HTTP server" id="idm139828120732448"></a><a data-type="indexterm" data-primary="HTTP calls in Angular" data-secondary="HttpClient" data-tertiary="server setup" id="idm139828120731472"></a> in the <em>chapter9/server</em> folder. Before we start any web development, let’s get our server up and running.</p>
+
+<p>Checkout and browse to the <em>chapter9/server</em> folder in the <a href="https://github.com/shyamseshadri/angular-up-and-running">GitHub repository</a>. From within the folder, execute the following commands in your terminal :</p>
+<pre data-type="programlisting">
+<strong>npm i</strong>
+<strong>node index.js</strong>
+</pre>
+
+<p>This installs all<a data-type="indexterm" data-primary="Node.js server" id="idm139828120726096"></a> the necessary dependencies for our Node.js server, and then starts the server on port 3000. Keep this server running in the background; don’t kill it. This will be what our application hits to fetch and save stocks.</p>
+<div data-type="warning" epub:type="warning"><h6>Warning</h6>
+<p>Note that this is a very simplistic server with an in-memory data store. Anything you create or save will be reset if you restart the server.</p>
+</div>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Using HttpClientModule"><div class="sect2" id="idm139828120723600">
+<h2>Using HttpClientModule</h2>
+
+<p>In case you are not coding along, you can get the base code from the <em>chapter8/observables</em> folder in the GitHub repository.<a data-type="indexterm" data-primary="HTTP calls in Angular" data-secondary="using HttPClientModule" id="idm139828120721616"></a></p>
+
+<p>Now let’s get to our web application, and see step by step how to convert our local web application to talk to a server and fetch its data. While doing this, we will also see how easy this switch is, since we are already using observables in our code.<a data-type="indexterm" data-primary="observables" id="idm139828120719984"></a></p>
+
+<p>The very first thing we will do is add a dependency on <code>HttpClientModule</code> in our <code>AppModule</code>. Let’s modify the <em>src/app/app.module.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">BrowserModule</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/platform-browser'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">NgModule</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">FormsModule</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/forms'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">HttpClientModule</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/common/http'</code><code class="p">;</code><code>    </code><a class="co" id="co_making_http_calls_in_angular_CO1-1" href="#callout_making_http_calls_in_angular_CO1-1"><img src="images/1.png" alt="1" /></a><code>
+
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">AppComponent</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./app.component'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">StockItemComponent</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./stock/stock-item/stock-item.component'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">CreateStockComponent</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./stock/create-stock/create-stock.component'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">StockListComponent</code><code> </code><code class="p">}</code><code>
+    </code><code class="nx">from</code><code> </code><code class="s1">'./stock/stock-list/stock-list.component'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">StockService</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/services/stock.service'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">NgModule</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="nx">declarations</code><code class="o">:</code><code> </code><code class="p">[</code><code>
+    </code><code class="nx">AppComponent</code><code class="p">,</code><code>
+    </code><code class="nx">StockItemComponent</code><code class="p">,</code><code>
+    </code><code class="nx">CreateStockComponent</code><code class="p">,</code><code>
+    </code><code class="nx">StockListComponent</code><code>
+  </code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">imports</code><code class="o">:</code><code> </code><code class="p">[</code><code>
+    </code><code class="nx">BrowserModule</code><code class="p">,</code><code>
+    </code><code class="nx">FormsModule</code><code class="p">,</code><code>
+    </code><code class="nx">HttpClientModule</code><code>                                         </code><a class="co" id="co_making_http_calls_in_angular_CO1-2" href="#callout_making_http_calls_in_angular_CO1-2"><img src="images/2.png" alt="2" /></a><code>
+  </code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">providers</code><code class="o">:</code><code> </code><code class="p">[</code><code>
+    </code><code class="nx">StockService</code><code class="p">,</code><code>
+  </code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">bootstrap</code><code class="o">:</code><code> </code><code class="p">[</code><code class="nx">AppComponent</code><code class="p">]</code><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">AppModule</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO1-1" href="#co_making_http_calls_in_angular_CO1-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Import the <code>HttpClientModule</code> instead of <code>HttpModule</code></p></dd>
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO1-2" href="#co_making_http_calls_in_angular_CO1-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Add <code>HttpClientModule</code> to the <code>imports</code> array</p></dd>
+</dl>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Making HTTP GET/POST Calls"><div class="sect2" id="idm139828120696736">
+<h2>Making HTTP GET/POST Calls</h2>
+
+<p>Next, we will change the implementation of our <code>StockService</code> to actually make an HTTP service call instead of just returning an observable of mock data.<a data-type="indexterm" data-primary="POST calls (HTTP), making" id="ix_POST"></a><a data-type="indexterm" data-primary="GET/POST calls (HTTP), making" id="ix_GETPOST"></a><a data-type="indexterm" data-primary="HTTP calls in Angular" data-secondary="making GET/POST calls" id="ix_HTTPGP"></a> To do this, we get the <code>HttpClient</code> service injected into the constructor (thanks, Angular dependency injection!), and then use it to make our calls. Let’s see how we can modify the <em>src/app/services/stock.service.ts</em> file:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Injectable</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">HttpClient</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/common/http'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Observable</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'rxjs/Observable'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Injectable</code><code class="p">()</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockService</code> <code class="p">{</code>
+
+  <code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code> <code class="nx">http</code>: <code class="kt">HttpClient</code><code class="p">)</code> <code class="p">{}</code>
+
+  <code class="nx">getStocks</code><code class="p">()</code> <code class="o">:</code> <code class="nx">Observable</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="p">[]</code><code class="o">&gt;</code> <code class="p">{</code>
+    <code class="k">return</code> <code class="k">this</code><code class="p">.</code><code class="nx">http</code><code class="p">.</code><code class="nx">get</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="p">[]</code><code class="o">&gt;</code><code class="p">(</code><code class="s1">'/api/stock'</code><code class="p">);</code>
+  <code class="p">}</code>
+
+  <code class="nx">createStock</code><code class="p">(</code><code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">)</code><code class="o">:</code> <code class="nx">Observable</code><code class="o">&lt;</code><code class="nx">any</code><code class="o">&gt;</code> <code class="p">{</code>
+    <code class="k">return</code> <code class="k">this</code><code class="p">.</code><code class="nx">http</code><code class="p">.</code><code class="nx">post</code><code class="p">(</code><code class="s1">'/api/stock'</code><code class="p">,</code> <code class="nx">stock</code><code class="p">);</code>
+  <code class="p">}</code>
+
+  <code class="nx">toggleFavorite</code><code class="p">(</code><code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">)</code><code class="o">:</code> <code class="nx">Observable</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="o">&gt;</code> <code class="p">{</code>
+    <code class="k">return</code> <code class="k">this</code><code class="p">.</code><code class="nx">http</code><code class="p">.</code><code class="nx">patch</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="o">&gt;</code><code class="p">(</code><code class="s1">'/api/stock/'</code> <code class="o">+</code> <code class="nx">stock</code><code class="p">.</code><code class="nx">code</code><code class="p">,</code>
+      <code class="p">{</code>
+        <code class="nx">favorite</code><code class="o">:</code> <code class="o">!</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code>
+      <code class="p">});</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>Our server exposes three APIs:</p>
+
+<ul>
+<li>
+<p>GET on <em>/api/stock</em> to get a list of stocks</p>
+</li>
+<li>
+<p>POST on <em>/api/stock</em> with the new stock as a body to create a stock on the server</p>
+</li>
+<li>
+<p>PATCH on <em>/api/stock/:code</em> with the stock code in the URL and the new favorite status in the body of the request, to change the state of favorite for the particular stock.<a data-type="indexterm" data-primary="PATCH call (HTTP), making" id="idm139828120310896"></a></p>
+</li>
+</ul>
+
+<p>Our <code>StockService</code> mirrors this API, with each of the three methods making the respective call. The <code>HttpClient</code> APIs directly mirror the HTTP methods, as we can call <code>httpClient.get</code>, <code>httpClient.post</code>, and <code>httpClient.patch</code> directly. Each of them take the URL as the first argument, and a request body as the second (if the method supports it).<a data-type="indexterm" data-primary="httpClient.get, httpClient.post, and httpClient.patch" id="idm139828120306944"></a></p>
+
+<p>One important thing to note is that the <code>HttpClient</code> can give you type-assurance across your code. We leverage this feature in the <code>getStocks()</code> and the <code>toggleFavorite()</code> methods.</p>
+
+<p>One effect of this is that we need to change our <em>stock.ts</em> from a TypeScript class to a TypeScript interface. Why is this? While we don’t need to, Angular does a simple typecast of the response body into the type we have defined. But TypeScript (and ECMAScript underneath it) has no nice and easy way to convert a simple plain-old JavaScript object into a prototypical JavaScript/TypeScript class object. This means that while our response from <code>StockService</code> will have all the properties of the class <code>Stock</code>, it would not have the functions (in particular, <code>isPositiveChange()</code>) available.</p>
+
+<p>We could write a converter, but it is only worth it in very specific cases. It is easier to simply leverage TypeScript for type safety and work with other ways of encapsulation (either at a component level, or maybe as an Angular service).</p>
+
+<p>For these reasons, let’s switch our <code>Stock</code> class to an interface, by editing <em>src/app/model/stock.ts</em> as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">export</code> <code class="kr">interface</code> <code class="nx">Stock</code> <code class="p">{</code>
+  <code class="nx">name</code>: <code class="kt">string</code><code class="p">;</code>
+  <code class="nx">code</code>: <code class="kt">string</code><code class="p">;</code>
+  <code class="nx">price</code>: <code class="kt">number</code><code class="p">;</code>
+  <code class="nx">previousPrice</code>: <code class="kt">number</code><code class="p">;</code>
+  <code class="nx">exchange</code>: <code class="kt">string</code><code class="p">;</code>
+  <code class="nx">favorite</code>: <code class="kt">boolean</code><code class="p">;</code>
+<code class="p">}</code></pre>
+
+<p>We have simply converted it to an interface, and defined all the properties on it. No more constructor, no more built-in functions. With that groundwork done, let’s now move to changing the components over to using the service correctly. We will first start with <code>StockListComponent</code>, which has minimal changes. All we will do is remove the toggling of favorites functionality away from this component, and let each individual stock component handle it. Let’s see the changes to <em>src/app/stock/stock-list/stock-list.component.ts</em>:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">StockService</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/services/stock.service'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/model/stock'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Observable</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'rxjs/Observable'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-list'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./stock-list.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./stock-list.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockListComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">stocks$</code>: <code class="kt">Observable</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="p">[]</code><code class="o">&gt;</code><code class="p">;</code>
+  <code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code> <code class="nx">stockService</code>: <code class="kt">StockService</code><code class="p">)</code> <code class="p">{</code> <code class="p">}</code>
+
+  <code class="nx">ngOnInit() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stocks$</code> <code class="o">=</code> <code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocks</code><code class="p">();</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>Our <code>StockListComponent</code> becomes simplified with this change. We also have to make a slight tweak to its template, to remove the <code>toggleFavorite</code> event binding. Change <em>src/app/stock/stock-list/stock-list.component.html</em> as follows:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;app-stock-item</code> <code class="err">*</code><code class="na">ngFor=</code><code class="s">"let stock of stocks$ | async"</code>
+                <code class="err">[</code><code class="na">stock</code><code class="err">]="</code><code class="na">stock</code><code class="err">"</code><code class="nt">&gt;</code>
+<code class="nt">&lt;/app-stock-item&gt;</code></pre>
+
+<p>Next, let’s move on to the <code>StockItemComponent</code>. We will move the <code>toggleFavorite</code> logic into the component here, and ask each individual stock to make the respective server call through <code>StockService.toggleFavorite</code> directly, and handle the response.<a data-type="indexterm" data-primary="EventEmitter" id="idm139828120106480"></a> We will remove the <code>EventEmitter</code> while we are at it. The finished <em>src/app/stock/stock-item/stock-item.component.ts</em> file should look like this:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Component</code><code class="p">,</code><code> </code><code class="nx">OnInit</code><code class="p">,</code><code> </code><code class="nx">Input</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Stock</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'../../model/stock'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">StockService</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/services/stock.service'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">Component</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="nx">selector</code><code class="o">:</code><code> </code><code class="s1">'app-stock-item'</code><code class="p">,</code><code>
+  </code><code class="nx">templateUrl</code><code class="o">:</code><code> </code><code class="s1">'./stock-item.component.html'</code><code class="p">,</code><code>
+  </code><code class="nx">styleUrls</code><code class="o">:</code><code> </code><code class="p">[</code><code class="s1">'./stock-item.component.css'</code><code class="p">]</code><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">StockItemComponent</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="err">@</code><code class="nx">Input</code><code class="p">(</code><code class="p">)</code><code> </code><code class="kr">public</code><code> </code><code class="nx">stock</code><code>: </code><code class="kt">Stock</code><code class="p">;</code><code>              </code><a class="co" id="co_making_http_calls_in_angular_CO2-1" href="#callout_making_http_calls_in_angular_CO2-1"><img src="images/1.png" alt="1" /></a><code>
+
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code><code> </code><code class="nx">stockService</code><code>: </code><code class="kt">StockService</code><code class="p">)</code><code> </code><code class="p">{</code><code class="p">}</code><code>    </code><a class="co" id="co_making_http_calls_in_angular_CO2-2" href="#callout_making_http_calls_in_angular_CO2-2"><img src="images/2.png" alt="2" /></a><code>
+
+  </code><code class="nx">onToggleFavorite</code><code class="p">(</code><code class="nx">event</code><code class="p">)</code><code> </code><code class="p">{</code><code>                   </code><a class="co" id="co_making_http_calls_in_angular_CO2-3" href="#callout_making_http_calls_in_angular_CO2-3"><img src="images/3.png" alt="3" /></a><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">toggleFavorite</code><code class="p">(</code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">)</code><code>
+      </code><code class="p">.</code><code class="nx">subscribe</code><code class="p">(</code><code class="p">(</code><code class="nx">stock</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code><code> </code><code class="o">=</code><code> </code><code class="o">!</code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO2-1" href="#co_making_http_calls_in_angular_CO2-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Only have input, remove the output binding</p></dd>
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO2-2" href="#co_making_http_calls_in_angular_CO2-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Inject <code>StockService</code> into the constructor</p></dd>
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO2-3" href="#co_making_http_calls_in_angular_CO2-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Change <code>onToggleFavorite</code> to call the service instead</p></dd>
+</dl>
+
+<p>Note that we are taking responsibility for toggling the local state of <code>favorite</code> on the stock on successful toggle favorite call. Without it, it would change the state on the server, but the local browser state would not be changed. We could also have chosen to refresh the entire list of stocks on every toggle favorite, by keeping the <code>EventEmitter</code> and asking the parent <code>StockListComponent</code> to refetch the list of stocks every time. That is a call we can make as we develop our applications, depending on our needs. There will be times when we want the latest and greatest information from the server, and times when handling changes locally is acceptable.</p>
+
+<p>There is also a change in our template for the <code>StockItemComponent</code>, as we no longer have access to the <code>isPositiveChange()</code> function on the stock. We instead directly calculate whether it is positive or not using the underlying properties in our template. Our changed <em>src/app/stock/stock-item/stock-item.component.html</em> should look as <span class="keep-together">follows</span>:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"stock-container"</code><code class="nt">&gt;</code><code>
+  </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"name"</code><code class="nt">&gt;</code><code>{{stock.name + ' (' + stock.code + ')'}}</code><code class="nt">&lt;/div&gt;</code><code>
+  </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"exchange"</code><code class="nt">&gt;</code><code>{{stock.exchange}}</code><code class="nt">&lt;/div&gt;</code><code>
+  </code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"price"</code><code>
+      </code><code class="err">[</code><code class="na">class</code><code class="err">.</code><code class="na">positive</code><code class="err">]</code><code class="err">=</code><code class="err">"</code><code class="na">stock</code><code class="err">.</code><code class="na">price</code><code> </code><code class="nt">&gt;</code><code> stock.previousPrice"     </code><a class="co" id="co_making_http_calls_in_angular_CO3-1" href="#callout_making_http_calls_in_angular_CO3-1"><img src="images/1.png" alt="1" /></a><code>
+      [class.negative]="stock.price </code><code class="err">&lt;</code><code>= stock.previousPrice"&gt;   </code><a class="co" id="co_making_http_calls_in_angular_CO3-2" href="#callout_making_http_calls_in_angular_CO3-2"><img src="images/2.png" alt="2" /></a><code>
+      $ {{stock.price}}
+  </code><code class="nt">&lt;/div&gt;</code><code>
+  </code><code class="nt">&lt;button</code><code> </code><code class="err">(</code><code class="na">click</code><code class="err">)</code><code class="err">=</code><code class="err">"</code><code class="na">onToggleFavorite</code><code class="err">(</code><code class="err">$</code><code class="na">event</code><code class="err">)</code><code class="err">"</code><code>
+          </code><code class="err">*</code><code class="na">ngIf=</code><code class="s">"!stock.favorite"</code><code class="nt">&gt;</code><code>Add to Favorite</code><code class="nt">&lt;/button&gt;</code><code>
+  </code><code class="nt">&lt;button</code><code> </code><code class="err">(</code><code class="na">click</code><code class="err">)</code><code class="err">=</code><code class="err">"</code><code class="na">onToggleFavorite</code><code class="err">(</code><code class="err">$</code><code class="na">event</code><code class="err">)</code><code class="err">"</code><code>
+          </code><code class="err">*</code><code class="na">ngIf=</code><code class="s">"stock.favorite"</code><code class="nt">&gt;</code><code>Remove from Favorite</code><code class="nt">&lt;/button&gt;</code><code>
+</code><code class="nt">&lt;/div&gt;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO3-1" href="#co_making_http_calls_in_angular_CO3-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Add <code>positive</code> class binding based on stock price</p></dd>
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO3-2" href="#co_making_http_calls_in_angular_CO3-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Add <code>negative</code> class binding based on stock price</p></dd>
+</dl>
+
+<p>Now, we will move to the last component, the <code>CreateStockComponent</code>. We only have to accommodate the change over from the class to the interface, which means we don’t have a nice constructor for a <code>Stock</code> object. While we are it, we will refactor the class for reuse. But there is no change required with respect to <code>HttpClient</code>, since we abstracted out the logic and used observables from the beginning. The finished <em>src/app/stock/create-stock/create-stock.component.ts</em> file should look like this:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Component</code><code class="p">,</code><code> </code><code class="nx">OnInit</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Stock</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/model/stock'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">StockService</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/services/stock.service'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">Component</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="nx">selector</code><code class="o">:</code><code> </code><code class="s1">'app-create-stock'</code><code class="p">,</code><code>
+  </code><code class="nx">templateUrl</code><code class="o">:</code><code> </code><code class="s1">'./create-stock.component.html'</code><code class="p">,</code><code>
+  </code><code class="nx">styleUrls</code><code class="o">:</code><code> </code><code class="p">[</code><code class="s1">'./create-stock.component.css'</code><code class="p">]</code><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">CreateStockComponent</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="kr">public</code><code> </code><code class="nx">stock</code><code>: </code><code class="kt">Stock</code><code class="p">;</code><code>
+  </code><code class="kr">public</code><code> </code><code class="nx">confirmed</code><code> </code><code class="o">=</code><code> </code><code class="kc">false</code><code class="p">;</code><code>
+  </code><code class="kr">public</code><code> </code><code class="nx">message</code><code> </code><code class="o">=</code><code> </code><code class="kc">null</code><code class="p">;</code><code>
+  </code><code class="kr">public</code><code> </code><code class="nx">exchanges</code><code> </code><code class="o">=</code><code> </code><code class="p">[</code><code class="s1">'NYSE'</code><code class="p">,</code><code> </code><code class="s1">'NASDAQ'</code><code class="p">,</code><code> </code><code class="s1">'OTHER'</code><code class="p">]</code><code class="p">;</code><code>
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code><code> </code><code class="nx">stockService</code><code>: </code><code class="kt">StockService</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">initializeStock</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>           </code><a class="co" id="co_making_http_calls_in_angular_CO4-1" href="#callout_making_http_calls_in_angular_CO4-1"><img src="images/1.png" alt="1" /></a><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">initializeStock() {</code><code>                 </code><a class="co" id="co_making_http_calls_in_angular_CO4-2" href="#callout_making_http_calls_in_angular_CO4-2"><img src="images/2.png" alt="2" /></a><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code> </code><code class="o">=</code><code>  </code><code class="p">{</code><code>
+      </code><code class="nx">name</code><code class="o">:</code><code> </code><code class="s1">''</code><code class="p">,</code><code>
+      </code><code class="nx">code</code><code class="o">:</code><code> </code><code class="s1">''</code><code class="p">,</code><code>
+      </code><code class="nx">price</code><code>: </code><code class="kt">0</code><code class="p">,</code><code>
+      </code><code class="nx">previousPrice</code><code>: </code><code class="kt">0</code><code class="p">,</code><code>
+      </code><code class="nx">exchange</code><code class="o">:</code><code> </code><code class="s1">'NASDAQ'</code><code class="p">,</code><code>
+      </code><code class="nx">favorite</code><code>: </code><code class="kt">false</code><code>
+    </code><code class="p">}</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">setStockPrice</code><code class="p">(</code><code class="nx">price</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">price</code><code> </code><code class="o">=</code><code> </code><code class="nx">price</code><code class="p">;</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">previousPrice</code><code> </code><code class="o">=</code><code> </code><code class="nx">price</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">createStock</code><code class="p">(</code><code class="nx">stockForm</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+    </code><code class="k">if</code><code> </code><code class="p">(</code><code class="nx">stockForm</code><code class="p">.</code><code class="nx">valid</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+      </code><code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">createStock</code><code class="p">(</code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">)</code><code>
+          </code><code class="p">.</code><code class="nx">subscribe</code><code class="p">(</code><code class="p">(</code><code class="nx">result</code><code>: </code><code class="kt">any</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+            </code><code class="k">this</code><code class="p">.</code><code class="nx">message</code><code> </code><code class="o">=</code><code> </code><code class="nx">result</code><code class="p">.</code><code class="nx">msg</code><code class="p">;</code><code>
+            </code><code class="k">this</code><code class="p">.</code><code class="nx">initializeStock</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>      </code><a class="co" id="co_making_http_calls_in_angular_CO4-3" href="#callout_making_http_calls_in_angular_CO4-3"><img src="images/3.png" alt="3" /></a><code>
+          </code><code class="p">}</code><code class="p">,</code><code> </code><code class="p">(</code><code class="nx">err</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+            </code><code class="k">this</code><code class="p">.</code><code class="nx">message</code><code> </code><code class="o">=</code><code> </code><code class="nx">err</code><code class="p">.</code><code class="nx">error</code><code class="p">.</code><code class="nx">msg</code><code class="p">;</code><code>
+          </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="p">}</code><code> </code><code class="k">else</code><code> </code><code class="p">{</code><code>
+      </code><code class="nx">console</code><code class="p">.</code><code class="nx">error</code><code class="p">(</code><code class="s1">'Stock form is in an invalid state'</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="p">}</code><code>
+  </code><code class="p">}</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO4-1" href="#co_making_http_calls_in_angular_CO4-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Call <code>initializeStock</code> to create a stock instance</p></dd>
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO4-2" href="#co_making_http_calls_in_angular_CO4-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Define <code>initializeStock</code> method for reuse</p></dd>
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO4-3" href="#co_making_http_calls_in_angular_CO4-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Use <code>initializeStock</code> after stock is successfully created</p></dd>
+</dl>
+
+<p>We just pulled out an <code>initializeStock</code> function, which we call both from the constructor as well as after the stock is successfully created. The only other change we did in this class is how we handled the error.<a data-type="indexterm" data-primary="HttpResponse" id="idm139828119421248"></a><a data-type="indexterm" data-primary="error handling, HTTP calls" id="idm139828119768368"></a> With <code>HttpResponse</code> for errors, the response body is actually available in the <code>error</code> key inside the response, so we grab the <code>msg</code> key from there instead. There are no other changes we need to do in this class. The template also remains as is.</p>
+
+<p>We are now almost ready to run our application, but we have one final change we need to make. The browser, for security reasons, does not allow you to make calls across domains and origins. Thus, even while both our server and the Angular application are running on localhost, they are running on different ports, and thus the browser treats them as different origins. To get around this, the Angular CLI allows us to set up a proxy, so that our requests would be sent to the server, which would then proxy it to our final endpoint.<a data-type="indexterm" data-primary="proxy server, setting up" id="idm139828119278784"></a></p>
+
+<p>To do this, we will create a file <em>proxy.conf.json</em> in the main folder of our Angular application, with the following contents:</p>
+
+<pre data-type="programlisting" data-code-language="js"><code class="p">{</code>
+  <code class="s2">"/api"</code><code class="o">:</code> <code class="p">{</code>
+    <code class="s2">"target"</code><code class="o">:</code> <code class="s2">"http://localhost:3000"</code><code class="p">,</code>
+    <code class="s2">"secure"</code><code class="o">:</code> <code class="kc">false</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>What we have done is simply asked Angular to proxy all requests made to the server with the path starting with <em>/api</em> to our Node.js server running on port 3000 locally. Technically, this filename can be anything, but we are just following a certain pattern. This file supports a lot more configuration, but we will not get into it in this book. You can read up on it in the <a href="https://github.com/angular/angular-cli/blob/master/docs/documentation/stories/proxy.md">official Angular CLI docs</a>.</p>
+
+<p>Now we are finally ready to run our application. So far, we have been running the application using <code>ng serve</code>. Now, we need to run it with the following command:</p>
+<pre data-type="programlisting">
+<strong>ng serve --proxy-config proxy.conf.json</strong>
+</pre>
+
+<p>This will let Angular run our application, but taking our proxy configuration into account. Now, when you browse to our application (<em>http://localhost:4200</em>), you should see the list of stocks coming from the server. Note that if you create a new stock, you will see a message saying it has been added successfully, but you will have to manually refresh the page to see it updated in the UI. Toggling the stock should also work, and this should be persisted even after you refresh the page. The application should look exactly the same as it has been looking so far, as we have not made any UI-specific changes.</p>
+
+<p>The finished code sample for this section is available in the GitHub repository in the <em>chapter9/simple-http</em> folder.<a data-type="indexterm" data-primary="HttpClient" data-secondary="introduction to" data-startref="ix_HttpCl" id="idm139828119443136"></a><a data-type="indexterm" data-primary="POST calls (HTTP), making" data-startref="ix_POST" id="idm139828119452704"></a><a data-type="indexterm" data-primary="GET/POST calls (HTTP), making" data-startref="ix_GETPOST" id="idm139828119451792"></a><a data-type="indexterm" data-primary="HTTP calls in Angular" data-secondary="making GET/POST calls" data-startref="ix_HTTPGP" id="idm139828119450832"></a><a data-type="indexterm" data-primary="HTTP calls in Angular" data-secondary="HttpClient" data-startref="ix_HTTPcli" id="idm139828119464432"></a></p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Advanced HTTP"><div class="sect1" id="idm139828120695792">
+<h1>Advanced HTTP</h1>
+
+<p>In the previous section, we started with the basics of Angular’s <code>HttpClient</code> and learned how to make simple HTTP GET and POST calls to our server, and deal with its response.<a data-type="indexterm" data-primary="HTTP calls in Angular" data-secondary="advanced HTTP" id="ix_HTTPadv"></a> In this section, we will dig a little bit deeper into our HTTP API, and other features that are supported by Angular’s HTTP module.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Options—Headers/Params"><div class="sect2" id="idm139828119392816">
+<h2>Options—Headers/Params</h2>
+
+<p>First, let’s take a closer look at the HTTP API we invoke. So far, we passed it a URL, along with a body for the request if necessary.<a data-type="indexterm" data-primary="HTTP calls in Angular" data-secondary="advanced HTTP" data-tertiary="options, headers/params" id="ix_HTTPadvopthp"></a> The HTTP API also allows us to pass an <code>options</code> object as the second (or third in case the API allows for a body like POST and PATCH) argument to the function.<a data-type="indexterm" data-primary="options object, HTTP headers and parameters" id="ix_opthp"></a> Again, let’s modify our existing application to see these options, and add in some common requirements as well. We will use the codebase from the previous section, which can be obtained from the <em>chapter9/simple-http</em> folder in case you are not coding along, as a base.</p>
+
+<p>First, one of the common tasks that any developer has with an HTTP API is to send additional query parameters, or certain HTTP headers along with the request.<a data-type="indexterm" data-primary="headers (HTTP), sending with request" id="idm139828119480240"></a><a data-type="indexterm" data-primary="parameters (HTTP queries), sending" id="idm139828119479520"></a> Let’s see how we can accomplish this using the <code>HttpClient</code>. We will change the <em>src/app/services/stock.service.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Injectable</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">HttpClient</code><code class="p">,</code><code> </code><code class="nx">HttpHeaders</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/common/http'</code><code class="p">;</code><code>
+
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Observable</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'rxjs/Observable'</code><code class="p">;</code><code>
+
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Stock</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/model/stock'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">Injectable</code><code class="p">(</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">StockService</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code><code> </code><code class="nx">http</code><code>: </code><code class="kt">HttpClient</code><code class="p">)</code><code> </code><code class="p">{</code><code class="p">}</code><code>
+
+  </code><code class="nx">getStocks</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">:</code><code> </code><code class="nx">Observable</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="p">[</code><code class="p">]</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="k">return</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">http</code><code class="p">.</code><code class="nx">get</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="p">[</code><code class="p">]</code><code class="o">&gt;</code><code class="p">(</code><code class="s1">'/api/stock'</code><code class="p">,</code><code> </code><code class="p">{</code><code>
+      </code><code class="nx">headers</code><code>: </code><code class="kt">new</code><code> </code><code class="nx">HttpHeaders</code><code class="p">(</code><code class="p">)</code><code>                      </code><a class="co" id="co_making_http_calls_in_angular_CO5-1" href="#callout_making_http_calls_in_angular_CO5-1"><img src="images/1.png" alt="1" /></a><code>
+          </code><code class="p">.</code><code class="nx">set</code><code class="p">(</code><code class="s1">'Authorization'</code><code class="p">,</code><code> </code><code class="s1">'MyAuthorizationHeaderValue'</code><code class="p">)</code><code>
+          </code><code class="p">.</code><code class="nx">set</code><code class="p">(</code><code class="s1">'X-EXAMPLE-HEADER'</code><code class="p">,</code><code> </code><code class="s1">'TestValue'</code><code class="p">)</code><code class="p">,</code><code>
+      </code><code class="nx">params</code><code class="o">:</code><code> </code><code class="p">{</code><code>                                       </code><a class="co" id="co_making_http_calls_in_angular_CO5-2" href="#callout_making_http_calls_in_angular_CO5-2"><img src="images/2.png" alt="2" /></a><code>
+        </code><code class="nx">q</code><code class="o">:</code><code> </code><code class="s1">'test'</code><code class="p">,</code><code>
+        </code><code class="nx">test</code><code class="o">:</code><code> </code><code class="s1">'value'</code><code>
+      </code><code class="p">}</code><code>
+    </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="cm">/** Unchanged after this, omitted for brevity */</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO5-1" href="#co_making_http_calls_in_angular_CO5-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Add HTTP headers to the outgoing call</p></dd>
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO5-2" href="#co_making_http_calls_in_angular_CO5-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Add query params <code>q</code> and <code>test</code> to the outgoing call</p></dd>
+</dl>
+
+<p>In the preceding code, we have made two changes. We have added a second argument to the <code>http.get</code> call, which is an options object. There are certain keys we can pass to it, to configure the outgoing HTTP request. In the code, we have added two options:</p>
+<dl>
+<dt>headers</dt>
+<dd>
+<p>We can set the outgoing/request HTTP headers. There are two ways we can set both the headers as well as the parameters.<a data-type="indexterm" data-primary="HttpHeaders object" id="idm139828119485744"></a> One option, as we have done in the code, is to pass an <code>HttpHeaders</code> object, which is a typed class instance, on which we can call <code>set</code> to set the correct headers. It follows a builder pattern, so you can chain multiple headers as we have done. The second option is to just pass it a plain-old JavaScript object. Of course, for the values, we have hardcoded it here, but you can just as well access it from some variable, or even some other service (in case you need to get authorization headers from, say, an <code>AuthService</code>).</p>
+</dd>
+<dt>params</dt>
+<dd>
+<p>Just like the headers, HTTP query parameters can also be configured in two ways: using the typed, built-in <code>HttpParams</code> class, or using a plain-old JavaScript object.<a data-type="indexterm" data-primary="HttpParams class" id="idm139828119190480"></a></p>
+</dd>
+</dl>
+
+<p>Now, when we run this code (making sure that the Node.js server is also running in parallel), open your network inspector to see the outgoing requests. You should see something like <a data-type="xref" href="#fig0901">Figure 9-1</a>.</p>
+
+<figure><div id="fig0901" class="figure">
+<img src="images/auar_09in01.png" alt="Headers and Query Params" />
+<h6><span class="label">Figure 9-1. </span>Sending query params and headers with an Angular HTTP request</h6>
+</div></figure>
+
+<p>The finished code is available in the <em>chapter9/http-api</em> folder.<a data-type="indexterm" data-primary="options object, HTTP headers and parameters" data-startref="ix_opthp" id="idm139828119378576"></a><a data-type="indexterm" data-primary="HTTP calls in Angular" data-secondary="advanced HTTP" data-tertiary="options, headers/params" data-startref="ix_HTTPadvopthp" id="idm139828119377600"></a></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Options—Observe/Response Type"><div class="sect2" id="idm139828119392288">
+<h2>Options—Observe/Response Type</h2>
+
+<p>We will next move on to two other options on the HTTP request, which give you flexibility in a variety of use cases.<a data-type="indexterm" data-primary="HTTP calls in Angular" data-secondary="advanced HTTP" data-tertiary="options, observe/response type" id="ix_HTTPadvoptor"></a> The first one we will focus on is the <code>observe</code> property on the <code>options</code> parameter.<a data-type="indexterm" data-primary="options parameter, observe/response type" id="ix_optparam"></a><a data-type="indexterm" data-primary="observe property, options parameter" id="idm139828119383536"></a></p>
+
+<p>The <code>observe</code> parameter takes one of three values:</p>
+<dl>
+<dt><code>body</code></dt>
+<dd>
+<p>This is the default value, which ensures that the observable’s <code>subscribe</code> gets called with the body of the response. This body is auto-casted to the return type specified when calling the API. This is what we have been using so far.</p>
+</dd>
+<dt><code>response</code></dt>
+<dd>
+<p>This changes the response type of the HTTP APIs from returning the entire <code>HttpResponse</code> instead of just the body. The response still holds a typed response, so you can still access it underneath, but you also get access to the headers of the response and the status code. Note that instead of a raw <code>HttpResponse</code>, what you really get is an <code>HttpResponse&lt;T&gt;</code>, where T is the type of the body. So in the case of <code>getStocks</code>, what you would end up returning is actually an observable of <code>HttpResponse&lt;Stock[]&gt;</code>.</p>
+</dd>
+<dt><code>events</code></dt>
+<dd>
+<p>This is similar to <code>response</code>, but gets triggered on all <code>HttpEvents</code>. This would include the initialization event, as well as the request finished event. These correspond to the <code>XMLHttpRequest</code> states. This is more useful when we have an API that sends progress events, as we can catch and listen to progress events as well with the <code>observe</code> parameter set to <code>events</code>.</p>
+</dd>
+</dl>
+
+<p>The second parameter that we will explore is the <code>responseType</code> property on the options parameter.<a data-type="indexterm" data-primary="responseType property, options parameter" id="idm139828119416112"></a> This can take one of four values:</p>
+<dl>
+<dt><code>json</code></dt>
+<dd>
+<p>This is the default, which basically ensures that the response body is parsed and treated as a JSON object. In most cases, you wouldn’t need to change this from the default.</p>
+</dd>
+<dt><code>text</code></dt>
+<dd>
+<p>This allows you to treat the response body as a string, without parsing it at all. In this case, the response from your HTTP request would be an <code>Observable&lt;string&gt;</code> instead of a typed response.</p>
+</dd>
+<dt><code>blob</code></dt>
+<dd>
+<p>Both this and the next option are more useful when dealing with binary responses that you need to handle in your application. <code>blob</code> gives you a file-like object containing the raw immutable data, which you can then process as you see fit.</p>
+</dd>
+<dt><code>arraybuffer</code></dt>
+<dd>
+<p>The last option gives us the underlying raw binary data directly.</p>
+</dd>
+</dl>
+
+<p>Let’s take a look at some of these in action. We will change the <code>StockService</code> temporarily to try the same API with a few of these values set as options. Change the <em>src/app/services/stock.service.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** No Change in Imports */</code><code>
+
+</code><code class="err">@</code><code class="nx">Injectable</code><code class="p">(</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">StockService</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code><code> </code><code class="nx">http</code><code>: </code><code class="kt">HttpClient</code><code class="p">)</code><code> </code><code class="p">{</code><code class="p">}</code><code>
+
+  </code><code class="nx">getStocks</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">:</code><code> </code><code class="nx">Observable</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="p">[</code><code class="p">]</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="k">return</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">http</code><code class="p">.</code><code class="nx">get</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="p">[</code><code class="p">]</code><code class="o">&gt;</code><code class="p">(</code><code class="s1">'/api/stock'</code><code class="p">,</code><code> </code><code class="p">{</code><code>
+      </code><code class="nx">headers</code><code>: </code><code class="kt">new</code><code> </code><code class="nx">HttpHeaders</code><code class="p">(</code><code class="p">)</code><code>
+          </code><code class="p">.</code><code class="nx">set</code><code class="p">(</code><code class="s1">'Authorization'</code><code class="p">,</code><code> </code><code class="s1">'MyAuthorizationHeaderValue'</code><code class="p">)</code><code>
+          </code><code class="p">.</code><code class="nx">set</code><code class="p">(</code><code class="s1">'X-EXAMPLE-HEADER'</code><code class="p">,</code><code> </code><code class="s1">'TestValue'</code><code class="p">)</code><code class="p">,</code><code>
+      </code><code class="nx">params</code><code class="o">:</code><code> </code><code class="p">{</code><code>
+        </code><code class="nx">q</code><code class="o">:</code><code> </code><code class="s1">'test'</code><code class="p">,</code><code>
+        </code><code class="nx">test</code><code class="o">:</code><code> </code><code class="s1">'value'</code><code>
+      </code><code class="p">}</code><code class="p">,</code><code>
+      </code><code class="nx">observe</code><code class="o">:</code><code> </code><code class="s1">'body'</code><code>                 </code><a class="co" id="co_making_http_calls_in_angular_CO6-1" href="#callout_making_http_calls_in_angular_CO6-1"><img src="images/1.png" alt="1" /></a><code>
+    </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">getStocksAsResponse</code><code class="p">(</code><code class="p">)</code><code class="o">:</code><code> </code><code class="nx">Observable</code><code class="o">&lt;</code><code class="nx">HttpResponse</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="p">[</code><code class="p">]</code><code class="o">&gt;&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="k">return</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">http</code><code class="p">.</code><code class="nx">get</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="p">[</code><code class="p">]</code><code class="o">&gt;</code><code class="p">(</code><code class="s1">'/api/stock'</code><code class="p">,</code><code> </code><code class="p">{</code><code>
+      </code><code class="nx">observe</code><code class="o">:</code><code> </code><code class="s1">'response'</code><code>                 </code><a class="co" id="co_making_http_calls_in_angular_CO6-2" href="#callout_making_http_calls_in_angular_CO6-2"><img src="images/2.png" alt="2" /></a><code>
+    </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">getStocksAsEvents</code><code class="p">(</code><code class="p">)</code><code class="o">:</code><code> </code><code class="nx">Observable</code><code class="o">&lt;</code><code class="nx">HttpEvent</code><code class="o">&lt;</code><code class="nx">any</code><code class="o">&gt;&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="k">return</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">http</code><code class="p">.</code><code class="nx">get</code><code class="p">(</code><code class="s1">'/api/stock'</code><code class="p">,</code><code> </code><code class="p">{</code><code>
+      </code><code class="nx">observe</code><code class="o">:</code><code> </code><code class="s1">'events'</code><code>                 </code><a class="co" id="co_making_http_calls_in_angular_CO6-3" href="#callout_making_http_calls_in_angular_CO6-3"><img src="images/3.png" alt="3" /></a><code>
+    </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">getStocksAsString</code><code class="p">(</code><code class="p">)</code><code class="o">:</code><code> </code><code class="nx">Observable</code><code class="o">&lt;</code><code class="kt">string</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="k">return</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">http</code><code class="p">.</code><code class="nx">get</code><code class="p">(</code><code class="s1">'/api/stock'</code><code class="p">,</code><code> </code><code class="p">{</code><code>
+      </code><code class="nx">responseType</code><code class="o">:</code><code> </code><code class="s1">'text'</code><code>                 </code><a class="co" id="co_making_http_calls_in_angular_CO6-4" href="#callout_making_http_calls_in_angular_CO6-4"><img src="images/4.png" alt="4" /></a><code>
+    </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">getStocksAsBlob</code><code class="p">(</code><code class="p">)</code><code class="o">:</code><code> </code><code class="nx">Observable</code><code class="o">&lt;</code><code class="nx">Blob</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="k">return</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">http</code><code class="p">.</code><code class="nx">get</code><code class="p">(</code><code class="s1">'/api/stock'</code><code class="p">,</code><code> </code><code class="p">{</code><code>
+      </code><code class="nx">responseType</code><code class="o">:</code><code> </code><code class="s1">'blob'</code><code>                 </code><a class="co" id="co_making_http_calls_in_angular_CO6-5" href="#callout_making_http_calls_in_angular_CO6-5"><img src="images/5.png" alt="5" /></a><code>
+    </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="cm">/** Remaining code unchanged, omitted for brevity */</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO6-1" href="#co_making_http_calls_in_angular_CO6-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Observe response body only</p></dd>
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO6-2" href="#co_making_http_calls_in_angular_CO6-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Observe entire response</p></dd>
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO6-3" href="#co_making_http_calls_in_angular_CO6-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Observe all events</p></dd>
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO6-4" href="#co_making_http_calls_in_angular_CO6-4"><img src="images/4.png" alt="4" /></a></dt>
+<dd><p>Response to be treated as text</p></dd>
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO6-5" href="#co_making_http_calls_in_angular_CO6-5"><img src="images/5.png" alt="5" /></a></dt>
+<dd><p>Response to be treated as blob</p></dd>
+</dl>
+
+<p>We have added four new methods to the <code>StockService</code> as follows:</p>
+
+<ul>
+<li>
+<p><code>getStocksAsResponse</code> makes the same HTTP call, but sets the <code>observe</code> value to <code>response</code>. This also changes the response of the function to return an <code>Observable&lt;HttpResponse&lt;Stock[]&gt;&gt;</code>.</p>
+</li>
+<li>
+<p><code>getStocksAsEvents</code> makes the same HTTP call, but sets the <code>observe</code> value to <code>events</code>. This also changes the response of the function to return an <code>Observable&lt;HttpEvent&lt;any&gt;&gt;</code>. This is because we will get multiple instances of <code>Http​Event</code> that are not just the response, but also progress, initialization, etc. Thus the format of the response is not defined.</p>
+</li>
+<li>
+<p><code>getStocksAsString</code> makes the same HTTP call, but sets the <code>responseType</code> value to <code>text</code>. We also change the response type of the function to return an <code>Observable&lt;string&gt;</code>, and the string is the entire body as a string.</p>
+</li>
+<li>
+<p><code>getStocksAsBlob</code> makes the same HTTP call, but sets the <code>responseType</code> value to <code>blob</code>. We also change the response type of the function to return an <code>Observable&lt;Blob&gt;</code> to allow the subscriber to work with the blob once we get a response from the server.</p>
+</li>
+</ul>
+
+<p>Now, let’s hook this up in the component so that we see the effect of calling each of these slightly different APIs. We will modify the <code>StockListComponent</code> to make calls to each of these APIs so that we can see and compare them side by side. Modify the <em>src/app/stock/stock-list/stock-list.component.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">StockService</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/services/stock.service'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/model/stock'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Observable</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'rxjs/Observable'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-list'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./stock-list.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./stock-list.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockListComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">stocks$</code>: <code class="kt">Observable</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="p">[]</code><code class="o">&gt;</code><code class="p">;</code>
+  <code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code> <code class="nx">stockService</code>: <code class="kt">StockService</code><code class="p">)</code> <code class="p">{</code> <code class="p">}</code>
+
+  <code class="nx">ngOnInit() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stocks$</code> <code class="o">=</code> <code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocks</code><code class="p">();</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocksAsResponse</code><code class="p">()</code>
+        <code class="p">.</code><code class="nx">subscribe</code><code class="p">((</code><code class="nx">response</code><code class="p">)</code> <code class="o">=&gt;</code> <code class="p">{</code>
+          <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'OBSERVE "response" RESPONSE is '</code><code class="p">,</code> <code class="nx">response</code><code class="p">);</code>
+        <code class="p">});</code>
+
+    <code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocksAsEvents</code><code class="p">()</code>
+        <code class="p">.</code><code class="nx">subscribe</code><code class="p">((</code><code class="nx">response</code><code class="p">)</code> <code class="o">=&gt;</code> <code class="p">{</code>
+          <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'OBSERVE "events" RESPONSE is '</code><code class="p">,</code> <code class="nx">response</code><code class="p">);</code>
+        <code class="p">});</code>
+
+    <code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocksAsString</code><code class="p">()</code>
+        <code class="p">.</code><code class="nx">subscribe</code><code class="p">((</code><code class="nx">response</code><code class="p">)</code> <code class="o">=&gt;</code> <code class="p">{</code>
+          <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Response Type "text" RESPONSE is '</code><code class="p">,</code> <code class="nx">response</code><code class="p">);</code>
+        <code class="p">});</code>
+
+    <code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocksAsBlob</code><code class="p">()</code>
+        <code class="p">.</code><code class="nx">subscribe</code><code class="p">((</code><code class="nx">response</code><code class="p">)</code> <code class="o">=&gt;</code> <code class="p">{</code>
+          <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Response Type "blob" RESPONSE is '</code><code class="p">,</code> <code class="nx">response</code><code class="p">);</code>
+        <code class="p">});</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>In the <code>StockListComponent</code>, we leave the original call untouched, and simply add calls to each of the other functions we added in the service below it. For each, we simply subscribe to the response, and then print it (with a respective log so that we can identify them separately). Now, when you run it, make sure you have your browser developer tools open so that you can see the logs it prints. You should see something like <a data-type="xref" href="#fig0902">Figure 9-2</a>.</p>
+
+<figure><div id="fig0902" class="figure">
+<img src="images/auar_09in02.png" alt="Different Responses for different parameters" />
+<h6><span class="label">Figure 9-2. </span>Different kind of response types in Angular</h6>
+</div></figure>
+
+<p>There are a few interesting things to note in the example we ran:</p>
+
+<ul>
+<li>
+<p>For the <code>getStocksAsEvents()</code> call, our subscription is actually called twice, once for the initialization/request being sent and once when the actual information has been loaded with the response. The second event is the one that has the actual data. If our API supported progress, then the subscription would get called for progress events as well.</p>
+</li>
+<li>
+<p>The <code>getStocksAsResponse()</code> call is similar to our initial <code>getStocks()</code> call, except it gives the body along with other HTTP request fields like status, headers, etc.</p>
+</li>
+<li>
+<p>The <code>getStocksAsString()</code> call is similar to our original call, but instead of getting a typed JSON response, we get our entire JSON response as a string. As mentioned before, this is more useful for working with non-JSON APIs.</p>
+</li>
+<li>
+<p>The final <code>getStocksAsBlob()</code> call returns a blob containing our data that we can then work with. This is more useful for working with binary data and the like, rather than JSON APIs.</p>
+</li>
+</ul>
+
+<p>For the most part, you wlll only need the default setting of observing the <code>body</code> and using the <code>json</code> response type. These other options exist for that 5% of use cases where the default is not enough, and you need access to something more. The new <code>HttpClient</code> gives you that flexibility to work with your APIs the way you want to, while making it easy for the most common use cases.</p>
+
+<p>The finished code sample for this section is available in the GitHub repository in the <em>chapter9/http-api</em> folder.<a data-type="indexterm" data-primary="options parameter, observe/response type" data-startref="ix_optparam" id="idm139828118630784"></a><a data-type="indexterm" data-primary="HTTP calls in Angular" data-secondary="advanced HTTP" data-tertiary="options, observe/response type" data-startref="ix_HTTPadvoptor" id="idm139828118629680"></a></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Interceptors"><div class="sect2" id="idm139828119375520">
+<h2>Interceptors</h2>
+
+<p>One other common use case is to be able to hook into all incoming and outgoing requests to be able to either modify them in flight, or listen in on all responses to accomplish things like logging, handling authentication failures in a common manner, etc. <a data-type="indexterm" data-primary="HTTP calls in Angular" data-secondary="advanced HTTP" data-tertiary="interceptors" id="ix_HTTPadvint"></a><a data-type="indexterm" data-primary="interceptors" id="ix_intercpt"></a></p>
+
+<p>With the <code>HttpClient</code> API, Angular allows easily defining interceptors, which can conceptually sit between the <code>HttpClient</code> and the server, allowing it to transform all outgoing requests, and listen in and transform if necessary all incoming responses before passing them on. Let’s see how we might create a very simple interceptor in Angular that allows us to:</p>
+
+<ul>
+<li>
+<p>Modify all outgoing requests by adding a header if we have an authorization token.</p>
+</li>
+<li>
+<p>Log all incoming responses before passing them along.</p>
+</li>
+<li>
+<p>In case the request ends up in a failure (a non-<code>200</code> or non-<code>300</code> response), we will log it differently.</p>
+</li>
+</ul>
+
+<p>We will fetch the authorization token from another service, which we will create just for the purpose of storing and returning our authorization information. To complete this example, we will build on our codebase from the first section. So if you want, you can obtain the base code from the <em>chapter9/simple-http</em> folder. Note that we are not using the additions we did while we were exploring the HTTP API.</p>
+
+<p>We will first add a very simple service that acts as a holder of authorization-related information. We can add it simply by running this from the terminal:</p>
+<pre data-type="programlisting">
+<strong>ng generate service services/auth --module=app</strong>
+</pre>
+
+<p>This will create an <code>AuthService</code> for you, and also hook up the provider in the <code>AppModule</code>. We will just make a small change to the generated service to hold a property that we can use in our interceptor. The changed service in <em>src/app/services/auth.service.ts</em> should look like the following:</p>
+
+<pre data-type="programlisting" data-code-language="ts" class="pagebreak-before"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Injectable</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Injectable</code><code class="p">()</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">AuthService</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">authToken</code>: <code class="kt">string</code><code class="p">;</code>
+
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{</code> <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>We have added a public property on the class called <code>authToken</code> in the <code>AuthService</code>. Because we generated the service using the Angular CLI, it automatically added the provider in the <code>AppModule</code>. Otherwise, we would have had to do it ourselves. We will add one more HTTP API call in the <code>StockService</code> to an API that always returns a <code>403</code>. Make the change so that the <em>src/app/services/stock.service.ts</em> file looks like this:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Injectable</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">HttpClient</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/common/http'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Observable</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'rxjs/Observable'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Injectable</code><code class="p">()</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockService</code> <code class="p">{</code>
+
+  <code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code> <code class="nx">http</code>: <code class="kt">HttpClient</code><code class="p">)</code> <code class="p">{}</code>
+
+  <code class="cm">/** No changes to other calls, omitting for brevity */</code>
+
+  <code class="nx">makeFailingCall() {</code>
+    <code class="k">return</code> <code class="k">this</code><code class="p">.</code><code class="nx">http</code><code class="p">.</code><code class="nx">get</code><code class="p">(</code><code class="s1">'/api/fail'</code><code class="p">);</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>We only added the last method, <code>makeFailingCall()</code>, to the <code>StockService</code>. The remaining code remains untouched. We will then change the <code>StockListComponent</code> to display a few extra buttons, which we will hook up to the <code>StockService</code> and the <code>AuthService</code> that we have just created. First, change the <em>src/app/stock/stock-list/stock-list.component.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">StockService</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/services/stock.service'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/model/stock'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Observable</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'rxjs/Observable'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">AuthService</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/services/auth.service'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-list'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./stock-list.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./stock-list.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockListComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">stocks$</code>: <code class="kt">Observable</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="p">[]</code><code class="o">&gt;</code><code class="p">;</code>
+  <code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code> <code class="nx">stockService</code>: <code class="kt">StockService</code><code class="p">,</code>
+              <code class="kr">private</code> <code class="nx">authService</code>: <code class="kt">AuthService</code><code class="p">)</code> <code class="p">{</code> <code class="p">}</code>
+
+  <code class="nx">ngOnInit() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">fetchStocks</code><code class="p">();</code>
+  <code class="p">}</code>
+
+  <code class="nx">fetchStocks() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stocks$</code> <code class="o">=</code> <code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocks</code><code class="p">();</code>
+  <code class="p">}</code>
+
+  <code class="nx">setAuthToken() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">authService</code><code class="p">.</code><code class="nx">authToken</code> <code class="o">=</code> <code class="s1">'TESTING'</code><code class="p">;</code>
+  <code class="p">}</code>
+
+  <code class="nx">resetAuthToken() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">authService</code><code class="p">.</code><code class="nx">authToken</code> <code class="o">=</code> <code class="kc">null</code><code class="p">;</code>
+  <code class="p">}</code>
+
+  <code class="nx">makeFailingCall() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">makeFailingCall</code><code class="p">().</code><code class="nx">subscribe</code><code class="p">(</code>
+      <code class="p">(</code><code class="nx">res</code><code class="p">)</code> <code class="o">=&gt;</code> <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Successfully made failing call'</code><code class="p">,</code> <code class="nx">res</code><code class="p">),</code>
+      <code class="p">(</code><code class="nx">err</code><code class="p">)</code> <code class="o">=&gt;</code> <code class="nx">console</code><code class="p">.</code><code class="nx">error</code><code class="p">(</code><code class="s1">'Error making failing call'</code><code class="p">,</code> <code class="nx">err</code><code class="p">));</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>We made a slight change to the initialization logic, and added a few new methods to the <code>StockListComponent</code>. First, we pulled out the <code>stock$</code> <code>Observable</code> subscription to a new method called <code>fetchStocks()</code>, and just called it in the <code>ngOnInit</code>. Next, we have added a few more methods, namely <code>setAuthToken()</code>, <code>resetAuthToken()</code>, and <code>makeFailingCall()</code>, all of which are trivial and basically call out to <code>AuthService</code> and <code>StockService</code>, respectively.</p>
+
+<p>Next, we will hook these four new methods to buttons in the template for the <code>StockListComponent</code>. Let’s change <em>src/app/stock/stock-list/stock-list.component.html</em> as <span class="keep-together">follows</span>:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;app-stock-item</code> <code class="err">*</code><code class="na">ngFor=</code><code class="s">"let stock of stocks$ | async"</code>
+                <code class="err">[</code><code class="na">stock</code><code class="err">]="</code><code class="na">stock</code><code class="err">"</code><code class="nt">&gt;</code>
+<code class="nt">&lt;/app-stock-item&gt;</code>
+
+<code class="nt">&lt;div&gt;</code>
+  <code class="nt">&lt;button</code> <code class="na">type=</code><code class="s">"button"</code>
+          <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">fetchStocks</code><code class="err">()"</code><code class="nt">&gt;</code>
+    Refetch Stocks
+  <code class="nt">&lt;/button&gt;</code>
+  <code class="nt">&lt;button</code> <code class="na">type=</code><code class="s">"button"</code>
+          <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">makeFailingCall</code><code class="err">()"</code><code class="nt">&gt;</code>
+    Make Failing Call
+  <code class="nt">&lt;/button&gt;</code>
+  <code class="nt">&lt;button</code> <code class="na">type=</code><code class="s">"button"</code>
+          <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">setAuthToken</code><code class="err">()"</code><code class="nt">&gt;</code>
+    Set Auth Token
+  <code class="nt">&lt;/button&gt;</code>
+  <code class="nt">&lt;button</code> <code class="na">type=</code><code class="s">"button"</code>
+          <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">resetAuthToken</code><code class="err">()"</code><code class="nt">&gt;</code>
+    Reset Auth Token
+  <code class="nt">&lt;/button&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>We have added four new buttons to the template, with each one calling out to one of the new methods we just added.</p>
+
+<p>So far, we have not added anything related to interceptors, but rather just set up our application to demonstrate various things related to the interceptors and how we might be able to use them in our application. Let’s create our interceptor now.<a data-type="indexterm" data-primary="interceptors" data-secondary="creating" id="idm139828118231312"></a> Sadly, the Angular CLI does not yet support generating the skeleton of the interceptor, so we will do it manually. Create a file at <em>src/app/services/stock-app.interceptor.ts</em> with the following content:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code class="nx">Injectable</code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code class="nx">HttpEvent</code><code class="p">,</code><code> </code><code class="nx">HttpInterceptor</code><code class="p">,</code><code> </code><code class="nx">HttpResponse</code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/common/http'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code class="nx">HttpHandler</code><code class="p">,</code><code> </code><code class="nx">HttpRequest</code><code class="p">,</code><code> </code><code class="nx">HttpErrorResponse</code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/common/http'</code><code>
+
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code class="nx">Observable</code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'rxjs/Observable'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">Injectable</code><code class="p">(</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">StockAppInterceptor</code><code> </code><code class="kr">implements</code><code> </code><code class="nx">HttpInterceptor</code><code> </code><code class="p">{</code><code>   </code><a class="co" id="co_making_http_calls_in_angular_CO7-1" href="#callout_making_http_calls_in_angular_CO7-1"><img src="images/1.png" alt="1" /></a><code>
+
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="p">)</code><code> </code><code class="p">{</code><code class="p">}</code><code>
+
+  </code><code class="nx">intercept</code><code class="p">(</code><code class="nx">req</code><code>: </code><code class="kt">HttpRequest</code><code class="o">&lt;</code><code class="nx">any</code><code class="o">&gt;</code><code class="p">,</code><code> </code><code class="nx">next</code><code>: </code><code class="kt">HttpHandler</code><code class="p">)</code><code class="o">:</code><code>
+      </code><code class="nx">Observable</code><code class="o">&lt;</code><code class="nx">HttpEvent</code><code class="o">&lt;</code><code class="nx">any</code><code class="o">&gt;&gt;</code><code> </code><code class="p">{</code><code>   </code><a class="co" id="co_making_http_calls_in_angular_CO7-2" href="#callout_making_http_calls_in_angular_CO7-2"><img src="images/2.png" alt="2" /></a><code>
+    </code><code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Making a request to '</code><code class="p">,</code><code> </code><code class="nx">req</code><code class="p">.</code><code class="nx">url</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="k">return</code><code> </code><code class="nx">next</code><code class="p">.</code><code class="nx">handle</code><code class="p">(</code><code class="nx">req</code><code class="p">)</code><code class="p">;</code><code>    </code><a class="co" id="co_making_http_calls_in_angular_CO7-3" href="#callout_making_http_calls_in_angular_CO7-3"><img src="images/3.png" alt="3" /></a><code>
+  </code><code class="p">}</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO7-1" href="#co_making_http_calls_in_angular_CO7-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Implement the <code>HttpInterceptor</code> interface</p></dd>
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO7-2" href="#co_making_http_calls_in_angular_CO7-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Implement the <code>intercept</code> API</p></dd>
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO7-3" href="#co_making_http_calls_in_angular_CO7-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Continue the chain by calling <code>handle</code> with the request</p></dd>
+</dl>
+
+<p>We have a mostly straightforward <code>StockAppInterceptor</code> class that implements the Angular <code>HttpInterceptor</code> interface.<a data-type="indexterm" data-primary="HttpInterceptor interface" id="idm139828118201664"></a><a data-type="indexterm" data-primary="intercept method" id="idm139828118200976"></a> This interface provides one method, <code>intercept</code>, which we implement in the class. The <code>intercept</code> method is called with two arguments, the <code>HttpRequest</code> and an <code>HttpHandler</code>.<a data-type="indexterm" data-primary="HttpRequest" id="idm139828118198464"></a><a data-type="indexterm" data-primary="HttpHandler" id="idm139828118197728"></a></p>
+
+<p>A good way to think of <code>HttpInterceptor</code> is that it is a chain. Each interceptor is called with the request, and it is up to the interceptor to decide whether it continues in the chain or not. Within this context, each interceptor can decide to modify the request as well. It can continue the chain by calling the handler provided to the <span class="keep-together"><code>intercept</code></span> method with a request object. If there is only one interceptor, then the handler would simply call our backend with the request object. If there are more, it would proceed to the next interceptor in the chain.</p>
+
+<p>Let’s hook up this simple interceptor, which at this point simply logs all outgoing requests to the console, to the application. We do so in the <code>AppModule</code> (available in <em>src/app/app.module.ts</em>) as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** Skipping other standard imports for brevity **/</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">HttpClientModule</code><code class="p">,</code> <code class="nx">HTTP_INTERCEPTORS</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/common/http'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">AuthService</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'./services/auth.service'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">StockAppInterceptor</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'./services/stock-app.interceptor'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">NgModule</code><code class="p">({</code>
+  <code class="nx">declarations</code><code class="o">:</code> <code class="p">[</code>
+    <code class="cm">/** Skipping for brevity **/</code>
+  <code class="p">],</code>
+  <code class="nx">imports</code><code class="o">:</code> <code class="p">[</code>
+    <code class="cm">/** Skipping for brevity **/</code>
+  <code class="p">],</code>
+  <code class="nx">providers</code><code class="o">:</code> <code class="p">[</code>
+    <code class="nx">StockService</code><code class="p">,</code>
+    <code class="nx">AuthService</code><code class="p">,</code>
+    <code class="p">{</code>
+      <code class="nx">provide</code>: <code class="kt">HTTP_INTERCEPTORS</code><code class="p">,</code>
+      <code class="nx">useClass</code>: <code class="kt">StockAppInterceptor</code><code class="p">,</code>
+      <code class="nx">multi</code>: <code class="kt">true</code><code class="p">,</code>
+    <code class="p">}</code>
+  <code class="p">],</code>
+  <code class="nx">bootstrap</code><code class="o">:</code> <code class="p">[</code><code class="nx">AppComponent</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">AppModule</code> <code class="p">{</code> <code class="p">}</code></pre>
+
+<p>The major focus is on the last element in the <code>providers</code> section, which is how we provide the <code>HttpInterceptor</code>. Here, we are using the basic form of a provider, where we mention what we are providing (using the <code>provide</code> key), how to provide it (using the <code>useClass</code>, which points at our newly created <code>StockAppInterceptor</code>), and the fact that it is an array of interceptors (<code>multi: true</code> takes care of this). We can similarly add another entry for each interceptor we want.</p>
+
+<p class="pagebreak-before">Now we can run this application (using <code>ng serve --proxy-config proxy.conf.json</code>, after making sure our Node.js server is running). When you run this, open the console in your developer tools and you should see a log entry each time a server call is made. You can trigger more server calls by clicking the Refetch Stocks button.</p>
+
+<p>Now, let’s extend to make the interceptor nontrivial. Modify the <em>src/app/services/stock-app.interceptor.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code class="nx">Injectable</code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code class="nx">HttpEvent</code><code class="p">,</code><code> </code><code class="nx">HttpInterceptor</code><code class="p">,</code><code> </code><code class="nx">HttpResponse</code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/common/http'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code class="nx">HttpHandler</code><code class="p">,</code><code> </code><code class="nx">HttpRequest</code><code class="p">,</code><code> </code><code class="nx">HttpErrorResponse</code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/common/http'</code><code>
+
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code class="nx">Observable</code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'rxjs/Observable'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="s1">'rxjs/add/operator/do'</code><code class="p">;</code><code>
+
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">AuthService</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./auth.service'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">Injectable</code><code class="p">(</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">StockAppInterceptor</code><code> </code><code class="kr">implements</code><code> </code><code class="nx">HttpInterceptor</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code><code> </code><code class="nx">authService</code><code>: </code><code class="kt">AuthService</code><code class="p">)</code><code> </code><code class="p">{</code><code class="p">}</code><code>
+
+  </code><code class="nx">intercept</code><code class="p">(</code><code class="nx">req</code><code>: </code><code class="kt">HttpRequest</code><code class="o">&lt;</code><code class="nx">any</code><code class="o">&gt;</code><code class="p">,</code><code> </code><code class="nx">next</code><code>: </code><code class="kt">HttpHandler</code><code class="p">)</code><code class="o">:</code><code>
+      </code><code class="nx">Observable</code><code class="o">&lt;</code><code class="nx">HttpEvent</code><code class="o">&lt;</code><code class="nx">any</code><code class="o">&gt;&gt;</code><code> </code><code class="p">{</code><code>         </code><a class="co" id="co_making_http_calls_in_angular_CO8-1" href="#callout_making_http_calls_in_angular_CO8-1"><img src="images/1.png" alt="1" /></a><code>
+    </code><code class="k">if</code><code> </code><code class="p">(</code><code class="k">this</code><code class="p">.</code><code class="nx">authService</code><code class="p">.</code><code class="nx">authToken</code><code class="p">)</code><code> </code><code class="p">{</code><code>      </code><a class="co" id="co_making_http_calls_in_angular_CO8-2" href="#callout_making_http_calls_in_angular_CO8-2"><img src="images/2.png" alt="2" /></a><code>
+      </code><code class="kr">const</code><code> </code><code class="nx">authReq</code><code> </code><code class="o">=</code><code> </code><code class="nx">req</code><code class="p">.</code><code class="nx">clone</code><code class="p">(</code><code class="p">{</code><code>
+        </code><code class="nx">headers</code><code>: </code><code class="kt">req.headers.set</code><code class="p">(</code><code>
+          </code><code class="s1">'Authorization'</code><code class="p">,</code><code>
+          </code><code class="k">this</code><code class="p">.</code><code class="nx">authService</code><code class="p">.</code><code class="nx">authToken</code><code>
+        </code><code class="p">)</code><code>
+      </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+      </code><code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Making an authorized request'</code><code class="p">)</code><code class="p">;</code><code>
+      </code><code class="nx">req</code><code> </code><code class="o">=</code><code> </code><code class="nx">authReq</code><code class="p">;</code><code>                       </code><a class="co" id="co_making_http_calls_in_angular_CO8-3" href="#callout_making_http_calls_in_angular_CO8-3"><img src="images/3.png" alt="3" /></a><code>
+    </code><code class="p">}</code><code>
+    </code><code class="k">return</code><code> </code><code class="nx">next</code><code class="p">.</code><code class="nx">handle</code><code class="p">(</code><code class="nx">req</code><code class="p">)</code><code>                </code><a class="co" id="co_making_http_calls_in_angular_CO8-4" href="#callout_making_http_calls_in_angular_CO8-4"><img src="images/4.png" alt="4" /></a><code>
+        </code><code class="p">.</code><code class="k">do</code><code class="p">(</code><code class="nx">event</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">handleResponse</code><code class="p">(</code><code class="nx">req</code><code class="p">,</code><code> </code><code class="nx">event</code><code class="p">)</code><code class="p">,</code><code>
+            </code><code class="nx">error</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">handleError</code><code class="p">(</code><code class="nx">req</code><code class="p">,</code><code> </code><code class="nx">error</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+
+  </code><code class="nx">handleResponse</code><code class="p">(</code><code class="nx">req</code><code>: </code><code class="kt">HttpRequest</code><code class="o">&lt;</code><code class="nx">any</code><code class="o">&gt;</code><code class="p">,</code><code> </code><code class="nx">event</code><code class="p">)</code><code> </code><code class="p">{</code><code>   </code><a class="co" id="co_making_http_calls_in_angular_CO8-5" href="#callout_making_http_calls_in_angular_CO8-5"><img src="images/5.png" alt="5" /></a><code>
+    </code><code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Handling response for '</code><code class="p">,</code><code> </code><code class="nx">req</code><code class="p">.</code><code class="nx">url</code><code class="p">,</code><code> </code><code class="nx">event</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="k">if</code><code> </code><code class="p">(</code><code class="nx">event</code><code> </code><code class="k">instanceof</code><code> </code><code class="nx">HttpResponse</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+      </code><code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Request for '</code><code class="p">,</code><code> </code><code class="nx">req</code><code class="p">.</code><code class="nx">url</code><code class="p">,</code><code>
+          </code><code class="s1">' Response Status '</code><code class="p">,</code><code> </code><code class="nx">event</code><code class="p">.</code><code class="nx">status</code><code class="p">,</code><code>
+          </code><code class="s1">' With body '</code><code class="p">,</code><code> </code><code class="nx">event</code><code class="p">.</code><code class="nx">body</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="p">}</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">handleError</code><code class="p">(</code><code class="nx">req</code><code>: </code><code class="kt">HttpRequest</code><code class="o">&lt;</code><code class="nx">any</code><code class="o">&gt;</code><code class="p">,</code><code> </code><code class="nx">event</code><code class="p">)</code><code> </code><code class="p">{</code><code>      </code><a class="co" id="co_making_http_calls_in_angular_CO8-6" href="#callout_making_http_calls_in_angular_CO8-6"><img src="images/6.png" alt="6" /></a><code>
+    </code><code class="nx">console</code><code class="p">.</code><code class="nx">error</code><code class="p">(</code><code class="s1">'Request for '</code><code class="p">,</code><code> </code><code class="nx">req</code><code class="p">.</code><code class="nx">url</code><code class="p">,</code><code>
+          </code><code class="s1">' Response Status '</code><code class="p">,</code><code> </code><code class="nx">event</code><code class="p">.</code><code class="nx">status</code><code class="p">,</code><code>
+          </code><code class="s1">' With error '</code><code class="p">,</code><code> </code><code class="nx">event</code><code class="p">.</code><code class="nx">error</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO8-1" href="#co_making_http_calls_in_angular_CO8-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Implement the <code>intercept</code> API</p></dd>
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO8-2" href="#co_making_http_calls_in_angular_CO8-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Check for presence of auth token in the service</p></dd>
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO8-3" href="#co_making_http_calls_in_angular_CO8-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Change the request to an authorized request with extra headers</p></dd>
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO8-4" href="#co_making_http_calls_in_angular_CO8-4"><img src="images/4.png" alt="4" /></a></dt>
+<dd><p>Call the <code>handle</code> API on the request to proceed in the chain</p></dd>
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO8-5" href="#co_making_http_calls_in_angular_CO8-5"><img src="images/5.png" alt="5" /></a></dt>
+<dd><p>Handle any successful response</p></dd>
+<dt><a class="co" id="callout_making_http_calls_in_angular_CO8-6" href="#co_making_http_calls_in_angular_CO8-6"><img src="images/6.png" alt="6" /></a></dt>
+<dd><p>Handle any error</p></dd>
+</dl>
+
+<p>We have changed a few things of note in the interceptor now:</p>
+
+<ul>
+<li>
+<p>First, we check for the presence of the <code>authToken</code> in the <code>AuthService</code>. If it is available, we then modify the request to add an <code>Authorization</code> header with the current value from the <code>AuthService</code>.<a data-type="indexterm" data-primary="Observable.do operator" id="idm139828117566320"></a></p>
+</li>
+<li>
+<p>We have added an operator to <code>Observable</code> using the <code>import 'rxjs/add/operator/do';</code> statement. We then use this on the <code>next.handle</code>.</p>
+</li>
+<li>
+<p>The <code>do</code> operator on an observable allows us to hook onto the results of an observable in a pass-through manner, but still make changes or have side effects. It is useful for cases like these where we want to see the response and possibly even make changes to it or log it.</p>
+</li>
+<li>
+<p>We subscribe to both the success and error events on the observable, and add the appropriate logging in both.</p>
+</li>
+</ul>
+<div data-type="note" epub:type="note"><h1>Why Clone the Request?</h1>
+<p>One very important thing to note is how we handle adding headers (or making any other changes) to the outgoing request.</p>
+
+<p><code>HttpRequest</code> (and <code>HttpResponse</code>) instances are <em>immutable</em>. This means that once created, its values cannot be changed.<a data-type="indexterm" data-primary="HttpRequest" data-secondary="immutability of" id="idm139828117670016"></a><a data-type="indexterm" data-primary="HttpResponse" data-secondary="immutability of" id="idm139828117669040"></a> We want the <code>HttpRequest</code> and <code>HttpResponse</code> to be immutable because there are various <code>Observable</code> operators, some of which might want to retry the request.<a data-type="indexterm" data-primary="cloning HttpRequest" id="idm139828117839952"></a></p>
+
+<p>For example, assume a simple flow where before we make the request, we add a counter that counts the number of requests from our client. If the request was retried, then the count might get updated again, even though it is still the original request that was being retried.</p>
+
+<p>If request instances were mutable, then on retrying the request through an interceptor chain, the request might be completely different. For this reason, both <code>HttpRequest</code> and <code>HttpResponse</code> instances are immutable. Thus, any changes we make on them result in a new immutable instance. This allows us to ensure that retrying a request through an interceptor chain would result in exactly the same request being made, and not result in unexpected behavior because of mutability.</p>
+
+<p>We therefore call <code>clone()</code> on the request to get a new instance with modified/updated properties that we pass to the instance. This gives us back a new instance with updated values. We pass this instance to the handler instead of the original request.</p>
+</div>
+
+<p>Now when you run your application, take the following actions:</p>
+<ol>
+<li>
+<p>See the initial request to get the list of stocks in the network inspector. Ensure that there is no <code>Authorization</code> header in the request.</p>
+</li>
+<li>
+<p>Click the Set Auth Token button. Now click the Refetch Stocks button. Notice that the <code>Authorization</code> header is now set and sent in the request. Corresponding logs will also be printed.</p>
+</li>
+<li>
+<p>Click Reset Auth Token to ensure that header is removed and try Refetch Stocks once again.</p>
+</li>
+<li>
+<p>Click the Make Failing Call button and ensure that the error handler in the interceptor gets called and the logs are correctly printed.</p>
+</li>
+
+</ol>
+<div data-type="warning" epub:type="warning"><h1>Service Dependencies and Interceptors</h1>
+<p>Note that we pulled in an <code>AuthService</code> dependency in the interceptor via dependency injection.<a data-type="indexterm" data-primary="dependencies" data-secondary="service dependencies and interceptors" id="idm139828117515024"></a><a data-type="indexterm" data-primary="interceptors" data-secondary="service dependencies and" id="idm139828117514080"></a><a data-type="indexterm" data-primary="Angular services" data-secondary="service dependencies and interceptors" id="idm139828117513120"></a> But there is one exception that you would need to watch out for, which is if the dependency you are pulling in within the interceptor in turn depends on <code>HttpClient</code>. This would compile, but when you run the application in your browser, you will see an error about <em>circular dependency</em>. <a data-type="indexterm" data-primary="circular dependency" id="idm139828117510944"></a>This is because the <code>HttpClient</code> underneath requires all the interceptors, and when we add a service as a dependency that requires <code>HttpClient</code>, we end up with a circular ask that breaks our application.<a data-type="indexterm" data-primary="HttpClient" data-secondary="service dependencies and interceptors" id="idm139828117509136"></a></p>
+
+<p>How do we fix this? There are a few approaches we can take:</p>
+
+<ul>
+<li>
+<p>Split apart your service if possible into a data service that does not depend on <code>HttpClient</code> and one that makes server calls using <code>HttpClient</code>. Then you can pull in the first service as a dependency only, which won’t cause this circular dependency. This is usually the easier and preferred approach.</p>
+</li>
+<li>
+<p>Do not inject your <code>HttpClient</code> dependency in the constructor, but rather lazily inject it later as and when you need it. To do this, you would need the <code>Injector</code> injected in the constructor. You can then do <code>this.injector.get(MyService)</code> to get a handle on your service and use it. Refer to <a href="https://github.com/angular/angular/issues/18224">this GitHub issue</a> for more details.</p>
+</li>
+</ul>
+</div>
+
+<p>The <a data-type="indexterm" data-primary="HTTP calls in Angular" data-secondary="advanced HTTP" data-tertiary="interceptors" data-startref="ix_HTTPadvint" id="idm139828117847136"></a><a data-type="indexterm" data-primary="interceptors" data-startref="ix_intercpt" id="idm139828117845584"></a><a data-type="indexterm" data-primary="HTTP calls in Angular" data-secondary="advanced HTTP" data-startref="ix_HTTPadv" id="idm139828117844640"></a>finished code is available in <em>chapter9/interceptors</em>.</p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Advanced Observables"><div class="sect1" id="idm139828118627264">
+<h1>Advanced Observables</h1>
+
+<p>In this final section, we will go a little bit more in depth into how we can accomplish some usually complex things using observables.<a data-type="indexterm" data-primary="HTTP calls in Angular" data-secondary="advanced observables" id="ix_HTTPobs"></a><a data-type="indexterm" data-primary="observables" data-secondary="advanced operations with" id="ix_obseradv"></a><a data-type="indexterm" data-primary="search-as-you-type application (example)" id="ix_srchapp"></a> We will also see some common pitfalls that you should be aware of when using observables. From an application perspective, we will try to add the capability to search stocks as you type from the application. This will allow us to see many things in actions. Search is the prototypical example for demonstrating the power of ReactiveX as it really demonstrates how observables can make certain tasks simpler, especially when you treat everything as a stream of events.</p>
+
+<p>Search-as-you-type is generally difficult, for the following reasons:</p>
+
+<ul>
+<li>
+<p>If you trigger an HTTP call every time someone performs a keypress, then you would end up with a lot of calls, most of which will need to be ignored.</p>
+</li>
+<li>
+<p>Users rarely type correctly in one shot, often having to erase and retype. This will also result in unnecessary duplicate calls.</p>
+</li>
+<li>
+<p>You need to worry about how to deal with out-of-order responses. If the result for the previous query returns after the current one, you need to handle it in your application logic.</p>
+</li>
+</ul>
+
+<p>Thankfully, observables give us powerful operators to handle each of these. Before we get into how to fix these using observables, let’s start by first adding a line to show how many search results we are seeing. This will also demonstrate one thing to watch out for when using observables.</p>
+
+<p>We will again use the code from the first finished example, which is available in <em>chapter9/simple-http</em>. We will build on this for the rest of the section.</p>
+
+<p>First, let’s edit <em>src/app/stock/stock-list.component.html</em> to show the number of stocks we have in addition to the stocks themselves. We might end up with something like:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;h2&gt;</code>
+  We have found {{(stocks$ | async)?.length}} stocks!
+<code class="nt">&lt;/h2&gt;</code>
+
+<code class="nt">&lt;app-stock-item</code> <code class="err">*</code><code class="na">ngFor=</code><code class="s">"let stock of stocks$ | async"</code>
+                <code class="err">[</code><code class="na">stock</code><code class="err">]="</code><code class="na">stock</code><code class="err">"</code><code class="nt">&gt;</code>
+<code class="nt">&lt;/app-stock-item&gt;</code></pre>
+
+<p>We have added a <code>div</code>, which shows the length (if present, which is what the ? syntax does—it marks the element as optional, thus preventing failure in case of nulls, etc.). Now if you run the application, you will see the list of stocks as well as “We have found 3 stocks!”</p>
+
+<p>But open up the network inspector and you will notice an interesting thing. There will actually be two different calls going for fetching the list of stocks.<a data-type="indexterm" data-primary="AsyncPipe" id="idm139828117677488"></a> Why? Because Angular observables are cold by default. And so every time someone subscribes to it, the observable is triggered. In this case, we have two subscribers, which are the two <code>Async</code> pipes, one for the <code>ngFor</code> and one for the <code>length</code>. Thus, instead of using the same observable, we end up with two different calls being made.</p>
+<div data-type="note" epub:type="note"><h1>Cold Versus Hot Observables</h1>
+<p>We just mentioned that Angular observables are cold observables by default. What does this mean for us?<a data-type="indexterm" data-primary="observables" data-secondary="cold vs. hot observables" id="idm139828117269664"></a>  Fundamentally, an observable is nothing but a function that connects a producer to a consumer.<a data-type="indexterm" data-primary="cold vs. hot observables" id="idm139828117268480"></a><a data-type="indexterm" data-primary="hot vs. cold observables" id="idm139828117267840"></a></p>
+
+<p>A cold observable is responsible for creating the producer as well, while a hot observable ends up sharing the producer.</p>
+
+<p>For us, this just means that if whenever someone subscribes to an observable in Angular, the producer is created for that instance. This is why for each subscribe, we end up with a new producer.</p>
+
+<p>You can read up more on hot and cold observables in <a href="http://bit.ly/2s2HETa">this article</a>.</p>
+</div>
+
+<p>Now how can we solve it? We have a few options:</p>
+
+<ul>
+<li>
+<p>We can tell Angular to share the same observable, thus preventing two calls.</p>
+</li>
+<li>
+<p>We can manually subscribe to the observable in the component, and capture the event response and save it to a class variable. Then the template can access the class variable instead of relying on the <code>Async</code> pipe.</p>
+</li>
+<li>
+<p>We can choose not to use observables and instead use the promise to get at the underlying value. Promises do work in Angular, <a data-type="indexterm" data-primary="promises, converting observables to" id="idm139828117687760"></a>and you can convert any observable into a promise by calling <code>toPromise</code> on the observable (after adding the operator <code>toPromise</code> first of course by importing it).</p>
+</li>
+</ul>
+
+<p>All of these are acceptable options, depending on the use case. While Angular pushes us toward using observables, there is no hard-and-fast rule that you can’t convert it into a promise. And there are cases where it makes sense to deal with a promise instead of an observable.</p>
+
+<p>We won’t go into code snippets for the latter two, though. Let’s see how we can share the same observable, by changing the <em>src/app/stock/stock-list/stock-list.component.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">StockService</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/services/stock.service'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/model/stock'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Observable</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'rxjs/Observable'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">share</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'rxjs/operators'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-list'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./stock-list.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./stock-list.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockListComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">stocks$</code>: <code class="kt">Observable</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="p">[]</code><code class="o">&gt;</code><code class="p">;</code>
+
+  <code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code> <code class="nx">stockService</code>: <code class="kt">StockService</code><code class="p">)</code> <code class="p">{</code> <code class="p">}</code>
+
+  <code class="nx">ngOnInit() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stocks$</code> <code class="o">=</code> <code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocks</code><code class="p">()</code>
+      <code class="p">.</code><code class="nx">pipe</code><code class="p">(</code><code class="nx">share</code><code class="p">());</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>We have simply imported and used the <code>share</code> operator from RxJS. Then, in the <code>ngOn​Init</code>, instead of saving the <code>getStocks()</code> observable directly, we pipe our base observable and add the <code>share()</code> operator to our pipe. We save this observable as a member variable. This ensures that regardless of how many subscriptions are present on the observable, there would be only one underlying trigger to the server. Now when you run the application, you should see only one request being made to fetch the list of stocks, and still see both the number of stocks as well as the individual stocks.</p>
+<div data-type="tip"><h6>Tip</h6>
+<p>Be careful when you use <code>AsyncPipe</code> in your application, as using multiple <code>async</code> pipes on the same observable without sharing the underlying observable underneath would result in multiple server calls.<a data-type="indexterm" data-primary="AsyncPipe" data-secondary="caution with" id="idm139828117231840"></a></p>
+
+<p>Another option is to use the <code>as</code> operator along with the <code>async</code> pipe.<a data-type="indexterm" data-primary="as operator" id="idm139828117229552"></a> This assigns the variable to a template variable for easy access and use. We can do something like:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;li</code> <code class="err">*</code><code class="na">ngFor=</code><code class="s">"let stock of stocks$ | async as stocks;</code>
+<code class="s">        index as i"</code><code class="nt">&gt;</code>
+  {{ stock.name }} ({{ i }} of {{ stocks.length }})
+<code class="nt">&lt;/li&gt;</code></pre>
+
+<p>The problem is that the template variable is scoped to the element, and cannot be accessed outside like in our example.</p>
+</div>
+
+<p>Next, let’s add a simple search field, and see how we might fetch a list of stocks based on the search term from the server. We will take this step by step, by first updating our service to make the modified server call, and then adding a search field in the UI.</p>
+
+<p>First, let’s change our <code>StockService</code> to support searching for stocks with a query string. We will update the <em>src/app/services/stock.service.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Injectable</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">HttpClient</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/common/http'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Observable</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'rxjs/Observable'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Injectable</code><code class="p">()</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockService</code> <code class="p">{</code>
+
+  <code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code> <code class="nx">http</code>: <code class="kt">HttpClient</code><code class="p">)</code> <code class="p">{}</code>
+
+  <code class="nx">getStocks</code><code class="p">(</code><code class="nx">query</code>: <code class="kt">string</code><code class="p">)</code> <code class="o">:</code> <code class="nx">Observable</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="p">[]</code><code class="o">&gt;</code> <code class="p">{</code>
+    <code class="k">return</code> <code class="k">this</code><code class="p">.</code><code class="nx">http</code><code class="p">.</code><code class="nx">get</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="p">[]</code><code class="o">&gt;</code><code class="p">(</code><code class="err">`</code><code class="o">/</code><code class="nx">api</code><code class="o">/</code><code class="nx">stock</code><code class="o">?</code><code class="nx">q</code><code class="o">=</code><code class="nx">$</code><code class="p">{</code><code class="nx">query</code><code class="p">}</code><code class="err">`</code><code class="p">);</code>
+  <code class="p">}</code>
+
+  <code class="cm">/** Remaining same, omitted for brevity */</code>
+<code class="p">}</code></pre>
+
+<p>We have changed the definition of the <code>getStocks</code> method to take a <code>query</code> parameter, which is then passed to the <em>/api/stock</em> server call as a query parameter. Note that we could have passed it as an options object as the second argument as well instead of appending it to the URL.</p>
+
+<p>Now we need to change our <code>StockListComponent</code> to make the updated call. While we are doing that, we will also add an input field bound to a model in the component, which will drive our search-as-you-type capability. Let’s modify the template first to add the new form field, by changing <em>src/app/stock/stock-list/stock-list.component.html</em> as follows:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div&gt;</code>
+  <code class="nt">&lt;input</code> <code class="na">name=</code><code class="s">"searchBox"</code>
+        <code class="err">[(</code><code class="na">ngModel</code><code class="err">)]="</code><code class="na">searchString</code><code class="err">"</code>
+        <code class="na">placeholder=</code><code class="s">"Search Here"</code>
+        <code class="err">(</code><code class="na">keyup</code><code class="err">)="</code><code class="na">search</code><code class="err">()"</code><code class="nt">&gt;</code>
+<code class="nt">&lt;/div&gt;</code>
+
+<code class="nt">&lt;h2&gt;</code>
+  We have found {{(stocks$ | async)?.length}} stocks!
+<code class="nt">&lt;/h2&gt;</code>
+
+<code class="nt">&lt;app-stock-item</code> <code class="err">*</code><code class="na">ngFor=</code><code class="s">"let stock of stocks$ | async"</code>
+                <code class="err">[</code><code class="na">stock</code><code class="err">]="</code><code class="na">stock</code><code class="err">"</code><code class="nt">&gt;</code>
+<code class="nt">&lt;/app-stock-item&gt;</code></pre>
+
+<p>We have added an <code>input</code> field named <code>searchBox</code> to the template, and bound it using <code>ngModel</code> to a member variable called <code>searchString</code>. In addition, on every <code>keyup</code> event, we are triggering a method called <code>search()</code>. Let’s see how the component in <em>src/app/stock/stock-list/stock-list.component.ts</em> has to evolve:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">StockService</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/services/stock.service'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/model/stock'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Observable</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'rxjs/Observable'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">share</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'rxjs/operators'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-list'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./stock-list.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./stock-list.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockListComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">stocks$</code>: <code class="kt">Observable</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="p">[]</code><code class="o">&gt;</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">searchString</code>: <code class="kt">string</code> <code class="o">=</code> <code class="s1">''</code><code class="p">;</code>
+
+  <code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code> <code class="nx">stockService</code>: <code class="kt">StockService</code><code class="p">)</code> <code class="p">{</code> <code class="p">}</code>
+
+  <code class="nx">ngOnInit() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stocks$</code> <code class="o">=</code> <code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocks</code><code class="p">(</code><code class="k">this</code><code class="p">.</code><code class="nx">searchString</code><code class="p">)</code>
+        <code class="p">.</code><code class="nx">pipe</code><code class="p">(</code><code class="nx">share</code><code class="p">());</code>
+  <code class="p">}</code>
+
+  <code class="nx">search() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stocks$</code> <code class="o">=</code> <code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocks</code><code class="p">(</code><code class="k">this</code><code class="p">.</code><code class="nx">searchString</code><code class="p">)</code>
+        <code class="p">.</code><code class="nx">pipe</code><code class="p">(</code><code class="nx">share</code><code class="p">());</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>We’ve not done much at this point; we’ve simply replicated our logic of fetching the stocks in another method called <code>search()</code>.  We have also ensured that we are passing along the query term to our <code>StockService</code>. If you run the application at this point, you will see the new search box. And if you type into the box, it does actually make a request to the server and search. But opening the network inspector in the developer tools tells the underlying story, which is that:</p>
+
+<ul>
+<li>
+<p>For every keystroke, we make a request to the server. This is horrifyingly inefficient.</p>
+</li>
+<li>
+<p>We make requests for duplicate values even if we had already made a request for the previous one.</p>
+</li>
+</ul>
+
+<p>Thankfully, because we only hold the reference to the latest observable, we don’t have to worry about out-of-order responses, but if we were subscribing to the observable in our component, then we would have to ensure that the response we are working with is the latest and not an older, out-of-date response.</p>
+
+<p>Now let’s see how we can leverage observable operators to solve these problems in a clean, simple manner. We will change the component’s implementation to the following now:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">StockService</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/services/stock.service'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/model/stock'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Observable</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'rxjs/Observable'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Subject</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'rxjs/Subject'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">debounceTime</code><code class="p">,</code> <code class="nx">switchMap</code><code class="p">,</code>
+         <code class="nx">distinctUntilChanged</code><code class="p">,</code> <code class="nx">startWith</code><code class="p">,</code>
+         <code class="nx">share</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'rxjs/operators'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-list'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./stock-list.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./stock-list.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockListComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">stocks$</code>: <code class="kt">Observable</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="p">[]</code><code class="o">&gt;</code><code class="p">;</code>
+  <code class="kr">public</code> <code class="nx">searchString</code>: <code class="kt">string</code> <code class="o">=</code> <code class="s1">''</code><code class="p">;</code>
+
+  <code class="kr">private</code> <code class="nx">searchTerms</code>: <code class="kt">Subject</code><code class="o">&lt;</code><code class="kt">string</code><code class="o">&gt;</code> <code class="o">=</code> <code class="k">new</code> <code class="nx">Subject</code><code class="p">();</code>
+  <code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code> <code class="nx">stockService</code>: <code class="kt">StockService</code><code class="p">)</code> <code class="p">{</code> <code class="p">}</code>
+
+  <code class="nx">ngOnInit() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stocks$</code> <code class="o">=</code> <code class="k">this</code><code class="p">.</code><code class="nx">searchTerms</code><code class="p">.</code><code class="nx">pipe</code><code class="p">(</code>
+      <code class="nx">startWith</code><code class="p">(</code><code class="k">this</code><code class="p">.</code><code class="nx">searchString</code><code class="p">),</code>
+      <code class="nx">debounceTime</code><code class="p">(</code><code class="mi">500</code><code class="p">),</code>
+      <code class="nx">distinctUntilChanged</code><code class="p">(),</code>
+      <code class="nx">switchMap</code><code class="p">((</code><code class="nx">query</code><code class="p">)</code> <code class="o">=&gt;</code> <code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocks</code><code class="p">(</code><code class="nx">query</code><code class="p">)),</code>
+      <code class="nx">share</code><code class="p">()</code>
+    <code class="p">);</code>
+  <code class="p">}</code>
+
+  <code class="nx">search() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">searchTerms</code><code class="p">.</code><code class="nx">next</code><code class="p">(</code><code class="k">this</code><code class="p">.</code><code class="nx">searchString</code><code class="p">);</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>We have given the component a major overhaul, so let’s talk through the various changes and why we have done them:</p>
+
+<ul>
+<li>
+<p>The first major thing we have done is that we have introduced a member variable called <code>searchTerms</code>, which is a <code>Subject</code>. A <code>Subject</code> is a special type in RxJS that acts as both an observer as well as an observable. That is, it is capable of both emitting events as well as subscribing to one. We will use this <code>searchTerms</code> subject to trigger an event whenever the user types in our search box.</p>
+</li>
+<li>
+<p>At this point, our <code>ngOnInit</code> now starts with the <code>Subject</code> we created, rather than the <code>StockService</code>. This means our chain of observable operators will be triggered each time the <code>Subject</code> gets a new term. The <code>Subject</code> is hooked in the <code>search()</code> to emit an event each time the user enters a letter.</p>
+</li>
+<li>
+<p>Of course, we don’t want to trigger the server call each time the user enters a key, so we introduce the <code>debounceTime()</code> operator in the chain. To chain, we use the <code>pipe</code> operator on the observable, and then can add any number of operators <span class="keep-together">separated</span> as arguments to the <code>pipe</code> function. Here, we instruct the stream to hold until there are no more new events for a period of 500 milliseconds. This ensures that we only send a call once the user stops typing for half a second.</p>
+</li>
+<li>
+<p>The next thing we want to do is to avoid unnecessary calls, like if the user enters a search term (say, “test”), then types a few more characters and then erases them to land back at the same word he started with. Instead of adding checks and local variables, we use another observable operator called <code>distinctUntilChanged()</code>. This ensures that the event is only emitted if the new value is different from the previous value, thus saving a few more network calls.</p>
+</li>
+<li>
+<p>So far, we are using a <code>Subject</code> that emits <code>string</code> values. But our observable that we bind to is one of <code>Stock[]</code>. Converting an observable chain from one type to another is usually the work of the <code>map</code> operator. But we will use a particular type of <code>map</code> operator called the <code>switchMap</code>. The <code>switchMap</code> has a nice behavior that in addition to converting from one type of observable to another, it also has the capability to cancel old, in-flight subscriptions. This helps to solve our out-of-order response problem in a nice, clean manner. Note that it does not necessarily cancel the underlying HTTP request, but simply drops the subscription.</p>
+</li>
+<li>
+<p>If we leave it at just this, our chain will only start the first moment the user starts typing into the search box, and will result in an empty list of stocks when the page loads. We can solve this by using an operator called <code>startWith</code>, which sets the initial value with which the observable chain is to be triggered. We start it with an empty string, which ensures that when the page is loaded, we see our original list of stocks.</p>
+</li>
+</ul>
+
+<p>At this point, with a chain of four RxJS operators, we can now run our application. When you type in the search box, it will wait for you to stop typing for a period before making the request. If you type and erase to land back at the starting value, it will not make the request at all.</p>
+
+<p>There are many more operators available in RxJS than what I can reasonably cover in this book, so I won’t even try. This section is more to give you an idea of what RxJS is really capable of. Whenever you are trying to do any complex work, see if you can tackle it using operators rather than doing it manually. The <a href="http://reactivex.io/rxjs/manual/overview.html#operators">official RxJS documentation</a> is a great place to start on learning them.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Conclusion"><div class="sect1" id="idm139828117289888">
+<h1>Conclusion</h1>
+
+<p>In this chapter, we learned how to make HTTP calls using the <code>HttpClient</code> in Angular.<a data-type="indexterm" data-primary="search-as-you-type application (example)" data-startref="ix_srchapp" id="idm139828116692864"></a><a data-type="indexterm" data-primary="HTTP calls in Angular" data-secondary="advanced observables" data-startref="ix_HTTPobs" id="idm139828116691760"></a><a data-type="indexterm" data-primary="observables" data-secondary="advanced operations with" data-startref="ix_obseradv" id="idm139828116690544"></a> We started with GET and POST calls using the <code>HttpClient</code>, before diving deeper into the API provided in the <code>HttpClient</code>. This included working with headers and query parameters, as well as working with different levels of detail in the response and different response types. We then moved on to handling common use cases of hooking onto every HTTP request and response using interceptors, and saw how to create and hook our own interceptor to the Angular HTTP chain. Finally, we saw how to leverage observables to accomplish some complex tasks in a simple, efficient manner with an example of search-as-you-type.</p>
+
+<p>In the next chapter, we will take a step back and learn how to write unit tests for services, as well as how to unit-test flows where HTTP calls are being made through the <code>HttpClient</code>.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Exercise"><div class="sect1" id="idm139828116686704">
+<h1>Exercise</h1>
+
+<p>Take the finished exercise from <a data-type="xref" href="ch08.html#chapter-8">Chapter 8</a> (available in <em>chapter8/exercise/ecommerce</em>). Install and run the server in the <em>chapter9/exercise/server</em> folder by running:</p>
+<pre data-type="programlisting">
+<strong>npm i</strong>
+<strong>node index.js</strong>
+</pre>
+
+<p>from within the folder. This will start a local Node.js server, which can work with products (similar to one we had for stocks). It exposes the following APIs:</p>
+
+<ul>
+<li>
+<p>GET on <em>/api/product</em> to get a list of products. It can also take an optional query param <code>q</code>, which is the product name to search for.</p>
+</li>
+<li>
+<p>POST on <em>/api/product</em> with product information in the body to create a product on the server (in-memory of course; restarting the server would lose all created products).</p>
+</li>
+<li>
+<p>PATCH  on <em>/api/product/:id</em> with the product ID in the URL and a field <code>changeInQuantity</code> in the body would change the quantity in cart of the product by that amount.</p>
+</li>
+</ul>
+
+<p>Given this, now try to accomplish the following:</p>
+<ol>
+<li>
+<p>Change over the <code>ProductService</code> to make HTTP calls instead of responding with mock data. Support searching for a list of products as well.</p>
+</li>
+<li>
+<p>Implement both product listing and search-as-you-type using the power of observables.</p>
+</li>
+<li>
+<p>Handle product creation, as well as change in quantity of an individual product and hook it up end-to-end.</p>
+</li>
+<li>
+<p>See if you can continue using the same observable chain to now reload the entire list of products each time a product is created or the quantity is changed.</p>
+</li>
+
+</ol>
+
+<p>Most of this can be accomplished using concepts covered in this chapter. The only tricky thing is how to reload the list of products when it happens in a different <span class="keep-together">component</span>, for which you can leverage template reference variables to access the component and make a call. The other thing you might need to use is the <code>merge</code> operator in the observable so that you can leverage the same observable for loading the list, searching products, and reloading the list.<a data-type="indexterm" data-primary="HTTP calls in Angular" data-startref="ix_HTTP" id="idm139828116668496"></a> You can check out the finished solution in <em>chapter9/exercise/ecommerce</em>.</p>
+</div></section>
+
+
+
+
+
+
+
+</div></section></div>
+</body>
+</html>

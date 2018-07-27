@@ -1,0 +1,691 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>5. Testing Angular Components</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><section data-type="chapter" epub:type="chapter" data-pdf-bookmark="Chapter 5. Testing Angular Components"><div class="chapter" id="chapter-5">
+<h1><span class="label">Chapter 5. </span>Testing Angular Components</h1>
+
+
+<p>In the chapters so far, we focused on writing our Angular application, and dealt with how to use the Angular CLI, how to create components, some common built-in Angular directives, and the like.<a data-type="indexterm" data-primary="testing" id="ix_test"></a></p>
+
+<p>In this chapter, we will take a detour to learn how we can write unit tests for the components we have written so far. To do this, we will first get a sense of the unit testing setup for Angular, the various frameworks and libraries we use to accomplish this, and walk step by step through writing unit tests for a component.<a data-type="indexterm" data-primary="components" data-secondary="testing" data-see="testing" id="idm139828132754656"></a></p>
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Why Unit Test?"><div class="sect1" id="idm139828132753280">
+<h1>Why Unit Test?</h1>
+
+<p>But before we go into all that, let’s quickly talk about unit tests and why they are important.<a data-type="indexterm" data-primary="unit testing" data-secondary="benefits of" id="idm139828132751792"></a><a data-type="indexterm" data-primary="testing" data-secondary="benefits of unit tests" id="idm139828132750816"></a> Unit tests are called that because they test an individual unit within your application. Given a very large application and its many pieces, it can become very tricky to test each and every flow through the application. This is why we break up the testing to check each individual component, such that we can be assured that when they are hooked up together, they will work correctly under all cases without necessarily testing each and every flow.</p>
+
+<p>This is easily demonstrated with a simple example. Assume we have a very simple application with three different parts. Each part itself might have five different flows through it, giving us a total of 5 * 5 * 5 = 125 flows through the entire application. If we focused only on end-to-end or overall testing, we would have to test 125 flows (or somewhere approaching that number) to get a reasonable assurance on the quality of the application.</p>
+
+<p>Now on the other hand, if we tested each part in isolation, assuming that the other parts were reasonably tested and functional, we would have to write 5 tests for each part, which gives us a total of about 15 tests. Add another 10 to 20 end-to-end tests to make sure the parts are hooked up correctly, and you can have reasonable (not 100% of course) confidence in the overall quality of your application.</p>
+
+<p>That said, unit tests are not just for overall quality. There are a few other good reasons why we write unit tests, some being:</p>
+
+<ul>
+<li>
+<p>It is an assertion that what you have written actually does what it is meant to. Without unit tests, there is no way to prove that your code performs correctly.</p>
+</li>
+<li>
+<p>It guards your code against future breakages, aka regressions. You write your code today with certain assumptions. You or someone else tomorrow may not remember or know them and may unwittingly change something that breaks your underlying assumption. Unit tests are guards that make sure your code remains future-proof.</p>
+</li>
+<li>
+<p>Unit tests are great documentation for your code. Comments have an annoying tendency of becoming obsolete, as people tend to forget to update them. Unit tests, on the other hand, will break if you forget to update your tests as you make changes to your code.</p>
+</li>
+<li>
+<p>Unit tests are a great view on how testable and modular your design is. If tests are hard to read or write, it usually is a signal that there might be design flaws or issues in the underlying code.</p>
+</li>
+</ul>
+
+<p>That said, people have different associations when they hear the term “unit test.” The prototypical definition of a unit test is a test of a component, with all dependencies completely mocked out. You are testing only the code you have written and nothing else.</p>
+
+<p>Of course, with frameworks like Angular, sometimes unit tests are useful, and other times you actually want a little bit of integration involved. You want to test how your component behaves rather than the class that defines the component. Angular gives you the capability to write both kinds of tests.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Testing and Angular"><div class="sect1" id="idm139828132740576">
+<h1>Testing and Angular</h1>
+
+<p>Before we go deep into how we write tests for Angular components, let’s take a look at the various frameworks and libraries we will use to write and run our Angular tests.<a data-type="indexterm" data-primary="frameworks" data-secondary="for testing" id="idm139828132739056"></a><a data-type="indexterm" data-primary="testing" data-secondary="frameworks and libraries used for" id="idm139828132738080"></a> Each of these can be used in other non-Angular projects as well, or can be swapped out for something comparable if you have a preference:</p>
+<dl>
+<dt>Jasmine</dt>
+<dd>
+<p>Jasmine is a test framework that is oriented toward writing specifications rather than traditional unit tests.<a data-type="indexterm" data-primary="Jasmine" id="idm139828132734960"></a> It is what is referred to as a behavior-driven development (BDD) framework.<a data-type="indexterm" data-primary="behavior-driven development (BDD) frameworks" id="idm139828132734128"></a> It is a standalone framework that can be used to write tests or specifications for any code, not just Angular. The major difference from traditional unit testing frameworks and something like Jasmine is that Jasmine is more oriented to reading like plain English, so instead of writing a test, you write a specification. A specification is a series of commands, and expectations on what should have happened as a result of these commands.</p>
+</dd>
+<dt>Karma</dt>
+<dd>
+<p>If Jasmine is the test-writing framework, then Karma is the test-running framework.<a data-type="indexterm" data-primary="Karma" id="idm139828132731568"></a> Karma’s sole task is to take any kind of test, and run it across a suite of real browsers and report the results back. It is highly tuned toward development workflow, as it is heavily oriented toward rapid execution and reporting. It is possible to have Karma run the tests every time you hit save, giving you real-time feedback on whether tests are still passing as you write your code.</p>
+</dd>
+<dt>Angular testing utilities</dt>
+<dd>
+<p>Angular provides a suite of various functions and utilities that make testing Angular-specific functionality easier.<a data-type="indexterm" data-primary="testing utilities (Angular)" id="idm139828132728960"></a><a data-type="indexterm" data-primary="Angular" data-secondary="testing utilities" id="idm139828132728240"></a> These are common tasks that you might need to perform in any test, such as initializing modules, components, working with services and routes, and the like. We will touch upon the relevant ones as we work our way through Angular, but in case you want to see all the utility functions upfront, you can check out <a href="https://angular.io/guide/testing#atu-apis">the documentation</a>.</p>
+</dd>
+<dt>Protractor</dt>
+<dd>
+<p>This framework is not relevant with regards to this chapter and unit testing, but for the sake of completeness, we will quickly mention it.<a data-type="indexterm" data-primary="Protractor" id="idm139828132724640"></a> Protractor is a framework that is built to write and run end-to-end tests. While the tests we write in this chapter will instantiate various classes and test functionality, it is useful to also test from the perspective of an end user. This would involve opening the browser, clicking, and interacting with the application. Protractor supports this capability of running the real application and simulating actions and verifying behavior, thus completing the circle of testing.</p>
+</dd>
+</dl>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="The Test Setup"><div class="sect1" id="idm139828132722928">
+<h1>The Test Setup</h1>
+
+<p>With that background, let’s write our first unit test. Since we generated our applications so far using the Angular CLI, we have the basic infrastructure already set up for us. <a data-type="indexterm" data-primary="testing" data-secondary="setup for" id="ix_testset"></a>In fact, every time we generate a component using the Angular CLI, it also generates a skeleton <code>spec</code> for us to write our test code in.</p>
+
+<p>For the purpose of understanding how the testing infrastructure is set up, we’ll walk through the major files one by one. The entire finished code for this chapter, including all the tests, is available in the GitHub repository in the <em>chapter5/component-spec</em> folder.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Karma Config"><div class="sect2" id="idm139828132718112">
+<h2>Karma Config</h2>
+
+<p>The first file of interest is the configuration file for how Karma should find and execute files.<a data-type="indexterm" data-primary="testing" data-secondary="setup for" data-tertiary="Karma configuration" id="idm139828132716640"></a><a data-type="indexterm" data-primary="Karma" data-secondary="configuration" id="idm139828132715392"></a> The pregenerated <em>karma.conf.js</em> is in the main application folder, and looks like the following:</p>
+
+<pre data-type="programlisting" data-code-language="javascript"><code class="c1">// Karma configuration file, see link for more information</code>
+<code class="c1">// https://karma-runner.github.io/1.0/config/configuration-file.html</code>
+
+<code class="nx">module</code><code class="p">.</code><code class="nx">exports</code> <code class="o">=</code> <code class="kd">function</code> <code class="p">(</code><code class="nx">config</code><code class="p">)</code> <code class="p">{</code>
+  <code class="nx">config</code><code class="p">.</code><code class="nx">set</code><code class="p">({</code>
+    <code class="nx">basePath</code><code class="o">:</code> <code class="s1">''</code><code class="p">,</code>
+    <code class="nx">frameworks</code><code class="o">:</code> <code class="p">[</code><code class="s1">'jasmine'</code><code class="p">,</code> <code class="s1">'@angular/cli'</code><code class="p">],</code>
+    <code class="nx">plugins</code><code class="o">:</code> <code class="p">[</code>
+      <code class="nx">require</code><code class="p">(</code><code class="s1">'karma-jasmine'</code><code class="p">),</code>
+      <code class="nx">require</code><code class="p">(</code><code class="s1">'karma-chrome-launcher'</code><code class="p">),</code>
+      <code class="nx">require</code><code class="p">(</code><code class="s1">'karma-jasmine-html-reporter'</code><code class="p">),</code>
+      <code class="nx">require</code><code class="p">(</code><code class="s1">'karma-coverage-istanbul-reporter'</code><code class="p">),</code>
+      <code class="nx">require</code><code class="p">(</code><code class="s1">'@angular/cli/plugins/karma'</code><code class="p">)</code>
+    <code class="p">],</code>
+    <code class="nx">client</code><code class="o">:</code><code class="p">{</code>
+      <code class="nx">clearContext</code><code class="o">:</code> <code class="kc">false</code> <code class="c1">// leave Jasmine Spec Runner output visible in browser</code>
+    <code class="p">},</code>
+    <code class="nx">coverageIstanbulReporter</code><code class="o">:</code> <code class="p">{</code>
+      <code class="nx">reports</code><code class="o">:</code> <code class="p">[</code> <code class="s1">'html'</code><code class="p">,</code> <code class="s1">'lcovonly'</code> <code class="p">],</code>
+      <code class="nx">fixWebpackSourcePaths</code><code class="o">:</code> <code class="kc">true</code>
+    <code class="p">},</code>
+    <code class="nx">angularCli</code><code class="o">:</code> <code class="p">{</code>
+      <code class="nx">environment</code><code class="o">:</code> <code class="s1">'dev'</code>
+    <code class="p">},</code>
+    <code class="nx">reporters</code><code class="o">:</code> <code class="p">[</code><code class="s1">'progress'</code><code class="p">,</code> <code class="s1">'kjhtml'</code><code class="p">],</code>
+    <code class="nx">port</code><code class="o">:</code> <code class="mi">9876</code><code class="p">,</code>
+    <code class="nx">colors</code><code class="o">:</code> <code class="kc">true</code><code class="p">,</code>
+    <code class="nx">logLevel</code><code class="o">:</code> <code class="nx">config</code><code class="p">.</code><code class="nx">LOG_INFO</code><code class="p">,</code>
+    <code class="nx">autoWatch</code><code class="o">:</code> <code class="kc">true</code><code class="p">,</code>
+    <code class="nx">browsers</code><code class="o">:</code> <code class="p">[</code><code class="s1">'Chrome'</code><code class="p">],</code>
+    <code class="nx">singleRun</code><code class="o">:</code> <code class="kc">false</code>
+  <code class="p">});</code>
+<code class="p">};</code></pre>
+
+<p>The Karma configuration is responsible for identifying the various plug-ins needed for Karma to run (which includes an Angular CLI–specific plug-in), the files it needs to watch or execute, and then some Karma-specific configuration including coverage reporting (<code>coverageIstanbulReporter</code>), which port it needs to run on (<code>port</code>), which browsers to run it on (<code>browsers</code>), whether it should rerun every time the file changes (<code>autoWatch</code>), and which level of logs it needs to capture.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="test.ts"><div class="sect2" id="idm139828132710640">
+<h2>test.ts</h2>
+
+<p>The <em>test.ts</em> file is<a data-type="indexterm" data-primary="testing" data-secondary="setup for" data-tertiary="test.ts file" id="idm139828131364576"></a> the main entry point for our testing, and responsible for loading all our components, the related specifications, and the testing framework and utilities needed to run them:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="c1">// This file is required by karma.conf.js and loads recursively all the .spec</code>
+<code class="c1">// and framework files</code>
+
+<code class="kr">import</code> <code class="s1">'zone.js/dist/zone-testing'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">getTestBed</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core/testing'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code>
+  <code class="nx">BrowserDynamicTestingModule</code><code class="p">,</code>
+  <code class="nx">platformBrowserDynamicTesting</code>
+<code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/platform-browser-dynamic/testing'</code><code class="p">;</code>
+
+<code class="kr">declare</code> <code class="kr">const</code> <code class="nx">require</code>: <code class="kt">any</code><code class="p">;</code>
+
+<code class="c1">// First, initialize the Angular testing environment.</code>
+<code class="nx">getTestBed</code><code class="p">().</code><code class="nx">initTestEnvironment</code><code class="p">(</code>
+  <code class="nx">BrowserDynamicTestingModule</code><code class="p">,</code>
+  <code class="nx">platformBrowserDynamicTesting</code><code class="p">()</code>
+<code class="p">);</code>
+<code class="c1">// Then we find all the tests.</code>
+<code class="kr">const</code> <code class="nx">context</code> <code class="o">=</code> <code class="nx">require</code><code class="p">.</code><code class="nx">context</code><code class="p">(</code><code class="s1">'./'</code><code class="p">,</code> <code class="kc">true</code><code class="p">,</code> <code class="sr">/\.spec\.ts$/</code><code class="p">);</code>
+<code class="c1">// And load the modules.</code>
+<code class="nx">context</code><code class="p">.</code><code class="nx">keys</code><code class="p">().</code><code class="nx">map</code><code class="p">(</code><code class="nx">context</code><code class="p">);</code></pre>
+
+<p>The <em>test.ts</em> file is basically responsible for loading a series of files for the testing framework, and then initializing the Angular testing environment. Then, <a data-type="indexterm" data-primary="specifications (.spec.ts files)" id="idm139828131360784"></a>it looks for specifications (files ending with <em>.spec.ts</em>) recursively in all the folders from the current directory (which is the <em>src</em> folder). It then loads all the relevant modules for them and starts executing Karma.</p>
+
+<p>This file is the reason why we don’t have to manually list all the specification files in <em>karma.conf.js</em>, as it recursively loads them.<a data-type="indexterm" data-primary="testing" data-secondary="setup for" data-startref="ix_testset" id="idm139828131095072"></a></p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Writing Unit Tests"><div class="sect1" id="idm139828131093696">
+<h1>Writing Unit Tests</h1>
+
+<p>With these two files in place, we can now focus on writing our unit test.<a data-type="indexterm" data-primary="unit testing" data-seealso="testing" id="idm139828131092160"></a><a data-type="indexterm" data-primary="testing" data-secondary="writing isolated unit test" id="ix_testwr"></a><a data-type="indexterm" data-primary="Jasmine" data-secondary="writing unit test with" id="idm139828131090000"></a> To get familiar with Jasmine, we will first start with writing what we call an “isolated unit test.”</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="An Isolated Unit Test"><div class="sect2" id="idm139828131088672">
+<h2>An Isolated Unit Test</h2>
+
+<p>An isolated unit test in Angular terminology is a vanilla JavaScript unit test. This has nothing to do with Angular, but just instantiates classes and methods and executes them. This is sufficient for a large number of classes, as they will mostly be doing simple data manipulation and execution.</p>
+
+<p>We will start with writing a very simple isolated unit test for the <code>AppComponent</code> using the example we were working on from <a data-type="xref" href="ch04.html#chapter-4">Chapter 4</a>. The base codebase to start with can be found in the GitHub repository in the <em>chapter4/component-output</em> folder.</p>
+
+<p>The very first thing we will do is create (if it doesn’t already exist) a file right beside <em>app.component.ts</em> in the <em>src/app</em> folder called <em>app.component.spec.ts</em>. If it already exists and you haven’t deleted it yet, you can go ahead and clear the content, as we will write it from scratch so that we are aware of all the intricacies involved in the test.</p>
+
+<p>The first two tests that we will write will focus on <code>AppComponent</code> as a class, and focus on its initialization and how a stock’s favorite state is toggled. In these tests, we will not focus on any Angular-specific functionality and see how to test <code>AppComponent</code> in isolation:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">AppComponent</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./app.component'</code><code class="p">;</code><code>    </code><a class="co" id="co_testing_angular_components_CO1-1" href="#callout_testing_angular_components_CO1-1"><img src="images/1.png" alt="1" /></a><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Stock</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/model/stock'</code><code class="p">;</code><code>
+
+</code><code class="nx">describe</code><code class="p">(</code><code class="s1">'AppComponent'</code><code class="p">,</code><code> </code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>      </code><a class="co" id="co_testing_angular_components_CO1-2" href="#callout_testing_angular_components_CO1-2"><img src="images/2.png" alt="2" /></a><code>
+
+  </code><code class="nx">it</code><code class="p">(</code><code class="s1">'should have stock instantiated on ngInit'</code><code class="p">,</code><code> </code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>   </code><a class="co" id="co_testing_angular_components_CO1-3" href="#callout_testing_angular_components_CO1-3"><img src="images/3.png" alt="3" /></a><code>
+    </code><code class="kr">const</code><code> </code><code class="nx">appComponent</code><code> </code><code class="o">=</code><code> </code><code class="k">new</code><code> </code><code class="nx">AppComponent</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>      </code><a class="co" id="co_testing_angular_components_CO1-4" href="#callout_testing_angular_components_CO1-4"><img src="images/4.png" alt="4" /></a><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">appComponent</code><code class="p">.</code><code class="nx">stock</code><code class="p">)</code><code class="p">.</code><code class="nx">toBeUndefined</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>    </code><a class="co" id="co_testing_angular_components_CO1-5" href="#callout_testing_angular_components_CO1-5"><img src="images/5.png" alt="5" /></a><code>
+    </code><code class="nx">appComponent</code><code class="p">.</code><code class="nx">ngOnInit</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">appComponent</code><code class="p">.</code><code class="nx">stock</code><code class="p">)</code><code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code>
+      </code><code class="k">new</code><code> </code><code class="nx">Stock</code><code class="p">(</code><code class="s1">'Test Stock Company'</code><code class="p">,</code><code> </code><code class="s1">'TSC'</code><code class="p">,</code><code> </code><code class="mi">85</code><code class="p">,</code><code> </code><code class="mi">80</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>   </code><a class="co" id="co_testing_angular_components_CO1-6" href="#callout_testing_angular_components_CO1-6"><img src="images/6.png" alt="6" /></a><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+
+  </code><code class="nx">it</code><code class="p">(</code><code class="s1">'should have toggle stock favorite'</code><code class="p">,</code><code> </code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="kr">const</code><code> </code><code class="nx">appComponent</code><code> </code><code class="o">=</code><code> </code><code class="k">new</code><code> </code><code class="nx">AppComponent</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">appComponent</code><code class="p">.</code><code class="nx">ngOnInit</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">appComponent</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code><code class="p">)</code><code class="p">.</code><code class="nx">toBeFalsy</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">appComponent</code><code class="p">.</code><code class="nx">onToggleFavorite</code><code class="p">(</code><code class="k">new</code><code> </code><code class="nx">Stock</code><code class="p">(</code><code class="s1">'Test'</code><code class="p">,</code><code> </code><code class="s1">'TEST'</code><code class="p">,</code><code> </code><code class="mi">54</code><code class="p">,</code><code> </code><code class="mi">55</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">appComponent</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code><code class="p">)</code><code class="p">.</code><code class="nx">toBeTruthy</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">appComponent</code><code class="p">.</code><code class="nx">onToggleFavorite</code><code class="p">(</code><code class="k">new</code><code> </code><code class="nx">Stock</code><code class="p">(</code><code class="s1">'Test'</code><code class="p">,</code><code> </code><code class="s1">'TEST'</code><code class="p">,</code><code> </code><code class="mi">54</code><code class="p">,</code><code> </code><code class="mi">55</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">appComponent</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code><code class="p">)</code><code class="p">.</code><code class="nx">toBeFalsy</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+</code><code class="p">}</code><code class="p">)</code><code class="p">;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_testing_angular_components_CO1-1" href="#co_testing_angular_components_CO1-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Importing all relevant dependencies for our tests</p></dd>
+<dt><a class="co" id="callout_testing_angular_components_CO1-2" href="#co_testing_angular_components_CO1-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Our main <code>AppComponent</code> test suite</p></dd>
+<dt><a class="co" id="callout_testing_angular_components_CO1-3" href="#co_testing_angular_components_CO1-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>The first test, each test being an <code>it</code> block</p></dd>
+<dt><a class="co" id="callout_testing_angular_components_CO1-4" href="#co_testing_angular_components_CO1-4"><img src="images/4.png" alt="4" /></a></dt>
+<dd><p>Instantiating the <code>AppComponent</code></p></dd>
+<dt><a class="co" id="callout_testing_angular_components_CO1-5" href="#co_testing_angular_components_CO1-5"><img src="images/5.png" alt="5" /></a></dt>
+<dd><p>An expectation or assertion on what the behavior should be</p></dd>
+<dt><a class="co" id="callout_testing_angular_components_CO1-6" href="#co_testing_angular_components_CO1-6"><img src="images/6.png" alt="6" /></a></dt>
+<dd><p>Our final expectation on what the stock should be</p></dd>
+</dl>
+
+<p>Our isolated unit tests read just like plain old JavaScript, with Jasmine syntax thrown in. We first import our relevant class and interfaces to be able to use them in the specification. Then we define our first describe block, which is Jasmine’s way of encapsulating a set of tests as one suite. Describe blocks can be nested any number deep, which we will use in the feature to create separate describe blocks for Angular-aware tests versus isolated unit tests.</p>
+
+<p>We then write our first test block, which uses Jasmine’s <code>it</code> to define a specification block. Within this, we define and instantiate our <code>AppComponent</code> instance, and then write an expectation that, by default, the <code>stock</code> instance of the <code>AppComponent</code> is <code>undefined</code>. We then <a data-type="indexterm" data-primary="ngOnInit function" id="idm139828130679440"></a>call the <code>ngOnInit</code> method of the <code>AppComponent</code> manually, which creates a stock instance for us. We then write another expectation to make sure this value is created as we expect it to be.</p>
+
+<p>Note that this behavior mirrors how the <code>AppComponent</code> behaves. When an instance of the <code>AppComponent</code> is created, we just have a definition for the <code>stock</code> object, but with no initial value. Thus, our initial expectation for the <code>stock</code> instance in the test is that it should be <code>undefined</code>. Then, we trigger the <code>ngOnInit</code> method, which ends up creating a <code>stock</code> instance with some values. We then assert in our test that the instance that gets created in the <code>AppComponent</code> actually has the values we want.</p>
+<div data-type="tip"><h6>Tip</h6>
+<p>Note that in an isolated unit test, Angular lifecycle methods are not called automatically, which is why we manually trigger <code>ngOnInit</code> ourselves in the test. This gives us the flexibility that we might want to test some other function and avoid the <code>ngOnInit</code>, which might make expensive or complex server calls.</p>
+</div>
+
+<p>Similarly, we write the second test that evaluates the <code>onToggleFavorite</code> method on the <code>AppComponent</code> class. We pass a random value to it, as the value is not used in the class except to log it.<a data-type="indexterm" data-primary="matchers (Jasmine)" id="idm139828130713808"></a> We use a different expectation, <code>toBeFalsy</code> and <code>toBeTruthy</code>, instead of the <code>toEquals</code> we used in the previous test. These are all in-built matchers that Jasmine provides for us to use in our specifications.<a data-type="indexterm" data-primary="Jasmine" data-secondary="matchers, documentation on" id="idm139828130720336"></a> You can see the whole list of matchers that Jasmine provides out of the box in the <a href="https://jasmine.github.io/api/2.8/matchers.html">official documentation</a>.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Running the Tests"><div class="sect2" id="idm139828131088080">
+<h2>Running the Tests</h2>
+
+<p>Running the actual tests, <a data-type="indexterm" data-primary="testing" data-secondary="writing isolated unit test" data-startref="ix_testwr" id="idm139828130710032"></a>if you are using the Angular CLI as we are doing in this book, is actually very simple.<a data-type="indexterm" data-primary="command-line interface (CLI)" data-secondary="running unit tests from" id="idm139828131066576"></a><a data-type="indexterm" data-primary="ng test command" id="idm139828131065616"></a><a data-type="indexterm" data-primary="testing" data-secondary="running the tests" id="idm139828131064944"></a> Simply execute</p>
+
+<pre data-type="programlisting">ng test</pre>
+
+<p>from the command line in the root folder to execute the tests. This will:</p>
+<ol>
+<li>
+<p>Pick up the configuration from the <em>karma.conf.js</em> Karma configuration file</p>
+</li>
+<li>
+<p>Load all the relevant tests and files as per the <em>test.ts</em> file</p>
+</li>
+<li>
+<p>Capture the default browser (which is Chrome in our case)</p>
+</li>
+<li>
+<p>Execute the tests and report the results in the terminal</p>
+</li>
+<li>
+<p>Keep a watch on files to continue executing on change</p>
+</li>
+
+</ol>
+
+<p>You should see Karma capturing<a data-type="indexterm" data-primary="Karma" data-secondary="Angular tests running via, in Chrome" id="idm139828130729312"></a> Chrome, and spawn up a browser that looks like <a data-type="xref" href="#fig0501">Figure 5-1</a>.</p>
+
+<figure><div id="fig0501" class="figure">
+<img src="images/auar_05in01.png" alt="Karma in Chrome" />
+<h6><span class="label">Figure 5-1. </span>Angular tests running via Karma in Chrome</h6>
+</div></figure>
+
+<p>In the terminal, once you run the <code>ng test</code> command, you should see output similar to <a data-type="xref" href="#fig0502">Figure 5-2</a>.</p>
+
+<figure><div id="fig0502" class="figure">
+<img src="images/auar_05in02.png" alt="Ng Test output" />
+<h6><span class="label">Figure 5-2. </span>Angular test output in the terminal</h6>
+</div></figure>
+
+<p>Once this completes, you should see (in both your Karma captured browser and the terminal) a result of having run two tests with both passing successfully.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Writing an Angular-Aware Unit Test"><div class="sect2" id="idm139828130711168">
+<h2>Writing an Angular-Aware Unit Test</h2>
+
+<p>The next thing we want to learn is how to write a test that is Angular-aware and goes through the Angular lifecycle.<a data-type="indexterm" data-primary="testing" data-secondary="writing Angular-aware unit test" id="idm139828131175808"></a> In such a test, rather than just instantiating the component class, we want to instantiate a component just the way Angular does, including the HTML for the component.</p>
+
+<p>We will write a test for the <code>StockItemComponent</code>, in which we will make sure that given the right stock input, the template gets rendered with the correct bindings. Furthermore, we want to make sure the input and output bindings are connected and triggered correctly.</p>
+
+<p>Let’s create a <em>stock-item.component.spec.ts</em> file as a sibling to <em>stock-item.component.ts</em>. Again, if this file already exists, replace it with the following contents:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">TestBed</code><code class="p">,</code><code> </code><code class="nx">async</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core/testing'</code><code class="p">;</code><code>    </code><a class="co" id="co_testing_angular_components_CO2-1" href="#callout_testing_angular_components_CO2-1"><img src="images/1.png" alt="1" /></a><code>
+
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">StockItemComponent</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./stock-item.component'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Stock</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'../../model/stock'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">By</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/platform-browser'</code><code class="p">;</code><code>
+
+</code><code class="nx">describe</code><code class="p">(</code><code class="s1">'Stock Item Component'</code><code class="p">,</code><code> </code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="kd">let</code><code> </code><code class="nx">fixture</code><code class="p">,</code><code> </code><code class="nx">component</code><code class="p">;</code><code>
+
+  </code><code class="nx">beforeEach</code><code class="p">(</code><code class="nx">async</code><code class="p">(</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>              </code><a class="co" id="co_testing_angular_components_CO2-2" href="#callout_testing_angular_components_CO2-2"><img src="images/2.png" alt="2" /></a><code>
+    </code><code class="nx">TestBed</code><code class="p">.</code><code class="nx">configureTestingModule</code><code class="p">(</code><code class="p">{</code><code>     </code><a class="co" id="co_testing_angular_components_CO2-3" href="#callout_testing_angular_components_CO2-3"><img src="images/3.png" alt="3" /></a><code>
+      </code><code class="nx">declarations</code><code class="o">:</code><code> </code><code class="p">[</code><code>
+        </code><code class="nx">StockItemComponent</code><code>
+      </code><code class="p">]</code><code class="p">,</code><code>
+    </code><code class="p">}</code><code class="p">)</code><code class="p">.</code><code class="nx">compileComponents</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>           </code><a class="co" id="co_testing_angular_components_CO2-4" href="#callout_testing_angular_components_CO2-4"><img src="images/4.png" alt="4" /></a><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>
+
+  </code><code class="nx">beforeEach</code><code class="p">(</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>            </code><a class="co" id="co_testing_angular_components_CO2-5" href="#callout_testing_angular_components_CO2-5"><img src="images/5.png" alt="5" /></a><code>
+    </code><code class="nx">fixture</code><code> </code><code class="o">=</code><code> </code><code class="nx">TestBed</code><code class="p">.</code><code class="nx">createComponent</code><code class="p">(</code><code class="nx">StockItemComponent</code><code class="p">)</code><code class="p">;</code><code>    </code><a class="co" id="co_testing_angular_components_CO2-6" href="#callout_testing_angular_components_CO2-6"><img src="images/6.png" alt="6" /></a><code>
+    </code><code class="nx">component</code><code> </code><code class="o">=</code><code> </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">componentInstance</code><code class="p">;</code><code>      </code><a class="co" id="co_testing_angular_components_CO2-7" href="#callout_testing_angular_components_CO2-7"><img src="images/7.png" alt="7" /></a><code>
+    </code><code class="nx">component</code><code class="p">.</code><code class="nx">stock</code><code> </code><code class="o">=</code><code> </code><code class="k">new</code><code> </code><code class="nx">Stock</code><code class="p">(</code><code class="s1">'Testing Stock'</code><code class="p">,</code><code> </code><code class="s1">'TS'</code><code class="p">,</code><code> </code><code class="mi">100</code><code class="p">,</code><code> </code><code class="mi">200</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">detectChanges</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>          </code><a class="co" id="co_testing_angular_components_CO2-8" href="#callout_testing_angular_components_CO2-8"><img src="images/8.png" alt="8" /></a><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+
+  </code><code class="nx">it</code><code class="p">(</code><code class="s1">'should create stock component and render stock data'</code><code class="p">,</code><code> </code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="kr">const</code><code> </code><code class="nx">nameEl</code><code> </code><code class="o">=</code><code> </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">debugElement</code><code class="p">.</code><code class="nx">query</code><code class="p">(</code><code class="nx">By</code><code class="p">.</code><code class="nx">css</code><code class="p">(</code><code class="s1">'.name'</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>     </code><a class="co" id="co_testing_angular_components_CO2-9" href="#callout_testing_angular_components_CO2-9"><img src="images/9.png" alt="9" /></a><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">nameEl</code><code class="p">.</code><code class="nx">nativeElement</code><code class="p">.</code><code class="nx">textContent</code><code class="p">)</code><code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code class="s1">'Testing Stock (TS)'</code><code class="p">)</code><code class="p">;</code><code>     </code><a class="co" id="co_testing_angular_components_CO2-10" href="#callout_testing_angular_components_CO2-10"><img src="images/10.png" alt="10" /></a><code>
+    </code><code class="kr">const</code><code> </code><code class="nx">priceEl</code><code> </code><code class="o">=</code><code> </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">debugElement</code><code class="p">.</code><code class="nx">query</code><code class="p">(</code><code class="nx">By</code><code class="p">.</code><code class="nx">css</code><code class="p">(</code><code class="s1">'.price.negative'</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">priceEl</code><code class="p">.</code><code class="nx">nativeElement</code><code class="p">.</code><code class="nx">textContent</code><code class="p">)</code><code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code class="s1">'$ 100'</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="kr">const</code><code> </code><code class="nx">addToFavoriteBtnEl</code><code> </code><code class="o">=</code><code> </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">debugElement</code><code class="p">.</code><code class="nx">query</code><code class="p">(</code><code class="nx">By</code><code class="p">.</code><code class="nx">css</code><code class="p">(</code><code class="s1">'button'</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">addToFavoriteBtnEl</code><code class="p">)</code><code class="p">.</code><code class="nx">toBeDefined</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+
+  </code><code class="nx">it</code><code class="p">(</code><code class="s1">'should trigger event emitter on add to favorite'</code><code class="p">,</code><code> </code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="kd">let</code><code> </code><code class="nx">selectedStock</code><code>: </code><code class="kt">Stock</code><code class="p">;</code><code>
+    </code><code class="nx">component</code><code class="p">.</code><code class="nx">toggleFavorite</code><code class="p">.</code><code class="nx">subscribe</code><code class="p">(</code><code class="p">(</code><code class="nx">stock</code><code>: </code><code class="kt">Stock</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="nx">selectedStock</code><code> </code><code class="o">=</code><code> </code><code class="nx">stock</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="kr">const</code><code> </code><code class="nx">addToFavoriteBtnEl</code><code> </code><code class="o">=</code><code> </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">debugElement</code><code class="p">.</code><code class="nx">query</code><code class="p">(</code><code class="nx">By</code><code class="p">.</code><code class="nx">css</code><code class="p">(</code><code class="s1">'button'</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>
+
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">selectedStock</code><code class="p">)</code><code class="p">.</code><code class="nx">toBeUndefined</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">addToFavoriteBtnEl</code><code class="p">.</code><code class="nx">triggerEventHandler</code><code class="p">(</code><code class="s1">'click'</code><code class="p">,</code><code> </code><code class="kc">null</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">selectedStock</code><code class="p">)</code><code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code class="nx">component</code><code class="p">.</code><code class="nx">stock</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+</code><code class="p">}</code><code class="p">)</code><code class="p">;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_testing_angular_components_CO2-1" href="#co_testing_angular_components_CO2-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Importing Angular testing utilities</p></dd>
+<dt><a class="co" id="callout_testing_angular_components_CO2-2" href="#co_testing_angular_components_CO2-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>An async <code>beforeEach</code>, to ensure templates are loaded in the components</p></dd>
+<dt><a class="co" id="callout_testing_angular_components_CO2-3" href="#co_testing_angular_components_CO2-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Using the Angular testing utilities to configure a module for testing</p></dd>
+<dt><a class="co" id="callout_testing_angular_components_CO2-4" href="#co_testing_angular_components_CO2-4"><img src="images/4.png" alt="4" /></a></dt>
+<dd><p>Compiling all the declared components for later use</p></dd>
+<dt><a class="co" id="callout_testing_angular_components_CO2-5" href="#co_testing_angular_components_CO2-5"><img src="images/5.png" alt="5" /></a></dt>
+<dd><p>A non-async <code>beforeEach</code> executed only after the previous one finishes</p></dd>
+<dt><a class="co" id="callout_testing_angular_components_CO2-6" href="#co_testing_angular_components_CO2-6"><img src="images/6.png" alt="6" /></a></dt>
+<dd><p>Creating an instance of the component fixture under test</p></dd>
+<dt><a class="co" id="callout_testing_angular_components_CO2-7" href="#co_testing_angular_components_CO2-7"><img src="images/7.png" alt="7" /></a></dt>
+<dd><p>Getting the underlying component instance from the test fixture</p></dd>
+<dt><a class="co" id="callout_testing_angular_components_CO2-8" href="#co_testing_angular_components_CO2-8"><img src="images/8.png" alt="8" /></a></dt>
+<dd><p>Manually triggering the Angular change detection to update templates</p></dd>
+<dt><a class="co" id="callout_testing_angular_components_CO2-9" href="#co_testing_angular_components_CO2-9"><img src="images/9.png" alt="9" /></a></dt>
+<dd><p>Getting a particular HTML element from the compiled element</p></dd>
+<dt><a class="co" id="callout_testing_angular_components_CO2-10" href="#co_testing_angular_components_CO2-10"><img src="images/10.png" alt="10" /></a></dt>
+<dd><p>Verifying that the element has the expected value</p></dd>
+</dl>
+
+<p>We have added a lot of code, and highlighted most of the important sections in the code as well. But let’s walk through it step by step so that we are aware of the intricacies of using the Angular testing utilities to write tests for components:</p>
+<ol>
+<li>
+<p><code>@angular/core/testing</code> provides a set of functionality for testing in Angular.<a data-type="indexterm" data-primary="testing utilities (Angular)" id="idm139828131191536"></a><a data-type="indexterm" data-primary="TestBed" id="idm139828131190864"></a> We use the <code>TestBed</code>, which is used to create modules and components while testing, and <code>async</code>, which is to allow the Jasmine framework to understand Angular’s async behavior (like loading templates for a component, which in our case is from an external template file). The <code>async</code> utility function ensures that we don’t start executing the test until these async tasks are finished.<a data-type="indexterm" data-primary="async utility function" id="idm139828131188496"></a> Notice how we call the <code>async</code> function with a function that does all the tasks which might be asynchronous, and then pass this result to the <code>beforeEach</code>.<a data-type="indexterm" data-primary="beforeEach function" id="idm139828130449568"></a></p>
+</li>
+<li>
+<p>We use the <code>TestBed</code> to configure a module for our test. Rather than using an existing module, we create a new module with just our component. This gives us absolute control and can also ensure that we don’t inadvertently depend on something else other than what we have defined. In this case, we declare the <code>StockItemComponent</code>, and then finally compile the component. This does the task of loading the component, loading all its related templates and styles, and then creating a compiled component for us to use later. This happens asynchronously in some cases, which is why we are wrapping it in an async block.</p>
+</li>
+<li>
+<p>In the non-async <code>beforeEach</code>, we create a fixture, which is an instance of the component along with its template and everything related to it. Unlike the previous isolated unit test, where we unit tested just the component class, the fixture is the combination of the template, the component class instance, and Angular’s magic to combine the two.</p>
+</li>
+<li>
+<p>From the <code>fixture</code> instance, we can get a handle to the underlying component class instance by using the <code>componentInstance</code> variable on it.<a data-type="indexterm" data-primary="fixture instance" id="idm139828130443280"></a> We can then manipulate the inputs and outputs directly from the component instance.</p>
+</li>
+<li>
+<p>In this test, we are not working with a higher-level component, so we cannot directly test the <code>Input</code> and <code>Output</code> bindings. But we can set these values by accessing them directly from the component instance.</p>
+</li>
+<li>
+<p>Finally, in the <code>beforeEach</code>, we <a data-type="indexterm" data-primary="fixture.detectChanges function" id="idm139828130438960"></a>trigger <code>fixture.detectChanges()</code>. This is a signal to Angular to trigger its change detection flow, which will look at the values in the component and update the bindings in the corresponding HTML. It is also the trigger to execute the <code>ngOnInit</code> for the component the very first time. Without this, the HTML for the component will not have any values. We trigger this after setting the <code>stock</code> value so that these values will be propagated to the HTML.</p>
+</li>
+<li>
+<p>In the actual tests, we can get access to individual elements from the generated component by using the <code>fixture.debugElement</code> and running CSS queries against it.<a data-type="indexterm" data-primary="fixture.debugElement function" id="idm139828130435168"></a> This allows us to check whether the template has the correct bindings and values. Thus, we can avoid writing an end-to-end test for a lot of these basic checks and simply write Angular tests for them.</p>
+</li>
+<li>
+<p>In the second test, we can actually see that when we trigger a <code>click</code> event on the button element in the template, the corresponding function in the <code>StockItemComponent</code> class is triggered, and an event is emitted with the current stock value.</p>
+</li>
+
+</ol>
+
+<p>Similarly, we can write a test for most components and test the interaction with the templates and get a good sense for most of the basic functionality and whether it is working as intended.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Testing Component Interactions"><div class="sect2" id="idm139828129826784">
+<h2>Testing Component Interactions</h2>
+
+<p>The final thing that we’ll need to check is whether the <code>AppComponent</code> and the <code>Stock​ItemComponent</code> interact with each other correctly, and whether the <code>stock</code> value is passed from the <code>AppComponent</code> to the <code>StockItemComponent</code> as input correctly.<a data-type="indexterm" data-primary="testing" data-secondary="component interactions" id="ix_testcompint"></a> We can also test these functionalities and more using the Angular testing utilities. Let’s extend our tests for the <code>AppComponent</code> by adding another sub-suite as follows in the <em>app.component.spec.ts</em> file:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">TestBed</code><code class="p">,</code> <code class="nx">async</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core/testing'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">AppComponent</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'./app.component'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">StockItemComponent</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/stock/stock-item/stock-item.component'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/model/stock'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">By</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/platform-browser'</code><code class="p">;</code>
+
+<code class="nx">describe</code><code class="p">(</code><code class="s1">'AppComponent'</code><code class="p">,</code> <code class="p">()</code> <code class="o">=&gt;</code> <code class="p">{</code>
+
+  <code class="nx">describe</code><code class="p">(</code><code class="s1">'Simple, No Angular Unit Test'</code><code class="p">,</code> <code class="p">()</code> <code class="o">=&gt;</code> <code class="p">{</code>
+    <code class="cm">/** Move all the previous test code into a</code>
+<code class="cm">        child describe block</code>
+<code class="cm">    */</code>
+  <code class="p">});</code>
+
+  <code class="nx">describe</code><code class="p">(</code><code class="s1">'Angular-Aware test'</code><code class="p">,</code> <code class="p">()</code> <code class="o">=&gt;</code> <code class="p">{</code>
+
+    <code class="kd">let</code> <code class="nx">fixture</code><code class="p">,</code> <code class="nx">component</code><code class="p">;</code>
+
+    <code class="nx">beforeEach</code><code class="p">(</code><code class="nx">async</code><code class="p">(()</code> <code class="o">=&gt;</code> <code class="p">{</code>
+      <code class="nx">TestBed</code><code class="p">.</code><code class="nx">configureTestingModule</code><code class="p">({</code>
+        <code class="nx">declarations</code><code class="o">:</code> <code class="p">[</code>
+          <code class="nx">AppComponent</code><code class="p">,</code>
+          <code class="nx">StockItemComponent</code><code class="p">,</code>
+        <code class="p">],</code>
+      <code class="p">}).</code><code class="nx">compileComponents</code><code class="p">();</code>
+    <code class="p">}));</code>
+
+    <code class="nx">beforeEach</code><code class="p">(()</code> <code class="o">=&gt;</code> <code class="p">{</code>
+      <code class="nx">fixture</code> <code class="o">=</code> <code class="nx">TestBed</code><code class="p">.</code><code class="nx">createComponent</code><code class="p">(</code><code class="nx">AppComponent</code><code class="p">);</code>
+      <code class="nx">component</code> <code class="o">=</code> <code class="nx">fixture</code><code class="p">.</code><code class="nx">componentInstance</code><code class="p">;</code>
+      <code class="nx">fixture</code><code class="p">.</code><code class="nx">detectChanges</code><code class="p">();</code>
+    <code class="p">});</code>
+
+    <code class="nx">it</code><code class="p">(</code><code class="s1">'should load stock with default values'</code><code class="p">,</code> <code class="p">()</code> <code class="o">=&gt;</code> <code class="p">{</code>
+      <code class="kr">const</code> <code class="nx">titleEl</code> <code class="o">=</code> <code class="nx">fixture</code><code class="p">.</code><code class="nx">debugElement</code><code class="p">.</code><code class="nx">query</code><code class="p">(</code><code class="nx">By</code><code class="p">.</code><code class="nx">css</code><code class="p">(</code><code class="s1">'h1'</code><code class="p">));</code>
+      <code class="c1">// Trim to avoid HTML whitespaces</code>
+      <code class="nx">expect</code><code class="p">(</code><code class="nx">titleEl</code><code class="p">.</code><code class="nx">nativeElement</code><code class="p">.</code><code class="nx">textContent</code><code class="p">.</code><code class="nx">trim</code><code class="p">())</code>
+          <code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code class="s1">'Stock Market App'</code><code class="p">);</code>
+
+      <code class="c1">// Check for default stock values in template</code>
+      <code class="kr">const</code> <code class="nx">nameEl</code> <code class="o">=</code> <code class="nx">fixture</code><code class="p">.</code><code class="nx">debugElement</code><code class="p">.</code><code class="nx">query</code><code class="p">(</code><code class="nx">By</code><code class="p">.</code><code class="nx">css</code><code class="p">(</code><code class="s1">'.name'</code><code class="p">));</code>
+      <code class="nx">expect</code><code class="p">(</code><code class="nx">nameEl</code><code class="p">.</code><code class="nx">nativeElement</code><code class="p">.</code><code class="nx">textContent</code><code class="p">)</code>
+          <code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code class="s1">'Test Stock Company (TSC)'</code><code class="p">);</code>
+      <code class="kr">const</code> <code class="nx">priceEl</code> <code class="o">=</code> <code class="nx">fixture</code><code class="p">.</code><code class="nx">debugElement</code><code class="p">.</code><code class="nx">query</code><code class="p">(</code><code class="nx">By</code><code class="p">.</code><code class="nx">css</code><code class="p">(</code><code class="s1">'.price.positive'</code><code class="p">));</code>
+      <code class="nx">expect</code><code class="p">(</code><code class="nx">priceEl</code><code class="p">.</code><code class="nx">nativeElement</code><code class="p">.</code><code class="nx">textContent</code><code class="p">).</code><code class="nx">toEqual</code><code class="p">(</code><code class="s1">'$ 85'</code><code class="p">);</code>
+      <code class="kr">const</code> <code class="nx">addToFavoriteBtnEl</code> <code class="o">=</code> <code class="nx">fixture</code><code class="p">.</code><code class="nx">debugElement</code><code class="p">.</code><code class="nx">query</code><code class="p">(</code><code class="nx">By</code><code class="p">.</code><code class="nx">css</code><code class="p">(</code><code class="s1">'button'</code><code class="p">));</code>
+      <code class="nx">expect</code><code class="p">(</code><code class="nx">addToFavoriteBtnEl</code><code class="p">).</code><code class="nx">toBeDefined</code><code class="p">();</code>
+    <code class="p">});</code>
+
+ <code class="p">});</code>
+
+<code class="p">});</code></pre>
+
+<p>Most of this test will look very similar to the previous test we wrote for the <code>StockItemComponent</code>, but here are a few notable differences:</p>
+
+<ul>
+<li>
+<p>When we configure our testing module, this time we have to mention both the <code>AppComponent</code>, which is the component under test, as well as the <code>StockItemComponent</code>. This is because the <code>AppComponent</code> uses the <code>StockItemComponent</code> internally, and without declaring it, Angular would complain about an unknown element.</p>
+</li>
+<li>
+<p>No major changes to either of the <code>beforeEach</code> other than this. One thing to note (and it’s worth playing around with and trying it out yourself) is that without the <code>fixture.detectChanges()</code> in the second <code>beforeEach</code>, none of the bindings would happen. You can test this by commenting it out and making sure the test fails.</p>
+</li>
+<li>
+<p>Our test follows a similar pattern like before (in fact, it is pretty much a copy/paste of the previous test for <code>StockItemComponent</code>). The one thing to note is we are trimming the actual text contents retrieved from the DOM to account for extra whitespaces in the HTML from how we have done our binding. This can be useful sometimes when the HTML is not an exact replica of your bound value.</p>
+</li>
+</ul>
+
+<p>Let’s quickly add another test that ensures that the end-to-end flow is both ways. We will add a test that makes sure that clicking Add to Favorite updates both the model value as well as hiding the button in the template. The following code is just the test, ignoring the imports and everything else. This is a part of <em>app.component.spec.ts</em> like the previous specification:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="nx">it</code><code class="p">(</code><code class="s1">'should toggle stock favorite correctly'</code><code class="p">,</code> <code class="p">()</code> <code class="o">=&gt;</code> <code class="p">{</code>
+  <code class="nx">expect</code><code class="p">(</code><code class="nx">component</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code><code class="p">).</code><code class="nx">toBeFalsy</code><code class="p">();</code>
+  <code class="kd">let</code> <code class="nx">addToFavoriteBtnEl</code> <code class="o">=</code> <code class="nx">fixture</code><code class="p">.</code><code class="nx">debugElement</code><code class="p">.</code><code class="nx">query</code><code class="p">(</code><code class="nx">By</code><code class="p">.</code><code class="nx">css</code><code class="p">(</code><code class="s1">'button'</code><code class="p">));</code>
+  <code class="nx">expect</code><code class="p">(</code><code class="nx">addToFavoriteBtnEl</code><code class="p">).</code><code class="nx">toBeDefined</code><code class="p">();</code>
+  <code class="nx">addToFavoriteBtnEl</code><code class="p">.</code><code class="nx">triggerEventHandler</code><code class="p">(</code><code class="s1">'click'</code><code class="p">,</code> <code class="kc">null</code><code class="p">);</code>
+
+  <code class="nx">fixture</code><code class="p">.</code><code class="nx">detectChanges</code><code class="p">();</code>
+  <code class="nx">expect</code><code class="p">(</code><code class="nx">component</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code><code class="p">).</code><code class="nx">toBeTruthy</code><code class="p">();</code>
+  <code class="nx">addToFavoriteBtnEl</code> <code class="o">=</code> <code class="nx">fixture</code><code class="p">.</code><code class="nx">debugElement</code><code class="p">.</code><code class="nx">query</code><code class="p">(</code><code class="nx">By</code><code class="p">.</code><code class="nx">css</code><code class="p">(</code><code class="s1">'button'</code><code class="p">));</code>
+  <code class="nx">expect</code><code class="p">(</code><code class="nx">addToFavoriteBtnEl</code><code class="p">).</code><code class="nx">toBeNull</code><code class="p">();</code>
+<code class="p">});</code></pre>
+
+<p>First, we check the base default value to ensure that the stock is not favorited by default and that the Add to Favorite button is present. Post that, we trigger the <code>click</code> event on the button.</p>
+
+<p>At this point, Angular is supposed to kick in, emit an event from the <code>StockItemComponent</code> to the <code>AppComponent</code>, change the model value, trigger the change detection flow, and update the UI. But in our test, we need to tell Angular to trigger the change detection flow, and hence after we trigger the event, we manually call <code>fixture.detectChanges()</code>.<a data-type="indexterm" data-primary="fixture.detectChanges function" id="idm139828129697616"></a></p>
+
+<p>After this, we can write our assertions to ensure that the behavior matches our expectations.</p>
+<div data-type="warning" epub:type="warning"><h6>Warning</h6>
+<p>Forgetting to trigger <code>fixture.detectChanges()</code> is one of the most common mistakes when writing Angular tests. By default, it is manual and thus up to the developer to trigger it when events corresponding to user interactions or server responses happen.<a data-type="indexterm" data-primary="testing" data-secondary="component interactions" data-startref="ix_testcompint" id="idm139828129694960"></a></p>
+</div>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Debugging"><div class="sect1" id="idm139828129826160">
+<h1>Debugging</h1>
+
+<p>Oftentimes, there are cases when your unit test is not working as expected, or is slightly off from what you expect.<a data-type="indexterm" data-primary="testing" data-secondary="debugging tests" id="idm139828129691920"></a> In these cases, one common approach would be to add tons of <code>console.log</code> statements to <a data-type="indexterm" data-primary="Karma" data-secondary="debugging tests using Chrome" id="idm139828129690432"></a>try and figure out when and where things are going wrong. <a data-type="xref" href="#fig0503">Figure 5-3</a> shows how you can see the test results in the Chrome browser captured by Karma.</p>
+
+<figure><div id="fig0503" class="figure">
+<img src="images/auar_05in03.png" alt="Debugging a unit test" />
+<h6><span class="label">Figure 5-3. </span>Debugging Karma tests using Chrome</h6>
+</div></figure>
+
+<p>Karma allows you to debug your tests and application code the same way you would debug in your normal browser. To debug your tests, simply:</p>
+<ol>
+<li>
+<p>Open up the Karma Chrome browser window that Karma spawned on startup. It is the one with the green bar at the top, as shown in <a data-type="xref" href="#fig0503">Figure 5-3</a>.</p>
+</li>
+<li>
+<p>Click the DEBUG button on the top right of the Karma browser window. This will open up a new tab in debug mode for you to start debugging.</p>
+</li>
+<li>
+<p>Open the Chrome developer tools (Command-Option-I on macOS, Ctrl-Shift-I on Windows) in this tab. Then open up the Sources tab of the developer tools.</p>
+</li>
+<li>
+<p>Select the file you want to debug from the Sources tab. Use Command-P on macOS and Ctrl-P on Windows to start typing the name of the file and select it in case you can’t find it.</p>
+</li>
+<li>
+<p>Add your breakpoints where you need them by clicking the line number on the left of the source code. You can learn more about how to do this by referring to <a href="http://bit.ly/2s3tdy1">the documentation</a>.</p>
+</li>
+<li>
+<p>Run the tests by refreshing the browser; your test should stop at your breakpoint.</p>
+</li>
+
+</ol>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Conclusion"><div class="sect1" id="idm139828129677776">
+<h1>Conclusion</h1>
+
+<p>In this chapter, we started digging into the testing sections of Angular. We saw how to use Karma and Jasmine to write simple, isolated unit tests for our component classes, without dealing with anything from Angular. We then saw how to use the Angular testing utilities to be able to test the component logic along with the Angular integration. We saw how to use the <code>TestBed</code> to test both individual components as well as cross-component interactions. Finally, we learned how to both run and debug these tests.</p>
+
+<p>In the next chapter, we will start digging into forms to understand how to capture data from users, and how to validate them and process them in a convenient manner.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Exercise"><div class="sect1" id="idm139828129674768">
+<h1>Exercise</h1>
+
+<p>Take the finished exercise from the previous chapter (available in <em>chapter4/exercise</em>). Do the following:</p>
+<ol>
+<li>
+<p>Add isolated unit tests for the <code>ProductListComponent</code> that checks the <code>onQuantity​Change</code> functionality.</p>
+</li>
+<li>
+<p>Add three Angular tests for the <code>ProductItemComponent</code> that test the initial rendering, the <code>incrementInCart</code>, and the <code>decrementInCart</code>.</p>
+</li>
+<li>
+<p>Add an integrated Angular test for the <code>ProductListComponent</code> that checks the integration between the <code>ProductListComponent</code> and its children <code>ProductItemComponent</code>.</p>
+</li>
+
+</ol>
+
+<p>All of this can be accomplished using concepts covered in this chapter.<a data-type="indexterm" data-primary="testing" data-startref="ix_test" id="idm139828129665664"></a> You can check out the finished solution in <em>chapter5/exercise/ecommerce</em>.</p>
+</div></section>
+
+
+
+
+
+
+
+</div></section></div>
+</body>
+</html>

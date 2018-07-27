@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chapter 6. While You Are Coding</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><p><a id="ch06"></a><a id="page_171"></a></p>
+<h2 id="title-IDABFX0" class="docChapterTitle">Chapter 6<br/><br/>While You Are Coding</h2>
+<p class="docText">Conventional wisdom says that once a project is in the coding phase, the work is mostly mechanical, transcribing the design into executable statements. We think that this attitude is the single biggest reason that many programs are ugly, inefficient, poorly structured, unmaintainable, and just plain wrong.</p>
+<p class="docText">Coding is not mechanical. If it were, all the CASE tools that people pinned their hopes on in the early 1980s would have replaced programmers long ago. There are decisions to be made every minute—decisions that require careful thought and judgment if the resulting program is to enjoy a long, accurate, and productive life.</p>
+<p class="docText">Developers who don't actively think about their code are programming by coincidence—the code might work, but there's no particular reason why. In <em>Programming by Coincidence,</em> we advocate a more positive involvement with the coding process.</p>
+<p class="docText">While most of the code we write executes quickly, we occasionally develop algorithms that have the potential to bog down even the fastest processors. In <em>Algorithm Speed,</em> we discuss ways to estimate the speed of code, and we give some tips on how to spot potential problems before they happen.</p>
+<p class="docText">Pragmatic Programmers think critically about all code, including our own. We constantly see room for improvement in our programs and our designs. In <em>Refactoring,</em> we look at techniques that help us fix up existing code even while we're in the midst of a project.</p>
+<p class="docText">Something that should be in the back of your mind whenever you're producing code is that you'll someday have to test it. Make code easy <a id="page_172"></a>to test, and you'll increase the likelihood that it will actually get tested, a thought we develop in <em>Code That's Easy to Test.</em></p>
+<p class="docText">Finally, in <em>Evil Wizards,</em> we suggest that you should be careful of tools that write reams of code on your behalf unless you understand what they're doing.</p>
+<p class="docText">Most of us can drive a car largely on autopilot—we don't explicitly command our foot to press a pedal, or our arm to turn the wheel—we just think "slow down and turn right." However, good, safe drivers are constantly reviewing the situation, checking for potential problems, and putting themselves into good positions in case the unexpected happens. The same is true of coding—it may be largely routine, but keeping your wits about you could well prevent a disaster.</p>
+<p class="docText"><a id="ch06lev1sec1"></a></p>
+<h3 id="title-IDAYGX0" class="docSection1Title">31. Programming by Coincidence</h3>
+<p class="docText">Do you ever watch old black-and-white war movies? The weary soldier advances cautiously out of the brush. There's a clearing ahead: are there any land mines, or is it safe to cross? There aren't any indications that it's a minefield—no signs, barbed wire, or craters. The soldier pokes the ground ahead of him with his bayonet and winces, expecting an explosion. There isn't one. So he proceeds painstakingly through the field for a while, prodding and poking as he goes. Eventually, convinced that the field is safe, he straightens up and marches proudly forward, only to be blown to pieces.</p>
+<p class="docText">The soldier's initial probes for mines revealed nothing, but this was merely lucky. He was led to a false conclusion—with disastrous results.</p>
+<p class="docText">As developers, we also work in minefields. There are hundreds of traps just waiting to catch us each day. Remembering the soldier's tale, we should be wary of drawing false conclusions. We should avoid programming by coincidence—relying on luck and accidental successes—in favor of <em>programming deliberately.</em></p>
+<p class="docText"><a id="ch06lev2sec1"></a><a id="page_173"></a></p>
+<h4 id="title-IDAWHX0" class="docSection2Title">How to Program by Coincidence</h4>
+<p class="docText">Suppose Fred is given a programming assignment. Fred types in some code, tries it, and it seems to work. Fred types in some more code, tries it, and it still seems to work. After several weeks of coding this way, the program suddenly stops working, and after hours of trying to fix it, he still doesn't know why. Fred may well spend a significant amount of time chasing this piece of code around without ever being able to fix it. No matter what he does, it just doesn't ever seem to work right.</p>
+<p class="docText">Fred doesn't know why the code is failing because <em>he didn't know why it worked in the first place.</em> It seemed to work, given the limited "testing" that Fred did, but that was just a coincidence. Buoyed by false confidence, Fred charged ahead into oblivion. Now, most intelligent people may know someone like Fred, but <em>we</em> know better. We don't rely on coincidences—do we?</p>
+<p class="docText">Sometimes we might. Sometimes it can be pretty easy to confuse a happy coincidence with a purposeful plan. Let's look at a few examples.</p>
+<p class="docText"><a id="ch06lev3sec1"></a></p>
+<h5 id="title-IDAPIX0" class="docSection3Title">Accidents of Implementation</h5>
+<p class="docText">Accidents of implementation are things that happen simply because that's the way the code is currently written. You end up relying on undocumented error or boundary conditions.</p>
+<p class="docText">Suppose you call a routine with bad data. The routine responds in a particular way, and you code based on that response. But the author didn't intend for the routine to work that way—it was never even considered. When the routine gets "fixed," your code may break. In the most extreme case, the routine you called may not even be designed to do what you want, but it <em>seems</em> to work okay. Calling things in the wrong order, or in the wrong context, is a related problem.</p>
+<p class="programlisting">            paint(g);<br/>            invalidate();<br/>            validate();<br/>            revalidate();<br/>            repaint();<br/>            paintImmediately(r);</p>
+<p class="docText">Here it looks like Fred is desperately trying to get something out on the screen. But these routines were never designed to be called this way; although they seem to work, that's really just a coincidence.</p>
+<p class="docText"><a id="page_174"></a>To add insult to injury, when the component finally does get drawn, Fred won't try to go back and take out the spurious calls. "It works now, better leave well enough alone...."</p>
+<p class="docText">It's easy to be fooled by this line of thought. Why should you take the risk of messing with something that's working? Well, we can think of several reasons:</p>
+<ul>
+<li>It may not really be working—it might just look like it is.</li>
+<li>The boundary condition you rely on may be just an accident. In different circumstances (a different screen resolution, perhaps), it might behave differently.</li>
+<li>Undocumented behavior may change with the next release of the library.</li>
+<li>Additional and unnecessary calls make your code slower.</li>
+<li>Additional calls also increase the risk of introducing new bugs of their own.</li>
+</ul>
+<p class="docText">For code you write that others will call, the basic principles of good modularization and of hiding implementation behind small, well-documented interfaces can all help. A well-specified contract (see <a href="ch04.html#ch04lev1sec1"><em>Design by Contract</em></a>, page <a href="ch04.html#page_109">109</a>) can help eliminate misunderstandings.</p>
+<p class="docText">For routines you call, rely only on documented behavior. If you can't, for whatever reason, then document your assumption well.</p>
+<p class="docText"><a id="ch06lev3sec2"></a></p>
+<h5 id="title-IDAVKX0" class="docSection3Title">Accidents of Context</h5>
+<p class="docText">You can have "accidents of context" as well. Suppose you are writing a utility module. Just because you are currently coding for a GUI environment, does the module have to rely on a GUI being present? Are you relying on English-speaking users? Literate users? What else are you relying on that isn't guaranteed?</p>
+<p class="docText"><a id="ch06lev3sec3"></a></p>
+<h5 id="title-IDAALX0" class="docSection3Title">Implicit Assumptions</h5>
+<p class="docText">Coincidences can mislead at all levels—from generating requirements through to testing. Testing is particularly fraught with false causalities and coincidental outcomes. It's easy to assume that <em>X</em> causes <em>Y,</em> but as we said in <a href="ch03.html#ch03lev1sec5"><em>Debugging</em></a>, page <a href="ch03.html#page_90">90</a>: don't assume it, prove it.</p>
+<p class="docText"><a id="page_175"></a>At all levels, people operate with many assumptions in mind—but these assumptions are rarely documented and are often in conflict between different developers. Assumptions that aren't based on well-established facts are the bane of all projects.</p>
+<p class="docNoteTitle">Tip 44</p>
+<p class="note"><a href="app03.html#id1e11058">Don't Program by Coincidence</a></p>
+<p class="docText"><a id="ch06lev2sec2"></a></p>
+<h4 id="title-IDAFMX0" class="docSection2Title">How to Program Deliberately</h4>
+<p class="docText">We want to spend less time churning out code, catch and fix errors as early in the development cycle as possible, and create fewer errors to begin with. It helps if we can program deliberately:</p>
+<ul>
+<li>Always be aware of what you are doing. Fred let things get slowly out of hand, until he ended up boiled, like the frog in <a href="ch01.html#ch01lev1sec3"><em>Stone Soup and Boiled Frogs</em></a>, page <a href="ch01.html#page_7">7</a>.</li>
+<li>Don't code blindfolded. Attempting to build an application you don't fully understand, or to use a technology you aren't familiar with, is an invitation to be misled by coincidences.</li>
+<li>Proceed from a plan, whether that plan is in your head, on the back of a cocktail napkin, or on a wall-sized printout from a CASE tool.</li>
+<li>Rely only on reliable things. Don't depend on accidents or assumptions. If you can't tell the difference in particular circumstances, assume the worst.</li>
+<li>Document your assumptions. <a href="ch04.html#ch04lev1sec1"><em>Design by Contract</em></a>, page <a href="ch04.html#page_109">109</a>, can help clarify your assumptions in your own mind, as well as help communicate them to others.</li>
+<li>Don't just test your code, but test your assumptions as well. Don't guess; actually try it. Write an assertion to test your assumptions (see <a href="ch04.html#ch04lev1sec3"><em>Assertive Programming</em></a>, page <a href="ch04.html#page_122">122</a>). If your assertion is right, you have improved the documentation in your code. If you discover your assumption is wrong, then count yourself lucky.</li>
+<li>Prioritize your effort. Spend time on the important aspects; more than likely, these are the hard parts. If you don't have fundamentals <a id="page_176"></a>or infrastructure correct, brilliant bells and whistles will be irrelevant.</li>
+<li>Don't be a slave to history. Don't let existing code dictate future code. All code can be replaced if it is no longer appropriate. Even within one program, don't let what you've already done constrain what you do next—be ready to refactor (see <a href="ch06.html#ch06lev1sec3"><em>Refactoring</em></a>, page <a href="ch06.html#page_184">184</a>). This decision may impact the project schedule. The assumption is that the impact will be less than the cost of <em>not</em> making the change.<sup><a href="#ch06fn01">[1]</a></sup>
+<p class="docFootnote"><sup><a id="ch06fn01">[1]</a></sup> You can also go too far here. We once knew a developer who rewrote all source he was given because he had his own naming conventions.</p></li>
+</ul>
+<p class="docText">So next time something seems to work, but you don't know why, make sure it isn't just a coincidence.</p>
+<p class="docText"><a id="ch06lev3sec4"></a></p>
+<h5 id="title-IDANOX0" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch01.html#ch01lev1sec3"><em>Stone Soup and Boiled Frogs</em></a>, page <a href="ch01.html#page_7">7</a></li>
+<li><a href="ch03.html#ch03lev1sec5"><em>Debugging</em></a>, page <a href="ch03.html#page_90">90</a></li>
+<li><a href="ch04.html#ch04lev1sec1"><em>Design by Contract</em></a>, page <a href="ch04.html#page_109">109</a></li>
+<li><a href="ch04.html#ch04lev1sec3"><em>Assertive Programming</em></a>, page <a href="ch04.html#page_122">122</a></li>
+<li><a href="ch05.html#ch05lev1sec3"><em>Temporal Coupling</em></a>, page <a href="ch05.html#page_150">150</a></li>
+<li><a href="ch06.html#ch06lev1sec3"><em>Refactoring</em></a>, page <a href="ch06.html#page_184">184</a></li>
+<li><a href="ch08.html#ch08lev1sec4"><em>It's All Writing</em></a>, page <a href="ch08.html#page_248">248</a></li>
+</ul>
+<p class="docText"><a id="ch06lev2sec3"></a></p>
+<h4 id="title-IDAKQX0" class="docSection2Title">Exercises</h4>
+<p class="docText1"><a id="ch06que01"></a><strong><a href="app02.html#ch06ans01">31</a>.</strong> Can you identify some coincidences in the following C code fragment? Assume that this code is buried deep in a library routine.</p>
+<p class="programlisting">                fprintf(stderr,<em>"Error, continue?"</em>);<br/>                gets(buf);</p>
+<p class="docText1"><a id="ch06que02"></a><strong><a href="app02.html#ch06ans02">32</a>.</strong> This piece of C code might work some of the time, on some machines. Then again, it might not. What's wrong?</p>
+<p class="progimage1"><img src="images/p0176-01.jpg" alt="image" /></p>
+<p class="docText1"><a id="page_177"></a><a id="ch06que03"></a><strong><a href="app02.html#ch06ans03">33</a>.</strong> This code comes from a general-purpose Java tracing suite. The function writes a string to a log file. It passes its unit test, but fails when one of the Web developers uses it. What coincidence does it rely on?</p>
+<p class="progimage1"><img src="images/p0177-01.jpg" alt="image" /></p>
+<p class="docText"><a id="ch06lev1sec2"></a></p>
+<h3 id="title-IDA2TX0" class="docSection1Title">32. Algorithm Speed</h3>
+<p class="docText">In <a href="ch02.html#ch02lev1sec7"><em>Estimating</em></a>, page <a href="ch02.html#page_64">64</a>, we talked about estimating things such as how long it takes to walk across town, or how long a project will take to finish. However, there is another kind of estimating that Pragmatic Programmers use almost daily: estimating the resources that algorithms use—time, processor, memory, and so on.</p>
+<p class="docText">This kind of estimating is often crucial. Given a choice between two ways of doing something, which do you pick? You know how long your program runs with 1,000 records, but how will it scale to 1,000,000? What parts of the code need optimizing?</p>
+<p class="docText">It turns out that these questions can often be answered using common sense, some analysis, and a way of writing approximations called the "big O" notation.</p>
+<p class="docText"><a id="ch06lev2sec4"></a></p>
+<h4 id="title-IDAQUX0" class="docSection2Title">What Do We Mean by Estimating Algorithms?</h4>
+<p class="docText">Most nontrivial algorithms handle some kind of variable input—sorting <em>n</em> strings, inverting an <em>m x n</em> matrix, or decrypting a message with an <em>n</em>-bit key. Normally, the size of this input will affect the algorithm: the larger the input, the longer the running time or the more memory used.</p>
+<p class="docText">If the relationship were always linear (so that the time increased in direct proportion to the value of <em>n</em>), this section wouldn't be important. However, most significant algorithms are not linear. The good news is that many are sublinear. A binary search, for example, doesn't need to look at every candidate when finding a match. The bad news is that <a id="page_178"></a>other algorithms are considerably worse than linear; runtimes or memory requirements increase far faster than <em>n.</em> An algorithm that takes a minute to process ten items may take a lifetime to process 100.</p>
+<p class="docText">We find that whenever we write anything containing loops or recursive calls, we subconsciously check the runtime and memory requirements. This is rarely a formal process, but rather a quick confirmation that what we're doing is sensible in the circumstances. However, we sometimes <em>do</em> find ourselves performing a more detailed analysis. That's when the <em>O</em>() notation comes in useful.</p>
+<p class="docText"><a id="ch06lev2sec5"></a></p>
+<h4 id="title-IDATVX0" class="docSection2Title">The <em>O</em>() Notation</h4>
+<p class="docText">The <em>O</em>() notation is a mathematical way of dealing with approximations. When we write that a particular sort routine sorts <em>n</em> records in <em>O</em>(<em>n</em><sup>2</sup>) time, we are simply saying that the worst-case time taken will vary as the square of <em>n.</em> Double the number of records, and the time will increase roughly fourfold. Think of the <em>O</em> as meaning <em>on the order of.</em> The <em>O</em>() notation puts an upper bound on the value of the thing we're measuring (time, memory, and so on). If we say a function takes <em>O</em>(<em>n</em><sup>2</sup>) time, then we know that the upper bound of the time it takes will not grow faster than <em>n</em><sup>2</sup>. Sometimes we come up with fairly complex <em>O</em>() functions, but because the highest-order term will dominate the value as <em>n</em> increases, the convention is to remove all low-order terms, and not to bother showing any constant multiplying factors. <em>O</em>(<em>n</em><sup>2</sup>/2<em>+</em> 3<em>n</em>) is the same as <em>O</em>(<em>n</em><sup>2</sup>/2), which is equivalent to <em>O</em>(<em>n</em><sup>2</sup>). This is actually a weakness of the <em>O</em>() notation—one <em>O</em>(<em>n</em><sup>2</sup>) algorithm may be 1,000 times faster than another <em>O</em>(<em>n</em><sup>2</sup>) algorithm, but you won't know it from the notation.</p>
+<p class="docText"><a href="#ch06fig01">Figure 6.1</a> shows several common <em>O</em>() notations you'll come across, along with a graph comparing running times of algorithms in each category. Clearly, things quickly start getting out of hand once we get over <em>O</em>(<em>n</em><sup>2</sup>).</p>
+<p class="docText"><a id="ch06fig01"></a></p>
+<p class="docFigureTitle">Figure 6.1. Runtimes of various algorithms</p>
+<p class="image"><img src="images/f06fig01.gif" alt="image" /></p>
+<p class="docText">For example, suppose you've got a routine that takes 1 s to process 100 records. How long will it take to process 1,000? If your code is <em>O</em>(1), then it will still take 1 s. If it's <em>O</em>(lg(<em>n</em>)), then you'll probably be waiting about 3 s. <em>O</em>(<em>n</em>) will show a linear increase to 10 s, while an <em>O</em>(<em>n</em> lg(<em>n</em>)) will take some 33 s. If you're unlucky enough to have an <em>O</em>(<em>n</em><sup>2</sup>) routine, then sit back for 100 s while it does its stuff. And if you're using an exponential <a id="page_179"></a><a id="page_180"></a>algorithm <em>O</em>(2<em><sup>n</sup></em>), you might want to make a cup of coffee—your routine should finish in about 10<sup>263</sup> years. Let us know how the universe ends.</p>
+<p class="docText">The <em>O</em>() notation doesn't apply just to time; you can use it to represent any other resources used by an algorithm. For example, it is often useful to be able to model memory consumption (see Exercise 35 on page <a href="ch06.html#page_183">183</a>).</p>
+<p class="docText"><a id="ch06lev2sec6"></a></p>
+<h4 id="title-IDAJ0X0" class="docSection2Title">Common Sense Estimation</h4>
+<p class="docText">You can estimate the order of many basic algorithms using common sense.</p>
+<ul>
+<li><a id="d1e11507"></a><strong>Simple loops.</strong> If a simple loop runs from 1 to <em>n,</em> then the algorithm is likely to be <em>O</em>(<em>n</em>)—time increases linearly with <em>n.</em> Examples include exhaustive searches, finding the maximum value in an array, and generating checksums.</li>
+<li><a id="d1e11530"></a><strong>Nested loops.</strong> If you nest a loop inside another, then your algorithm becomes <em>O</em>(<em>m x n</em>)<em>,</em> where <em>m</em> and <em>n</em> are the two loops' limits. This commonly occurs in simple sorting algorithms, such as bubble sort, where the outer loop scans each element in the array in turn, and the inner loop works out where to place that element in the sorted result. Such sorting algorithms tend to be <em>O</em>(<em>n</em><sup>2</sup>).</li>
+<li><a id="d1e11561"></a><strong>Binary chop.</strong> If your algorithm halves the set of things it considers each time around the loop, then it is likely to be logarithmic, <em>O</em>(lg(<em>n</em>)) (see Exercise 37, page <a href="ch06.html#page_183">183</a>). A binary search of a sorted list, traversing a binary tree, and finding the first set bit in a machine word can all be <em>O</em>(lg(<em>n</em>)).</li>
+<li><a id="d1e11581"></a><strong>Divide and conquer.</strong> Algorithms that partition their input, work on the two halves independently, and then combine the result can be <em>O</em>(<em>n</em> lg(<em>n</em>)). The classic example is quicksort, which works by partitioning the data into two halves and recursively sorting each. Although technically <em>O</em>(<em>n</em><sup>2</sup>)<em>,</em> because its behavior degrades when it is fed sorted input, the average runtime of quicksort is <em>O</em>(<em>n</em> lg(<em>n</em>)).</li>
+<li><a id="d1e11618"></a><strong>Combinatoric.</strong> Whenever algorithms start looking at the permutations of things, their running times may get out of hand. This is because permutations involve factorials (there are 5! = 5 x 4 x 3 x 2 x 1 = 120 permutations of the digits from 1 to 5). Time a combinatoric <a id="page_181"></a>algorithm for five elements: it will take six times longer to run it for six, and 42 times longer for seven. Examples include algorithms for many of the acknowledged <em>hard</em> problems—the traveling salesman problem, optimally packing things into a container, partitioning a set of numbers so that each set has the same total, and so on. Often, heuristics are used to reduce the running times of these types of algorithms in particular problem domains.</li>
+</ul>
+<p class="docText"><a id="ch06lev2sec7"></a></p>
+<h4 id="title-IDAM4X0" class="docSection2Title">Algorithm Speed in Practice</h4>
+<p class="docText">It's unlikely that you'll spend much time during your career writing sort routines. The ones in the libraries available to you will probably outperform anything you may write without substantial effort. However, the basic kinds of algorithms we've described earlier pop up time and time again. Whenever you find yourself writing a simple loop, you know that you have an <em>O</em>(<em>n</em>) algorithm. If that loop contains an inner loop, then you're looking at <em>O</em>(<em>m x n</em>)<em>.</em> You should be asking yourself how large these values can get. If the numbers are bounded, then you'll know how long the code will take to run. If the numbers depend on external factors (such as the number of records in an overnight batch run, or the number of names in a list of people), then you might want to stop and consider the effect that large values may have on your running time or memory consumption.</p>
+<p class="docNoteTitle">Tip 45</p>
+<p class="note"><a href="app03.html#id1e11653">Estimate the Order of Your Algorithms</a></p>
+<p class="docText">There are some approaches you can take to address potential problems. If you have an algorithm that is <em>O</em>(<em>n</em><sup>2</sup>)<em>,</em> try to find a divide and conquer approach that will take you down to <em>O</em>(<em>n</em> lg(<em>n</em>)).</p>
+<p class="docText">If you're not sure how long your code will take, or how much memory it will use, try running it, varying the input record count or whatever is likely to impact the runtime. Then plot the results. You should soon get a good idea of the shape of the curve. Is it curving upward, a straight line, or flattening off as the input size increases? Three or four points should give you an idea.</p>
+<p class="docText">Also consider just what you're doing in the code itself. A simple <em>O</em>(<em>n</em><sup>2</sup>) loop may well perform better that a complex, <em>O</em>(<em>n</em> lg(<em>n</em>)) one for smaller <a id="page_182"></a>values of <em>n,</em> particularly if the <em>O</em>(<em>n</em> lg(<em>n</em>)) algorithm has an expensive inner loop.</p>
+<p class="docText">In the middle of all this theory, don't forget that there are practical considerations as well. Runtime may look like it increases linearly for small input sets. But feed the code millions of records and suddenly the time degrades as the system starts to thrash. If you test a sort routine with random input keys, you may be surprised the first time it encounters ordered input. Pragmatic Programmers try to cover both the theoretical and practical bases. After all this estimating, the only timing that counts is the speed of your code, running in the production environment, with real data.<sup><a href="#ch06fn02">[2]</a></sup> This leads to our next tip.</p>
+<p class="docFootnote"><sup><a id="ch06fn02">[2]</a></sup> In fact, while testing the sort algorithms used as an exercise for this section on a 64MB Pentium, the authors ran out of real memory while running the radix sort with more than seven million numbers. The sort started using swap space, and times degraded dramatically.</p>
+<p class="docNoteTitle">Tip 46</p>
+<p class="note"><a href="app03.html#id1e11727">Test Your Estimates</a></p>
+<p class="docText">If it's tricky getting accurate timings, use <em>code profilers</em> to count the number of times the different steps in your algorithm get executed, and plot these figures against the size of the input.</p>
+<p class="docText"><a id="ch06lev3sec5"></a></p>
+<h5 id="title-IDAIBY0" class="docSection3Title">Best Isn't Always Best</h5>
+<p class="docText">You also need to be pragmatic about choosing appropriate algorithms—the fastest one is not always the best for the job. Given a small input set, a straightforward insertion sort will perform just as well as a quicksort, and will take you less time to write and debug. You also need to be careful if the algorithm you choose has a high setup cost. For small input sets, this setup may dwarf the running time and make the algorithm inappropriate.</p>
+<p class="docText">Also be wary of <em>premature optimization.</em> It's always a good idea to make sure an algorithm really is a bottleneck before investing your precious time trying to improve it.</p>
+<p class="docText"><a id="ch06lev3sec6"></a><a id="page_183"></a></p>
+<h5 id="title-IDA2BY0" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch02.html#ch02lev1sec7"><em>Estimating</em></a>, page <a href="ch02.html#page_64">64</a></li>
+</ul>
+<p class="docText"><a id="ch06lev3sec7"></a></p>
+<h5 id="title-IDARCY0" class="docSection3Title">Challenges</h5>
+<ul>
+<li>Every developer should have a feel for how algorithms are designed and analyzed. Robert Sedgewick has written a series of accessible books on the subject ([<a href="app01.html#sed83">Sed83</a>, <a href="app01.html#sf96">SF96</a>, <a href="app01.html#sed92">Sed92</a>] and others). We recommend adding one of his books to your collection, and making a point of reading it.</li>
+<li>For those who like more detail than Sedgewick provides, read Donald Knuth's definitive <em>Art of Computer Programming</em> books, which analyze a wide range of algorithms [<a href="app01.html#knu97a">Knu97a</a>, <a href="app01.html#knu97b">Knu97b</a>, <a href="app01.html#knu98">Knu98</a>].</li>
+<li>In Exercise 34, we look at sorting arrays of long integers. What is the impact if the keys are more complex, and the overhead of key comparison is high? Does the key structure affect the efficiency of the sort algorithms, or is the fastest sort always fastest?</li>
+</ul>
+<p class="docText"><a id="ch06lev2sec8"></a></p>
+<h4 id="title-IDAGEY0" class="docSection2Title">Exercises</h4>
+<p class="docText1"><a id="ch06que04"></a><strong><a href="app02.html#ch06ans04">34</a>.</strong> We have coded a set of simple sort routines, which can be downloaded from our Web site (<a href="http://www.pragmaticprogrammer.com">www.pragmaticprogrammer.com</a>). Run them on various machines available to you. Do your figures follow the expected curves? What can you deduce about the relative speeds of your machines? What are the effects of various compiler optimization settings? Is the radix sort indeed linear?</p>
+<p class="docText1"><a id="ch06que05"></a><strong><a href="app02.html#ch06ans05">35</a>.</strong> The routine below prints out the contents of a binary tree. Assuming the tree is balanced, roughly how much stack space will the routine use while printing a tree of 1,000,000 elements? (Assume that subroutine calls impose no significant stack overhead.)</p>
+<p class="progimage1"><img src="images/p0183-01.jpg" alt="image" /></p>
+<p class="docText1"><a id="ch06que06"></a><strong><a href="app02.html#ch06ans06">36</a>.</strong> Can you see any way to reduce the stack requirements of the routine in Exercise 35 (apart from reducing the size of the buffer)?</p>
+<p class="docText1"><a id="ch06que07"></a><strong><a href="app02.html#ch06ans07">37</a>.</strong> On page <a href="ch06.html#page_180">180</a>, we claimed that a binary chop is <em>O</em>(lg(n)). Can you prove this?</p>
+<p class="docText"><a id="ch06lev1sec3"></a><a id="page_184"></a></p>
+<h3 id="title-IDACHY0" class="docSection1Title">33. Refactoring</h3>
+<p class="blockquote"><em>Change and decay in all around I see ...</em></p>
+<p class="attribution">• <strong>H. F. Lyte, "Abide With Me"</strong></p>
+<p class="docText">As a program evolves, it will become necessary to rethink earlier decisions and rework portions of the code. This process is perfectly natural. Code needs to evolve; it's not a static thing.</p>
+<p class="docText">Unfortunately, the most common metaphor for software development is building construction (Bertrand Meyer [<a href="app01.html#mey97b">Mey97b</a>] uses the term "Software Construction"). But using construction as the guiding metaphor implies these steps:</p>
+<ol>
+<li>An architect draws up blueprints.</li>
+<li>Contractors dig the foundation, build the superstructure, wire and plumb, and apply finishing touches.</li>
+<li>The tenants move in and live happily ever after, calling building maintenance to fix any problems.</li>
+</ol>
+<p class="docText">Well, software doesn't quite work that way. Rather than construction, software is more like <em>gardening</em>—it is more organic than concrete. You plant many things in a garden according to an initial plan and conditions. Some thrive, others are destined to end up as compost. You may move plantings relative to each other to take advantage of the interplay of light and shadow, wind and rain. Overgrown plants get split or pruned, and colors that clash may get moved to more aesthetically pleasing locations. You pull weeds, and you fertilize plantings that are in need of some extra help. You constantly monitor the health of the garden, and make adjustments (to the soil, the plants, the layout) as needed.</p>
+<p class="docText">Business people are comfortable with the metaphor of building construction: it is more scientific than gardening, it's repeatable, there's a rigid reporting hierarchy for management, and so on. But we're not building skyscrapers—we aren't as constrained by the boundaries of physics and the real world.</p>
+<p class="docText">The gardening metaphor is much closer to the realities of software development. Perhaps a certain routine has grown too large, or is trying <a id="page_185"></a>to accomplish too much—it needs to be split into two. Things that don't work out as planned need to be weeded or pruned.</p>
+<p class="docText">Rewriting, reworking, and re-architecting code is collectively known as <em>refactoring.</em></p>
+<p class="docText"><a id="ch06lev2sec9"></a></p>
+<h4 id="title-IDAVJY0" class="docSection2Title">When Should You Refactor?</h4>
+<p class="docText">When you come across a stumbling block because the code doesn't quite fit anymore, or you notice two things that should really be merged, or anything else at all strikes you as being "wrong," <em>don't hesitate to change it</em>. There's no time like the present. Any number of things may cause code to qualify for refactoring:</p>
+<ul>
+<li><a id="d1e11956"></a><strong>Duplication.</strong> You've discovered a violation of the <em>DRY</em> principle (<a href="ch02.html#ch02lev1sec1"><em>The Evils of Duplication</em></a>, page <a href="ch02.html#page_26">26</a>).</li>
+<li><a id="d1e11970"></a><strong>Nonorthogonal design.</strong> You've discovered some code or design that could be made more orthogonal (<a href="ch02.html#ch02lev1sec2"><em>Orthogonality</em></a>, page <a href="ch02.html#page_34">34</a>).</li>
+<li><a id="d1e11981"></a><strong>Outdated knowledge.</strong> Things change, requirements drift, and your knowledge of the problem increases. Code needs to keep up.</li>
+<li><a id="d1e11989"></a><strong>Performance.</strong> You need to move functionality from one area of the system to another to improve performance.</li>
+</ul>
+<p class="docText">Refactoring your code—moving functionality around and updating earlier decisions—is really an exercise in <em>pain management.</em> Let's face it, changing source code around can be pretty painful: it was almost working, and now it's <em>really</em> torn up. Many developers are reluctant to start ripping up code just because it isn't quite right.</p>
+<p class="docText"><a id="ch06lev3sec8"></a></p>
+<h5 id="title-IDAJMY0" class="docSection3Title">Real-World Complications</h5>
+<p class="docText">So you go to your boss or client and say, "This code works, but I need another week to refactor it."</p>
+<p class="docText">We can't print their reply.</p>
+<p class="docText">Time pressure is often used as an excuse for not refactoring. But this excuse just doesn't hold up: fail to refactor now, and there'll be a far greater time investment to fix the problem down the road—when there are more dependencies to reckon with. Will there be more time available then? Not in our experience.</p>
+<p class="docText"><a id="page_186"></a>You might want to explain this principle to the boss by using a medical analogy: think of the code that needs refactoring as a "growth." Removing it requires invasive surgery. You can go in now, and take it out while it is still small. Or, you could wait while it grows and spreads—but removing it then will be both more expensive and more dangerous. Wait even longer, and you may lose the patient entirely.</p>
+<p class="docNoteTitle">Tip 47</p>
+<p class="note"><a href="app03.html#id1e12023">Refactor Early, Refactor Often</a></p>
+<p class="docText">Keep track of the things that need to be refactored. If you can't refactor something immediately, make sure that it gets placed on the schedule. Make sure that users of the affected code <em>know</em> that it is scheduled to be refactored and how this might affect them.</p>
+<p class="docText"><a id="ch06lev2sec10"></a></p>
+<h4 id="title-IDAPNY0" class="docSection2Title">How Do You Refactor?</h4>
+<p class="docText">Refactoring started out in the Smalltalk community, and, along with other trends (such as design patterns), has started to gain a wider audience. But as a topic it is still fairly new; there isn't much published on it. The first major book on refactoring ([<a href="app01.html#fbb99">FBB<sup>+</sup>99</a>], and also [<a href="app01.html#app01lev3sec47">URL 47</a>]) is being published around the same time as this book.</p>
+<p class="docText">At its heart, refactoring is redesign. Anything that you or others on your team designed can be redesigned in light of new facts, deeper understandings, changing requirements, and so on. But if you proceed to rip up vast quantities of code with wild abandon, you may find yourself in a worse position than when you started.</p>
+<p class="docText">Clearly, refactoring is an activity that needs to be undertaken slowly, deliberately, and carefully. Martin Fowler offers the following simple tips on how to refactor without doing more harm than good (see the box on page <a href="ch02.html#page_30">30</a> in [FS97]):</p>
+<ol>
+<li>Don't try to refactor and add functionality at the same time.</li>
+<li>Make sure you have good tests before you begin refactoring. Run the tests as often as possible. That way you will know quickly if your changes have broken anything.<br/>
+<p class="docText"><a id="page_187"></a></p>
+<div class="sidebar1">
+<p class="docSidebarTitle">Automatic Refactoring</p>
+<p class="sidebar">Historically, Smalltalk users have always enjoyed a <em>class browser</em> as part of the IDE. Not to be confused with Web browsers, class browsers let users navigate through and examine class hierarchies and methods.</p>
+<p class="sidebar">Typically, class browsers allow you to edit code, create new methods and classes, and so on. The next variation on this idea is the <em>refactoring browser.</em></p>
+<p class="sidebar">A refactoring browser can semiautomatically perform common refactoring operations for you: splitting up a long routine into smaller ones, automatically propagating changes to method and variable names, drag and drop to assist you in moving code, and so on.</p>
+<p class="sidebar">As we write this book, this technology has yet to appear outside of the Smalltalk world, but this is likely to change at the same speed that Java changes—rapidly. In the meantime, the pioneering Smalltalk refactoring browser can be found online at [<a href="app01.html#app01lev3sec20">URL 20</a>].</p>
+</div></li>
+<li>Take short, deliberate steps: move a field from one class to another, fuse two similar methods into a superclass. Refactoring often involves making many localized changes that result in a larger-scale change. If you keep your steps small, and test after each step, you will avoid prolonged debugging.</li>
+</ol>
+<p class="docText">We'll talk more about testing at this level in <a href="ch06.html#ch06lev1sec4"><em>Code That's Easy to Test</em></a>, page <a href="ch06.html#page_189">189</a>, and larger-scale testing in <a href="ch08.html#ch08lev1sec3"><em>Ruthless Testing</em></a>, page <a href="ch08.html#page_237">237</a>, but Mr. Fowler's point of maintaining good regression tests is the key to refactoring with confidence.</p>
+<p class="docText">It can also be helpful to make sure that drastic changes to a module—such as altering its interface or its functionality in an incompatible manner—break the build. That is, old clients of this code should fail to compile. You can then quickly find the old clients and make the necessary changes to bring them up to date.</p>
+<p class="docText">So next time you see a piece of code that isn't quite as it should be, fix both it and everything that depends on it. Manage the pain: if it hurts now, but is going to hurt even more later, you might as well get it over <a id="page_188"></a>with. Remember the lessons of <a href="ch01.html#ch01lev1sec2"><em>Software Entropy</em></a>, page <a href="ch01.html#page_4">4</a>: don't live with broken windows.</p>
+<p class="docText"><a id="ch06lev3sec9"></a></p>
+<h5 id="title-IDAZQY0" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch01.html#ch01lev1sec1"><em>The Cat Ate My Source Code</em></a>, page <a href="ch01.html#page_2">2</a></li>
+<li><a href="ch01.html#ch01lev1sec2"><em>Software Entropy</em></a>, page <a href="ch01.html#page_4">4</a></li>
+<li><a href="ch01.html#ch01lev1sec3"><em>Stone Soup and Boiled Frogs</em></a>, page <a href="ch01.html#page_7">7</a></li>
+<li><a href="ch02.html#ch02lev1sec1"><em>The Evils of Duplication</em></a>, page <a href="ch02.html#page_26">26</a></li>
+<li><a href="ch02.html#ch02lev1sec2"><em>Orthogonality</em></a>, page <a href="ch02.html#page_34">34</a></li>
+<li><a href="ch01.html#ch01lev1sec3"><em>Programming by Coincidence</em></a>, page <a href="ch06.html#page_172">172</a></li>
+<li><a href="ch01.html#ch01lev1sec3"><em>Code That's Easy to Test</em></a>, page <a href="ch06.html#page_189">189</a></li>
+<li><a href="ch01.html#ch01lev1sec3"><em>Ruthless Testing</em></a>, page <a href="ch08.html#page_237">237</a></li>
+</ul>
+<p class="docText"><a id="ch06lev2sec11"></a></p>
+<h4 id="title-IDAZSY0" class="docSection2Title">Exercises</h4>
+<p class="docText1"><a id="ch06que08"></a><strong><a href="app02.html#ch06ans08">38</a>.</strong> The following code has obviously been updated several times over the years, but the changes haven't improved its structure. Refactor it.</p>
+<p class="progimage1"><img src="images/p0188-01.jpg" alt="image" /></p>
+<p class="docText1"><a id="ch06que09"></a><strong><a href="app02.html#ch06ans09">39</a>.</strong> The following Java class needs to support a few more shapes. Refactor the class to prepare it for the additions.</p>
+<p class="docText"><a id="page_189"></a></p>
+<p class="progimage"><img src="images/p0189-01.jpg" alt="image" /></p>
+<p class="docText1"><a id="ch06que10"></a><strong><a href="app02.html#ch06ans10">40</a>.</strong> This Java code is part of a framework that will be used throughout your project. Refactor it to be more general and easier to extend in the future.</p>
+<p class="progimage1"><img src="images/p0189-02.jpg" alt="image" /></p>
+<p class="docText"><a id="ch06lev1sec4"></a></p>
+<h3 id="title-IDAMZY0" class="docSection1Title">34. Code That's Easy to Test</h3>
+<p class="docText3">The <em>Software IC</em> is a metaphor that people like to toss around when discussing reusability and component-based development.<sup><a href="#ch06fn03">[3]</a></sup> The idea is that software components should be combined just as integrated circuit chips are combined. This works only if the components you are using are known to be reliable.</p>
+<p class="docFootnote"><sup><a id="ch06fn03">[3]</a></sup> The term "Software IC" (Integrated Circuit) seems to have been invented in 1986 by Cox and Novobilski in their Objective-C book <em>Object-Oriented Programming</em> [<a href="app01.html#cn91">CN91</a>].</p>
+<p class="docText">Chips are designed to be tested—not just at the factory, not just when they are installed, but also in the field when they are deployed. More complex chips and systems may have a full Built-In Self Test (BIST) feature that runs some base-level diagnostics internally, or a Test Access Mechanism (TAM) that provides a test harness that allows the external environment to provide stimuli and collect responses from the chip.</p>
+<p class="docText">We can do the same thing in software. Like our hardware colleagues, we need to build testability into the software from the very beginning, and test each piece thoroughly before trying to wire them together.</p>
+<p class="docText"><a id="ch06lev2sec12"></a><a id="page_190"></a></p>
+<h4 id="title-IDAO0Y0" class="docSection2Title">Unit Testing</h4>
+<p class="docText">Chip-level testing for hardware is roughly equivalent to <em>unit testing</em> in software—testing done on each module, in isolation, to verify its behavior. We can get a better feeling for how a module will react in the big wide world once we have tested it throughly under controlled (even contrived) conditions.</p>
+<p class="docText">A software unit test is code that exercises a module. Typically, the unit test will establish some kind of artificial environment, then invoke routines in the module being tested. It then checks the results that are returned, either against known values or against the results from previous runs of the same test (regression testing).</p>
+<p class="docText">Later, when we assemble our "software IC's" into a complete system, we'll have confidence that the individual parts work as expected, and then we can use the same unit test facilities to test the system as a whole. We talk about this large-scale checking of the system in <a href="ch08.html#ch08lev1sec3"><em>Ruthless Testing</em></a>, page <a href="ch08.html#page_237">237</a>.</p>
+<p class="docText">Before we get that far, however, we need to decide what to test at the unit level. Typically, programmers throw a few random bits of data at the code and call it tested. We can do much better, using the ideas behind <em>design by contract.</em></p>
+<p class="docText"><a id="ch06lev2sec13"></a></p>
+<h4 id="title-IDAM1Y0" class="docSection2Title">Testing Against Contract</h4>
+<p class="docText">We like to think of unit testing as <em>testing against contract</em> (see <a href="ch04.html#ch04lev1sec1"><em>Design by Contract</em></a>, page <a href="ch04.html#page_109">109</a>). We want to write test cases that ensure that a given unit honors its contract. This will tell us two things: whether the code meets the contract, and whether the contract means what we think it means. We want to test that the module delivers the functionality it promises, over a wide range of test cases and boundary conditions.</p>
+<p class="docText">What does this mean in practice? Let's look at the square root routine we first encountered on page <a href="ch04.html#page_114">114</a>. Its contract is simple:</p>
+<p class="progimage"><img src="images/p0190-01.jpg" alt="image" /></p>
+<p class="docText">This tells us what to test:</p>
+<ul>
+<li><a id="page_191"></a>Pass in a negative argument and ensure that it is rejected.</li>
+<li>Pass in an argument of zero to ensure that it is accepted (this is the boundary value).</li>
+<li>Pass in values between zero and the maximum expressible argument and verify that the difference between the square of the result and the original argument is less than some small fraction of the argument.</li>
+</ul>
+<p class="docText">Armed with this contract, and assuming that our routine does its own pre- and postcondition checking, we can write a basic test script to exercise the square root function.</p>
+<p class="progimage"><img src="images/p0191-01.jpg" alt="image" /></p>
+<p class="docText">Then we can call this routine to test our square root function:</p>
+<p class="progimage"><img src="images/p0191-02.jpg" alt="image" /></p>
+<p class="docText">This is a pretty simple test; in the real world, any nontrivial module is likely to be dependent on a number of other modules, so how do we go about testing the combination?</p>
+<p class="docText">Suppose we have a module A that uses a <code>LinkedList</code> and a <code>Sort</code>. In order, we would test:</p>
+<ol>
+<li><code>LinkedList's</code> contract, in full</li>
+<li><code>Sort's</code> contract, in full</li>
+<li>A's contract, which relies on the other contracts but does not directly expose them</li>
+</ol>
+<p class="docText"><a id="page_192"></a>This style of testing requires you to test subcomponents of a module first. Once the subcomponents have been verified, then the module itself can be tested.</p>
+<p class="docText">If <code>LinkedList</code> and <code>Sort</code>'s tests passed, but A's test failed, we can be pretty sure that the problem is in A, or in A's <em>use</em> of one of those subcomponents. This technique is a great way to reduce debugging effort: we can quickly concentrate on the likely source of the problem within module A, and not waste time reexamining its subcomponents.</p>
+<p class="docText">Why do we go to all this trouble? Above all, we want to avoid creating a "time bomb"—something that sits around unnoticed and blows up at an awkward moment later in the project. By emphasizing testing against contract, we can try to avoid as many of those downstream disasters as possible.</p>
+<p class="docNoteTitle">Tip 48</p>
+<p class="note"><a href="app03.html#id1e12545">Design to Test</a></p>
+<p class="docText">When you design a module, or even a single routine, you should design both its contract and the code to test that contract. By designing code to pass a test and fulfill its contract, you may well consider boundary conditions and other issues that wouldn't occur to you otherwise. There's no better way to fix errors than by avoiding them in the first place. In fact, by building the tests <em>before</em> you implement the code, you get to try out the interface before you commit to it.</p>
+<p class="docText"><a id="ch06lev2sec14"></a></p>
+<h4 id="title-IDAEBZ0" class="docSection2Title">Writing Unit Tests</h4>
+<p class="docText">The unit tests for a module shouldn't be shoved in some far-away corner of the source tree. They need to be conveniently located. For small projects, you can embed the unit test for a module in the module itself. For larger projects, we suggest moving each test into a subdirectory. Either way, remember that if it isn't easy to find, it won't be used.</p>
+<p class="docText">By making the test code readily accessible, you are providing developers who may use your code with two invaluable resources:</p>
+<ol>
+<li>Examples of how to use all the functionality of your module</li>
+<li><a id="page_193"></a>A means to build regression tests to validate any future changes to the code</li>
+</ol>
+<p class="docText">It's convenient, but not always practical, for each class or module to contain its own unit test. In Java, for example, every class can have its own <code>main</code>. In all but the application's main class file, the <code>main</code> routine can be used to run unit tests; it will be ignored when the application itself is run. This has the benefit that the code you ship still contains the tests, which can be used to diagnose problems in the field.</p>
+<p class="docText">In C++ you can achieve the same effect (at compile time) by using <code>#ifdef</code> to compile unit test code selectively. For example, here's a very simple unit test in C++, embedded in our module, that checks our square root function using a <code>testValue</code> routine similar to the Java one defined previously:</p>
+<p class="progimage"><img src="images/p0193-01.jpg" alt="image" /></p>
+<p class="docText">This unit test will either run a minimal set of tests or, if given arguments, allow you to pass data in from the outside world. A shell script could use this ability to run a much more complete set of tests.</p>
+<p class="docText">What do you do if the correct response for a unit test is to exit, or abort the program? In that case, you need to be able to select the test to run, perhaps by specifying an argument on the command line. You'll <a id="page_194"></a>also need to pass in parameters if you need to specify different starting conditions for your tests.</p>
+<p class="docText">But providing unit tests isn't enough. You must run them, and run them often. It also helps if the class <em>passes</em> its tests once in a while.</p>
+<p class="docText"><a id="ch06lev2sec15"></a></p>
+<h4 id="title-IDALEZ0" class="docSection2Title">Using Test Harnesses</h4>
+<p class="docText">Because we usually write <em>a lot</em> of test code, and do a lot of testing, we'll make life easier on ourselves and develop a standard testing harness for the project. The <code>main</code> shown in the previous section is a very simple test harness, but usually we'll need more functionality than that.</p>
+<p class="docText">A test harness can handle common operations such as logging status, analyzing output for expected results, and selecting and running the tests. Harnesses may be GUI driven, may be written in the same target language as the rest of the project, or may be implemented as a combination of <code>makefiles</code> and Perl scripts. A simple test harness is shown in the answer to Exercise 41 on page <a href="app02.html#page_305">305</a>.</p>
+<p class="docText">In object-oriented languages and environments, you might create a base class that provides these common operations. Individual tests can subclass from that and add specific test code. You could use a standard naming convention and reflection in Java to build a list of tests dynamically. This technique is a nice way of honoring the <em>DRY</em> principle—you don't have to maintain a list of available tests. But before you go off and start writing your own harness, you may want to investigate Kent Beck and Erich Gamma's xUnit at [<a href="app01.html#app01lev3sec22">URL 22</a>]. You might also want to look at our book <em>Pragmatic Unit Testing</em> [<a href="app01.html#ht03">HT03</a>] for an introduction to JUnit.</p>
+<p class="docText">Regardless of the technology you decide to use, test harnesses should include the following capabilities:</p>
+<ul>
+<li>A standard way to specify setup and cleanup</li>
+<li>A method for selecting individual tests or all available tests</li>
+<li>A means of analyzing output for expected (or unexpected) results</li>
+<li>A standardized form of failure reporting</li>
+</ul>
+<p class="docText">Tests should be composable; that is, a test can be composed of subtests of subcomponents to any depth. We can use this feature to test selected parts of the system or the entire system just as easily, using the same tools.</p>
+<p class="docText"><a id="page_195"></a></p>
+<div class="sidebar1">
+<p class="docSidebarTitle">Ad Hoc Testing</p>
+<p class="sidebar">During debugging, we may end up creating some particular tests on-the-fly. These may be as simple as a <code>print</code> statement, or a piece of code entered interactively in a debugger or IDE environment.</p>
+<p class="sidebar">At the end of the debugging session, you need to formalize the ad hoc test. If the code broke once, it is likely to break again. Don't just throw away the test you created; add it to the existing unit test.</p>
+</div>
+<p class="docText">For example, using JUnit (the Java member of the xUnit family), we might write our square root test as follows:</p>
+<p class="progimage"><img src="images/p0195-01.jpg" alt="image" /></p>
+<p class="docText">JUnit is designed to be composable: we could add as many tests as we wanted to this suite, and each of those tests could in turn be a suite. In addition, you have your choice of a graphical or batch interface to drive the tests.</p>
+<p class="docText"><a id="ch06lev2sec16"></a><a id="page_196"></a></p>
+<h4 id="title-IDAGJZ0" class="docSection2Title">Build a Test Window</h4>
+<p class="docText">Even the best sets of tests are unlikely to find all the bugs; there's something about the damp, warm conditions of a production environment that seems to bring them out of the woodwork.</p>
+<p class="docText">This means you'll often need to test a piece of software once it has been deployed—with real-world data flowing though its veins. Unlike a circuit board or chip, we don't have <em>test pins</em> in software, but we <em>can</em> provide various views into the internal state of a module, without using the debugger (which may be inconvenient or impossible in a production application).</p>
+<p class="docText">Log files containing trace messages are one such mechanism. Log messages should be in a regular, consistent format; you may want to parse them automatically to deduce processing time or logic paths that the program took. Poorly or inconsistently formatted diagnostics are just so much "spew"—they are difficult to read and impractical to parse.</p>
+<p class="docText">Another mechanism for getting inside running code is the "hot-key" sequence. When this particular combination of keys is pressed, a diagnostic control window pops up with status messages and so on. This isn't something you normally would reveal to end users, but it can be very handy for the help desk.</p>
+<p class="docText">For larger, more complex server code, a nifty technique for providing a view into its operation is to include a built-in Web server. Anyone can point a Web browser to the application's HTTP port (which is usually on a nonstandard number, such as 8080) and see internal status, log entries, and possibly even some sort of a debug control panel. This may sound difficult to implement, but it's not. Freely available and embeddable HTTP Web servers are available in a variety of modern languages. A good place to start looking is [<a href="app01.html#app01lev3sec58">URL 58</a>].</p>
+<p class="docText"><a id="ch06lev2sec17"></a></p>
+<h4 id="title-IDAKKZ0" class="docSection2Title">A Culture of Testing</h4>
+<p class="docText">All software you write <em>will</em> be tested—if not by you and your team, then by the eventual users—so you might as well plan on testing it thoroughly. A little forethought can go a long way toward minimizing maintenance costs and help-desk calls.</p>
+<p class="docText"><a id="page_197"></a>Despite its hacker reputation, the Perl community has a very strong commitment to unit and regression testing. The Perl standard module installation procedure supports a regression test by invoking</p>
+<p class="programlisting">        % make test</p>
+<p class="docText">There's nothing magic about Perl itself in this regard. Perl makes it easier to collate and analyze test results to ensure compliance, but the big advantage is simply that it's a standard—tests go in a particular place, and have a certain expected output. <em>Testing is more cultural than technical;</em> we can instill this testing culture in a project regardless of the language being used.</p>
+<p class="docNoteTitle">Tip 49</p>
+<p class="note"><a href="app03.html#id1e12851">Test Your Software, or Your Users Will</a></p>
+<p class="docText"><a id="ch06lev3sec10"></a></p>
+<h5 id="title-IDAVLZ0" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch01.html#ch01lev1sec1"><em>The Cat Ate My Source Code</em></a>, page <a href="ch01.html#page_2">2</a></li>
+<li><a href="ch02.html#ch02lev1sec2"><em>Orthogonality</em></a>, page <a href="ch02.html#page_34">34</a></li>
+<li><a href="ch04.html#ch04lev1sec1"><em>Design by Contract</em></a>, page <a href="ch04.html#page_109">109</a></li>
+<li><a href="ch06.html#ch06lev1sec3"><em>Refactoring</em></a>, page <a href="ch06.html#page_184">184</a></li>
+<li><a href="ch08.html#ch08lev1sec3"><em>Ruthless Testing</em></a>, page <a href="ch08.html#page_237">237</a></li>
+</ul>
+<p class="docText"><a id="ch06lev2sec18"></a></p>
+<h4 id="title-IDADNZ0" class="docSection2Title">Exercises</h4>
+<p class="docText1"><a id="ch06que11"></a><strong><a href="app02.html#ch06ans11">41</a>.</strong> Design a test jig for the blender interface described in the answer to Exercise 17 on page <a href="app02.html#page_289">289</a>. Write a shell script that will perform a regression test for the blender. You need to test basic functionality, error and boundary conditions, and any contractual obligations. What restrictions are placed on changing the speed? Are they being honored?</p>
+<p class="docText"><a id="ch06lev1sec5"></a><a id="page_198"></a></p>
+<h3 id="title-IDA2NZ0" class="docSection1Title">35. Evil Wizards</h3>
+<p class="docText">There's no denying it—applications are getting harder and harder to write. User interfaces in particular are becoming increasingly sophisticated. Twenty years ago, the average application would have a glass teletype interface (if it had an interface at all). Asynchronous terminals would typically provide a character interactive display, while pollable devices (such as the ubiquitous IBM 3270) would let you fill in an entire screen before hitting <img src="images/send.gif" alt="image" />. Now, users expect graphical user interfaces, with context-sensitive help, cut and paste, drag and drop, OLE integration, and MDI or SDI. Users are looking for Web-browser integration and thin-client support.</p>
+<p class="docText">All the time the applications themselves are getting more complex. Most developments now use a multitier model, possibly with some middleware layer or a transaction monitor. These programs are expected to be dynamic and flexible, and to interoperate with applications written by third parties.</p>
+<p class="docText">Oh, and did we mention that we needed it all next week?</p>
+<p class="docText">Developers are struggling to keep up. If we were using the same kind of tools that produced the basic dumb-terminal applications 20 years ago, we'd never get anything done.</p>
+<p class="docText">So the tool makers and infrastructure vendors have come up with a magic bullet, the <em>wizard.</em> Wizards are great. Do you need an MDI application with OLE container support? Just click a single button, answer a couple of simple questions, and the wizard will automatically generate skeleton code for you. The Microsoft Visual C++ environment creates over 1,200 lines of code for this scenario, automatically. Wizards are hard at work in other contexts, too. You can use wizards to create server components, implement Java beans, and handle network interfaces—all complex areas where it's nice to have expert help.</p>
+<p class="docText">But using a wizard designed by a guru does not automatically make Joe developer equally expert. Joe can feel pretty good—he's just produced a mass of code and a pretty spiffy-looking program. He just adds in the specific application functionality and it's ready to ship. But unless Joe actually understands the code that has been produced on his behalf, he's fooling himself. He's programming by coincidence. Wizards are a one-way street—they cut the code for you, and then move on. If the <a id="page_199"></a>code they produce isn't quite right, or if circumstances change and you need to adapt the code, you're on your own.</p>
+<p class="docText">We are not against wizards. On the contrary, we dedicate an entire section (<a href="ch03.html#ch03lev1sec7"><em>Code Generators</em></a>, page <a href="ch03.html#page_102">102</a>) to writing your own. But if you <em>do</em> use a wizard, and you don't understand all the code that it produces, you won't be in control of your own application. You won't be able to maintain it, and you'll be struggling when it comes time to debug.</p>
+<p class="docNoteTitle">Tip 50</p>
+<p class="note"><a href="app03.html#id1e12950">Don't Use Wizard Code You Don't Understand</a></p>
+<p class="docText">Some people feel that this is an extreme position. They say that developers routinely rely on things they don't fully understand—the quantum mechanics of integrated circuits, the interrupt structure of the processor, the algorithms used to schedule processes, the code in the supplied libraries, and so on. We agree. And we'd feel the same about wizards if they were simply a set of library calls or standard operating system services that developers could rely on. But they're not. Wizards generate code that becomes an integral part of Joe's application. The wizard code is not factored out behind a tidy interface—it is interwoven line by line with functionality that Joe writes.<sup><a href="#ch06fn04">[4]</a></sup> Eventually, it stops being the wizard's code and starts being Joe's. And no one should be producing code they don't fully understand.</p>
+<p class="docFootnote"><sup><a id="ch06fn04">[4]</a></sup> However, there are other techniques that help manage complexity. We discuss two, beans and AOP, in <a href="ch02.html#ch02lev1sec2"><em>Orthogonality</em></a>, page <a href="ch02.html#page_34">34</a>.</p>
+<p class="docText"><a id="ch06lev3sec11"></a></p>
+<h4 id="title-IDAQQZ0" class="docSection2Title">Related sections include:</h4>
+<ul>
+<li><a href="ch02.html#ch02lev1sec2"><em>Orthogonality</em></a>, page <a href="ch02.html#page_34">34</a></li>
+<li><a href="ch03.html#ch03lev1sec7"><em>Code Generators</em></a>, page <a href="ch03.html#page_102">102</a></li>
+</ul>
+<p class="docText"><a id="ch06lev3sec12"></a></p>
+<h4 id="title-IDALRZ0" class="docSection2Title">Challenges</h4>
+<ul>
+<li>If you have a GUI-building wizard available, use it to generate a skeleton application. Go through every line of code it produces. Do you understand it all? Could you have produced it yourself? Would you have produced it yourself, or is it doing things you don't need?</li>
+</ul>
+</div>
+</body>
+</html>

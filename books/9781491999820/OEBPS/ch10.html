@@ -1,0 +1,896 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>10. Unit Testing Services</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><section data-type="chapter" epub:type="chapter" data-pdf-bookmark="Chapter 10. Unit Testing Services"><div class="chapter" id="chapter-10">
+<h1><span class="label">Chapter 10. </span>Unit Testing Services</h1>
+
+
+<p>In the previous two chapters, we started understanding what Angular services are, when to create them, and how to use them.<a data-type="indexterm" data-primary="testing" data-secondary="unit testing services" id="ix_tstser"></a><a data-type="indexterm" data-primary="Angular services" data-secondary="unit testing" id="ix_AngserUT"></a> We also started learning how to make HTTP calls and handle the various use cases that crop up when working with servers.</p>
+
+<p>In this chapter, we will take a step back and try to see how we can unit test these services. We will first see how to unit test a service, followed by understanding how to leverage the Angular dependency injection system to mock out service dependencies in unit tests. Finally, we will dig into writing unit tests when we are working with <code>HttpClient</code>.</p>
+
+<p>If you want to quickly recap what unit tests are and how to write them for components, you can refer to <a data-type="xref" href="ch05.html#chapter-5">Chapter 5</a>.</p>
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="How to Unit Test Services"><div class="sect1" id="idm139828116659200">
+<h1>How to Unit Test Services</h1>
+
+<p>The first thing we will start with is learning how to unit test very simple services. These might be services without any dependencies that act as encapsulators of business logic or functionality that needs to be reused across our application.<a data-type="indexterm" data-primary="testing" data-secondary="unit testing services" data-tertiary="initial setup" id="idm139828116656928"></a></p>
+
+<p>We will start with testing the very simple service we built in <a data-type="xref" href="ch08.html#chapter-8">Chapter 8</a>. You can use the codebase in <em>chapter8/simple-service</em> as the base for this section. The finished code is available in <em>chapter10/simple-service</em>.</p>
+
+<p>Any time we are unit testing our service, we must do a few things over and above what we did for testing components. Namely:</p>
+
+<ul>
+<li>
+<p>Configure the Angular <code>TestBed</code> with a provider for the service we want to test.<a data-type="indexterm" data-primary="TestBed" data-secondary="configuring for service unit testing" id="idm139828116573536"></a></p>
+</li>
+<li>
+<p>Inject an instance of the service we want to test either into our test or as a common instance in the <code>beforeEach</code>.<a data-type="indexterm" data-primary="beforeEach function" id="idm139828116571136"></a></p>
+</li>
+</ul>
+
+<p>When you generate a service using the Angular CLI, this initial skeleton is generated for you out of the box.<a data-type="indexterm" data-primary="specifications (.spec.ts files)" id="idm139828116569632"></a> Regardless, let’s first take a look at the skeleton spec that was generated in <em>src/app/services/stock.service.spec.ts</em>:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">TestBed</code><code class="p">,</code> <code class="nx">inject</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core/testing'</code><code class="p">;</code>
+
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">StockService</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'./stock.service'</code><code class="p">;</code>
+
+<code class="nx">describe</code><code class="p">(</code><code class="s1">'StockService'</code><code class="p">,</code> <code class="p">()</code> <code class="o">=&gt;</code> <code class="p">{</code>
+  <code class="nx">beforeEach</code><code class="p">(()</code> <code class="o">=&gt;</code> <code class="p">{</code>
+    <code class="nx">TestBed</code><code class="p">.</code><code class="nx">configureTestingModule</code><code class="p">({</code>
+      <code class="nx">providers</code><code class="o">:</code> <code class="p">[</code><code class="nx">StockService</code><code class="p">]</code>
+    <code class="p">});</code>
+  <code class="p">});</code>
+
+  <code class="nx">it</code><code class="p">(</code><code class="s1">'should be created'</code><code class="p">,</code> <code class="nx">inject</code><code class="p">([</code><code class="nx">StockService</code><code class="p">],</code>
+      <code class="p">(</code><code class="nx">service</code>: <code class="kt">StockService</code><code class="p">)</code> <code class="o">=&gt;</code> <code class="p">{</code>
+    <code class="nx">expect</code><code class="p">(</code><code class="nx">service</code><code class="p">).</code><code class="nx">toBeTruthy</code><code class="p">();</code>
+  <code class="p">}));</code>
+<code class="p">});</code></pre>
+
+<p>The basic skeleton itself allows us to walk through some of the initial setup that we mentioned. Let’s cover the most important bits:</p>
+
+<ul>
+<li>
+<p>In the <code>beforeEach</code>, like we used to register the components, we now register the <code>provider</code> for the <code>StockService</code>. This ensures that the test is now running in the context of our testing module.</p>
+</li>
+<li>
+<p>In the <code>it</code>, which is the actual test, instead of just passing the test function to it, we call <code>inject</code>, which is a function provided by the Angular testing utilities.<a data-type="indexterm" data-primary="inject function" id="idm139828116291712"></a> We pass an array to it as the first argument, which are the Angular services that need to be injected into our test. The second argument is a function that gets the arguments in the same order that we passed to the array. We write our actual test within this function.</p>
+</li>
+</ul>
+
+<p>In the skeleton code, we instantiate the <code>StockService</code> provider with the testing module, and then just make sure that when we inject it in the test, we get an instantiated version of the service for use in the test.</p>
+
+<p>Before we get on to the actual test, let’s quickly review the service that we will be testing. The <code>StockService</code> currently looks like the following:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Injectable</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Injectable</code><code class="p">()</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockService</code> <code class="p">{</code>
+
+  <code class="kr">private</code> <code class="nx">stocks</code>: <code class="kt">Stock</code><code class="p">[];</code>
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stocks</code> <code class="o">=</code> <code class="p">[</code>
+      <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Test Stock Company'</code><code class="p">,</code> <code class="s1">'TSC'</code><code class="p">,</code> <code class="mi">85</code><code class="p">,</code> <code class="mi">80</code><code class="p">,</code> <code class="s1">'NASDAQ'</code><code class="p">),</code>
+      <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Second Stock Company'</code><code class="p">,</code> <code class="s1">'SSC'</code><code class="p">,</code> <code class="mi">10</code><code class="p">,</code> <code class="mi">20</code><code class="p">,</code> <code class="s1">'NSE'</code><code class="p">),</code>
+      <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Last Stock Company'</code><code class="p">,</code> <code class="s1">'LSC'</code><code class="p">,</code> <code class="mi">876</code><code class="p">,</code> <code class="mi">765</code><code class="p">,</code> <code class="s1">'NYSE'</code><code class="p">)</code>
+    <code class="p">];</code>
+   <code class="p">}</code>
+
+  <code class="nx">getStocks</code><code class="p">()</code> <code class="o">:</code> <code class="nx">Stock</code><code class="p">[]</code> <code class="p">{</code>
+    <code class="k">return</code> <code class="k">this</code><code class="p">.</code><code class="nx">stocks</code><code class="p">;</code>
+  <code class="p">}</code>
+
+  <code class="nx">createStock</code><code class="p">(</code><code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">)</code> <code class="p">{</code>
+    <code class="kd">let</code> <code class="nx">foundStock</code> <code class="o">=</code> <code class="k">this</code><code class="p">.</code><code class="nx">stocks</code><code class="p">.</code><code class="nx">find</code><code class="p">(</code><code class="nx">each</code> <code class="o">=&gt;</code> <code class="nx">each</code><code class="p">.</code><code class="nx">code</code> <code class="o">===</code> <code class="nx">stock</code><code class="p">.</code><code class="nx">code</code><code class="p">);</code>
+    <code class="k">if</code> <code class="p">(</code><code class="nx">foundStock</code><code class="p">)</code> <code class="p">{</code>
+      <code class="k">return</code> <code class="kc">false</code><code class="p">;</code>
+    <code class="p">}</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stocks</code><code class="p">.</code><code class="nx">push</code><code class="p">(</code><code class="nx">stock</code><code class="p">);</code>
+    <code class="k">return</code> <code class="kc">true</code><code class="p">;</code>
+  <code class="p">}</code>
+
+  <code class="nx">toggleFavorite</code><code class="p">(</code><code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">)</code> <code class="p">{</code>
+    <code class="kd">let</code> <code class="nx">foundStock</code> <code class="o">=</code> <code class="k">this</code><code class="p">.</code><code class="nx">stocks</code><code class="p">.</code><code class="nx">find</code><code class="p">(</code><code class="nx">each</code> <code class="o">=&gt;</code> <code class="nx">each</code><code class="p">.</code><code class="nx">code</code> <code class="o">===</code> <code class="nx">stock</code><code class="p">.</code><code class="nx">code</code><code class="p">);</code>
+    <code class="nx">foundStock</code><code class="p">.</code><code class="nx">favorite</code> <code class="o">=</code> <code class="o">!</code><code class="nx">foundStock</code><code class="p">.</code><code class="nx">favorite</code><code class="p">;</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>The <code>StockService</code> has three stocks that are instantiated by default. When we call <code>getStocks()</code>, this list of three stocks is returned. We can also add stocks by calling <span class="keep-together"><code>createStock</code></span>, which checks for the presence of the stock and then adds it.</p>
+
+<p>Now let’s improve it to actually test the service, which had the capability of getting a list of stocks and adding stocks.<a data-type="indexterm" data-primary="testing" data-secondary="unit testing services" data-tertiary="StockService (example)" id="idm139828116284624"></a> We will add two tests for these two methods:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** Other imports skipped for brevity **/</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Stock</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/model/stock'</code><code class="p">;</code><code>
+
+</code><code class="nx">describe</code><code class="p">(</code><code class="s1">'StockService'</code><code class="p">,</code><code> </code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+  </code><code class="kd">var</code><code> </code><code class="nx">stockService</code><code>: </code><code class="kt">StockService</code><code class="p">;</code><code>
+  </code><code class="nx">beforeEach</code><code class="p">(</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="cm">/** No change in first beforeEach, skipping for brevity **/</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+
+  </code><code class="nx">beforeEach</code><code class="p">(</code><code class="nx">inject</code><code class="p">(</code><code class="p">[</code><code class="nx">StockService</code><code class="p">]</code><code class="p">,</code><code>             </code><a class="co" id="co_unit_testing_services_CO1-1" href="#callout_unit_testing_services_CO1-1"><img src="images/1.png" alt="1" /></a><code>
+    </code><code class="p">(</code><code class="nx">service</code><code>: </code><code class="kt">StockService</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+      </code><code class="nx">stockService</code><code> </code><code class="o">=</code><code> </code><code class="nx">service</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>
+
+  </code><code class="nx">it</code><code class="p">(</code><code class="s1">'should allow adding stocks'</code><code class="p">,</code><code> </code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocks</code><code class="p">(</code><code class="p">)</code><code class="p">.</code><code class="nx">length</code><code class="p">)</code><code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code class="mi">3</code><code class="p">)</code><code class="p">;</code><code>      </code><a class="co" id="co_unit_testing_services_CO1-2" href="#callout_unit_testing_services_CO1-2"><img src="images/2.png" alt="2" /></a><code>
+    </code><code class="kd">let</code><code> </code><code class="nx">stock</code><code> </code><code class="o">=</code><code> </code><code class="k">new</code><code> </code><code class="nx">Stock</code><code class="p">(</code><code class="s1">'Testing A New Company'</code><code class="p">,</code><code> </code><code class="s1">'TTT'</code><code class="p">,</code><code>
+        </code><code class="mi">850</code><code class="p">,</code><code> </code><code class="mi">800</code><code class="p">,</code><code> </code><code class="s1">'NASDAQ'</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">createStock</code><code class="p">(</code><code class="nx">stock</code><code class="p">)</code><code class="p">)</code><code class="p">.</code><code class="nx">toBeTruthy</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>    </code><a class="co" id="co_unit_testing_services_CO1-3" href="#callout_unit_testing_services_CO1-3"><img src="images/3.png" alt="3" /></a><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocks</code><code class="p">(</code><code class="p">)</code><code class="p">.</code><code class="nx">length</code><code class="p">)</code><code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code class="mi">4</code><code class="p">)</code><code class="p">;</code><code>      </code><a class="co" id="co_unit_testing_services_CO1-4" href="#callout_unit_testing_services_CO1-4"><img src="images/4.png" alt="4" /></a><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocks</code><code class="p">(</code><code class="p">)</code><code class="p">[</code><code class="mi">3</code><code class="p">]</code><code class="p">.</code><code class="nx">code</code><code class="p">)</code><code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code class="s1">'TTT'</code><code class="p">)</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+
+  </code><code class="nx">it</code><code class="p">(</code><code class="s1">'should fetch a list of stocks'</code><code class="p">,</code><code> </code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocks</code><code class="p">(</code><code class="p">)</code><code class="p">.</code><code class="nx">length</code><code class="p">)</code><code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code class="mi">3</code><code class="p">)</code><code class="p">;</code><code>      </code><a class="co" id="co_unit_testing_services_CO1-5" href="#callout_unit_testing_services_CO1-5"><img src="images/5.png" alt="5" /></a><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocks</code><code class="p">(</code><code class="p">)</code><code class="p">[</code><code class="mi">0</code><code class="p">]</code><code class="p">.</code><code class="nx">code</code><code class="p">)</code><code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code class="s1">'TSC'</code><code class="p">)</code><code class="p">;</code><code> </code><a class="co" id="co_unit_testing_services_CO1-6" href="#callout_unit_testing_services_CO1-6"><img src="images/6.png" alt="6" /></a><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocks</code><code class="p">(</code><code class="p">)</code><code class="p">[</code><code class="mi">1</code><code class="p">]</code><code class="p">.</code><code class="nx">code</code><code class="p">)</code><code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code class="s1">'SSC'</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocks</code><code class="p">(</code><code class="p">)</code><code class="p">[</code><code class="mi">2</code><code class="p">]</code><code class="p">.</code><code class="nx">code</code><code class="p">)</code><code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code class="s1">'LSC'</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+</code><code class="p">}</code><code class="p">)</code><code class="p">;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_unit_testing_services_CO1-1" href="#co_unit_testing_services_CO1-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Inject <code>StockService</code> into another <code>beforeEach</code> and save it for access across tests</p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO1-2" href="#co_unit_testing_services_CO1-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Ensure that we start with the original three stocks from our service</p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO1-3" href="#co_unit_testing_services_CO1-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Add the stock and ensure that it returns <code>true</code></p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO1-4" href="#co_unit_testing_services_CO1-4"><img src="images/4.png" alt="4" /></a></dt>
+<dd><p>Check for the presence of the stock we added in the service</p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO1-5" href="#co_unit_testing_services_CO1-5"><img src="images/5.png" alt="5" /></a></dt>
+<dd><p>Ensure that we start with the original three stocks from our service</p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO1-6" href="#co_unit_testing_services_CO1-6"><img src="images/6.png" alt="6" /></a></dt>
+<dd><p>Check each stock to ensure it is the data we expect</p></dd>
+</dl>
+
+<p>We have made a slight change to the initialization logic, and added two pretty mundane, run-of-the-mill tests:</p>
+
+<ul>
+<li>
+<p>Instead of writing an <code>inject</code> block in each test (each <code>it</code> block), we have moved that logic to another <code>beforeEach</code> block, which is solely responsible for setting up local variables that will be repeatedly used across all the tests. Note that this does not mean the same instance is used in all the tests, but that we don’t have to inject the service into each test individually.</p>
+</li>
+<li>
+<p>We have added two tests, one to test adding of stocks and another to check the default <code>getStocks()</code> call. Again, note that the two tests are independent. Our adding a stock in the first stock does not result in there being four stocks in the second test. Before each test, we are creating a new testing module with a new instance of the service.</p>
+</li>
+</ul>
+
+<p>Other than this, the test itself is pretty straightforward and self-explanatory. To run this test, simply execute:</p>
+<pre data-type="programlisting">
+<strong>ng test</strong>
+</pre>
+
+<p>That should automatically start Karma, capture Chrome, run the tests, and report the results right<a data-type="indexterm" data-primary="Karma" data-secondary="running service tests in" id="idm139828115835312"></a> in your terminal window.</p>
+<div data-type="note" epub:type="note"><h1>Handling Service Dependencies?</h1>
+<p>What if our service itself had a dependency on another service? Well, we would handle it exactly the same way.<a data-type="indexterm" data-primary="dependencies" data-secondary="handling service dependencies in unit testing" id="idm139828115757024"></a><a data-type="indexterm" data-primary="TestBed" data-secondary="handling service dependencies in" id="idm139828115756176"></a> We have a few options:</p>
+
+<ul>
+<li>
+<p>Register the dependency as a service with the Angular <code>TestBed</code> module, and let Angular be responsible for injecting it into the service we are testing.</p>
+</li>
+<li>
+<p>Override/mock the dependent service by registering a fake/stub provider with the <code>TestBed</code>, and rely on that instead of the original service.</p>
+</li>
+</ul>
+
+<p>For both of these, we would simply add another <code>provider</code> in the <code>TestBed.configureTestingModule</code> call for the other service. We will see this principle in action in the next section.</p>
+</div>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Testing Components with a Service Dependency"><div class="sect1" id="idm139828116658256">
+<h1>Testing Components with a Service Dependency</h1>
+
+<p>Next, let’s see how to deal with two slightly<a data-type="indexterm" data-primary="components" data-secondary="testing components with a service dependency" id="ix_comptstser"></a><a data-type="indexterm" data-primary="Angular services" data-secondary="unit testing" data-tertiary="testing components with a service dependency" id="ix_Angsertstcomp"></a><a data-type="indexterm" data-primary="testing" data-secondary="unit testing services" data-tertiary="testing components with a service dependency" id="ix_tstsercomp"></a> different situations:</p>
+
+<ul>
+<li>
+<p>If we had to test a component, and actually use the real service underneath in the test.</p>
+</li>
+<li>
+<p>If we had to test a component, and we wanted to mock out the service it depends on in the test.</p>
+</li>
+</ul>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Testing Components with a Real Service"><div class="sect2" id="idm139828115743952">
+<h2>Testing Components with a Real Service</h2>
+
+<p>First, let’s take a look at the test for <code>StockListComponent</code> if we were using the real service underneath.<a data-type="indexterm" data-primary="components" data-secondary="testing components with a service dependency" data-tertiary="testing with a real service" id="idm139828115742192"></a> Our <em>src/app/stock/stock-list/stock-list.component.spec.ts</em> file would look like the following:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">async</code><code class="p">,</code><code> </code><code class="nx">ComponentFixture</code><code class="p">,</code><code> </code><code class="nx">TestBed</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core/testing'</code><code class="p">;</code><code>
+
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">StockListComponent</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./stock-list.component'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">StockService</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/services/stock.service'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">StockItemComponent</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/stock/stock-item/stock-item.component'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Stock</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/model/stock'</code><code class="p">;</code><code>
+
+</code><code class="nx">describe</code><code class="p">(</code><code class="s1">'StockListComponent With Real Service'</code><code class="p">,</code><code> </code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+  </code><code class="kd">let</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">StockListComponent</code><code class="p">;</code><code>
+  </code><code class="kd">let</code><code> </code><code class="nx">fixture</code><code>: </code><code class="kt">ComponentFixture</code><code class="o">&lt;</code><code class="nx">StockListComponent</code><code class="o">&gt;</code><code class="p">;</code><code>
+
+  </code><code class="nx">beforeEach</code><code class="p">(</code><code class="nx">async</code><code class="p">(</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="nx">TestBed</code><code class="p">.</code><code class="nx">configureTestingModule</code><code class="p">(</code><code class="p">{</code><code>
+      </code><code class="nx">declarations</code><code class="o">:</code><code> </code><code class="p">[</code><code> </code><code class="nx">StockListComponent</code><code class="p">,</code><code> </code><code class="nx">StockItemComponent</code><code> </code><code class="p">]</code><code class="p">,</code><code>    </code><a class="co" id="co_unit_testing_services_CO2-1" href="#callout_unit_testing_services_CO2-1"><img src="images/1.png" alt="1" /></a><code>
+      </code><code class="nx">providers</code><code class="o">:</code><code> </code><code class="p">[</code><code> </code><code class="nx">StockService</code><code> </code><code class="p">]</code><code>                                  </code><a class="co" id="co_unit_testing_services_CO2-2" href="#callout_unit_testing_services_CO2-2"><img src="images/2.png" alt="2" /></a><code>
+    </code><code class="p">}</code><code class="p">)</code><code>
+    </code><code class="p">.</code><code class="nx">compileComponents</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>
+
+  </code><code class="nx">beforeEach</code><code class="p">(</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="nx">fixture</code><code> </code><code class="o">=</code><code> </code><code class="nx">TestBed</code><code class="p">.</code><code class="nx">createComponent</code><code class="p">(</code><code class="nx">StockListComponent</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">component</code><code> </code><code class="o">=</code><code> </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">componentInstance</code><code class="p">;</code><code>
+    </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">detectChanges</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+
+  </code><code class="nx">it</code><code class="p">(</code><code class="s1">'should load stocks from real service on init'</code><code class="p">,</code><code> </code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">component</code><code class="p">)</code><code class="p">.</code><code class="nx">toBeTruthy</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">component</code><code class="p">.</code><code class="nx">stocks</code><code class="p">.</code><code class="nx">length</code><code class="p">)</code><code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code class="mi">3</code><code class="p">)</code><code class="p">;</code><code>                   </code><a class="co" id="co_unit_testing_services_CO2-3" href="#callout_unit_testing_services_CO2-3"><img src="images/3.png" alt="3" /></a><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+</code><code class="p">}</code><code class="p">)</code><code class="p">;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_unit_testing_services_CO2-1" href="#co_unit_testing_services_CO2-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Add <code>StockItemComponent</code> to the <code>TestBed</code> <code>declarations</code> array</p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO2-2" href="#co_unit_testing_services_CO2-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Add <code>StockService</code> to the <code>providers</code> array</p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO2-3" href="#co_unit_testing_services_CO2-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Ensure that the stocks in the component are loaded from the service</p></dd>
+</dl>
+
+<p>Most of the test is the autogenerated skeleton from the Angular CLI. The changes we have made in particular are:</p>
+
+<ul>
+<li>
+<p>We have added a declaration of <code>StockItemComponent</code> in addition to the <code>StockListComponent</code>. This is because the template for our <code>StockListComponent</code> uses the <code>StockItemComponent</code> and hence it is needed for our test to succeed.</p>
+</li>
+<li>
+<p>We have added <code>StockService</code> in the array passed to the <code>providers</code> section of the testing module created. This ensures that in our test, we use the actual underlying <code>StockService</code> whenever it is asked for by any component.</p>
+</li>
+<li>
+<p>Finally, we have added an assertion to ensure that we load the three stocks that are returned by our <code>StockService</code> when the component is initialized.</p>
+</li>
+</ul>
+
+<p>If you notice, this should be similar to how we tested the service itself in the previous section. We simply add a provider for our service and then we have the real live service in our tests accessible.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Testing Components with a Mock Service"><div class="sect2" id="idm139828115478544">
+<h2>Testing Components with a Mock Service</h2>
+
+<p>Next, let’s see how we could write a similar test, but instead of using the real service in the test, how to mock out certain calls instead of creating a brand-new fake service just for our test.<a data-type="indexterm" data-primary="components" data-secondary="testing components with a service dependency" data-tertiary="testing with a mock service" id="idm139828115476640"></a> This approach is useful when we do actually want to use most of the service, but just override/mock out certain calls. This is also less cumbersome than creating and maintaining a full parallel fake implementation.</p>
+
+<p>Let’s see how we could use the real service with just some calls mocked out in our test. Our revamped test in <em>src/app/stock/stock-list/stock-list.component.spec.ts</em> would look like this:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** Standard imports, skipping for brevity **/</code><code>
+
+</code><code class="nx">describe</code><code class="p">(</code><code class="s1">'StockListComponent With Mock Service'</code><code class="p">,</code><code> </code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+  </code><code class="kd">let</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">StockListComponent</code><code class="p">;</code><code>
+  </code><code class="kd">let</code><code> </code><code class="nx">fixture</code><code>: </code><code class="kt">ComponentFixture</code><code class="o">&lt;</code><code class="nx">StockListComponent</code><code class="o">&gt;</code><code class="p">;</code><code>
+  </code><code class="kd">let</code><code> </code><code class="nx">stockService</code><code>: </code><code class="kt">StockService</code><code class="p">;</code><code>
+
+  </code><code class="nx">beforeEach</code><code class="p">(</code><code class="nx">async</code><code class="p">(</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="cm">/** No change in TestBed configuration, skipping for brevity **/</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>
+
+  </code><code class="nx">beforeEach</code><code class="p">(</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="nx">fixture</code><code> </code><code class="o">=</code><code> </code><code class="nx">TestBed</code><code class="p">.</code><code class="nx">createComponent</code><code class="p">(</code><code class="nx">StockListComponent</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">component</code><code> </code><code class="o">=</code><code> </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">componentInstance</code><code class="p">;</code><code>
+    </code><code class="c1">// Always get the Service from the Injector!
+</code><code>    </code><code class="nx">stockService</code><code> </code><code class="o">=</code><code> </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">debugElement</code><code class="p">.</code><code class="nx">injector</code><code class="p">.</code><code class="nx">get</code><code class="p">(</code><code class="nx">StockService</code><code class="p">)</code><code class="p">;</code><code>   </code><a class="co" id="co_unit_testing_services_CO3-1" href="#callout_unit_testing_services_CO3-1"><img src="images/1.png" alt="1" /></a><code>
+    </code><code class="kd">let</code><code> </code><code class="nx">spy</code><code> </code><code class="o">=</code><code> </code><code class="nx">spyOn</code><code class="p">(</code><code class="nx">stockService</code><code class="p">,</code><code> </code><code class="s1">'getStocks'</code><code class="p">)</code><code>                        </code><a class="co" id="co_unit_testing_services_CO3-2" href="#callout_unit_testing_services_CO3-2"><img src="images/2.png" alt="2" /></a><code>
+        </code><code class="p">.</code><code class="nx">and</code><code class="p">.</code><code class="nx">returnValue</code><code class="p">(</code><code class="p">[</code><code>
+          </code><code class="k">new</code><code> </code><code class="nx">Stock</code><code class="p">(</code><code class="s1">'Mock Stock'</code><code class="p">,</code><code> </code><code class="s1">'MS'</code><code class="p">,</code><code> </code><code class="mi">800</code><code class="p">,</code><code> </code><code class="mi">900</code><code class="p">,</code><code> </code><code class="s1">'NYSE'</code><code class="p">)</code><code>
+        </code><code class="p">]</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">detectChanges</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+
+  </code><code class="nx">it</code><code class="p">(</code><code class="s1">'should load stocks from mocked service on init'</code><code class="p">,</code><code> </code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">component</code><code class="p">)</code><code class="p">.</code><code class="nx">toBeTruthy</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">component</code><code class="p">.</code><code class="nx">stocks</code><code class="p">.</code><code class="nx">length</code><code class="p">)</code><code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code class="mi">1</code><code class="p">)</code><code class="p">;</code><code>                       </code><a class="co" id="co_unit_testing_services_CO3-3" href="#callout_unit_testing_services_CO3-3"><img src="images/3.png" alt="3" /></a><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">component</code><code class="p">.</code><code class="nx">stocks</code><code class="p">[</code><code class="mi">0</code><code class="p">]</code><code class="p">.</code><code class="nx">code</code><code class="p">)</code><code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code class="s1">'MS'</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+</code><code class="p">}</code><code class="p">)</code><code class="p">;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_unit_testing_services_CO3-1" href="#co_unit_testing_services_CO3-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Get the <code>StockService</code> instance through the component’s injector</p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO3-2" href="#co_unit_testing_services_CO3-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Mock out the <code>getStocks()</code> call and return a hardcoded value instead</p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO3-3" href="#co_unit_testing_services_CO3-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Ensure that the stocks are provided from our mocked-out call now</p></dd>
+</dl>
+
+<p>Our test looks mostly similar to the test in the previous section, especially in how we hook up the service as a provider to the <code>TestBed</code>. The major difference is in the second <code>beforeEach</code>, where we use the injector in the test fixture to get a handle on the <code>StockService</code>.</p>
+
+<p>There are two ways for us to get the service instance in our tests. We can either rely on the <code>inject</code> function from the Angular testing utilities to inject the service instance, like we did in our test for <code>StockService</code>, or we can use the <code>injector</code> reference on the element, like we just did here.</p>
+
+<p>Once we have a handle on the service instance, we can use <em>Jasmine spies</em> to spy on different methods on the service.<a data-type="indexterm" data-primary="Jasmine" data-secondary="spies, using to spy on a service" id="idm139828115722624"></a> A spy (whether it is from Jasmine or any other framework) allows us to stub any function or method, and track any calls to it along with its arguments and also define our own return values.</p>
+
+<p>In this case, we use <code>spyOn</code> to spy on a particular method in the service (the <code>getStocks()</code> call), and use it to change the return value to what we want, rather than the original underlying call. This way, the actual service call never gets invoked.</p>
+
+<p>Our test then just has assertions to make sure the return value is from our mocked service call rather than the original service.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Testing Components with a Fake Service"><div class="sect2" id="idm139828115477920">
+<h2>Testing Components with a Fake Service</h2>
+
+<p>The last option we have when we are writing tests for components or services that depend on other services is to replace the actual service with a fake that we have created just for the purpose of testing.<a data-type="indexterm" data-primary="components" data-secondary="testing components with a service dependency" data-tertiary="testing with a fake service" id="idm139828115717424"></a> This allows us to create a service tuned just for the test that gives us maybe more access, or just tracks what APIs are called with what values. Most of this could also be accomplished with Jasmine spies, but if you have a repeated use case, then it might make more sense to create a fake that can be reused.</p>
+
+<p>For us, a fake would simply be an object that we create, which has the same API as the service we are mocking, but our own (hardcoded) implementation of the methods underneath. For example, our fake could simply return a different hardcoded list of stocks instead of making a server call in a test.</p>
+
+<p>Let’s see how we could use a fake service in our test. Our revamped test in <em>src/app/stock/stock-list/stock-list.component.spec.ts</em> would look like this:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** Skipping imports for brevity **/</code><code>
+
+</code><code class="nx">describe</code><code class="p">(</code><code class="s1">'StockListComponent With Fake Service'</code><code class="p">,</code><code> </code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+  </code><code class="kd">let</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">StockListComponent</code><code class="p">;</code><code>
+  </code><code class="kd">let</code><code> </code><code class="nx">fixture</code><code>: </code><code class="kt">ComponentFixture</code><code class="o">&lt;</code><code class="nx">StockListComponent</code><code class="o">&gt;</code><code class="p">;</code><code>
+
+  </code><code class="nx">beforeEach</code><code class="p">(</code><code class="nx">async</code><code class="p">(</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="kd">let</code><code> </code><code class="nx">stockServiceFake</code><code> </code><code class="o">=</code><code> </code><code class="p">{</code><code>                           </code><a class="co" id="co_unit_testing_services_CO4-1" href="#callout_unit_testing_services_CO4-1"><img src="images/1.png" alt="1" /></a><code>
+      </code><code class="nx">getStocks</code><code class="o">:</code><code> </code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+        </code><code class="k">return</code><code> </code><code class="p">[</code><code class="k">new</code><code> </code><code class="nx">Stock</code><code class="p">(</code><code class="s1">'Fake Stock'</code><code class="p">,</code><code> </code><code class="s1">'FS'</code><code class="p">,</code><code> </code><code class="mi">800</code><code class="p">,</code><code> </code><code class="mi">900</code><code class="p">,</code><code> </code><code class="s1">'NYSE'</code><code class="p">)</code><code class="p">]</code><code class="p">;</code><code>
+      </code><code class="p">}</code><code>
+    </code><code class="p">}</code><code class="p">;</code><code>
+    </code><code class="nx">TestBed</code><code class="p">.</code><code class="nx">configureTestingModule</code><code class="p">(</code><code class="p">{</code><code>
+      </code><code class="nx">declarations</code><code class="o">:</code><code> </code><code class="p">[</code><code> </code><code class="nx">StockListComponent</code><code class="p">,</code><code> </code><code class="nx">StockItemComponent</code><code> </code><code class="p">]</code><code class="p">,</code><code>
+      </code><code class="nx">providers</code><code class="o">:</code><code> </code><code class="p">[</code><code> </code><code class="p">{</code><code>
+        </code><code class="nx">provide</code><code>: </code><code class="kt">StockService</code><code class="p">,</code><code>
+        </code><code class="nx">useValue</code><code>: </code><code class="kt">stockServiceFake</code><code>                        </code><a class="co" id="co_unit_testing_services_CO4-2" href="#callout_unit_testing_services_CO4-2"><img src="images/2.png" alt="2" /></a><code>
+      </code><code class="p">}</code><code> </code><code class="p">]</code><code>
+    </code><code class="p">}</code><code class="p">)</code><code>
+    </code><code class="p">.</code><code class="nx">compileComponents</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>
+
+  </code><code class="nx">beforeEach</code><code class="p">(</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="nx">fixture</code><code> </code><code class="o">=</code><code> </code><code class="nx">TestBed</code><code class="p">.</code><code class="nx">createComponent</code><code class="p">(</code><code class="nx">StockListComponent</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">component</code><code> </code><code class="o">=</code><code> </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">componentInstance</code><code class="p">;</code><code>
+    </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">detectChanges</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+
+  </code><code class="nx">it</code><code class="p">(</code><code class="s1">'should load stocks from fake service on init'</code><code class="p">,</code><code> </code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">component</code><code class="p">)</code><code class="p">.</code><code class="nx">toBeTruthy</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">component</code><code class="p">.</code><code class="nx">stocks</code><code class="p">.</code><code class="nx">length</code><code class="p">)</code><code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code class="mi">1</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">component</code><code class="p">.</code><code class="nx">stocks</code><code class="p">[</code><code class="mi">0</code><code class="p">]</code><code class="p">.</code><code class="nx">code</code><code class="p">)</code><code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code class="s1">'FS'</code><code class="p">)</code><code class="p">;</code><code>         </code><a class="co" id="co_unit_testing_services_CO4-3" href="#callout_unit_testing_services_CO4-3"><img src="images/3.png" alt="3" /></a><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+</code><code class="p">}</code><code class="p">)</code><code class="p">;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_unit_testing_services_CO4-1" href="#co_unit_testing_services_CO4-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Define a <code>stockServiceFake</code> JavaScript object that implements a <code>getStocks()</code> method</p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO4-2" href="#co_unit_testing_services_CO4-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Specify the instance to use when providing the <code>StockService</code></p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO4-3" href="#co_unit_testing_services_CO4-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Ensure that the values are coming from our fake service</p></dd>
+</dl>
+
+<p>There are a lot of differences in the test from the previous sections, so let’s walk through some of the major changes:</p>
+
+<ul>
+<li>
+<p>We first create a fake service instance, called <code>stockServiceFake</code>. Note that we initialize it with only one of the methods (<code>getStocks()</code>), and not necessarily all the APIs in the service.</p>
+</li>
+<li>
+<p>When we configure the testing module using the <code>TestBed</code>, instead of registering the <code>StockService</code>, we register a provider. We tell Angular that whenever someone asks for <code>StockService</code> (using the <code>provide</code> key), provide the value <code>stockServiceFake</code> (using the <code>useValue</code>) key. This overrides the default behavior of providing the class instance.</p>
+</li>
+</ul>
+<div data-type="note" epub:type="note"><h1>Providing an Instance of a Service</h1>
+<p>Generally, when we identify a class as a <code>provider</code> to Angular, Angular would be responsible for instantiating an instance of the class and providing it when a component or a service depends <span class="keep-together">on it</span>.<a data-type="indexterm" data-primary="providers" id="idm139828115080624"></a><a data-type="indexterm" data-primary="services" data-secondary="providing an instance of" id="idm139828115079888"></a></p>
+
+<p>In certain cases, we don’t want Angular to instantiate it, but rather we want to define what value to use. That is when we use the mechanism we used in the preceding code, where we can define what class is being provided (using the <code>provide</code> key) and specify the instance to use, rather than letting Angular create the instance (using the <code>useValue</code> key).</p>
+
+<p>You can read up more on the different ways you can configure Providers in the <a href="http://bit.ly/2IVt8Hl">official Angular docs</a>.</p>
+</div>
+
+<p>Other than this, our test looks similar. We again assert that the data returned to the component is from our fake service, and not from the original service.</p>
+<div data-type="warning" epub:type="warning"><h1>Always Get Services from the Injector</h1>
+<p>Note that the recommended way to get the handle on an instance of a service, even when using fakes, is through the injector.<a data-type="indexterm" data-primary="injector, getting services from" id="idm139828114950976"></a> This is because the <code>fakeStockService</code> instance we create in our test will not be the same as the instance provided by the Angular dependency injector. Thus, even with a fake, if you want to assert, for example, that a stock was added successfully to the service, you would want to do it against the service returned by the injector, and not the original instance we used.</p>
+
+<p>You can either let Angular’s dependency injection provide it for you using the <code>inject</code> method from the Angular testing utilities or use the <code>injector</code> instance on the element created.</p>
+
+<p>Angular’s dependency injector creates a clone of the stub/fake you provide to it and injects that instead of the original instance.</p>
+
+<p>You can check this out by tring to write the test against the service instance in the test versus the way we have written it here, and see the behavior of the test. You will see that the test fails, because the original instance does not change.</p>
+</div>
+
+<p>All three of these tests are available in <em>chapter10/simple-service/src/app/stock/stock-list/stock-list.component.spec.ts</em>, one after the other as three <code>describe</code> blocks.<a data-type="indexterm" data-primary="components" data-secondary="testing components with a service dependency" data-startref="ix_comptstser" id="idm139828115590496"></a><a data-type="indexterm" data-primary="Angular services" data-secondary="unit testing" data-tertiary="testing components with a service dependency" data-startref="ix_Angsertstcomp" id="idm139828115589248"></a><a data-type="indexterm" data-primary="testing" data-secondary="unit testing services" data-tertiary="testing components with a service dependency" data-startref="ix_tstsercomp" id="idm139828115705632"></a></p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Unit Testing Async"><div class="sect1" id="idm139828115718720">
+<h1>Unit Testing Async</h1>
+
+<p>So far, we have seen how we might test simple and straightforward services, with or without further dependencies, as well as test components.<a data-type="indexterm" data-primary="testing" data-secondary="unit testing services" data-tertiary="asynchronous code" id="ix_tstserasy"></a><a data-type="indexterm" data-primary="Angular services" data-secondary="unit testing" data-tertiary="async services" id="ix_Angsertstasy"></a> But the services we have worked with so far have been synchronous. In this section, we will dig a little bit into how to handle and write tests when the underlying service or code deals with asynchronous flows.<a data-type="indexterm" data-primary="asynchronous operations in services" data-secondary="testing" id="ix_asynctst"></a></p>
+
+<p>With any code that touches an asynchronous flow, we have to be careful in our tests and recognize at which point the hand-off happens from synchronous flow to asynchronous, and deal with it accordingly. Thankfully, Angular provides enough helpers to abstract out some of the complexities of this in our test.</p>
+
+<p>Fundamentally, we have to make sure our test itself is identified and running as an asynchronous test. Secondly, we must ensure that we identify when we have to wait for the asynchronous part to finish, and validate the changes after that.</p>
+
+<p>Let’s see how a test for the <code>CreateStockComponent</code> might look, when we had just switched to using observables (but not HTTP yet). We will use the codebase from <em>chapter8/observables</em> as the base on which to write our tests.</p>
+
+<p>We will add (or modify if the skeleton already exists) the <em>src/app/stock/create-stock/create-stock.component.spec.ts</em> file, and change it as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">async</code><code class="p">,</code><code> </code><code class="nx">ComponentFixture</code><code class="p">,</code><code> </code><code class="nx">TestBed</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core/testing'</code><code class="p">;</code><code>
+
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">CreateStockComponent</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./create-stock.component'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">StockService</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/services/stock.service'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Stock</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/model/stock'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">FormsModule</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/forms'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">By</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/platform-browser'</code><code class="p">;</code><code>
+
+
+</code><code class="nx">describe</code><code class="p">(</code><code class="s1">'CreateStockComponent'</code><code class="p">,</code><code> </code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+  </code><code class="kd">let</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">CreateStockComponent</code><code class="p">;</code><code>
+  </code><code class="kd">let</code><code> </code><code class="nx">fixture</code><code>: </code><code class="kt">ComponentFixture</code><code class="o">&lt;</code><code class="nx">CreateStockComponent</code><code class="o">&gt;</code><code class="p">;</code><code>
+
+  </code><code class="nx">beforeEach</code><code class="p">(</code><code class="nx">async</code><code class="p">(</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="nx">TestBed</code><code class="p">.</code><code class="nx">configureTestingModule</code><code class="p">(</code><code class="p">{</code><code>
+      </code><code class="nx">declarations</code><code class="o">:</code><code> </code><code class="p">[</code><code> </code><code class="nx">CreateStockComponent</code><code> </code><code class="p">]</code><code class="p">,</code><code>
+      </code><code class="nx">providers</code><code class="o">:</code><code> </code><code class="p">[</code><code> </code><code class="nx">StockService</code><code> </code><code class="p">]</code><code class="p">,</code><code>
+      </code><code class="nx">imports</code><code class="o">:</code><code> </code><code class="p">[</code><code> </code><code class="nx">FormsModule</code><code> </code><code class="p">]</code><code>         </code><a class="co" id="co_unit_testing_services_CO5-1" href="#callout_unit_testing_services_CO5-1"><img src="images/1.png" alt="1" /></a><code>
+    </code><code class="p">}</code><code class="p">)</code><code>
+    </code><code class="p">.</code><code class="nx">compileComponents</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>
+
+  </code><code class="nx">beforeEach</code><code class="p">(</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="nx">fixture</code><code> </code><code class="o">=</code><code> </code><code class="nx">TestBed</code><code class="p">.</code><code class="nx">createComponent</code><code class="p">(</code><code class="nx">CreateStockComponent</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">component</code><code> </code><code class="o">=</code><code> </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">componentInstance</code><code class="p">;</code><code>
+    </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">detectChanges</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+
+  </code><code class="nx">it</code><code class="p">(</code><code class="s1">'should create stock through service'</code><code class="p">,</code><code> </code><code class="nx">async</code><code class="p">(</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>   </code><a class="co" id="co_unit_testing_services_CO5-2" href="#callout_unit_testing_services_CO5-2"><img src="images/2.png" alt="2" /></a><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">component</code><code class="p">)</code><code class="p">.</code><code class="nx">toBeTruthy</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">component</code><code class="p">.</code><code class="nx">stock</code><code> </code><code class="o">=</code><code> </code><code class="k">new</code><code> </code><code class="nx">Stock</code><code class="p">(</code><code>
+      </code><code class="s1">'My New Test Stock'</code><code class="p">,</code><code> </code><code class="s1">'MNTS'</code><code class="p">,</code><code> </code><code class="mi">100</code><code class="p">,</code><code> </code><code class="mi">120</code><code class="p">,</code><code> </code><code class="s1">'NYSE'</code><code class="p">)</code><code class="p">;</code><code>
+
+    </code><code class="nx">component</code><code class="p">.</code><code class="nx">createStock</code><code class="p">(</code><code class="p">{</code><code class="nx">valid</code><code>: </code><code class="kt">true</code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+
+    </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">whenStable</code><code class="p">(</code><code class="p">)</code><code class="p">.</code><code class="nx">then</code><code class="p">(</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>        </code><a class="co" id="co_unit_testing_services_CO5-3" href="#callout_unit_testing_services_CO5-3"><img src="images/3.png" alt="3" /></a><code>
+      </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">detectChanges</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>               </code><a class="co" id="co_unit_testing_services_CO5-4" href="#callout_unit_testing_services_CO5-4"><img src="images/4.png" alt="4" /></a><code>
+      </code><code class="nx">expect</code><code class="p">(</code><code class="nx">component</code><code class="p">.</code><code class="nx">message</code><code class="p">)</code><code>
+          </code><code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code class="s1">'Stock with code MNTS successfully created'</code><code class="p">)</code><code class="p">;</code><code>
+      </code><code class="kr">const</code><code> </code><code class="nx">messageEl</code><code> </code><code class="o">=</code><code> </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">debugElement</code><code class="p">.</code><code class="nx">query</code><code class="p">(</code><code>
+          </code><code class="nx">By</code><code class="p">.</code><code class="nx">css</code><code class="p">(</code><code class="s1">'.message'</code><code class="p">)</code><code class="p">)</code><code class="p">.</code><code class="nx">nativeElement</code><code class="p">;</code><code>
+      </code><code class="nx">expect</code><code class="p">(</code><code class="nx">messageEl</code><code class="p">.</code><code class="nx">textContent</code><code class="p">)</code><code>
+          </code><code class="p">.</code><code class="nx">toBe</code><code class="p">(</code><code class="s1">'Stock with code MNTS successfully created'</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>
+</code><code class="p">}</code><code class="p">)</code><code class="p">;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_unit_testing_services_CO5-1" href="#co_unit_testing_services_CO5-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>The <code>CreateStockComponent</code> needs <code>FormsModule</code> to work</p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO5-2" href="#co_unit_testing_services_CO5-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Pass the return value of calling <code>async</code> as the second param to the <code>it</code> function<a data-type="indexterm" data-primary="async utility function" id="idm139828114193920"></a></p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO5-3" href="#co_unit_testing_services_CO5-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Wait for the test fixture to finish executing asynchronous flows</p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO5-4" href="#co_unit_testing_services_CO5-4"><img src="images/4.png" alt="4" /></a></dt>
+<dd><p>Update the view after the changes</p></dd>
+</dl>
+
+<p>The early part of the unit test remains pretty much the same, from initializing the <code>TestBed</code> with the module to the <code>beforeEach</code>. We also have to import the <code>FormsModule</code> for the <code>CreateStockComponent</code> to work.</p>
+
+<p>The first difference comes in the <code>it</code> declaration itself of our asynchronous test. Instead of simply passing the function containing our test code to the <code>it</code> block, we now pass an <code>async</code> function, which in turn is passed the function containing our test code. Do not forget this part when writing an asynchronous unit test.</p>
+
+<p>The second major difference is after calling the function under test, <code>createStock()</code>, which actually triggers the asynchronous flow. Normally, we would write our assertions right after this. In the case of an asynchronous flow, we need to ask Angular’s test fixture to stabilize (that is, wait for the asynchronous parts to finish).<a data-type="indexterm" data-primary="whenStabilize function" id="idm139828114182864"></a> The <code>whenStabilize</code> returns a promise that on completion allows us to run the remaining part of the test. In this case, we tell Angular to detect any changes and update the UI, and then make our assertions.</p>
+<div data-type="note" epub:type="note"><h6>Note</h6>
+<p>In this particular case, even if we had skipped the <code>whenStabilize</code> bit and directly written our assertions, our test might still have passed. But that is only because our actual underlying service is also synchronous, even though it does return an observable. If it was truly asynchronous, then the <code>whenStable</code> becomes critical for us. Thus, it is generally a good practice to aways use it when it comes to <code>async</code> tests.</p>
+</div>
+
+<p>The finished code for this example is available in the <em>chapter10/observables</em> folder in the GitHub repository.</p>
+<aside data-type="sidebar" epub:type="sidebar"><div class="sidebar" id="idm139828114548816">
+<h5>async Versus fakeAsync</h5>
+<p>In the preceding test, we passed an <code>async</code> function to the <code>it</code> block, which is our test. This allowed us to deal with any asynchronous behavior in the test and still be able to assert everything we needed to.<a data-type="indexterm" data-primary="async utility function" data-secondary="fakeAsync function vs." id="idm139828114546368"></a></p>
+
+<p>Angular also provides a <code>fakeAsync</code> function, which can be used instead of the <code>async</code> function.<a data-type="indexterm" data-primary="fakeAsync function vs. async function" id="idm139828114543952"></a> Both are very similar and used for the same purpose, which is to abstract away some of Angular’s internals and handling of asynchronous behavior in our code. The <code>async</code> function still exposes some of the underlying asynchronous behavior, since we have to deal with promises in our test with the <code>whenStable()</code> function.</p>
+
+<p>The <code>fakeAsync</code> does away with all of that. It allows us to write our unit test (for async and sync code) in a completely synchronous manner (almost that is, unless we are actually making XHR requests in our tests). Here is how the same test might look if rewritten using <code>fakeAsync</code>:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">async</code><code class="p">,</code><code> </code><code class="nx">fakeAsync</code><code class="p">,</code><code> </code><code class="nx">tick</code><code class="p">,</code><code>
+         </code><code class="nx">ComponentFixture</code><code class="p">,</code><code> </code><code class="nx">TestBed</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core/testing'</code><code class="p">;</code><code>
+
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">CreateStockComponent</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'./create-stock.component'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">StockService</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/services/stock.service'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Stock</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/model/stock'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">FormsModule</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/forms'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">By</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/platform-browser'</code><code class="p">;</code><code>
+
+
+</code><code class="nx">describe</code><code class="p">(</code><code class="s1">'CreateStockComponent'</code><code class="p">,</code><code> </code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+  </code><code class="cm">/** Skipped for brevity, same as before */</code><code>
+
+  </code><code class="nx">it</code><code class="p">(</code><code class="s1">'should create stock through service'</code><code class="p">,</code><code> </code><code class="nx">fakeAsync</code><code class="p">(</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>    </code><a class="co" id="co_unit_testing_services_CO6-1" href="#callout_unit_testing_services_CO6-1"><img src="images/1.png" alt="1" /></a><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">component</code><code class="p">)</code><code class="p">.</code><code class="nx">toBeTruthy</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">component</code><code class="p">.</code><code class="nx">stock</code><code> </code><code class="o">=</code><code> </code><code class="k">new</code><code> </code><code class="nx">Stock</code><code class="p">(</code><code>
+      </code><code class="s1">'My New Test Stock'</code><code class="p">,</code><code> </code><code class="s1">'MNTS'</code><code class="p">,</code><code> </code><code class="mi">100</code><code class="p">,</code><code> </code><code class="mi">120</code><code class="p">,</code><code> </code><code class="s1">'NYSE'</code><code class="p">)</code><code class="p">;</code><code>
+
+    </code><code class="nx">component</code><code class="p">.</code><code class="nx">createStock</code><code class="p">(</code><code class="p">{</code><code class="nx">valid</code><code>: </code><code class="kt">true</code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+
+    </code><code class="nx">tick</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>                      </code><a class="co" id="co_unit_testing_services_CO6-2" href="#callout_unit_testing_services_CO6-2"><img src="images/2.png" alt="2" /></a><code>
+    </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">detectChanges</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">component</code><code class="p">.</code><code class="nx">message</code><code class="p">)</code><code>
+        </code><code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code class="s1">'Stock with code MNTS successfully created'</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="kr">const</code><code> </code><code class="nx">messageEl</code><code> </code><code class="o">=</code><code> </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">debugElement</code><code class="p">.</code><code class="nx">query</code><code class="p">(</code><code>
+        </code><code class="nx">By</code><code class="p">.</code><code class="nx">css</code><code class="p">(</code><code class="s1">'.message'</code><code class="p">)</code><code class="p">)</code><code class="p">.</code><code class="nx">nativeElement</code><code class="p">;</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">messageEl</code><code class="p">.</code><code class="nx">textContent</code><code class="p">)</code><code>
+        </code><code class="p">.</code><code class="nx">toBe</code><code class="p">(</code><code class="s1">'Stock with code MNTS successfully created'</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>
+</code><code class="p">}</code><code class="p">)</code><code class="p">;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_unit_testing_services_CO6-1" href="#co_unit_testing_services_CO6-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Using the <code>fakeAsync</code> instead of <code>async</code></p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO6-2" href="#co_unit_testing_services_CO6-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Using <code>tick()</code> to simulate and finish all async behavior</p></dd>
+</dl>
+
+<p>We pass a <code>fakeAsync</code> function, and instead of the <code>whenStable</code> call, we now have a simple <code>tick()</code> function call that does similar work. It allows the code to look linear and makes it more readable.</p>
+
+<p>There are in fact two methods to simulate a passage of time in a <code>fakeAsync</code> test, namely <code>tick()</code> and <code>flush()</code>. <code>tick</code> simulates the passage of time (and can take the number of milliseconds as an argument). <code>flush</code>, on the other hand, takes the number of turns as an argument, which is basically how many times the queue of tasks is to be drained.</p>
+
+<p>So why use one over the other? If you would like to keep your code linear and abstract away the async behavior, then the <code>fakeAsync</code> is great. But if you would like to ensure that you are thinking about how your code flows, and want to keep it similar to your actual code, then you can use the <code>async</code> method. It is completely a matter of preference. Feel free to pick whichever works better for your style of coding!<a data-type="indexterm" data-primary="asynchronous operations in services" data-secondary="testing" data-startref="ix_asynctst" id="idm139828114599456"></a><a data-type="indexterm" data-primary="testing" data-secondary="unit testing services" data-tertiary="asynchronous code" data-startref="ix_tstserasy" id="idm139828114605728"></a><a data-type="indexterm" data-primary="Angular services" data-secondary="unit testing" data-tertiary="async services" data-startref="ix_Angsertstasy" id="idm139828114604240"></a></p>
+</div></aside>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Unit Testing HTTP"><div class="sect1" id="idm139828115703776">
+<h1>Unit Testing HTTP</h1>
+
+<p>The last thing we will take a look at in this chapter is to see how to test HTTP communication.<a data-type="indexterm" data-primary="Angular services" data-secondary="unit testing" data-tertiary="HTTP calls" id="ix_AngsertstHTTP"></a><a data-type="indexterm" data-primary="testing" data-secondary="unit testing services" data-tertiary="HTTP calls" id="ix_tstserHTTP"></a><a data-type="indexterm" data-primary="HTTP calls in Angular" data-secondary="unit testing" id="ix_HTTPtst"></a> In particular, we will dig into how to mock out server calls. We will see how to leverage Angular’s built-in testing utilities that it provides to test HTTP <span class="keep-together">communication</span>.</p>
+
+<p>For this section, we will use the code from <em>chapter9/simple-http</em> as the base, and see how we can test both GET calls like fetching a list of stocks as well as POST calls that we make to create stocks.</p>
+
+<p>First, let’s test the <code>StockListComponent</code> to see how we can test the initialization logic of fetching the list of stocks from our server. We want to ensure the entire flow of making a server call, getting the list of stocks, and then displaying it.</p>
+
+<p>We will modify <em>src/app/stock/stock-list/stock-list.component.spec.ts</em> as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** Standard imports, skipping for brevity **/</code><code>
+
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">HttpClientModule</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/common/http'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">HttpClientTestingModule</code><code class="p">,</code><code> </code><code class="nx">HttpTestingController</code><code> </code><code class="p">}</code><code>
+    </code><code class="nx">from</code><code> </code><code class="s1">'@angular/common/http/testing'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">By</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/platform-browser'</code><code class="p">;</code><code>
+
+
+</code><code class="nx">describe</code><code class="p">(</code><code class="s1">'StockListComponent With Real Service'</code><code class="p">,</code><code> </code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+  </code><code class="kd">let</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">StockListComponent</code><code class="p">;</code><code>
+  </code><code class="kd">let</code><code> </code><code class="nx">fixture</code><code>: </code><code class="kt">ComponentFixture</code><code class="o">&lt;</code><code class="nx">StockListComponent</code><code class="o">&gt;</code><code class="p">;</code><code>
+  </code><code class="kd">let</code><code> </code><code class="nx">httpBackend</code><code>: </code><code class="kt">HttpTestingController</code><code class="p">;</code><code>      </code><a class="co" id="co_unit_testing_services_CO7-1" href="#callout_unit_testing_services_CO7-1"><img src="images/1.png" alt="1" /></a><code>
+
+  </code><code class="nx">beforeEach</code><code class="p">(</code><code class="nx">async</code><code class="p">(</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="nx">TestBed</code><code class="p">.</code><code class="nx">configureTestingModule</code><code class="p">(</code><code class="p">{</code><code>
+      </code><code class="nx">declarations</code><code class="o">:</code><code> </code><code class="p">[</code><code> </code><code class="nx">StockListComponent</code><code class="p">,</code><code> </code><code class="nx">StockItemComponent</code><code> </code><code class="p">]</code><code class="p">,</code><code>
+      </code><code class="nx">providers</code><code class="o">:</code><code> </code><code class="p">[</code><code> </code><code class="nx">StockService</code><code> </code><code class="p">]</code><code class="p">,</code><code>
+      </code><code class="nx">imports</code><code class="o">:</code><code> </code><code class="p">[</code><code>
+        </code><code class="nx">HttpClientModule</code><code class="p">,</code><code>
+        </code><code class="nx">HttpClientTestingModule</code><code>                </code><a class="co" id="co_unit_testing_services_CO7-2" href="#callout_unit_testing_services_CO7-2"><img src="images/2.png" alt="2" /></a><code>
+      </code><code class="p">]</code><code>
+    </code><code class="p">}</code><code class="p">)</code><code>
+    </code><code class="p">.</code><code class="nx">compileComponents</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>
+
+  </code><code class="nx">beforeEach</code><code class="p">(</code><code class="nx">inject</code><code class="p">(</code><code class="p">[</code><code class="nx">HttpTestingController</code><code class="p">]</code><code class="p">,</code><code>
+      </code><code class="p">(</code><code class="nx">backend</code><code>: </code><code class="kt">HttpTestingController</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="nx">httpBackend</code><code> </code><code class="o">=</code><code> </code><code class="nx">backend</code><code class="p">;</code><code>
+    </code><code class="nx">fixture</code><code> </code><code class="o">=</code><code> </code><code class="nx">TestBed</code><code class="p">.</code><code class="nx">createComponent</code><code class="p">(</code><code class="nx">StockListComponent</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">component</code><code> </code><code class="o">=</code><code> </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">componentInstance</code><code class="p">;</code><code>
+    </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">detectChanges</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">httpBackend</code><code class="p">.</code><code class="nx">expectOne</code><code class="p">(</code><code class="p">{</code><code>                   </code><a class="co" id="co_unit_testing_services_CO7-3" href="#callout_unit_testing_services_CO7-3"><img src="images/3.png" alt="3" /></a><code>
+      </code><code class="nx">url</code><code class="o">:</code><code> </code><code class="s1">'/api/stock'</code><code class="p">,</code><code>
+      </code><code class="nx">method</code><code class="o">:</code><code> </code><code class="s1">'GET'</code><code>
+    </code><code class="p">}</code><code class="p">,</code><code> </code><code class="s1">'Get list of stocks'</code><code class="p">)</code><code class="p">.</code><code class="nx">flush</code><code class="p">(</code><code class="p">[</code><code class="p">{</code><code>         </code><a class="co" id="co_unit_testing_services_CO7-4" href="#callout_unit_testing_services_CO7-4"><img src="images/4.png" alt="4" /></a><code>
+      </code><code class="nx">name</code><code class="o">:</code><code> </code><code class="s1">'Test Stock 1'</code><code class="p">,</code><code>
+      </code><code class="nx">code</code><code class="o">:</code><code> </code><code class="s1">'TS1'</code><code class="p">,</code><code>
+      </code><code class="nx">price</code><code>: </code><code class="kt">80</code><code class="p">,</code><code>
+      </code><code class="nx">previousPrice</code><code>: </code><code class="kt">90</code><code class="p">,</code><code>
+      </code><code class="nx">exchange</code><code class="o">:</code><code> </code><code class="s1">'NYSE'</code><code>
+    </code><code class="p">}</code><code class="p">,</code><code> </code><code class="p">{</code><code>
+      </code><code class="nx">name</code><code class="o">:</code><code> </code><code class="s1">'Test Stock 2'</code><code class="p">,</code><code>
+      </code><code class="nx">code</code><code class="o">:</code><code> </code><code class="s1">'TS2'</code><code class="p">,</code><code>
+      </code><code class="nx">price</code><code>: </code><code class="kt">800</code><code class="p">,</code><code>
+      </code><code class="nx">previousPrice</code><code>: </code><code class="kt">900</code><code class="p">,</code><code>
+      </code><code class="nx">exchange</code><code class="o">:</code><code> </code><code class="s1">'NYSE'</code><code>
+    </code><code class="p">}</code><code class="p">]</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>
+
+  </code><code class="nx">it</code><code class="p">(</code><code class="s1">'should load stocks from real service on init'</code><code class="p">,</code><code>
+      </code><code class="nx">async</code><code class="p">(</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">component</code><code class="p">)</code><code class="p">.</code><code class="nx">toBeTruthy</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">component</code><code class="p">.</code><code class="nx">stocks</code><code class="nx">$</code><code class="p">)</code><code class="p">.</code><code class="nx">toBeTruthy</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+
+    </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">whenStable</code><code class="p">(</code><code class="p">)</code><code class="p">.</code><code class="nx">then</code><code class="p">(</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>         </code><a class="co" id="co_unit_testing_services_CO7-5" href="#callout_unit_testing_services_CO7-5"><img src="images/5.png" alt="5" /></a><code>
+      </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">detectChanges</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+      </code><code class="kr">const</code><code> </code><code class="nx">stockItems</code><code> </code><code class="o">=</code><code> </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">debugElement</code><code class="p">.</code><code class="nx">queryAll</code><code class="p">(</code><code>
+        </code><code class="nx">By</code><code class="p">.</code><code class="nx">css</code><code class="p">(</code><code class="s1">'app-stock-item'</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>
+      </code><code class="nx">expect</code><code class="p">(</code><code class="nx">stockItems</code><code class="p">.</code><code class="nx">length</code><code class="p">)</code><code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code class="mi">2</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>
+
+  </code><code class="nx">afterEach</code><code class="p">(</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="nx">httpBackend</code><code class="p">.</code><code class="nx">verify</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>                  </code><a class="co" id="co_unit_testing_services_CO7-6" href="#callout_unit_testing_services_CO7-6"><img src="images/6.png" alt="6" /></a><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+</code><code class="p">}</code><code class="p">)</code><code class="p">;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_unit_testing_services_CO7-1" href="#co_unit_testing_services_CO7-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Include the <code>HttpTestingController</code> as a local variable</p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO7-2" href="#co_unit_testing_services_CO7-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Import the <code>HttpClientModule</code> and the <code>HttpTestingController</code> in the module</p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO7-3" href="#co_unit_testing_services_CO7-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Set expectation that one call to <em>/api/stock</em> will be made as part of the test</p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO7-4" href="#co_unit_testing_services_CO7-4"><img src="images/4.png" alt="4" /></a></dt>
+<dd><p>Define a list of hardcoded stocks to return when the GET call is made</p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO7-5" href="#co_unit_testing_services_CO7-5"><img src="images/5.png" alt="5" /></a></dt>
+<dd><p>Wait for the Angular task queue to get empty, and then proceed</p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO7-6" href="#co_unit_testing_services_CO7-6"><img src="images/6.png" alt="6" /></a></dt>
+<dd><p>Verify that the GET call to <em>/api/stock</em> was actually made as part of the test</p></dd>
+</dl>
+
+<p>While the test seems very long, the changes to support testing HTTP calls are actually pretty straightforward. The major change when it comes to writing tests for code that makes XHR calls is the use of the <code>HttpTestingController</code>. In our unit test, while we want to test the code flow that makes XHR calls, we don’t really want to make the actual underlying call.<a data-type="indexterm" data-primary="XHR calls, testing code with" id="idm139828114029728"></a><a data-type="indexterm" data-primary="HttpTestingController" id="idm139828114029008"></a> Any network call in a test adds unreliable dependencies, and makes our tests brittle and possibly nondeterministic.</p>
+
+<p>For this reason, we actually mock out the XHR calls in our tests, just check that the right XHR calls are made, and that if the response was a certain value, then it is handled correctly. Therefore, a lot of our tests would simply be setting up through the <code>HttpTestingController</code> what calls to expect and what responses to send when those calls are made. You even have control over whether the server responds with a <code>200</code> success response, or whether it is an error (a <code>400</code> or <code>500</code> response, which corresponds to a client- or server-side error, respectively).</p>
+
+<p>With that context, let’s walk through the points of interest in the preceding test:</p>
+<ol>
+<li>
+<p>The first and most important change is that we need to import the <code>HttpClientModule</code> so <a data-type="indexterm" data-primary="HttpClientModule" id="idm139828113988176"></a>that our service can initialize with the injected <code>HttpClient</code>.</p>
+</li>
+<li>
+<p>The second thing is that we include the <code>HttpClientTestingModule</code> from <code>@angular/common/http/testing</code>. This testing module helps automatically mock out the actual server calls, and replaces it with a <code>HttpTestingController</code> that can intercept and mock all server calls.<a data-type="indexterm" data-primary="HttpClientTestingModule" id="idm139828114650096"></a></p>
+</li>
+<li>
+<p>We hook these two modules up in the <code>imports</code> section of the <code>TestBed</code> module configuration.</p>
+</li>
+<li>
+<p>Then in our test (or in this case, the <code>beforeEach</code>), we can inject an instance of the <code>HttpTestingController</code> to set our expectations and verify server calls.</p>
+</li>
+<li>
+<p>After initializing the component instance as usual, we then start setting our expectations on the <code>HttpTestingController</code>. In this case, we expect that one GET call to the URL <em>/api/stock</em>. We also pass it a human-readable text to print in the logs in case the test fails or that call is not made.</p>
+</li>
+<li>
+<p>In addition to setting expectations on calls made, we can also define the response Angular should send when those calls are made. Here, we return an array of two stocks by calling the <code>flush</code> method. The first argument to <code>flush</code> is the response body.</p>
+</li>
+<li>
+<p>The rest of the test is straightforward. We expect the component to be initialized. Then, we wait for the change detection to stabilize (by calling <code>fixture.whenStable()</code>), and then ensure that the response we returned is actually rendered in the template correctly.</p>
+</li>
+<li>
+<p>In the <code>afterEach</code>, we call <code>httpBackend.verify()</code>. This ensures that all the expectations we set on the <code>HttpTestingController</code> were actually satisfied during the run of the test. It is generally good practice to do this in the <code>afterEach</code>, to ensure that our code doesn’t make extra or fewer calls.</p>
+</li>
+
+</ol>
+
+<p>Let’s quickly write one more test to see how to handle POST calls, and how to send non-<code>200</code> responses from the server. We will create the <em>src/app/stock/create-stock/create-stock.component.spec.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** Standard imports, skipping for brevity **/</code><code>
+
+</code><code class="nx">describe</code><code class="p">(</code><code class="s1">'CreateStockComponent With Real Service'</code><code class="p">,</code><code> </code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+  </code><code class="kd">let</code><code> </code><code class="nx">component</code><code>: </code><code class="kt">CreateStockComponent</code><code class="p">;</code><code>
+  </code><code class="kd">let</code><code> </code><code class="nx">fixture</code><code>: </code><code class="kt">ComponentFixture</code><code class="o">&lt;</code><code class="nx">CreateStockComponent</code><code class="o">&gt;</code><code class="p">;</code><code>
+  </code><code class="kd">let</code><code> </code><code class="nx">httpBackend</code><code>: </code><code class="kt">HttpTestingController</code><code class="p">;</code><code>
+
+  </code><code class="nx">beforeEach</code><code class="p">(</code><code class="nx">async</code><code class="p">(</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="cm">/** TestBed configuration similar to before, skipping for brevity **/</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>
+
+  </code><code class="nx">beforeEach</code><code class="p">(</code><code class="nx">inject</code><code class="p">(</code><code class="p">[</code><code class="nx">HttpTestingController</code><code class="p">]</code><code class="p">,</code><code>
+      </code><code class="p">(</code><code class="nx">backend</code><code>: </code><code class="kt">HttpTestingController</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="nx">httpBackend</code><code> </code><code class="o">=</code><code> </code><code class="nx">backend</code><code class="p">;</code><code>
+    </code><code class="nx">fixture</code><code> </code><code class="o">=</code><code> </code><code class="nx">TestBed</code><code class="p">.</code><code class="nx">createComponent</code><code class="p">(</code><code class="nx">CreateStockComponent</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">component</code><code> </code><code class="o">=</code><code> </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">componentInstance</code><code class="p">;</code><code>
+    </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">detectChanges</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>
+
+  </code><code class="nx">it</code><code class="p">(</code><code class="s1">'should make call to create stock and handle failure'</code><code class="p">,</code><code>
+      </code><code class="nx">async</code><code class="p">(</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">component</code><code class="p">)</code><code class="p">.</code><code class="nx">toBeTruthy</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">detectChanges</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+
+    </code><code class="nx">component</code><code class="p">.</code><code class="nx">stock</code><code> </code><code class="o">=</code><code> </code><code class="p">{</code><code>
+      </code><code class="nx">name</code><code class="o">:</code><code> </code><code class="s1">'Test Stock'</code><code class="p">,</code><code>
+      </code><code class="nx">price</code><code>: </code><code class="kt">200</code><code class="p">,</code><code>
+      </code><code class="nx">previousPrice</code><code>: </code><code class="kt">500</code><code class="p">,</code><code>
+      </code><code class="nx">code</code><code class="o">:</code><code> </code><code class="s1">'TSS'</code><code class="p">,</code><code>
+      </code><code class="nx">exchange</code><code class="o">:</code><code> </code><code class="s1">'NYSE'</code><code class="p">,</code><code>
+      </code><code class="nx">favorite</code><code>: </code><code class="kt">false</code><code>
+    </code><code class="p">}</code><code class="p">;</code><code>
+
+    </code><code class="nx">component</code><code class="p">.</code><code class="nx">createStock</code><code class="p">(</code><code class="p">{</code><code class="nx">valid</code><code>: </code><code class="kt">true</code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+
+    </code><code class="kd">let</code><code> </code><code class="nx">httpReq</code><code> </code><code class="o">=</code><code> </code><code class="nx">httpBackend</code><code class="p">.</code><code class="nx">expectOne</code><code class="p">(</code><code class="p">{</code><code>        </code><a class="co" id="co_unit_testing_services_CO8-1" href="#callout_unit_testing_services_CO8-1"><img src="images/1.png" alt="1" /></a><code>
+      </code><code class="nx">url</code><code class="o">:</code><code> </code><code class="s1">'/api/stock'</code><code class="p">,</code><code>
+      </code><code class="nx">method</code><code class="o">:</code><code> </code><code class="s1">'POST'</code><code>
+    </code><code class="p">}</code><code class="p">,</code><code> </code><code class="s1">'Create Stock with Failure'</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">expect</code><code class="p">(</code><code class="nx">httpReq</code><code class="p">.</code><code class="nx">request</code><code class="p">.</code><code class="nx">body</code><code class="p">)</code><code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code class="nx">component</code><code class="p">.</code><code class="nx">stock</code><code class="p">)</code><code class="p">;</code><code>    </code><a class="co" id="co_unit_testing_services_CO8-2" href="#callout_unit_testing_services_CO8-2"><img src="images/2.png" alt="2" /></a><code>
+    </code><code class="nx">httpReq</code><code class="p">.</code><code class="nx">flush</code><code class="p">(</code><code class="p">{</code><code class="nx">msg</code><code class="o">:</code><code> </code><code class="s1">'Stock already exists.'</code><code class="p">}</code><code class="p">,</code><code>         </code><a class="co" id="co_unit_testing_services_CO8-3" href="#callout_unit_testing_services_CO8-3"><img src="images/3.png" alt="3" /></a><code>
+        </code><code class="p">{</code><code class="nx">status</code><code>: </code><code class="kt">400</code><code class="p">,</code><code> </code><code class="nx">statusText</code><code class="o">:</code><code> </code><code class="s1">'Failed!!'</code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+
+    </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">whenStable</code><code class="p">(</code><code class="p">)</code><code class="p">.</code><code class="nx">then</code><code class="p">(</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+      </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">detectChanges</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>
+      </code><code class="kr">const</code><code> </code><code class="nx">messageEl</code><code> </code><code class="o">=</code><code> </code><code class="nx">fixture</code><code class="p">.</code><code class="nx">debugElement</code><code class="p">.</code><code class="nx">query</code><code class="p">(</code><code>
+          </code><code class="nx">By</code><code class="p">.</code><code class="nx">css</code><code class="p">(</code><code class="s1">'.message'</code><code class="p">)</code><code class="p">)</code><code class="p">.</code><code class="nx">nativeElement</code><code class="p">;</code><code>
+      </code><code class="nx">expect</code><code class="p">(</code><code class="nx">messageEl</code><code class="p">.</code><code class="nx">textContent</code><code class="p">)</code><code class="p">.</code><code class="nx">toEqual</code><code class="p">(</code><code class="s1">'Stock already exists.'</code><code class="p">)</code><code class="p">;</code><code>   </code><a class="co" id="co_unit_testing_services_CO8-4" href="#callout_unit_testing_services_CO8-4"><img src="images/4.png" alt="4" /></a><code>
+    </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">)</code><code class="p">;</code><code>
+
+  </code><code class="nx">afterEach</code><code class="p">(</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="nx">httpBackend</code><code class="p">.</code><code class="nx">verify</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>           </code><a class="co" id="co_unit_testing_services_CO8-5" href="#callout_unit_testing_services_CO8-5"><img src="images/5.png" alt="5" /></a><code>
+  </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+</code><code class="p">}</code><code class="p">)</code><code class="p">;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_unit_testing_services_CO8-1" href="#co_unit_testing_services_CO8-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Expect a POST request to be made to <em>/api/stock</em> during the test</p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO8-2" href="#co_unit_testing_services_CO8-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Ensure that the body of the POST request is the same as the stock we created in the component</p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO8-3" href="#co_unit_testing_services_CO8-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Define the response for the POST request, which is a failure <code>400</code> response</p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO8-4" href="#co_unit_testing_services_CO8-4"><img src="images/4.png" alt="4" /></a></dt>
+<dd><p>Check that the server response is shown correctly by the component</p></dd>
+<dt><a class="co" id="callout_unit_testing_services_CO8-5" href="#co_unit_testing_services_CO8-5"><img src="images/5.png" alt="5" /></a></dt>
+<dd><p>Ensure that the POST request happened during the test</p></dd>
+</dl>
+
+<p>Most of the preceding test should be very similar to the test we wrote for the <code>StockListComponent</code>. Let’s talk about the major differences in detail:</p>
+
+<ul>
+<li>
+<p>Instead of immediately flushing the response when we set the expectation on the <code>httpBackend</code> for the POST call, we save it to a local variable.<a data-type="indexterm" data-primary="httpBackend" id="idm139828113037744"></a></p>
+</li>
+<li>
+<p>We can then write expectations on the various parts of the HTTP request, like the method, URL, body, headers, and so on.</p>
+</li>
+<li>
+<p>We then ensure that the body of the request matches the stock in our component.</p>
+</li>
+<li>
+<p>Finally, we flush a response, but instead of just flushing the body, we pass a second <code>options</code> argument to configure the response further. We mark the response as a <code>400</code> response to trigger the error condition.</p>
+</li>
+<li>
+<p>The rest of the test doesn’t change, from waiting for the fixture to stabilize, asserting on the elements, to verifying that the calls were made on the <code>httpBackend</code>.</p>
+</li>
+</ul>
+<div data-type="warning" epub:type="warning"><h6>Warning</h6>
+<p><code>httpBackend.expectOne</code> also takes an <code>HttpRequest</code> object instead of passing the URL and the method as a config object.<a data-type="indexterm" data-primary="httpBackend.expectOne" id="idm139828113030144"></a><a data-type="indexterm" data-primary="HttpRequest" id="idm139828113029440"></a> In such a case, we can actually configure the <code>HttpRequest</code> object with the body of the POST request as well. Note that this does not enforce that the POST request is made with that body. You will still need to manually check it the way we did in the previous example. Do not assume that the body is automatically matched and forget to verify it.</p>
+</div>
+
+<p>The finished code is available in the <em>chapter10/simple-http</em> folder of the GitHub <span class="keep-together">repository</span>.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Conclusion"><div class="sect1" id="idm139828114609184">
+<h1>Conclusion</h1>
+
+<p>In this chapter, we dug deeper into testing services in Angular.<a data-type="indexterm" data-primary="Angular services" data-secondary="unit testing" data-tertiary="HTTP calls" data-startref="ix_AngsertstHTTP" id="idm139828113024944"></a><a data-type="indexterm" data-primary="testing" data-secondary="unit testing services" data-tertiary="HTTP calls" data-startref="ix_tstserHTTP" id="idm139828113023424"></a><a data-type="indexterm" data-primary="HTTP calls in Angular" data-secondary="unit testing" data-startref="ix_HTTPtst" id="idm139828113021936"></a> We looked at how we could test services, as well as components that use services. We explored the various techniques and options to deal with services, from using the real service, to mocking it or stubbing it out. Then we moved onto seeing how we could handle async behavior when it came to unit tests, and then finally how to deal with XHR and HTTP in our tests.</p>
+
+<p>In the next chapter, we will switch back to seeing how we can enhance our Angular applications with the ability to deep-link to certain pages and components. We will see how to start setting up our routes, as well as protect certain routes to be accessible under only certain conditions.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Exercise"><div class="sect1" id="idm139828113019264">
+<h1>Exercise</h1>
+
+<p>Take the finished exercise from <a data-type="xref" href="ch09.html#chapter-9">Chapter 9</a> (available in <em>chapter9/exercise/ecommerce</em>). Given this, now try to accomplish the following:</p>
+<ol>
+<li>
+<p>Update the <code>ProductListComponent</code> tests. Remove the isolated unit tests. Update the Angular tests to use the <code>HttpTestingController</code> to provide the list of stocks as well as handle quantity change.</p>
+</li>
+<li>
+<p>Ensure that the list of stocks is reloaded when the quantity changes.</p>
+</li>
+<li>
+<p>Add tests for the positive and negative cases of the <code>CreateProductComponent</code>. Check that the event is emitted when a product is successfully created as well.</p>
+</li>
+
+</ol>
+
+<p>Most of this can be accomplished using concepts covered in this chapter. <a data-type="indexterm" data-primary="testing" data-secondary="unit testing services" data-startref="ix_tstser" id="idm139828113011984"></a><a data-type="indexterm" data-primary="Angular services" data-secondary="unit testing" data-startref="ix_AngserUT" id="idm139828113010736"></a>You can check out the finished solution in <em>chapter10/exercise/ecommerce</em>.</p>
+</div></section>
+
+
+
+
+
+
+
+</div></section></div>
+</body>
+</html>

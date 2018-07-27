@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chapter 3. The Basic Tools</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><p><a id="ch03"></a><a id="page_71"></a></p>
+<h2 id="title-IDAORP0" class="docChapterTitle">Chapter 3<br/><br/>The Basic Tools</h2>
+<p class="docText">Every craftsman starts his or her journey with a basic set of good-quality tools. A woodworker might need rules, gauges, a couple of saws, some good planes, fine chisels, drills and braces, mallets, and clamps. These tools will be lovingly chosen, will be built to last, will perform specific jobs with little overlap with other tools, and, perhaps most importantly, will feel right in the budding woodworker's hands.</p>
+<p class="docText">Then begins a process of learning and adaptation. Each tool will have its own personality and quirks, and will need its own special handling. Each must be sharpened in a unique way, or held just so. Over time, each will wear according to use, until the grip looks like a mold of the woodworker's hands and the cutting surface aligns perfectly with the angle at which the tool is held. At this point, the tools become conduits from the craftsman's brain to the finished product—they have become extensions of his or her hands. Over time, the woodworker will add new tools, such as biscuit cutters, laser-guided miter saws, dovetail jigs—all wonderful pieces of technology. But you can bet that he or she will be happiest with one of those original tools in hand, feeling the plane sing as it slides through the wood.</p>
+<p class="docText">Tools amplify your talent. The better your tools, and the better you know how to use them, the more productive you can be. Start with a basic set of generally applicable tools. As you gain experience, and as you come across special requirements, you'll add to this basic set. Like the craftsman, expect to add to your toolbox regularly. Always be on the lookout for better ways of doing things. If you come across a situation where you feel your current tools can't cut it, make a note to look for <a id="page_72"></a>something different or more powerful that would have helped. Let need drive your acquisitions.</p>
+<p class="docText">Many new programmers make the mistake of adopting a single power tool, such as a particular integrated development environment (IDE), and never leave its cozy interface. This really is a mistake. We need to be comfortable beyond the limits imposed by an IDE. The only way to do this is to keep the basic tool set sharp and ready to use.</p>
+<p class="docText">In this chapter we'll talk about investing in your own basic toolbox. As with any good discussion on tools, we'll start (in <em>The Power of Plain Text</em>) by looking at your raw materials, the stuff you'll be shaping. From there we'll move to the workbench, or in our case the computer. How can you use your computer to get the most out of the tools you use? We'll discuss this in <em>Shell Games.</em> Now that we have material and a bench to work on, we'll turn to the tool you'll probably use more than any other, your editor. In <em>Power Editing,</em> we'll suggest ways of making you more efficient.</p>
+<p class="docText">To ensure that we never lose any of our precious work, we should always use a <em>Source Code Control</em> system—even for things such as our personal address book! And, since Mr. Murphy was really an optimist after all, you can't be a great programmer until you become highly skilled at <em>Debugging.</em></p>
+<p class="docText">You'll need some glue to bind much of the magic together. We discuss some possibilities, such as awk, Perl, and Python, in <em>Text Manipulation.</em></p>
+<p class="docText">Just as woodworkers sometimes build jigs to guide the construction of complex pieces, programmers can write code that itself writes code. We discuss this in <em>Code Generators.</em></p>
+<p class="docText">Spend time learning to use these tools, and at some point you'll be surprised to discover your fingers moving over the keyboard, manipulating text without conscious thought. The tools will have become extensions of your hands.</p>
+<p class="docText"><a id="ch03lev1sec1"></a><a id="page_73"></a></p>
+<h3 id="title-IDABTP0" class="docSection1Title">14. The Power of Plain Text</h3>
+<p class="docText">As Pragmatic Programmers, our base material isn't wood or iron, it's knowledge. We gather requirements as knowledge, and then express that knowledge in our designs, implementations, tests, and documents. And we believe that the best format for storing knowledge persistently is <em>plain text.</em> With plain text, we give ourselves the ability to manipulate knowledge, both manually and programmatically, using virtually every tool at our disposal.</p>
+<p class="docText"><a id="ch03lev2sec1"></a></p>
+<h4 id="title-IDAOTP0" class="docSection2Title">What Is Plain Text?</h4>
+<p class="docText"><em>Plain text</em> is made up of printable characters in a form that can be read and understood directly by people. For example, although the following snippet is made up of printable characters, it is meaningless.</p>
+<p class="programlisting">        Field19=467abe</p>
+<p class="docText">The reader has no idea what the significance of <code>467abe</code> may be. A better choice would be to make it <em>understandable</em> to humans.</p>
+<p class="programlisting">        DrawingType=UMLActivityDrawing</p>
+<p class="docText">Plain text doesn't mean that the text is unstructured; XML, SGML, and HTML are great examples of plain text that has a well-defined structure. You can do everything with plain text that you could do with some binary format, including versioning.</p>
+<p class="docText">Plain text tends to be at a higher level than a straight binary encoding, which is usually derived directly from the implementation. Suppose you wanted to store a property called <code>uses_menus</code> that can be either <code>TRUE</code> or <code>FALSE.</code> Using text, you might write this as</p>
+<p class="programlisting">        myprop.uses_menus=FALSE</p>
+<p class="docText">Contrast this with <code>0010010101110101</code>.</p>
+<p class="docText">The problem with most binary formats is that the context necessary to understand the data is separate from the data itself. You are artificially divorcing the data from its meaning. The data may as well be encrypted; it is absolutely meaningless without the application logic to parse it. With plain text, however, you can achieve a self-describing data stream that is independent of the application that created it.</p>
+<p class="docNoteTitle"><a id="page_74"></a>Tip 20</p>
+<p class="note"><a href="app03.html#id1e4563">Keep Knowledge in Plain Text</a></p>
+<p class="docText"><a id="ch03lev2sec2"></a></p>
+<h4 id="title-IDAQVP0" class="docSection2Title">Drawbacks</h4>
+<p class="docText">There are two major drawbacks to using plain text: (1) It may take more space to store than a compressed binary format, and (2) it may be computationally more expensive to interpret and process a plain text file.</p>
+<p class="docText">Depending on your application, either or both of these situations may be unacceptable—for example, when storing satellite telemetry data, or as the internal format of a relational database.</p>
+<p class="docText">But even in these situations, it may be acceptable to store <em>metadata</em> about the raw data in plain text (see <a href="ch05.html#ch05lev1sec2"><em>Metaprogramming</em></a>, page <a href="ch05.html#page_144">144</a>).</p>
+<p class="docText">Some developers may worry that by putting metadata in plain text, they're exposing it to the system's users. This fear is misplaced. Binary data may be more obscure than plain text, but it is no more secure. If you worry about users seeing passwords, encrypt them. If you don't want them changing configuration parameters, include a <em>secure hash</em><sup><a href="#ch03fn01">[1]</a></sup> of all the parameter values in the file as a checksum.</p>
+<p class="docFootnote"><sup><a id="ch03fn01">[1]</a></sup> MD5 is often used for this purpose. For an excellent introduction to the wonderful world of cryptography, see [<a href="app01.html#sch95">Sch95</a>].</p>
+<p class="docText"><a id="ch03lev2sec3"></a></p>
+<h4 id="title-IDAZWP0" class="docSection2Title">The Power of Text</h4>
+<p class="docText">Since <em>larger</em> and <em>slower</em> aren't the most frequently requested features from users, why bother with plain text? What <em>are</em> the benefits?</p>
+<ul>
+<li>Insurance against obsolescence</li>
+<li>Leverage</li>
+<li>Easier testing</li>
+</ul>
+<p class="docText"><a id="ch03lev3sec1"></a></p>
+<h5 id="title-IDAZXP0" class="docSection3Title">Insurance Against Obsolescence</h5>
+<p class="docText">Human-readable forms of data, and self-describing data, will outlive all other forms of data and the applications that created them. Period.</p>
+<p class="docText"><a id="page_75"></a>As long as the data survives, you will have a chance to be able to use it—potentially long after the original application that wrote it is defunct.</p>
+<p class="docText">You can parse such a file with only partial knowledge of its format; with most binary files, you must know all the details of the entire format in order to parse it successfully.</p>
+<p class="docText">Consider a data file from some legacy system<sup><a href="#ch03fn02">[2]</a></sup> that you are given. You know little about the original application; all that's important to you is that it maintained a list of clients' Social Security numbers, which you need to find and extract. Among the data, you see</p>
+<p class="docFootnote"><sup><a id="ch03fn02">[2]</a></sup> All software becomes legacy as soon as it's written.</p>
+<p class="programlisting">        &lt;FIELD10&gt;123-45-6789&lt;/FIELD10&gt;<br/>        ...<br/>        &lt;FIELD10&gt;567-89-0123&lt;/FIELD10&gt;<br/>        ...<br/>        &lt;FIELD10&gt;901-23-4567&lt;/FIELD10&gt;</p>
+<p class="docText">Recognizing the format of a Social Security number, you can quickly write a small program to extract that data—even if you have no information on anything else in the file.</p>
+<p class="docText">But imagine if the file had been formatted this way instead:</p>
+<p class="programlisting">        AC27123456789B11P<br/>        ...<br/>        XY43567890123QTYL<br/>        ...<br/>        6T2190123456788AM</p>
+<p class="docText">You may not have recognized the significance of the numbers quite as easily. This is the difference between <em>human readable</em> and <em>human understandable.</em></p>
+<p class="docText">While we're at it, <code>FIELD10</code> doesn't help much either. Something like</p>
+<p class="programlisting">        &lt;SSNO&gt;123-45-6789&lt;/SSNO&gt;</p>
+<p class="docText">makes the exercise a no-brainer—and ensures that the data will outlive any project that created it.</p>
+<p class="docText"><a id="ch03lev3sec2"></a></p>
+<h5 id="title-IDAG0P0" class="docSection3Title">Leverage</h5>
+<p class="docText">Virtually every tool in the computing universe, from source code management systems to compiler environments to editors and stand-alone filters, can operate on plain text.</p>
+<p class="docText"><a id="page_76"></a></p>
+<div class="sidebar1">
+<p class="docSidebarTitle">The Unix Philosophy</p>
+<p class="sidebar">Unix is famous for being designed around the philosophy of small, sharp tools, each intended to do one thing well. This philosophy is enabled by using a common underlying format—the line-oriented, plain text file. Databases used for system administration (users and passwords, networking configuration, and so on) are all kept as plain text files. (Some systems, such as Solaris, also maintain a binary form of certain databases as a performance optimization. The plain text version is kept as an interface to the binary version.)</p>
+<p class="sidebar">When a system crashes, you may be faced with only a minimal environment to restore it (you may not be able to access graphics drivers, for instance). Situations such as this can really make you appreciate the simplicity of plain text.</p>
+</div>
+<p class="docText">For instance, suppose you have a production deployment of a large application with a complex site-specific configuration file (<code>sendmail</code> comes to mind). If this file is in plain text, you could place it under a source code control system (see <a href="ch03.html#ch03lev1sec4"><em>Source Code Control</em></a>, page <a href="ch03.html#page_86">86</a>), so that you automatically keep a history of all changes. File comparison tools such as <code>diff</code> and <code>fc</code> allow you to see at a glance what changes have been made, while <code>sum</code> allows you to generate a checksum to monitor the file for accidental (or malicious) modification.</p>
+<p class="docText"><a id="ch03lev3sec3"></a></p>
+<h5 id="title-IDAP1P0" class="docSection3Title">Easier Testing</h5>
+<p class="docText">If you use plain text to create synthetic data to drive system tests, then it is a simple matter to add, update, or modify the test data <em>without having to create any special tools to do so.</em> Similarly, plain text output from regression tests can be trivially analyzed (with <code>diff</code>, for instance) or subjected to more thorough scrutiny with Perl, Python, or some other scripting tool.</p>
+<p class="docText"><a id="ch03lev2sec4"></a></p>
+<h4 id="title-IDAA2P0" class="docSection2Title">Lowest Common Denominator</h4>
+<p class="docText">Even in the future of XML-based intelligent agents that travel the wild and dangerous Internet autonomously, negotiating data interchange among themselves, the ubiquitous text file will still be there. In fact, in <a id="page_77"></a>heterogeneous environments the advantages of plain text can outweigh all of the drawbacks. You need to ensure that all parties can communicate using a common standard. Plain text is that standard.</p>
+<p class="docText"><a id="ch03lev3sec4"></a></p>
+<h5 id="title-IDAK2P0" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch03.html#ch03lev1sec4"><em>Source Code Control</em></a>, page <a href="ch03.html#page_86">86</a></li>
+<li><a href="ch03.html#ch03lev1sec7"><em>Code Generators</em></a>, page <a href="ch03.html#page_102">102</a></li>
+<li><a href="ch05.html#ch05lev1sec2"><em>Metaprogramming</em></a>, page <a href="ch05.html#page_144">144</a></li>
+<li><a href="ch05.html#ch05lev1sec5"><em>Blackboards</em></a>, page <a href="ch05.html#page_165">165</a></li>
+<li><a href="ch08.html#ch08lev1sec2"><em>Ubiquitous Automation</em></a>, page <a href="ch08.html#page_230">230</a></li>
+<li><a href="ch08.html#ch08lev1sec4"><em>It's All Writing</em></a>, page <a href="ch08.html#page_248">248</a></li>
+</ul>
+<p class="docText"><a id="ch03lev3sec5"></a></p>
+<h5 id="title-IDA33P0" class="docSection3Title">Challenges</h5>
+<ul>
+<li>Design a small address book database (name, phone number, and so on) using a straightforward binary representation in your language of choice. Do this before reading the rest of this challenge.<br/>
+<ol>
+<li>Translate that format into a plain text format using XML.</li>
+<li>For each version, add a new, variable-length field called <em>directions</em> in which you might enter directions to each person's house.</li>
+</ol>
+<p>What issues come up regarding versioning and extensibility? Which form was easier to modify? What about converting existing data?</p></li>
+</ul>
+<p class="docText"><a id="ch03lev1sec2"></a></p>
+<h3 id="title-IDAC5P0" class="docSection1Title">15. Shell Games</h3>
+<p class="docText">Every woodworker needs a good, solid, reliable workbench, somewhere to hold work pieces at a convenient height while he or she works them. The workbench becomes the center of the wood shop, the craftsman returning to it time and time again as a piece takes shape.</p>
+<p class="docText">For a programmer manipulating files of text, that workbench is the command shell. From the shell prompt, you can invoke your full repertoire of tools, using pipes to combine them in ways never dreamt of by their original developers. From the shell, you can launch applications, debuggers, browsers, editors, and utilities. You can search for files, <a id="page_78"></a>query the status of the system, and filter output. And by programming the shell, you can build complex macro commands for activities you perform often.</p>
+<p class="docText">For programmers raised on GUI interfaces and integrated development environments (IDEs), this might seem an extreme position. After all, can't you do everything equally well by pointing and clicking?</p>
+<p class="docText">The simple answer is "no." GUI interfaces are wonderful, and they can be faster and more convenient for some simple operations. Moving files, reading MIME-encoded e-mail, and typing letters are all things that you might want to do in a graphical environment. But if you do all your work using GUIs, you are missing out on the full capabilities of your environment. You won't be able to automate common tasks, or use the full power of the tools available to you. And you won't be able to combine your tools to create customized <em>macro tools</em>. A benefit of GUIs is WYSIWYG—what you see is what you get. The disadvantage is WYSIAYG—what you see is <em>all</em> you get.</p>
+<p class="docText">GUI environments are normally limited to the capabilities that their designers intended. If you need to go beyond the model the designer provided, you are usually out of luck—and more often than not, you <em>do</em> need to go beyond the model. Pragmatic Programmers don't just cut code, or develop object models, or write documentation, or automate the build process—we do <em>all</em> of these things. The scope of any one tool is usually limited to the tasks that the tool is expected to perform. For instance, suppose you need to integrate a code preprocessor (to implement design-by-contract, or multi-processing pragmas, or some such) into your IDE. Unless the designer of the IDE explicitly provided hooks for this capability, you can't do it.</p>
+<p class="docText">You may already be comfortable working from the command prompt, in which case you can safely skip this section. Otherwise, you may need to be convinced that the shell is your friend.</p>
+<p class="docText">As a Pragmatic Programmer, you will constantly want to perform ad hoc operations—things that the GUI may not support. The command line is better suited when you want to quickly combine a couple of commands to perform a query or some other task. Here are a few examples.</p>
+<p class="docText"><a id="page_79"></a><strong><em>Find all .c files modified more recently than your Makefile.</em></strong></p>
+<p class="programlisting1"><img src="images/079tab01.jpg" alt="image" /></p>
+<p class="docText"><strong><em>Construct a zip/tar archive of my source.</em></strong></p>
+<p class="programlisting1"><img src="images/079tab02.jpg" alt="image" /></p>
+<p class="docText"><strong><em>Which Java files have not been changed in the last week?</em></strong></p>
+<p class="programlisting1"><img src="images/079tab03.jpg" alt="image" /></p>
+<p class="docText"><strong><em>Of those files, which use the <code>awt</code> libraries?</em></strong></p>
+<p class="programlisting1"><img src="images/079tab04.jpg" alt="image" /></p>
+<p class="docText">Clearly the list could go on. The shell commands may be obscure or terse, but they are powerful and concise. And, because shell commands can be combined into script files (or command files under Windows <a id="page_80"></a>systems), you can build sequences of commands to automate things you do often.</p>
+<p class="docNoteTitle">Tip 21</p>
+<p class="note"><a href="app03.html#id1e5051">Use the Power of Command Shells</a></p>
+<p class="docText">Gain familiarity with the shell, and you'll find your productivity soaring. Need to create a list of all the unique package names explicitly imported by your Java code? The following stores it in a file called "list."</p>
+<p class="progimage"><img src="images/p0080-01.jpg" alt="image" /></p>
+<p class="docText">If you haven't spent much time exploring the capabilities of the command shell on the systems you use, this might appear daunting. However, invest some energy in becoming familiar with your shell and things will soon start falling into place. Play around with your command shell, and you'll be surprised at how much more productive it makes you.</p>
+<p class="docText"><a id="ch03lev2sec5"></a></p>
+<h4 id="title-IDASJQ0" class="docSection2Title">Shell Utilities and Windows Systems</h4>
+<p class="docText">Although the command shells provided with Windows systems are improving gradually, Windows command-line utilities are still inferior to their Unix counterparts. However, all is not lost.</p>
+<p class="docText">Cygnus Solutions has a package called Cygwin [<a href="app01.html#app01lev3sec31">URL 31</a>]. As well as providing a Unix compatibility layer for Windows, Cygwin comes with a collection of more than 120 Unix utilities, including such favorites as <code>ls</code>, <code>grep</code>, and <code>find</code>. The utilities and libraries may be downloaded and used for free, but be sure to read their license.<sup><a href="#ch03fn03">[3]</a></sup> The Cygwin distribution comes with the Bash shell.</p>
+<p class="docFootnote"><sup><a id="ch03fn03">[3]</a></sup> The GNU General Public License [<a href="app01.html#app01lev3sec57">URL 57</a>] is a kind of legal virus that Open Source developers use to protect their (and your) rights. You should spend some time reading it. In essence, it says that you can use and modify GPL'd software, but if you distribute any modifications they must be licensed according to the GPL (and marked as such), and you must make source available. That's the virus part—whenever you derive a work from a GPL'd work, your derived work must also be GPL'd. However, it does not limit you in any way when simply using the tools—the ownership and licensing of software developed using the tools are up to you.</p>
+<p class="docText"><a id="page_81"></a></p>
+<div class="sidebar1">
+<p class="docSidebarTitle">Using Unix Tools Under Windows</p>
+<p class="sidebar">We love the availability of high-quality Unix tools under Windows, and use them daily. However, be aware that there are integration issues. Unlike their MS-DOS counterparts, these utilities are sensitive to the case of filenames, so <code>ls a*.bat</code> won't find <code>AUTOEXEC.BAT.</code> You may also come across problems with filenames containing spaces, and with differences in path separators. Finally, there are interesting problems when running MS-DOS programs that expect MS-DOS–style arguments under the Unix shells. For example, the Java utilities from JavaSoft use a colon as their CLASSPATH separator under Unix, but use a semicolon under MS-DOS. As a result, a Bash or ksh script that runs on a Unix box will run identically under Windows, but the command line it passes to Java will be interpreted incorrectly.</p>
+</div>
+<p class="docText">Alternatively, David Korn (of Korn shell fame) has put together a package called <small>UWIN</small>. This has the same aims as the Cygwin distribution—it is a Unix development environment under Windows. UWIN comes with a version of the Korn shell. Commercial versions are available from Global Technologies, Ltd. [<a href="app01.html#app01lev3sec30">URL 30</a>]. In addition, AT&amp;T allows free downloading of the package for evaluation and academic use. Again, read their license before using.</p>
+<p class="docText">Finally, Tom Christiansen is (at the time of writing) putting together <em>Perl Power Tools,</em> an attempt to implement all the familiar Unix utilities portably, in Perl [<a href="app01.html#app01lev3sec32">URL 32</a>].</p>
+<p class="docText"><a id="ch03lev3sec6"></a></p>
+<h5 id="title-IDA1LQ0" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch08.html#ch08lev1sec2"><em>Ubiquitous Automation</em></a>, page <a href="ch08.html#page_230">230</a></li>
+</ul>
+<p class="docText"><a id="ch03lev3sec7"></a></p>
+<h5 id="title-IDAQMQ0" class="docSection3Title">Challenges</h5>
+<ul>
+<li>Are there things that you're currently doing manually in a GUI? Do you ever pass instructions to colleagues that involve a number of individual "click this button," "select this item" steps? Could these be automated?</li>
+<li>Whenever you move to a new environment, make a point of finding out what shells are available. See if you can bring your current shell with you.</li>
+<li>Investigate alternatives to your current shell. If you come across a problem your shell can't address, see if an alternative shell would cope better.</li>
+</ul>
+<p class="docText"><a id="ch03lev1sec3"></a><a id="page_82"></a></p>
+<h3 id="title-IDAKNQ0" class="docSection1Title">16. Power Editing</h3>
+<p class="docText">We've talked before about tools being an extension of your hand. Well, this applies to editors more than to any other software tool. You need to be able to manipulate text as effortlessly as possible, because text is the basic raw material of programming. Let's look at some common features and functions that help you get the most from your editing environment.</p>
+<p class="docText"><a id="ch03lev2sec6"></a></p>
+<h4 id="title-IDAUNQ0" class="docSection2Title">One Editor</h4>
+<p class="docText">We think it is better to know one editor very well, and use it for all editing tasks: code, documentation, memos, system administration, and so on. Without a single editor, you face a potential modern day Babel of confusion. You may have to use the built-in editor in each language's IDE for coding, and an all-in-one office product for documentation, and maybe a different built-in editor for sending e-mail. Even the keystrokes you use to edit command lines in the shell may be different.<sup><a href="#ch03fn04">[4]</a></sup> It is difficult to be proficient in any of these environments if you have a different set of editing conventions and commands in each.</p>
+<p class="docFootnote"><sup><a id="ch03fn04">[4]</a></sup> Ideally, the shell you use should have keybindings that match the ones used by your editor. Bash, for instance, supports both <code>vi</code> and <code>emacs</code> keybindings.</p>
+<p class="docText">You need to be proficient. Simply typing linearly and using a mouse to cut and paste is not enough. You just can't be as effective that way as you can with a powerful editor under your fingers. Typing <img src="images/arrow.gif" alt="image" /> or <img src="images/backspace.gif" alt="image" /> ten times to move the cursor left to the beginning of a line isn't as efficient as typing a single key such as <img src="images/a.gif" alt="image" />, <img src="images/home.gif" alt="image" />, or <img src="images/zero.gif" alt="image" />.</p>
+<p class="docNoteTitle">Tip 22</p>
+<p class="note"><a href="app03.html#id1e5211">Use a Single Editor Well</a></p>
+<p class="docText">Choose an editor, know it thoroughly, and use it for all editing tasks. If you use a single editor (or set of keybindings) across all text editing activities, you don't have to stop and think to accomplish text manipulation: the necessary keystrokes will be a reflex. The editor will be <a id="page_83"></a>an extension of your hand; the keys will sing as they slice their way through text and thought. That's our goal.</p>
+<p class="docText">Make sure that the editor you choose is available on all platforms you use. Emacs, vi, CRiSP, Brief, and others are available across multiple platforms, often in both GUI and non-GUI (text screen) versions.</p>
+<p class="docText"><a id="ch03lev2sec7"></a></p>
+<h4 id="title-IDAEQQ0" class="docSection2Title">Editor Features</h4>
+<p class="docText">Beyond whatever features you find particularly useful and comfortable, here are some basic abilities that we think every decent editor should have. If your editor falls short in any of these areas, then this may be the time to consider moving on to a more advanced one.</p>
+<ul>
+<li><a id="d1e5236"></a><strong>Configurable.</strong> All aspects of the editor should be configurable to your preferences, including fonts, colors, window sizes, and keystroke bindings (which keys perform what commands). Using only keystrokes for common editing operations is more efficient than mouse or menu-driven commands, because your hands never leave the keyboard.</li>
+<li><a id="d1e5244"></a><strong>Extensible.</strong> An editor shouldn't be obsolete just because a new programming language comes out. It should be able to integrate with whatever compiler environment you are using. You should be able to "teach" it the nuances of any new language or text format (XML, HTML version 9, and so on).</li>
+<li><a id="d1e5252"></a><strong>Programmable.</strong> You should be able to program the editor to perform complex, multistep tasks. This can be done with macros or with a built-in scripting programming language (Emacs uses a variant of Lisp, for instance).</li>
+</ul>
+<p class="docText">In addition, many editors support features that are specific to a particular programming language, such as:</p>
+<ul>
+<li>Syntax highlighting</li>
+<li>Auto-completion</li>
+<li>Auto-indentation</li>
+<li>Initial code or document boilerplate</li>
+<li>Tie-in to help systems</li>
+<li>IDE-like features (compile, debug, and so on)</li>
+</ul>
+<p class="docText"><a id="page_84"></a>A feature such as syntax highlighting may sound like a frivolous extra, but in reality it can be very useful and enhance your productivity. Once you get used to seeing keywords appear in a different color or font, a mistyped keyword that <em>doesn't</em> appear that way jumps out at you long before you fire up the compiler.</p>
+<p class="docText">Having the ability to compile and navigate directly to errors within the editor environment is very handy on big projects. Emacs in particular is adept at this style of interaction.</p>
+<p class="docText"><a id="ch03lev2sec8"></a></p>
+<h4 id="title-IDAUSQ0" class="docSection2Title">Productivity</h4>
+<p class="docText">A surprising number of people we've met use the Windows <code>notepad</code> utility to edit their source code. This is like using a teaspoon as a shovel—simply typing and using basic mouse-based cut and paste is not enough.</p>
+<p class="docText">What sort of things will you need to do that <em>can't</em> be done in this way?</p>
+<p class="docText">Well, there's cursor movement, to start with. Single keystrokes that move you in units of words, lines, blocks, or functions are far more efficient than repeatedly typing a keystroke that moves you character by character or line by line.</p>
+<p class="docText">Or suppose you are writing Java code. You like to keep your <code>import</code> statements in alphabetical order, and someone else has checked in a few files that don't adhere to this standard (this may sound extreme, but on a large project it can save you a lot of time scanning through a long list of <code>import</code> statements). You'd like to go quickly through a few files and sort a small section of them. In editors such as vi and Emacs you can do this easily (see <a href="#ch03fig01">Figure 3.1</a>). Try <em>that</em> in <code>notepad</code>.</p>
+<p class="docText"><a id="ch03fig01"></a></p>
+<p class="docFigureTitle">Figure 3.1. Sorting lines in an editor</p>
+<p class="image"><img src="images/f03fig01.gif" alt="image" /></p>
+<p class="docText">Some editors can help streamline common operations. For instance, when you create a new file in a particular language, the editor can supply a template for you. It might include:</p>
+<ul>
+<li><a id="page_85"></a>Name of the class or module filled in (derived from the filename)</li>
+<li>Your name and/or copyright statements</li>
+<li>Skeletons for constructs in that language (constructor and destructor declarations, for example)</li>
+</ul>
+<p class="docText">Another useful feature is auto-indenting. Rather than having to indent manually (by using space or tab), the editor automatically indents for you at the appropriate time (after typing an open brace, for example). The nice part about this feature is that you can use the editor to provide a consistent indentation style for your project.<sup><a href="#ch03fn05">[5]</a></sup></p>
+<p class="docFootnote"><sup><a id="ch03fn05">[5]</a></sup> The Linux kernel is developed this way. Here you have geographically dispersed developers, many working on the same pieces of code. There is a published list of settings (in this case, for Emacs) that describes the required indentation style.</p>
+<p class="docText"><a id="ch03lev2sec9"></a></p>
+<h4 id="title-IDAGVQ0" class="docSection2Title">Where to Go from Here</h4>
+<p class="docText">This sort of advice is particularly hard to write because virtually every reader is at a different level of comfort and expertise with the editor(s) they are currently using. So, to summarize, and to provide some guidance on where to go next, find yourself in the left-hand column of the chart, and look at the right-hand column to see what we think you should do.</p>
+<p class="image1"><img src="images/085tab01.jpg" alt="image" /></p>
+<p class="docText"><a id="ch03lev2sec10"></a><a id="page_86"></a></p>
+<h4 id="title-IDASYQ0" class="docSection2Title">What Editors Are Available?</h4>
+<p class="docText">Having recommended that you master a decent editor, which one do we recommend? Well, we're going to duck that question; your choice of editor is a personal one (some would even say a religious one!). However, in <a href="app01.html">Appendix A</a>, page <a href="app01.html#page_266">266</a>, we list a number of popular editors and where to get them.</p>
+<p class="docText"><a id="ch03lev3sec8"></a></p>
+<h5 id="title-IDABZQ0" class="docSection3Title">Challenges</h5>
+<ul>
+<li>Some editors use full-blown languages for customization and scripting. Emacs, for example, uses Lisp. As one of the new languages you are going to learn this year, learn the language your editor uses. For anything you find yourself doing repeatedly, develop a set of macros (or equivalent) to handle it.</li>
+<li>Do you know everything your editor is capable of doing? Try to stump your colleagues who use the same editor. Try to accomplish any given editing task in as few keystrokes as possible.</li>
+</ul>
+<p class="docText"><a id="ch03lev1sec4"></a></p>
+<h3 id="title-IDAYZQ0" class="docSection1Title">17. Source Code Control</h3>
+<p class="blockquote"><em>Progress, far from consisting in change, depends on retentiveness. Those who cannot remember the past are condemned to repeat it.</em></p>
+<p class="attribution">• <strong>George Santayana, <em>Life of Reason</em></strong></p>
+<p class="docText">One of the important things we look for in a user interface is the <img src="images/undo.gif" alt="image" /> key—a single button that forgives us our mistakes. It's even better if the environment supports multiple levels of undo and redo, so you can go back and recover from something that happened a couple of minutes ago. But what if the mistake happened last week, and you've turned your computer on and off ten times since then? Well, that's one of the many benefits of using a source code control system: it's a giant <img src="images/undo.gif" alt="image" /> key—a project-wide time machine that can return you to those halcyon days of last week, when the code actually compiled and ran.</p>
+<p class="docText">Source code control systems, or the more widely scoped <em>configuration management</em> systems, keep track of every change you make in your source code and documentation. The better ones can keep track of <a id="page_87"></a>compiler and OS versions as well. With a properly configured source code control system, <em>you can always go back to a previous version of your software.</em></p>
+<p class="docText">But a source code control system (SCCS<sup><a href="#ch03fn06">[6]</a></sup>) does far more than undo mistakes. A good SCCS will let you track changes, answering questions such as: Who made changes in this line of code? What's the difference between the current version and last week's? How many lines of code did we change in this release? Which files get changed most often? This kind of information is invaluable for bug-tracking, audit, performance, and quality purposes.</p>
+<p class="docFootnote"><sup><a id="ch03fn06">[6]</a></sup> We use the uppercase SCCS to refer to generic source code control systems. There is also a specific system called "sccs," originally released with AT&amp;T System V Unix.</p>
+<p class="docText">An SCCS will also let you identify releases of your software. Once identified, you will always be able to go back and regenerate the release, independent of changes that may have occurred later.</p>
+<p class="docText">We often use an SCCS to manage branches in the development tree. For example, once you have released some software, you'll normally want to continue developing for the next release. At the same time, you'll need to deal with bugs in the current release, shipping fixed versions to clients. You'll want these bug fixes rolled into the next release (if appropriate), but you don't want to ship code under development to clients. With an SCCS you can generate branches in the development tree each time you generate a release. You apply bug fixes to code in the branch, and continue developing on the main trunk. Since the bug fixes may be relevant to the main trunk as well, some systems allow you to merge selected changes from the branch back into the main trunk automatically.</p>
+<p class="docText">Source code control systems may keep the files they maintain in a central repository—a great candidate for archiving.</p>
+<p class="docText">Finally, some products may allow two or more users to be working concurrently on the same set of files, even making concurrent changes in the same file. The system then manages the merging of these changes when the files are sent back to the repository. Although seemingly risky, such systems work well in practice on projects of all sizes.</p>
+<p class="docNoteTitle"><a id="page_88"></a>Tip 23</p>
+<p class="note"><a href="app03.html#id1e5539">Always Use Source Code Control</a></p>
+<p class="docText">Always. Even if you are a single-person team on a one-week project. Even if it's a "throw-away" prototype. Even if the stuff you're working on isn't source code. Make sure that <em>everything</em> is under source code control—documentation, phone number lists, memos to vendors, makefiles, build and release procedures, that little shell script that burns the CD master—everything. We routinely use source code control on just about everything we type (including the text of this book). Even if we're not working on a project, our day-to-day work is secured in a repository.</p>
+<p class="docText"><a id="ch03lev3sec9"></a></p>
+<h4 id="title-IDAV2Q0" class="docSection2Title">Source Code Control and Builds</h4>
+<p class="docText">There is a tremendous hidden benefit in having an entire project under the umbrella of a source code control system: you can have product builds that are <em>automatic</em> and <em>repeatable.</em></p>
+<p class="docText">The project build mechanism can pull the latest source out of the repository automatically. It can run in the middle of the night after everyone's (hopefully) gone home. You can run automatic regression tests to ensure that the day's coding didn't break anything. The automation of the build ensures consistency—there are no manual procedures, and you won't need developers remembering to copy code into some special build area.</p>
+<p class="docText">The build is repeatable because you can always rebuild the source as it existed on a given date.</p>
+<p class="docText"><a id="ch03lev2sec11"></a></p>
+<h4 id="title-IDAM3Q0" class="docSection2Title">But My Team Isn't Using Source Code Control</h4>
+<p class="docText">Shame on them! Sounds like an opportunity to do some evangelizing! However, while you wait for them to see the light, perhaps you should implement your own private source control. Use one of the freely available tools we list in <a href="app01.html">Appendix A</a>, and make a point of keeping your personal work safely tucked into a repository (as well as doing whatever your project requires). Although this may seem to be duplication of effort, we can pretty much guarantee it will save you grief (and save your project money) the first time you need to answer questions such <a id="page_89"></a>as "What did you do to the <em>xyz</em> module?" and "What broke the build?" This approach may also help convince your management that source code control really works.</p>
+<p class="docText">Don't forget that an SCCS is equally applicable to the things you do outside of work.</p>
+<p class="docText"><a id="ch03lev2sec12"></a></p>
+<h4 id="title-IDAA4Q0" class="docSection2Title">Source Code Control Products</h4>
+<p class="docText"><a href="app01.html">Appendix A</a>, page <a href="app01.html#page_271">271</a>, gives URLs for representative source code control systems, some commercial and others freely available. And many more products are available—look for pointers to the configuration management FAQ. For an introduction to the freely-available CVS version control system, see our book <em>Pragmatic Version Control</em> [<a href="app01.html#th03">TH03</a>].</p>
+<p class="docText"><a id="ch03lev3sec10"></a></p>
+<h5 id="title-IDAR4Q0" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch02.html#ch02lev1sec2"><em>Orthogonality</em></a>, page <a href="ch02.html#page_34">34</a></li>
+<li><a href="ch03.html#ch03lev1sec1"><em>The Power of Plain Text</em></a>, page <a href="ch03.html#page_73">73</a></li>
+<li><a href="ch08.html#ch08lev1sec4"><em>It's All Writing</em></a>, page <a href="ch08.html#page_248">248</a></li>
+</ul>
+<p class="docText"><a id="ch03lev3sec11"></a></p>
+<h5 id="title-IDAS5Q0" class="docSection3Title">Challenges</h5>
+<ul>
+<li>Even if you are not able to use an SCCS at work, install RCS or CVS on a personal system. Use it to manage your pet projects, documents you write, and (possibly) configuration changes applied to the computer system itself.</li>
+<li>Take a look at some of the Open Source projects for which publicly accessible archives are available on the Web (such as Mozilla [<a href="app01.html#app01lev3sec51">URL 51</a>], KDE [<a href="app01.html#app01lev3sec54">URL 54</a>], and the Gimp [<a href="app01.html#app01lev3sec55">URL 55</a>]). How do you get updates of the source? How do you make changes—does the project regulate access or arbitrate the inclusion of changes?</li>
+</ul>
+<p class="docText"><a id="ch03lev1sec5"></a><a id="page_90"></a></p>
+<h3 id="title-IDA2AR0" class="docSection1Title">18. Debugging</h3>
+<p class="blockquote"><em>It is a painful thing</em><br/><em>To look at your own trouble and know</em><br/><em>That you yourself and no one else has made it</em></p>
+<p class="attribution">• <strong>Sophocles, <em>Ajax</em></strong></p>
+<p class="docText">The word <em>bug</em> has been used to describe an "object of terror" ever since the fourteenth century. Rear Admiral Dr. Grace Hopper, the inventor of COBOL, is credited with observing the first <em>computer bug</em>—literally, a moth caught in a relay in an early computer system. When asked to explain why the machine wasn't behaving as intended, a technician reported that there was "a bug in the system," and dutifully taped it—wings and all—into the log book.</p>
+<p class="docText">Regrettably, we still have "bugs" in the system, albeit not the flying kind. But the fourteenth century meaning—a bogeyman—is perhaps even more applicable now than it was then. Software defects manifest themselves in a variety of ways, from misunderstood requirements to coding errors. Unfortunately, modern computer systems are still limited to doing what you <em>tell</em> them to do, not necessarily what you <em>want</em> them to do.</p>
+<p class="docText">No one writes perfect software, so it's a given that debugging will take up a major portion of your day. Let's look at some of the issues involved in debugging and some general strategies for finding elusive bugs.</p>
+<p class="docText"><a id="ch03lev2sec13"></a></p>
+<h4 id="title-IDAYCR0" class="docSection2Title">Psychology of Debugging</h4>
+<p class="docText">Debugging itself is a sensitive, emotional subject for many developers. Instead of attacking it as a puzzle to be solved, you may encounter denial, finger pointing, lame excuses, or just plain apathy.</p>
+<p class="docText">Embrace the fact that debugging is just <em>problem solving,</em> and attack it as such.</p>
+<p class="docText">Having found someone else's bug, you can spend time and energy laying blame on the filthy culprit who created it. In some workplaces this is part of the culture, and may be cathartic. However, in the technical arena, you want to concentrate on fixing the <em>problem,</em> not the blame.</p>
+<p class="docNoteTitle"><a id="page_91"></a>Tip 24</p>
+<p class="note"><a href="app03.html#id1e5712">Fix the Problem, Not the Blame</a></p>
+<p class="docText">It doesn't really matter whether the bug is your fault or someone else's. It is still your problem.</p>
+<p class="docText"><a id="ch03lev2sec14"></a></p>
+<h4 id="title-IDAWDR0" class="docSection2Title">A Debugging Mindset</h4>
+<p class="blockquote"><em>The easiest person to deceive is one's self</em></p>
+<p class="attribution">• <strong>Edward Bulwer-Lytton, <em>The Disowned</em></strong></p>
+<p class="docText">Before you start debugging, it's important to adopt the right mindset. You need to turn off many of the defenses you use each day to protect your ego, tune out any project pressures you may be under, and get yourself comfortable. Above all, remember the first rule of debugging:</p>
+<p class="docNoteTitle">Tip 25</p>
+<p class="note"><a href="app03.html#id1e5741">Don't Panic</a></p>
+<p class="docText">It's easy to get into a panic, especially if you are facing a deadline, or have a nervous boss or client breathing down your neck while you are trying to find the cause of the bug. But it is very important to step back a pace, and actually <em>think</em> about what could be causing the symptoms that you believe indicate a bug.</p>
+<p class="docText">If your first reaction on witnessing a bug or seeing a bug report is "that's impossible," you are plainly wrong. Don't waste a single neuron on the train of thought that begins "but that can't happen" because quite clearly it <em>can,</em> and has.</p>
+<p class="docText">Beware of myopia when debugging. Resist the urge to fix just the symptoms you see: it is more likely that the actual fault may be several steps removed from what you are observing, and may involve a number of other related things. Always try to discover the root cause of a problem, not just this particular appearance of it.</p>
+<p class="docText"><a id="ch03lev2sec15"></a></p>
+<h4 id="title-IDADFR0" class="docSection2Title">Where to Start</h4>
+<p class="docText">Before you <em>start</em> to look at the bug, make sure that you are working on code that compiled cleanly—without warnings. We routinely set <a id="page_92"></a>compiler warning levels as high as possible. It doesn't make sense to waste time trying to find a problem that the compiler could find for you! We need to concentrate on the harder problems at hand.</p>
+<p class="docText">When trying to solve any problem, you need to gather all the relevant data. Unfortunately, bug reporting isn't an exact science. It's easy to be misled by coincidences, and you can't afford to waste time debugging coincidences. You first need to be accurate in your observations.</p>
+<p class="docText">Accuracy in bug reports is further diminished when they come through a third party—you may actually need to <em>watch</em> the user who reported the bug in action to get a sufficient level of detail.</p>
+<p class="docText">Andy once worked on a large graphics application. Nearing release, the testers reported that the application crashed every time they painted a stroke with a particular brush. The programmer responsible argued that there was nothing wrong with it; he had tried painting with it, and it worked just fine. This dialog went back and forth for several days, with tempers rapidly rising.</p>
+<p class="docText">Finally, we got them together in the same room. The tester selected the brush tool and painted a stroke from the upper right corner to the lower left corner. The application exploded. "Oh," said the programmer, in a small voice, who then sheepishly admitted that he had made test strokes only from the lower left to the upper right, which did not expose the bug.</p>
+<p class="docText">There are two points to this story:</p>
+<ul>
+<li>You may need to interview the user who reported the bug in order to gather more data than you were initially given.</li>
+<li>Artificial tests (such as the programmer's single brush stroke from bottom to top) don't exercise enough of an application. You must brutally test both boundary conditions and realistic end-user usage patterns. You need to do this systematically (see <a href="ch08.html#ch08lev1sec3"><em>Ruthless Testing</em></a>, page <a href="ch08.html#page_237">237</a>).</li>
+</ul>
+<p class="docText"><a id="ch03lev2sec16"></a></p>
+<h4 id="title-IDAVGR0" class="docSection2Title">Debugging Strategies</h4>
+<p class="docText">Once <em>you</em> think you know what is going on, it's time to find out what the <em>program</em> thinks is going on.</p>
+<p class="docText"><a id="page_93"></a></p>
+<div class="sidebar1">
+<p class="docSidebarTitle">Bug Reproduction</p>
+<p class="sidebar">No, our bugs aren't really multiplying (although some of them are probably old enough to do it legally). We're talking about a different kind of reproduction.</p>
+<p class="sidebar">The best way to start fixing a bug is to make it reproducible. After all, if you can't reproduce it, how will you know if it is ever fixed?</p>
+<p class="sidebar">But we want more than a bug that can be reproduced by following some long series of steps; we want a bug that can be reproduced with a <em>single command.</em> It's a lot harder to fix a bug if you have to go through 15 steps to get to the point where the bug shows up. Sometimes by forcing yourself to isolate the circumstances that display the bug, you'll even gain an insight on how to fix it.</p>
+<p class="sidebar">See <a href="ch08.html#ch08lev1sec2"><em>Ubiquitous Automation</em></a>, page <a href="ch08.html#page_230">230</a>, for other ideas along these lines.</p>
+</div>
+<p class="docText"><a id="ch03lev3sec12"></a></p>
+<h5 id="title-IDA1HR0" class="docSection3Title">Visualize Your Data</h5>
+<p class="docText">Often, the easiest way to discern what a program is doing—or what it is going to do—is to get a good look at the data it is operating on. The simplest example of this is a straightforward <code>"variable name = data value"</code> approach, which may be implemented as printed text, or as fields in a GUI dialog box or list.</p>
+<p class="docText">But you can gain a much deeper insight into your data by using a debugger that allows you to <em>visualize</em> your data and all of the interrelationships that exist. There are debuggers that can represent your data as a 3D fly-over through a virtual reality landscape, or as a 3D waveform plot, or just as simple structural diagrams, as shown in <a href="#ch03fig02">Figure 3.2</a> on the next page. As you single-step through your program, pictures like these can be worth much more than a thousand words, as the bug you've been hunting suddenly jumps out at you.</p>
+<p class="docText"><a id="ch03fig02"></a></p>
+<p class="docFigureTitle">Figure 3.2. Sample debugger diagram of a circular linked list. The arrows represent pointers to nodes.</p>
+<p class="image"><img src="images/f03fig02.gif" alt="image" /></p>
+<p class="docText">Even if your debugger has limited support for visualizing data, you can still do it yourself—either by hand, with paper and pencil, or with external plotting programs.</p>
+<p class="docText">The DDD debugger has some visualization capabilities, and is freely available (see [<a href="app01.html#app01lev3sec19">URL 19</a>]). It is interesting to note that DDD works with <a id="page_94"></a>multiple languages, including Ada, C, C++, Fortran, Java, Modula, Pascal, Perl, and Python (clearly an orthogonal design).</p>
+<p class="docText"><a id="ch03lev3sec13"></a></p>
+<h5 id="title-IDA0JR0" class="docSection3Title">Tracing</h5>
+<p class="docText">Debuggers generally focus on the state of the program <em>now.</em> Sometimes you need more—you need to watch the state of a program or a data structure over time. Seeing a stack trace can only tell you how you got here directly. It can't tell you what you were doing prior to this call chain, especially in event-based systems.</p>
+<p class="docText"><em>Tracing statements</em> are those little diagnostic messages you print to the screen or to a file that say things such as "got here" and "value of x = 2." It's a primitive technique compared with IDE-style debuggers, but it is peculiarly effective at diagnosing several classes of errors that debuggers can't. Tracing is invaluable in any system where time itself is a factor: concurrent processes, real-time systems, and event-based applications.</p>
+<p class="docText">You can use tracing statements to "drill down" into the code. That is, you can add tracing statements as you descend the call tree.</p>
+<p class="docText">Trace messages should be in a regular, consistent format; you may want to parse them automatically. For instance, if you needed to track down a resource leak (such as unbalanced file opens/closes), you could trace each <code>open</code> and each <code>close</code> in a log file. By processing the log <a id="page_95"></a>file with Perl, you could easily identify where the offending <code>open</code> was occurring.</p>
+<div class="sidebar1">
+<p class="docSidebarTitle">Corrupt Variables? Check Their Neighborhood</p>
+<p class="sidebar">Sometimes you'll examine a variable, expecting to see a small integer value, and instead get something like <code>0x6e69614d</code>. Before you roll up your sleeves for some serious debugging, have a quick look at the memory around this corrupted variable. Often it will give you a clue. In our case, examining the surrounding memory as characters shows us</p>
+<p class="programlisting">        20333231 6e69614d 2c745320 746f4e0a<br/>          1 2 3       M a i n        S t, \n N o t<br/>        2c6e776f 2058580a 31323433 00000a33<br/>          o w n, \n X X       3 4 2 1   3\n\0\0</p>
+<p class="sidebar">Looks like someone sprayed a street address over our counter. Now we know where to look.</p>
+</div>
+<p class="docText"><a id="ch03lev3sec14"></a></p>
+<h5 id="title-IDAPLR0" class="docSection3Title">Rubber Ducking</h5>
+<p class="docText">A very simple but particularly useful technique for finding the cause of a problem is simply to explain it to someone else. The other person should look over your shoulder at the screen, and nod his or her head constantly (like a rubber duck bobbing up and down in a bathtub). They do not need to say a word; the simple act of explaining, step by step, what the code is supposed to do often causes the problem to leap off the screen and announce itself.<sup><a href="#ch03fn07">[7]</a></sup></p>
+<p class="docFootnote"><sup><a id="ch03fn07">[7]</a></sup> Why "rubber ducking"? While an undergraduate at Imperial College in London, Dave did a lot of work with a research assistant named Greg Pugh, one of the best developers Dave has known. For several months Greg carried around a small yellow rubber duck, which he'd place on his terminal while coding. It was a while before Dave had the courage to ask....</p>
+<p class="docText">It sounds simple, but in explaining the problem to another person you must explicitly state things that you may take for granted when going through the code yourself. By having to verbalize some of these assumptions, you may suddenly gain new insight into the problem.</p>
+<p class="docText"><a id="ch03lev3sec15"></a><a id="page_96"></a></p>
+<h5 id="title-IDACMR0" class="docSection3Title">Process of Elimination</h5>
+<p class="docText">In most projects, the code you are debugging may be a mixture of application code written by you and others on your project team, third-party products (database, connectivity, graphical libraries, specialized communications or algorithms, and so on) and the platform environment (operating system, system libraries, and compilers).</p>
+<p class="docText">It is possible that a bug exists in the OS, the compiler, or a third-party product—but this should not be your first thought. It is much more likely that the bug exists in the application code under development. It is generally more profitable to assume that the application code is incorrectly calling into a library than to assume that the library itself is broken. Even if the problem <em>does</em> lie with a third party, you'll still have to eliminate your code before submitting the bug report.</p>
+<p class="docText">We worked on a project where a senior engineer was convinced that the <code>select</code> system call was broken on Solaris. No amount of persuasion or logic could change his mind (the fact that every other networking application on the box worked fine was irrelevant). He spent weeks writing work-arounds, which, for some odd reason, didn't seem to fix the problem. When finally forced to sit down and read the documentation on <code>select</code>, he discovered the problem and corrected it in a matter of minutes. We now use the phrase "select is broken" as a gentle reminder whenever one of us starts blaming the system for a fault that is likely to be our own.</p>
+<p class="docNoteTitle">Tip 26</p>
+<p class="note"><a href="app03.html#id1e5969">"select" Isn't Broken</a></p>
+<p class="docText">Remember, if you see hoof prints, think horses—not zebras. The OS is probably not broken. And the database is probably just fine.</p>
+<p class="docText">If you "changed only one thing" and the system stopped working, that one thing was likely to be responsible, directly or indirectly, no matter how farfetched it seems. Sometimes the thing that changed is outside of your control: new versions of the OS, compiler, database, or other third-party software can wreak havoc with previously correct code. New bugs might show up. Bugs for which you had a work-around get fixed, breaking the work-around. APIs change, functionality changes; in short, it's a whole new ball game, and you must retest the system under these <a id="page_97"></a>new conditions. So keep a close eye on the schedule when considering an upgrade; you may want to wait until <em>after</em> the next release.</p>
+<p class="docText">If, however, you have no obvious place to start looking, you can always rely on a good old-fashioned binary search. See if the symptoms are present at either of two far away spots in the code. Then look in the middle. If the problem is present, then the bug lies between the start and the middle point; otherwise, it is between the middle point and the end. You can continue in this fashion until you narrow down the spot sufficiently to identify the problem.</p>
+<p class="docText"><a id="ch03lev2sec17"></a></p>
+<h4 id="title-IDARNR0" class="docSection2Title">The Element of Surprise</h4>
+<p class="docText">When you find yourself surprised by a bug (perhaps even muttering "that's impossible" under your breath where we can't hear you), you must reevaluate truths you hold dear. In that linked list routine—the one you knew was bulletproof and couldn't possibly be the cause of this bug—did you test <em>all</em> the boundary conditions? That other piece of code you've been using for years—it couldn't possibly still have a bug in it. Could it?</p>
+<p class="docText">Of course it can. The amount of surprise you feel when something goes wrong is directly proportional to the amount of trust and faith you have in the code being run. That's why, when faced with a "surprising" failure, you must realize that one or more of your assumptions is wrong. Don't gloss over a routine or piece of code involved in the bug because you "know" it works. Prove it. Prove it in <em>this</em> context, with <em>this</em> data, with <em>these</em> boundary conditions.</p>
+<p class="docNoteTitle">Tip 27</p>
+<p class="note"><a href="app03.html#id1e6010">Don't Assume It—Prove It</a></p>
+<p class="docText">When you come across a surprise bug, beyond merely fixing it, you need to determine why this failure wasn't caught earlier. Consider whether you need to amend the unit or other tests so that they would have caught it.</p>
+<p class="docText">Also, if the bug is the result of bad data that was propagated through a couple of levels before causing the explosion, see if better parameter checking in those routines would have isolated it earlier (see the <a id="page_98"></a>discussions on crashing early and assertions on pages <a href="ch04.html#page_120">120</a> and <a href="ch04.html#page_122">122</a>, respectively).</p>
+<p class="docText">While you're at it, are there any other places in the code that may be susceptible to this same bug? Now is the time to find and fix them. Make sure that <em>whatever</em> happened, you'll know if it happens again.</p>
+<p class="docText">If it took a long time to fix this bug, ask yourself why. Is there anything you can do to make fixing this bug easier the next time around? Perhaps you could build in better testing hooks, or write a log file analyzer.</p>
+<p class="docText">Finally, if the bug is the result of someone's wrong assumption, discuss the problem with the whole team: if one person misunderstands, then it's possible many people do.</p>
+<p class="docText">Do all this, and hopefully you won't be surprised next time.</p>
+<p class="docText"><a id="ch03lev2sec18"></a></p>
+<h4 id="title-IDAJPR0" class="docSection2Title">Debugging Checklist</h4>
+<ul>
+<li>Is the problem being reported a direct result of the underlying bug, or merely a symptom?</li>
+<li>Is the bug <em>really</em> in the compiler? Is it in the OS? Or is it in your code?</li>
+<li>If you explained this problem in detail to a coworker, what would you say?</li>
+<li>If the suspect code passes its unit tests, are the tests complete enough? What happens if you run the unit test with <em>this</em> data?</li>
+<li>Do the conditions that caused this bug exist anywhere else in the system?</li>
+</ul>
+<p class="docText"><a id="ch03lev3sec16"></a></p>
+<h5 id="title-IDAPQR0" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch04.html#ch04lev1sec3"><em>Assertive Programming</em></a>, page <a href="ch04.html#page_122">122</a></li>
+<li><a href="ch06.html#ch06lev1sec1"><em>Programming by Coincidence</em></a>, page <a href="ch06.html#page_172">172</a></li>
+<li><a href="ch08.html#ch08lev1sec2"><em>Ubiquitous Automation</em></a>, page <a href="ch08.html#page_230">230</a></li>
+<li><a href="ch08.html#ch08lev1sec3"><em>Ruthless Testing</em></a>, page <a href="ch08.html#page_237">237</a></li>
+</ul>
+<p class="docText"><a id="ch03lev3sec17"></a></p>
+<h5 id="title-IDAWRR0" class="docSection3Title">Challenges</h5>
+<ul>
+<li>Debugging is challenge enough.</li>
+</ul>
+<p class="docText"><a id="ch03lev1sec6"></a><a id="page_99"></a></p>
+<h3 id="title-IDAKSR0" class="docSection1Title">19. Text Manipulation</h3>
+<p class="docText">Pragmatic Programmers manipulate text the same way woodworkers shape wood. In previous sections we discussed some specific tools—shells, editors, debuggers—that we use. These are similar to a wood-worker's chisels, saws, and planes—tools specialized to do one or two jobs well. However, every now and then we need to perform some transformation not readily handled by the basic tool set. We need a general-purpose text manipulation tool.</p>
+<p class="docText">Text manipulation languages are to programming what routers<sup><a href="#ch03fn08">[8]</a></sup> are to woodworking. They are noisy, messy, and somewhat brute force. Make mistakes with them, and entire pieces can be ruined. Some people swear they have no place in the toolbox. But in the right hands, both routers and text manipulation languages can be incredibly powerful and versatile. You can quickly trim something into shape, make joints, and carve. Used properly, these tools have surprising finesse and subtlety. But they take time to master.</p>
+<p class="docFootnote"><sup><a id="ch03fn08">[8]</a></sup> Here <em>router</em> means the tool that spins cutting blades very, very fast, not a device for interconnecting networks.</p>
+<p class="docText">There is a growing number of good text manipulation languages. Unix developers often like to use the power of their command shells, augmented with tools such as <code>awk</code> and <code>sed</code>. People who prefer a more structured tool like the object-oriented nature of Python [<a href="app01.html#app01lev3sec9">URL 9</a>]. Some people use Tcl [<a href="app01.html#app01lev3sec23">URL 23</a>] as their tool of choice. We happen to prefer Ruby [<a href="app01.html#tfh04">TFH04</a>] and Perl [<a href="app01.html#app01lev3sec8">URL 8</a>] for hacking out short scripts.</p>
+<p class="docText">These languages are important enabling technologies. Using them, you can quickly hack up utilities and prototype ideas—jobs that might take five or ten times as long using conventional languages. And that multiplying factor is crucially important to the kind of experimenting that we do. Spending 30 minutes trying out a crazy idea is a whole lot better than spending five hours. Spending a day automating important components of a project is acceptable; spending a week might not be. In their book <em>The Practice of Programming</em> [<a href="app01.html#kp99">KP99</a>], Kernighan and Pike built the same program in five different languages. The Perl version was the shortest (17 lines, compared with C's 150). With Perl you can <a id="page_100"></a>manipulate text, interact with programs, talk over networks, drive Web pages, perform arbitrary precision arithmetic, and write programs that look like Snoopy swearing.</p>
+<p class="docNoteTitle">Tip 28</p>
+<p class="note"><a href="app03.html#id1e6163">Learn a Text Manipulation Language</a></p>
+<p class="docText">To show the wide-ranging applicability of text manipulation languages, here's a sample of some applications we've developed over the last few years.</p>
+<ul>
+<li><a id="d1e6177"></a><strong>Database schema maintenance.</strong> A set of Perl scripts took a plain text file containing a database schema definition and from it generated:<br/>
+<p class="indent1">– The SQL statements to create the database</p>
+<p class="indent1">– Flat data files to populate a data dictionary</p>
+<p class="indent1">– C code libraries to access the database</p>
+<p class="indent1">– Scripts to check database integrity</p>
+<p class="indent1">– Web pages containing schema descriptions and diagrams</p>
+<p class="indent1">– An XML version of the schema</p>
+</li>
+<li><a id="d1e6213"></a><strong>Java property access.</strong> It is good OO programming style to restrict access to an object's properties, forcing external classes to get and set them via methods. However, in the common case where a property is represented inside the class by a simple member variable, creating a get and set method for each variable is tedious and mechanical. We have a Perl script that modifies the source files and inserts the correct method definitions for all appropriately flagged variables.</li>
+<li><a id="d1e6221"></a><strong>Test data generation.</strong> We had tens of thousands of records of test data, spread over several different files and formats, that needed to be knitted together and converted into a form suitable for loading into a relational database. Perl did it in a couple of hours (and in the process found a couple of consistency errors in the original data).</li>
+<li><a id="d1e6229"></a><strong>Book writing.</strong> We think it is important that any code presented in a book should have been tested first. Most of the code in this <a id="page_101"></a>book has been. However, using the <em>DRY</em> principle (see <a href="ch02.html#ch02lev1sec1"><em>The Evils of Duplication</em></a>, page <a href="ch02.html#page_26">26</a>) we didn't want to copy and paste lines of code from the tested programs into the book. That would have meant that the code was duplicated, virtually guaranteeing that we'd forget to update an example when the corresponding program was changed. For some examples, we also didn't want to bore you with all the framework code needed to make our example compile and run. We turned to Perl. A relatively simple script is invoked when we format the book—it extracts a named segment of a source file, does syntax highlighting, and converts the result into the typesetting language we use.</li>
+<li><a id="d1e6243"></a><strong>C to Object Pascal interface.</strong> A client had a team of developers writing Object Pascal on PCs. Their code needed to interface to a body of code written in C. We developed a short Perl script that parsed the C header files, extracting the definitions of all exported functions and the data structures they used. We then generated Object Pascal units with Pascal records for all the C structures, and imported procedure definitions for all the C functions. This generation process became part of the build, so that whenever the C header changed, a new Object Pascal unit would be constructed automatically.</li>
+<li><a id="d1e6251"></a><strong>Generating Web documentation.</strong> Many project teams are publishing their documentation to internal Web sites. We have written many Perl programs that analyze database schemas, C or C++ source files, makefiles, and other project sources to produce the required HTML documentation. We also use Perl to wrap the documents with standard headers and footers, and to transfer them to the Web site.</li>
+</ul>
+<p class="docText">We use text manipulation languages almost every day. Many of the ideas in this book can be implemented more simply in them than in any other language of which we're aware. These languages make it easy to write code generators, which we'll look at next.</p>
+<p class="docText"><a id="ch03lev3sec18"></a></p>
+<h4 id="title-IDAYXR0" class="docSection2Title">Related sections include:</h4>
+<ul>
+<li><a href="ch02.html#ch02lev1sec1"><em>The Evils of Duplication</em></a>, page <a href="ch02.html#page_26">26</a></li>
+</ul>
+<p class="docText"><a id="ch03lev2sec19"></a><a id="page_102"></a></p>
+<h4 id="title-IDAQYR0" class="docSection2Title">Exercises</h4>
+<p class="docText1"><a id="ch03que01"></a><strong><a href="app02.html#ch03ans01">11</a>.</strong> Your C program uses an enumerated type to represent one of 100 states. You'd like to be able to print out the state as a string (as opposed to a number) for debugging purposes. Write a script that reads from standard input a file containing</p>
+<p class="programlisting1">        name<br/>        state_a<br/>        state_b<br/>          :       :</p>
+<p class="indent2">Produce the file <em>name.h,</em> which contains</p>
+<p class="programlisting">        <strong>extern const char</strong>* NAME_names[];<br/>        <strong>typedef enum</strong> {<br/>              state_a,<br/>              state_b,<br/>                :       :<br/>          } NAME;</p>
+<p class="indent2">and the file <em>name.c,</em> which contains</p>
+<p class="programlisting">        <strong>const char</strong>* NAME_names[] = {<br/>              <em>"state_a",</em><br/>              <em>"state_b",</em><br/>                  :       :<br/>          };</p>
+<p class="docText1"><a id="ch03que02"></a><strong><a href="app02.html#ch03ans02">12</a>.</strong> Halfway through writing this book, we realized that we hadn't put the <code>use strict</code> directive into many of our Perl examples. Write a script that goes through the <code>.pl</code> files in a directory and adds a <code>use strict</code> at the end of the initial comment block to all files that don't already have one. Remember to keep a backup of all files you change.</p>
+<p class="docText"><a id="ch03lev1sec7"></a></p>
+<h3 id="title-IDAL1R0" class="docSection1Title">20. Code Generators</h3>
+<p class="docText">When woodworkers are faced with the task of producing the same thing over and over, they cheat. They build themselves a jig or a template. If they get the jig right once, they can reproduce a piece of work time after time. The jig takes away complexity and reduces the chances of making mistakes, leaving the craftsman free to concentrate on quality.</p>
+<p class="docText">As programmers, we often find ourselves in a similar position. We need to achieve the same functionality, but in different contexts. We need to repeat information in different places. Sometimes we just need to protect ourselves from carpal tunnel syndrome by cutting down on repetitive typing.</p>
+<p class="docText"><a id="page_103"></a>In the same way a woodworker invests the time in a jig, a programmer can build a code generator. Once built, it can be used throughout the life of the project at virtually no cost.</p>
+<p class="docNoteTitle">Tip 29</p>
+<p class="note"><a href="app03.html#id1e6370">Write Code That Writes Code</a></p>
+<p class="docText">There are two main types of code generators:</p>
+<ol>
+<li><em>Passive code generators</em> are run once to produce a result. From that point forward, the result becomes freestanding—it is divorced from the code generator. The wizards discussed in <a href="ch06.html#ch06lev1sec5"><em>Evil Wizards</em></a>, page <a href="ch06.html#page_198">198</a>, along with some CASE tools, are examples of passive code generators.</li>
+<li><em>Active code generators</em> are used each time their results are required. The result is a throw-away—it can always be reproduced by the code generator. Often, active code generators read some form of script or control file to produce their results.</li>
+</ol>
+<p class="docText"><a id="ch03lev2sec20"></a></p>
+<h4 id="title-IDA22R0" class="docSection2Title">Passive Code Generators</h4>
+<p class="docText">Passive code generators save typing. They are basically parameterized templates, generating a given output from a set of inputs. Once the result is produced, it becomes a full-fledged source file in the project; it will be edited, compiled, and placed under source control just like any other file. Its origins will be forgotten.</p>
+<p class="docText">Passive code generators have many uses:</p>
+<ul>
+<li><em>Creating new source files.</em> A passive code generator can produce templates, source code control directives, copyright notices, and standard comment blocks for each new file in a project. We have our editors set up to do this whenever we create a new file: edit a new Java program, and the new editor buffer will automatically contain a comment block, package directive, and the outline class declaration, already filled in.</li>
+<li><em>Performing one-off conversions</em> among programming languages. We started writing this book using the troff system, but we switched to L<small>A</small>TEX after 15 sections had been completed. We wrote a code generator that read the troff source and converted it to L<small>A</small>TEX. It was <a id="page_104"></a>about 90% accurate; the rest we did by hand. This is an interesting feature of passive code generators: they don't have to be totally accurate. You get to choose how much effort you put into the generator, compared with the energy you spend fixing up its output.</li>
+<li><em>Producing lookup tables and other resources</em> that are expensive to compute at runtime. Instead of calculating trigonometric functions, many early graphics systems used precomputed tables of sine and cosine values. Typically, these tables were produced by a passive code generator and then copied into the source.</li>
+</ul>
+<p class="docText"><a id="ch03lev2sec21"></a></p>
+<h4 id="title-IDA43R0" class="docSection2Title">Active Code Generators</h4>
+<p class="docText">While passive code generators are simply a convenience, their active cousins are a necessity if you want to follow the <em>DRY</em> principle. With an active code generator, you can take a single representation of some piece of knowledge and convert it into all the forms your application needs. This <em>is not</em> duplication, because the derived forms are disposable, and are generated as needed by the code generator (hence the word <em>active</em>).</p>
+<p class="docText">Whenever you find yourself trying to get two disparate environments to work together, you should consider using active code generators.</p>
+<p class="docText">Perhaps you're developing a database application. Here, you're dealing with two environments—the database and the programming language you are using to access it. You have a schema, and you need to define low-level structures mirroring the layout of certain database tables. You could just code these directly, but this violates the <em>DRY</em> principle: knowledge of the schema would then be expressed in two places. When the schema changes, you need to remember to change the corresponding code. If a column is removed from a table, but the code base is not changed, you might not even get a compilation error. The first you'll know about it is when your tests start failing (or when the user calls).</p>
+<p class="docText">An alternative is to use an active code generator—take the schema and use it to generate the source code for the structures, as shown in <a href="#ch03fig03">Figure 3.3</a>. Now, whenever the schema changes, the code used to access it also changes, automatically. If a column is removed, then its corresponding field in the structure will disappear, and any higher-level code that uses that column will fail to compile. You've caught the error at compile time, <a id="page_105"></a>not in production. Of course, this scheme works only if you make the code generation part of the build process itself.<sup><a href="#ch03fn09">[9]</a></sup></p>
+<p class="docFootnote"><sup><a id="ch03fn09">[9]</a></sup> Just <em>how</em> do you go about building code from a database schema? There are several ways. If the schema is held in a flat file (for example, as <code>create table</code> statements), then a relatively simple script can parse it and generate the source. Alternatively, if you use a tool to create the schema directly in the database, then you should be able to extract the information you need directly from the database's data dictionary. Perl provides libraries that give you access to most major databases.</p>
+<p class="docText"><a id="ch03fig03"></a></p>
+<p class="docFigureTitle">Figure 3.3. Active code generator creates code from a database schema</p>
+<p class="image"><img src="images/f03fig03.gif" alt="image" /></p>
+<p class="docText">Another example of melding environments using code generators happens when different programming languages are used in the same application. In order to communicate, each code base will need some information in common—data structures, message formats, and field names, for example. Rather than duplicate this information, use a code generator. Sometimes you can parse the information out of the source files of one language and use it to generate code in a second language. Often, though, it is simpler to express it in a simpler, language-neutral representation and generate the code for both languages, as shown in <a href="#ch03fig04">Figure 3.4</a> on the following page. Also see the answer to Exercise 13 on page <a href="app02.html#page_286">286</a> for an example of how to separate the parsing of the flat file representation from code generation.</p>
+<p class="docText"><a id="ch03fig04"></a></p>
+<p class="docFigureTitle">Figure 3.4. Generating code from a language-neutral representation. In the input file, lines starting with 'M' flag the start of a message definition, 'F' lines define fields, and 'E' is the end of the message.</p>
+<p class="image"><img src="images/f03fig04.gif" alt="image" /></p>
+<p class="docText"><a id="ch03lev2sec22"></a></p>
+<h4 id="title-IDAABS0" class="docSection2Title">Code Generators Needn't Be Complex</h4>
+<p class="docText">All this talk of <em>active</em> this and <em>passive</em> that may leave you with the impression that code generators are complex beasts. They needn't be. Normally the most complex part is the parser, which analyzes the input file. Keep the input format simple, and the code generator becomes <a id="page_106"></a>simple. Have a look at the answer to Exercise 13 (page <a href="app02.html#page_286">286</a>): the actual code generation is basically <code>print</code> statements.</p>
+<p class="docText"><a id="ch03lev2sec23"></a></p>
+<h4 id="title-IDASBS0" class="docSection2Title">Code Generators Needn't Generate Code</h4>
+<p class="docText">Although many of the examples in this section show code generators that produce program source, this needn't always be the case. You can use code generators to write just about any output: HTML, XML, plain text—any text that might be an input somewhere else in your project.</p>
+<p class="docText"><a id="ch03lev3sec19"></a></p>
+<h5 id="title-IDAACS0" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch02.html#ch02lev1sec1"><em>The Evils of Duplication</em></a>, page <a href="ch02.html#page_26">26</a></li>
+<li><a href="ch03.html#ch03lev1sec1"><em>The Power of Plain Text</em></a>, page <a href="ch03.html#page_73">73</a></li>
+<li><a href="ch06.html#ch06lev1sec5"><em>Evil Wizards</em></a>, page <a href="ch06.html#page_198">198</a></li>
+<li><a href="ch08.html#ch08lev1sec2"><em>Ubiquitous Automation</em></a>, page <a href="ch08.html#page_230">230</a></li>
+</ul>
+<p class="docText"><a id="ch03lev2sec24"></a></p>
+<h4 id="title-IDAIDS0" class="docSection2Title">Exercises</h4>
+<p class="docText1"><a id="ch03que03"></a><strong><a href="app02.html#ch03ans03">13</a>.</strong> Write a code generator that takes the input file in <a href="#ch03fig04">Figure 3.4</a>, and generates output in two languages of your choice. Try to make it easy to add new languages.</p>
+</div>
+</body>
+</html>

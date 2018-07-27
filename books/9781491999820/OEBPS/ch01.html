@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>1. Introducing Angular</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><section data-type="chapter" epub:type="chapter" class="pagenumrestart" data-pdf-bookmark="Chapter 1. Introducing Angular"><div class="chapter" id="chapter-1">
+<h1><span class="label">Chapter 1. </span>Introducing Angular</h1>
+
+
+<p>Our expectations of what we can perform on the web (and by web here, I mean both desktop as well as the mobile web) has increased to the point where what used to be full-fledged native desktop applications are run on the browser. Web applications now resemble desktop native applications in scope and complexity, which also results in added complexity as a developer.</p>
+
+<p>Furthermore, Single-Page Applications (SPAs) have become a very common choice in building out frontend experiences, as they allow for great customer experiences in terms of speed and responsiveness.<a data-type="indexterm" data-primary="Single-Page Applications (SPAs)" id="idm139828148017040"></a> Once the initial application has loaded into a customer’s browser, further interactions only have to worry about loading the additional data needed, without reloading the entire page as was the norm with server-side rendered pages of the past.</p>
+
+<p>AngularJS was started to first bring structure and consistency to single-page web application development, while providing a way to quickly develop scalable and maintainable web applications. In the time since it was released, the web and browsers have moved forward by leaps and bounds, and some of the problems that AngularJS was solving weren’t as relevant anymore.</p>
+
+<p>Angular then was basically a completely new rewritten version of the framework, built for the new-age web. It leveraged a lot of the newer advances, from modules to web components, while improving the existing features of AngularJS, like dependency injection and templating.</p>
+<div data-type="tip"><h6>Tip</h6>
+<p>From now on, when I say AngularJS, I refer to the original AngularJS framework, the 1.0 version.<a data-type="indexterm" data-primary="Angular" data-secondary="and AngularJS" id="idm139828148013344"></a> Whenever I mention Angular, it refers to the newer framework, from 2.0 onward. This is primarily because Angular 2.0 onward does not predicate itself to using only JavaScript, but also supports writing applications in TypeScript.</p>
+</div>
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Why Angular"><div class="sect1" id="idm139828148011744">
+<h1>Why Angular</h1>
+
+<p>Angular as a framework provides a few significant advantages while also providing a common structure for developers on a team to work with.<a data-type="indexterm" data-primary="Angular" data-secondary="advantages of" id="idm139828148010288"></a> It allows us to develop large applications in a maintainable manner. We will dig into each one of these in more detail in the following chapters:</p>
+<dl>
+<dt>Custom components</dt>
+<dd>
+<p>Angular allows you to build your own declarative components that can pack functionality along with its rendering logic into bite-sized, reusable pieces. It also plays well with web components.<a data-type="indexterm" data-primary="custom components" id="idm139828148006960"></a></p>
+</dd>
+<dt>Data binding</dt>
+<dd>
+<p>Angular allows you to seamlessly move your data from your core JavaScript code to the view, and react to view events without having to write the glue code yourself.<a data-type="indexterm" data-primary="data binding" id="idm139828148004800"></a></p>
+</dd>
+<dt>Dependency injection</dt>
+<dd>
+<p>Angular allows you to write modular services, and have them injected wherever they are needed. This greatly improves the testability and reusability of the same.<a data-type="indexterm" data-primary="dependency injection" id="idm139828148002640"></a></p>
+</dd>
+<dt>Testing</dt>
+<dd>
+<p>Tests are first-class citizens, and Angular has been built from the ground up with testability in mind. You can (and should!) test every part of your application.<a data-type="indexterm" data-primary="testing" id="idm139828148000480"></a></p>
+</dd>
+<dt>Comprehensive</dt>
+<dd>
+<p>Angular is a full-fledged framework, and provides out-of-the-box solutions for server communication, routing within your application, and more.<a data-type="indexterm" data-primary="comprehensive framework (Angular)" id="idm139828147998336"></a></p>
+</dd>
+</dl>
+<div data-type="note" epub:type="note"><h6>Note</h6>
+<p>Angular as a framework has adopted semantic versioning for all new releases. Furthermore, the core team has an aggressive roadmap, with a new major release planned every six months.<a data-type="indexterm" data-primary="Angular" data-secondary="versioning and upgrades" id="idm139828147996496"></a> Thus, what started off as Angular 2 is now referred to as just Angular, since we don’t want to call them Angular 2, Angular 4, Angular 5, and so on.</p>
+
+<p>That said, unlike AngularJS to Angular, upgrading between versions of Angular (say 2 to 4, etc.) is an incremental step, and more often than not an almost trivial upgrade. So you don’t need to worry about having to do a major upgrade every few months with drastic code changes.</p>
+</div>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="What This Book Will Not Cover"><div class="sect1" id="idm139828147994176">
+<h1>What This Book Will Not Cover</h1>
+
+<p>While Angular as a framework is quite large, the community around it is even larger. A lot of great features and options for use with Angular in fact stem from this <span class="keep-together">community</span>. This makes life harder as an author to figure out how to write a book that preps you, the reader, as an Angular developer, while still limiting the scope to what I think are the essentials.</p>
+
+<p>To that extent, while Angular can be extended in so many ways, from
+writing native mobile apps using Angular (see <a href="https://www.nativescript.org/">NativeScript</a>), rendering your Angular application on the server (see <a href="https://universal.angular.io/">Angular Universal</a>), using Redux as a first-class option in Angular (multiple options; see <a href="https://github.com/ngrx">ngrx</a>), and many more, the initial version of the book will only focus on the core Angular platform and all the capabilities it provides. It will also strive to focus on the more common cases rather than cover every single feature and capability of Angular, as such a book would run into thousands of pages.</p>
+
+<p>The intention is to focus on the parts that will be necessary and useful to all Angular developers, rather than focus on bits and parts that would be useful to a subset.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Getting Started with Your Development Environment"><div class="sect1" id="idm139828147987840">
+<h1>Getting Started with Your Development Environment</h1>
+
+<p>Angular expects you to do a fair bit of groundwork to be able to develop seamlessly on your computer. Certain prerequisites need to be installed that we will cover in this section.<a data-type="indexterm" data-primary="development environment" data-secondary="getting started with" id="idm139828147986112"></a></p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Node.js"><div class="sect2" id="idm139828147985008">
+<h2>Node.js</h2>
+
+<p>While you will never be coding in Node.js, Angular uses Node.js as its base for a large part of its build environment.<a data-type="indexterm" data-primary="development environment" data-secondary="getting started with" data-tertiary="Node.js" id="idm139828147983344"></a> Thus, to get started with Angular, you will need to have Node.js installed on your environment.<a data-type="indexterm" data-primary="Node.js, installing" id="idm139828147981856"></a> There are multiple ways to install Node.js, so please refer to the <a href="https://nodejs.org/en/download/">Node.js Download Page</a> for more instructions.</p>
+<div data-type="warning" epub:type="warning"><h6>Warning</h6>
+<p>On macOS, installing Node.js through Homebrew has been known to cause some issues. So try installing it directly if you run into any problems.</p>
+</div>
+
+<p>You need to install version 6.9.0 or above of Node.js, and version 3.0.0 or above of npm.<a data-type="indexterm" data-primary="NPM" id="idm139828147978528"></a> You can confirm your versions after installing by running the following <span class="keep-together">commands</span>:</p>
+<pre data-type="programlisting">
+<strong>node --version</strong>
+<strong>npm --v</strong>
+</pre>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="TypeScript"><div class="sect2" id="idm139828147975296">
+<h2>TypeScript</h2>
+
+<p>TypeScript adds a set of types to the JavaScript code that we write, allowing us to write JavaScript that is easier to understand, reason about, and trace. It ensures that the latest proposed ECMAScript features are also available at the tip of our fingers.<a data-type="indexterm" data-primary="development environment" data-secondary="getting started with" data-tertiary="TypeScript" id="idm139828147973584"></a><a data-type="indexterm" data-primary="TypeScript" data-secondary="advantage of using" id="idm139828147972336"></a> At the end of the day, all your TypeScript code compiles down to JavaScript that can run easily in any environment.</p>
+
+<p>TypeScript is not mandatory for developing an Angular application, but it is highly recommended, as it offers some syntactic sugar, as well as makes the codebase easier to understand and maintain. In this book, we will be using TypeScript to develop Angular applications.</p>
+
+<p>TypeScript is installed as an NPM package, <a data-type="indexterm" data-primary="TypeScript" data-secondary="installing" id="idm139828147970048"></a>and thus can be simply installed with the following command:</p>
+<pre data-type="programlisting">
+<strong>npm install -g typescript</strong>
+</pre>
+
+<p>Make sure you install at least version 2.4.0 or above.</p>
+
+<p>While we will be covering most of the basic features/concepts that we use from TypeScript, it is always a good idea to learn more from the <a href="https://www.typescriptlang.org/docs/home.html">official TypeScript documentation</a>.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Angular CLI"><div class="sect2" id="idm139828147965824">
+<h2>Angular CLI</h2>
+
+<p>Unlike AngularJS, where it was easy to source one file as a dependency and be up and running, Angular has a slightly more complicated setup.<a data-type="indexterm" data-primary="development environment" data-secondary="getting started with" data-tertiary="Angular CLI" id="idm139828147964096"></a> To this extent, the Angular team has created a command-line interface (CLI) tool to make it easier to bootstrap and develop your Angular applications.<a data-type="indexterm" data-primary="command-line interface (CLI)" id="idm139828147962560"></a></p>
+
+<p>As it significantly helps making the process of development easier, I recommend using it at the very least for your initial projects until you get the hang of all the things it does and are comfortable doing it yourself. In this book, we will cover both the CLI command as well as the actions it performs underneath, so that you get a good understanding of all the changes needed.</p>
+
+<p>Installing the latest version (1.7.3 at the time of writing this book) is as simple as running the following command:</p>
+<pre data-type="programlisting">
+<strong>npm install -g @angular/cli</strong>
+</pre>
+<div data-type="tip"><h6>Tip</h6>
+<p>If you are scratching your head at this newfangled naming convention for Angular packages, <a data-type="indexterm" data-primary="packages, naming convention for" id="idm139828147958288"></a>the new syntax is a feature of NPM called <em>scoped packages</em>.<a data-type="indexterm" data-primary="NPM" data-secondary="scoped packages" id="idm139828147956912"></a><a data-type="indexterm" data-primary="scoped packages (NPM)" id="idm139828147955904"></a> It allows packages to be grouped together within NPM under a single folder. You can read more <a href="https://docs.npmjs.com/misc/scope">here</a>.</p>
+</div>
+
+<p>Once installed, you can confirm if it was successful by running the following <span class="keep-together">command</span>:</p>
+<pre data-type="programlisting">
+<strong>ng --version</strong>
+</pre>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Getting the Codebase"><div class="sect2" id="idm139828147951760">
+<h2>Getting the Codebase</h2>
+
+<p>All the examples from this book, along with the exercises and the final solution, are hosted as a Git repository.<a data-type="indexterm" data-primary="development environment" data-secondary="getting started with" data-tertiary="codebase, getting" id="idm139828147950384"></a><a data-type="indexterm" data-primary="Git repository for this book" id="idm139828147949136"></a><a data-type="indexterm" data-primary="code examples from this book" data-secondary="getting the codebase" id="idm139828147948448"></a> While it is not mandatory to download this, you can choose to do so if you want a reference or want to play around with the samples in this book. You can do so by cloning the Git repository by running the following <span class="keep-together">command</span>:</p>
+<pre data-type="programlisting">
+<strong>git clone https://github.com/shyamseshadri/angular-up-and-running.git</strong>
+</pre>
+
+<p>This will create a folder called <em>angular-up-and-running</em> in your current working directory with all the necessary examples. Within this directory you’ll find subfolders containing the examples, organized by chapter.</p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Conclusion"><div class="sect1" id="idm139828147943936">
+<h1>Conclusion</h1>
+
+<p>At this point, we are all set up with our development environment and are ready to start developing Angular applications. We have installed Node.js, TypeScript, as well as the Angular CLI and understand the need and use of each.</p>
+
+<p>In the next chapter, we will finally get our hands dirty building our first Angular application and understanding some of the basic terms and concepts of Angular.</p>
+</div></section>
+
+
+
+
+
+
+
+</div></section></div>
+</body>
+</html>

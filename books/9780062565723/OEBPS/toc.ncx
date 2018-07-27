@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
+    <head>
+        <meta name="dtb:uid" content="9780062565723" />
+        <meta name="dtb:generator" content="epub-nicohaenggi"/>
+        <meta name="dtb:depth" content="1"/>
+        <meta name="dtb:totalPageCount" content="0"/>
+        <meta name="dtb:maxPageNumber" content="0"/>
+    </head>
+    <docTitle>
+        <text>WTF?: What&#39;s the Future and Why It&#39;s Up to Us</text>
+    </docTitle>
+    <docAuthor>
+        <text>Tim O&#39;Reilly</text>
+    </docAuthor>
+    <navMap>
+        
+                <navPoint id="cover" playOrder="1" class="chapter">
+                    <navLabel>
+                        <text>Cover</text>
+                    </navLabel>
+                    <content src="9780062565723_Cover.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-1" playOrder="2" class="chapter">
+                    <navLabel>
+                        <text>Title Page</text>
+                    </navLabel>
+                    <content src="9780062565723_Titlepage.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-2" playOrder="3" class="chapter">
+                    <navLabel>
+                        <text>Dedication</text>
+                    </navLabel>
+                    <content src="9780062565723_Dedication.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="toc" playOrder="4" class="chapter">
+                    <navLabel>
+                        <text>Contents</text>
+                    </navLabel>
+                    <content src="nav.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-4" playOrder="5" class="chapter">
+                    <navLabel>
+                        <text>Introduction: The WTF? Economy</text>
+                    </navLabel>
+                    <content src="9780062565723_Introduction.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-5" playOrder="6" class="chapter">
+                    <navLabel>
+                        <text>Part I: Using the Right Maps</text>
+                    </navLabel>
+                    <content src="9780062565723_Part_1.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-6" playOrder="7" class="chapter">
+                    <navLabel>
+                        <text>1   Seeing the Future in the Present</text>
+                    </navLabel>
+                    <content src="9780062565723_Chapter_1.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-7" playOrder="8" class="chapter">
+                    <navLabel>
+                        <text>2   Toward a Global Brain</text>
+                    </navLabel>
+                    <content src="9780062565723_Chapter_2.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-8" playOrder="9" class="chapter">
+                    <navLabel>
+                        <text>3   Learning from Lyft and Uber</text>
+                    </navLabel>
+                    <content src="9780062565723_Chapter_3.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-9" playOrder="10" class="chapter">
+                    <navLabel>
+                        <text>4   There Isn’t Just One Future</text>
+                    </navLabel>
+                    <content src="9780062565723_Chapter_4.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-10" playOrder="11" class="chapter">
+                    <navLabel>
+                        <text>Part II: Platform Thinking</text>
+                    </navLabel>
+                    <content src="9780062565723_Part_2.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-11" playOrder="12" class="chapter">
+                    <navLabel>
+                        <text>5   Networks and the Nature of the Firm</text>
+                    </navLabel>
+                    <content src="9780062565723_Chapter_5.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-12" playOrder="13" class="chapter">
+                    <navLabel>
+                        <text>6   Thinking in Promises</text>
+                    </navLabel>
+                    <content src="9780062565723_Chapter_6.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-13" playOrder="14" class="chapter">
+                    <navLabel>
+                        <text>7   Government as a Platform</text>
+                    </navLabel>
+                    <content src="9780062565723_Chapter_7.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-14" playOrder="15" class="chapter">
+                    <navLabel>
+                        <text>Part III: A World Ruled by Algorithms</text>
+                    </navLabel>
+                    <content src="9780062565723_Part_3.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-15" playOrder="16" class="chapter">
+                    <navLabel>
+                        <text>8   Managing a Workforce of Djinns</text>
+                    </navLabel>
+                    <content src="9780062565723_Chapter_8.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-16" playOrder="17" class="chapter">
+                    <navLabel>
+                        <text>9   “A Hot Temper Leaps O’er a Cold Decree”</text>
+                    </navLabel>
+                    <content src="9780062565723_Chapter_9.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-17" playOrder="18" class="chapter">
+                    <navLabel>
+                        <text>10   Media in the Age of Algorithms</text>
+                    </navLabel>
+                    <content src="9780062565723_Chapter_10.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-18" playOrder="19" class="chapter">
+                    <navLabel>
+                        <text>11   Our Skynet Moment</text>
+                    </navLabel>
+                    <content src="9780062565723_Chapter_11.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-19" playOrder="20" class="chapter">
+                    <navLabel>
+                        <text>Part IV: It&amp;#8217;s Up to Us</text>
+                    </navLabel>
+                    <content src="9780062565723_Part_4.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-20" playOrder="21" class="chapter">
+                    <navLabel>
+                        <text>12   Rewriting the Rules</text>
+                    </navLabel>
+                    <content src="9780062565723_Chapter_12.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-21" playOrder="22" class="chapter">
+                    <navLabel>
+                        <text>13   Supermoney</text>
+                    </navLabel>
+                    <content src="9780062565723_Chapter_13.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-22" playOrder="23" class="chapter">
+                    <navLabel>
+                        <text>14   We Don’t Have to Run Out of Jobs</text>
+                    </navLabel>
+                    <content src="9780062565723_Chapter_14.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-23" playOrder="24" class="chapter">
+                    <navLabel>
+                        <text>15   Don’t Replace People, Augment Them</text>
+                    </navLabel>
+                    <content src="9780062565723_Chapter_15.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-24" playOrder="25" class="chapter">
+                    <navLabel>
+                        <text>16   Work on Stuff That Matters</text>
+                    </navLabel>
+                    <content src="9780062565723_Chapter_16.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-25" playOrder="26" class="chapter">
+                    <navLabel>
+                        <text>Acknowledgments</text>
+                    </navLabel>
+                    <content src="9780062565723_Acknowledgments.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-26" playOrder="27" class="chapter">
+                    <navLabel>
+                        <text>Notes</text>
+                    </navLabel>
+                    <content src="9780062565723_Notes.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-27" playOrder="28" class="chapter">
+                    <navLabel>
+                        <text>Index</text>
+                    </navLabel>
+                    <content src="9780062565723_Index.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-28" playOrder="29" class="chapter">
+                    <navLabel>
+                        <text>About the Author</text>
+                    </navLabel>
+                    <content src="About_the_Author.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="tocxhtmlfile" playOrder="0" class="chapter">
+                    <navLabel>
+                        <text>WTF?</text>
+                    </navLabel>
+                    <content src="9780062565723_BA.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-29" playOrder="30" class="chapter">
+                    <navLabel>
+                        <text>Credits</text>
+                    </navLabel>
+                    <content src="9780062565723_Credits.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-31" playOrder="31" class="chapter">
+                    <navLabel>
+                        <text>Copyright</text>
+                    </navLabel>
+                    <content src="9780062565723_Copyright.xhtml"/>
+                </navPoint>
+        
+                <navPoint id="x9780062565723-32" playOrder="32" class="chapter">
+                    <navLabel>
+                        <text>About the Publisher</text>
+                    </navLabel>
+                    <content src="About_the_Publisher.xhtml"/>
+                </navPoint>
+        
+    </navMap>
+</ncx>

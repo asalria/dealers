@@ -1,0 +1,1101 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>8. Angular Services</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><section data-type="chapter" epub:type="chapter" data-pdf-bookmark="Chapter 8. Angular Services"><div class="chapter" id="chapter-8">
+<h1><span class="label">Chapter 8. </span>Angular Services</h1>
+
+
+<p>In the previous two chapters, we worked on creating form-based Angular applications.<a data-type="indexterm" data-primary="Angular services" id="ix_Angser"></a> To this extent, we approached it in two ways: the traditional template-driven approach and then the reactive form-based approach. With both, we looked at the building blocks and then built live working forms with validation and proper messaging.</p>
+
+<p>In this chapter, we will move beyond the UI for a bit, and start exploring Angular services, which are the workhorses of any application.<a data-type="indexterm" data-primary="services" data-seealso="Angular services" id="idm139828124147488"></a> We will take  a step back, understand what Angular services are, and how to create one. Then we will dig into the Angular dependency injection system and understand how to use and leverage it, before going off and building our own Angular services.</p>
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="What Are Angular Services?"><div class="sect1" id="idm139828124145984">
+<h1>What Are Angular Services?</h1>
+
+<p>We have mostly worked with Angular components so far. Components, to quickly recap, are responsible for deciding what data to display and how to render and display it in the UI.<a data-type="indexterm" data-primary="Angular services" data-secondary="about" id="idm139828124144288"></a> We bind our data from the components to our UI and bind our events from the UI to methods in the components to allow and handle user interactions. That is, components in Angular are our presentation layer, and should be involved in and focus on the presentation aspects of data.</p>
+
+<p>But if components are our presentation layer, it begs the question of what should be responsible for the actual data fetching and common business logic in an Angular application. This is where Angular services come in. Angular services are that layer that is common across your application, that can be reused across various components. Generally, you would create and use Angular services when:</p>
+
+<ul>
+<li>
+<p>You need to retrieve data from or send data to your server. This may or may not involve any processing of the data while it is being transferred.</p>
+</li>
+<li>
+<p>You need to encapsulate application logic that is not specific to any one component, or logic that can be reused across components.</p>
+</li>
+<li>
+<p>You need to share data across components, especially across components that may or may not know about each other. Services by default are  singletons across your application, which allows you to store state and access them across various components.</p>
+</li>
+</ul>
+
+<p>Another simple way to think about Angular services is that it is the layer to abstract the “how” away from the component, so that the component can just focus on the “what,” and let the service decide the how.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Creating Our Own Angular Service"><div class="sect1" id="idm139828124137696">
+<h1>Creating Our Own Angular Service</h1>
+
+<p>Instead of talking in abstract, let’s dig into some actual code so that we can more fully understand the concept of services.<a data-type="indexterm" data-primary="Angular services" data-secondary="creating" id="ix_Angsercr"></a> What we will do is build on the example we have worked on so far, and extend it using Angular services. We will try to accomplish the following things in our stock market application:</p>
+
+<ul>
+<li>
+<p>Fetch the list of stocks to show from a service, instead of hardcoding it in the component.</p>
+</li>
+<li>
+<p>When we create a stock, we will send it to the service.</p>
+</li>
+<li>
+<p>When we create a stock, we want it to show up in our list of stocks.</p>
+</li>
+</ul>
+
+<p>To do this, if we want to continue using components, we would have to come up with a way for our <code>CreateStockComponent</code> to communicate with our <code>StockItemComponent</code>, and keep the data in sync between the two. This would mean our components would have to know each other, and where in the hierarchy they and all other components fit.</p>
+
+<p>First, we will add a <code>StockListComponent</code> that fetches a list of stocks, and displays them using the <code>StockItemComponent</code>. This component will use the <code>StockService</code> that we will build to act as a layer behind both the components. It will be responsible for figuring out how and where to fetch the list of stocks from, and how to create a stock. In this chapter, we will continue with it being a list on the client, but we will see how to build it in a way that each component does not need to worry about the details. Later, when we learn how to work with an HTTP server, we will see how easy it is to switch once we have a service layer in between.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Digging into the Example"><div class="sect2" id="idm139828124127456">
+<h2>Digging into the Example</h2>
+
+<p>For this example, you can use the code from <em>chapter6/template-driven/control-validity</em> as the base to code from.<a data-type="indexterm" data-primary="Angular services" data-secondary="creating" data-tertiary="examining the code" id="ix_Angsercrcde"></a> We will modify the example to achieve what we have just outlined.</p>
+
+<p>First, let’s tackle the easy stuff. The <code>StockItemComponent</code> class does not need any change, but we will change the template for it slightly so that it displays both an Add to Favorite and a Remove from Favorite button depending on the state of the stock. We can modify <em>src/app/stock/stock-item/stock-item.component.html</em> as follows:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-container"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"name"</code><code class="nt">&gt;</code>{{stock.name + ' (' + stock.code + ')'}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"exchange"</code><code class="nt">&gt;</code>{{stock.exchange}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"price"</code>
+      <code class="err">[</code><code class="na">class</code><code class="err">.</code><code class="na">positive</code><code class="err">]="</code><code class="na">stock</code><code class="err">.</code><code class="na">isPositiveChange</code><code class="err">()"</code>
+      <code class="err">[</code><code class="na">class</code><code class="err">.</code><code class="na">negative</code><code class="err">]="!</code><code class="na">stock</code><code class="err">.</code><code class="na">isPositiveChange</code><code class="err">()"</code><code class="nt">&gt;</code>$ {{stock.price}}<code class="nt">&lt;/div&gt;</code>
+  <code class="nt">&lt;button</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">onToggleFavorite</code><code class="err">($</code><code class="na">event</code><code class="err">)"</code>
+          <code class="err">*</code><code class="na">ngIf=</code><code class="s">"!stock.favorite"</code><code class="nt">&gt;</code>Add to Favorite<code class="nt">&lt;/button&gt;</code>
+  <code class="nt">&lt;button</code> <code class="err">(</code><code class="na">click</code><code class="err">)="</code><code class="na">onToggleFavorite</code><code class="err">($</code><code class="na">event</code><code class="err">)"</code>
+          <code class="err">*</code><code class="na">ngIf=</code><code class="s">"stock.favorite"</code><code class="nt">&gt;</code>Remove from Favorite<code class="nt">&lt;/button&gt;</code>
+<code class="nt">&lt;/div&gt;</code></pre>
+
+<p>We have just added a <code>div</code> to show the <code>exchange</code> of the stock, and a button to show Remove from Favorite if the stock is already favorited.</p>
+
+<p>Next, let’s create the skeleton for the <code>StockListComponent</code> before we try creating and integrating our <code>StockService</code>. We can generate the skeleton by executing:</p>
+
+<pre data-type="programlisting">ng g component stock/stock-list</pre>
+
+<p>which we can then modify to our purpose. We will modify the <em>src/app/stock/stock-list/stock-list.component.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-stock-list'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./stock-list.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./stock-list.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockListComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">stocks</code>: <code class="kt">Stock</code><code class="p">[];</code>
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{</code> <code class="p">}</code>
+
+  <code class="nx">ngOnInit() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stocks</code> <code class="o">=</code> <code class="p">[</code>
+      <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Test Stock Company'</code><code class="p">,</code> <code class="s1">'TSC'</code><code class="p">,</code> <code class="mi">85</code><code class="p">,</code> <code class="mi">80</code><code class="p">,</code> <code class="s1">'NASDAQ'</code><code class="p">),</code>
+      <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Second Stock Company'</code><code class="p">,</code> <code class="s1">'SSC'</code><code class="p">,</code> <code class="mi">10</code><code class="p">,</code> <code class="mi">20</code><code class="p">,</code> <code class="s1">'NSE'</code><code class="p">),</code>
+      <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Last Stock Company'</code><code class="p">,</code> <code class="s1">'LSC'</code><code class="p">,</code> <code class="mi">876</code><code class="p">,</code> <code class="mi">765</code><code class="p">,</code> <code class="s1">'NYSE'</code><code class="p">)</code>
+    <code class="p">];</code>
+  <code class="p">}</code>
+
+  <code class="nx">onToggleFavorite</code><code class="p">(</code><code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">)</code> <code class="p">{</code>
+    <code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Favorite for stock '</code><code class="p">,</code> <code class="nx">stock</code><code class="p">,</code> <code class="s1">' was triggered'</code><code class="p">);</code>
+    <code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code> <code class="o">=</code> <code class="o">!</code><code class="nx">stock</code><code class="p">.</code><code class="nx">favorite</code><code class="p">;</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>There are a few things of note here, but nothing fundamentally new or path-breaking so far:</p>
+
+<ul>
+<li>
+<p>We have declared an array of stocks at the class level, and initialized it with some default values in the <code>ngOnInit</code> block.</p>
+</li>
+<li>
+<p>We have a function <code>onToggleFavorite</code> that logs the stock and toggles its favorite state.<a data-type="indexterm" data-primary="templates" data-secondary="stock service (example)" id="idm139828123864176"></a></p>
+</li>
+</ul>
+
+<p>Let’s now look at its corresponding template, in <em>src/app/stock/stock-list/stock-list.component.html</em>:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;app-stock-item</code> <code class="err">*</code><code class="na">ngFor=</code><code class="s">"let stock of stocks"</code> <code class="err">[</code><code class="na">stock</code><code class="err">]="</code><code class="na">stock</code><code class="err">"</code>
+                <code class="err">(</code><code class="na">toggleFavorite</code><code class="err">)="</code><code class="na">onToggleFavorite</code><code class="err">($</code><code class="na">event</code><code class="err">)"</code><code class="nt">&gt;</code>
+<code class="nt">&lt;/app-stock-item&gt;</code></pre>
+
+<p>In the template, we simply loop over all the stocks and display an instance of the <code>StockItemComponent</code> for each one. We ask the <code>StockItemComponent</code> to trigger the <code>onToggleFavorite</code> whenever someone clicks the Add to Favorite or Remove from Favorite button within the stock item.</p>
+<div data-type="tip"><h6>Tip</h6>
+<p>Since we generated the component using the Angular CLI, we can avoid the step of having to register the newly created component in the Angular module. Otherwise, there would be one more step here of adding the newly created component in the <em>app.module.ts</em> file in the <code>declarations</code> section.</p>
+</div>
+
+<p>The <code>AppComponent</code> can now be simplified further. The component class in <em>src/app/app.component.ts</em> can be modified to:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-root'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./app.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./app.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">AppComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+  <code class="nx">title</code> <code class="o">=</code> <code class="s1">'Stock Market App'</code><code class="p">;</code>
+
+  <code class="nx">ngOnInit</code><code class="p">()</code><code class="o">:</code> <code class="k">void</code> <code class="p">{</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>The corresponding template in <em>src/app/app.component.html</em> can be modified to:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;h1&gt;</code>
+  {{title}}
+<code class="nt">&lt;/h1&gt;</code>
+<code class="nt">&lt;app-stock-list&gt;&lt;/app-stock-list&gt;</code>
+<code class="nt">&lt;app-create-stock&gt;&lt;/app-create-stock&gt;</code></pre>
+
+<p>Now finally, let’s look at what it takes to build a very simple and trivial <code>StockService</code>. We can again generate the base skeleton for the service using the Angular CLI as <span class="keep-together">follows</span>:</p>
+
+<pre data-type="programlisting">ng g service services/stock</pre>
+
+<p>This will generate two files, a skeleton <em>stock-service.ts</em> and a dummy test for it in <em>stock-service.spec.ts</em>. We will ignore the latter for now but will return to it in <a data-type="xref" href="ch10.html#chapter-10">Chapter 10</a>, as part of our discussion of unit testing of services. The generated skeleton in <em>src/app/service/stock.service.ts</em> should look something like this:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Injectable</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Injectable</code><code class="p">()</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockService</code> <code class="p">{</code>
+
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{</code> <code class="p">}</code>
+
+<code class="p">}</code></pre>
+
+<p>The skeleton is literally just an empty shell class, with one decorator of note, which is <code>Injectable</code>. <a data-type="indexterm" data-primary="@Injectable decorator" id="idm139828123690464"></a>The <code>Injectable</code> decorator has no current value for us, but is a recommended decorator whenever you are working with services, as it is a hint to the Angular dependency injection system that the service you are working on might have other dependencies.<a data-type="indexterm" data-primary="dependency injection" data-secondary="Injectable decorator and" id="idm139828123689056"></a> With the <code>Injectable</code> decorator, Angular will take care of injecting them into our service.</p>
+
+<p>We will leave the decorator untouched, keeping with the best practices. And pretty soon, as early as the next chapter, we will need it anyway.</p>
+
+<p>Now, let’s get to the crux of the work, which is the data that the <code>StockService</code> is to provide. This is where services really shine. Components generally will defer and ask a service for data (or a section of the data). It is up to the service to decide how and where to fetch the data from, whether it is from a web service  via HTTP calls, a local storage or cache, or even return mock data, as we will in just a bit. Later, if we want to change the source, we can do it in one place without touching any of the components, as long as our API signature remains the same.</p>
+
+<p>Let’s define our <code>StockService</code> to continue returning mock data. We will edit the <em>src/app/services/stock.service.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts" class="pagebreak-before"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Injectable</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">Stock</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/model/stock'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Injectable</code><code class="p">()</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockService</code> <code class="p">{</code>
+
+  <code class="kr">private</code> <code class="nx">stocks</code>: <code class="kt">Stock</code><code class="p">[];</code>
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stocks</code> <code class="o">=</code> <code class="p">[</code>
+      <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Test Stock Company'</code><code class="p">,</code> <code class="s1">'TSC'</code><code class="p">,</code> <code class="mi">85</code><code class="p">,</code> <code class="mi">80</code><code class="p">,</code> <code class="s1">'NASDAQ'</code><code class="p">),</code>
+      <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Second Stock Company'</code><code class="p">,</code> <code class="s1">'SSC'</code><code class="p">,</code> <code class="mi">10</code><code class="p">,</code> <code class="mi">20</code><code class="p">,</code> <code class="s1">'NSE'</code><code class="p">),</code>
+      <code class="k">new</code> <code class="nx">Stock</code><code class="p">(</code><code class="s1">'Last Stock Company'</code><code class="p">,</code> <code class="s1">'LSC'</code><code class="p">,</code> <code class="mi">876</code><code class="p">,</code> <code class="mi">765</code><code class="p">,</code> <code class="s1">'NYSE'</code><code class="p">)</code>
+    <code class="p">];</code>
+   <code class="p">}</code>
+
+  <code class="nx">getStocks</code><code class="p">()</code> <code class="o">:</code> <code class="nx">Stock</code><code class="p">[]</code> <code class="p">{</code>
+    <code class="k">return</code> <code class="k">this</code><code class="p">.</code><code class="nx">stocks</code><code class="p">;</code>
+  <code class="p">}</code>
+
+  <code class="nx">createStock</code><code class="p">(</code><code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">)</code> <code class="p">{</code>
+    <code class="kd">let</code> <code class="nx">foundStock</code> <code class="o">=</code> <code class="k">this</code><code class="p">.</code><code class="nx">stocks</code><code class="p">.</code><code class="nx">find</code><code class="p">(</code><code class="nx">each</code> <code class="o">=&gt;</code> <code class="nx">each</code><code class="p">.</code><code class="nx">code</code> <code class="o">===</code> <code class="nx">stock</code><code class="p">.</code><code class="nx">code</code><code class="p">);</code>
+    <code class="k">if</code> <code class="p">(</code><code class="nx">foundStock</code><code class="p">)</code> <code class="p">{</code>
+      <code class="k">return</code> <code class="kc">false</code><code class="p">;</code>
+    <code class="p">}</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stocks</code><code class="p">.</code><code class="nx">push</code><code class="p">(</code><code class="nx">stock</code><code class="p">);</code>
+    <code class="k">return</code> <code class="kc">true</code><code class="p">;</code>
+  <code class="p">}</code>
+
+  <code class="nx">toggleFavorite</code><code class="p">(</code><code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">)</code> <code class="p">{</code>
+    <code class="kd">let</code> <code class="nx">foundStock</code> <code class="o">=</code> <code class="k">this</code><code class="p">.</code><code class="nx">stocks</code><code class="p">.</code><code class="nx">find</code><code class="p">(</code><code class="nx">each</code> <code class="o">=&gt;</code> <code class="nx">each</code><code class="p">.</code><code class="nx">code</code> <code class="o">===</code> <code class="nx">stock</code><code class="p">.</code><code class="nx">code</code><code class="p">);</code>
+    <code class="nx">foundStock</code><code class="p">.</code><code class="nx">favorite</code> <code class="o">=</code> <code class="o">!</code><code class="nx">foundStock</code><code class="p">.</code><code class="nx">favorite</code><code class="p">;</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>While it seems like we have added a lot of code, if we dig into it, there is nothing that is Angular specific in the code we added. Most of the added code is business functionality that we have defined and enforced via the <code>StockService</code>. Let’s quickly walk through the major functionality we have introduced in the service:</p>
+
+<ul>
+<li>
+<p>We have moved our initialization of the mock list of stocks to the constructor of the <code>StockService</code>, initializing it with some dummy values to provide an initial state for our UI when it is rendered.</p>
+</li>
+<li>
+<p>We have defined a very simple <code>getStocks()</code> method that simply returns the current list of stocks.</p>
+</li>
+<li>
+<p>The <code>createStock</code> method does little more than simply adding the stock to our list of stocks. It first checks if the stock already exists (using the <code>code</code> on the stock to check for uniqueness), exiting early if it does. If not found, it adds the passed-in stock to our list of stocks.</p>
+</li>
+<li>
+<p>Finally, we have a <code>toggleFavorite</code>, which simply finds the passed-in stock in our array and then toggles the state of the <code>favorite</code> key on it.</p>
+</li>
+</ul>
+
+<p>Now that we have defined our service, let’s see what it takes to be able to use it in our components. Before we can start injecting it into our components, we need to define how this service will be provided and at what level.<a data-type="indexterm" data-primary="service providers" data-see="providers" id="idm139828123459776"></a> We can define this at the <code>StockListComponent</code> level, the <code>AppComponent</code> level, or the <code>AppModule</code> level. We will see what the difference is in a bit, but in the meantime, let’s define it at the module level.</p>
+
+<p>Let’s edit the <em>src/app/app.module.ts</em> file to define the provider as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** Imports same as before, skipped for brevity **/</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">StockService</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/services/stock.service'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">NgModule</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="nx">declarations</code><code class="o">:</code><code> </code><code class="p">[</code><code>
+    </code><code class="nx">AppComponent</code><code class="p">,</code><code>
+    </code><code class="nx">StockItemComponent</code><code class="p">,</code><code>
+    </code><code class="nx">CreateStockComponent</code><code class="p">,</code><code>
+    </code><code class="nx">StockListComponent</code><code>
+  </code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">imports</code><code class="o">:</code><code> </code><code class="p">[</code><code>
+    </code><code class="nx">BrowserModule</code><code class="p">,</code><code>
+    </code><code class="nx">FormsModule</code><code class="p">,</code><code>
+    </code><code class="nx">HttpModule</code><code>
+  </code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">providers</code><code class="o">:</code><code> </code><code class="p">[</code><code>
+    </code><code class="nx">StockService</code><code>                    </code><a class="co" id="co_angular_services_CO1-1" href="#callout_angular_services_CO1-1"><img src="images/1.png" alt="1" /></a><code>
+  </code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">bootstrap</code><code class="o">:</code><code> </code><code class="p">[</code><code class="nx">AppComponent</code><code class="p">]</code><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">AppModule</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_angular_services_CO1-1" href="#co_angular_services_CO1-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Registering the provider for <code>StockService</code></p></dd>
+</dl>
+
+<p>We have just made a small addition to the <code>NgModule</code> decorator on the <code>AppModule</code>. We have registered an array of <code>providers</code>, in which the <code>StockService</code> is the one and only service right now<a data-type="indexterm" data-primary="providers" data-secondary="providers array in Angular modules" id="idm139828123345600"></a>. The <code>providers</code> array in the Angular module tells Angular to create a singleton instance of the service, and make it available for any class or component that asks for it. When we register it at the module level, it means that any component within the module that asks for the service will get the exact same instance injected into it.</p>
+<div data-type="tip"><h6>Tip</h6>
+<p>We could have skipped the step of manually adding the service to the module by asking the Angular CLI to also perform this. The Angular CLI doesn’t know at which level the service is supposed to operate, so it skips the service registration. If we wanted it to register it at the app module level, we could have executed it as:</p>
+<pre data-type="programlisting"><strong>ng g service services/stock --module=app</strong></pre>
+
+<p>This would have both generated the service and also registered the provider in the <code>AppModule</code>.</p>
+</div>
+
+<p>At this point, we are ready to start using the service, so first we will use it in the newly created <code>StockListComponent</code>. Let’s change the <em>src/app/stock/stock-list/stock-list.component.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Component</code><code class="p">,</code><code> </code><code class="nx">OnInit</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">StockService</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/services/stock.service'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Stock</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/model/stock'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">Component</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="nx">selector</code><code class="o">:</code><code> </code><code class="s1">'app-stock-list'</code><code class="p">,</code><code>
+  </code><code class="nx">templateUrl</code><code class="o">:</code><code> </code><code class="s1">'./stock-list.component.html'</code><code class="p">,</code><code>
+  </code><code class="nx">styleUrls</code><code class="o">:</code><code> </code><code class="p">[</code><code class="s1">'./stock-list.component.css'</code><code class="p">]</code><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">StockListComponent</code><code> </code><code class="kr">implements</code><code> </code><code class="nx">OnInit</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="kr">public</code><code> </code><code class="nx">stocks</code><code>: </code><code class="kt">Stock</code><code class="p">[</code><code class="p">]</code><code class="p">;</code><code>
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code><code> </code><code class="nx">stockService</code><code>: </code><code class="kt">StockService</code><code class="p">)</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code><code>   </code><a class="co" id="co_angular_services_CO2-1" href="#callout_angular_services_CO2-1"><img src="images/1.png" alt="1" /></a><code>
+
+  </code><code class="nx">ngOnInit() {</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stocks</code><code> </code><code class="o">=</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocks</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>        </code><a class="co" id="co_angular_services_CO2-2" href="#callout_angular_services_CO2-2"><img src="images/2.png" alt="2" /></a><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">onToggleFavorite</code><code class="p">(</code><code class="nx">stock</code><code>: </code><code class="kt">Stock</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+    </code><code class="nx">console</code><code class="p">.</code><code class="nx">log</code><code class="p">(</code><code class="s1">'Favorite for stock '</code><code class="p">,</code><code> </code><code class="nx">stock</code><code class="p">,</code><code> </code><code class="s1">' was triggered'</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">toggleFavorite</code><code class="p">(</code><code class="nx">stock</code><code class="p">)</code><code class="p">;</code><code>            </code><a class="co" id="co_angular_services_CO2-3" href="#callout_angular_services_CO2-3"><img src="images/3.png" alt="3" /></a><code>
+  </code><code class="p">}</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_angular_services_CO2-1" href="#co_angular_services_CO2-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Inject the <code>StockService</code> into the component</p></dd>
+<dt><a class="co" id="callout_angular_services_CO2-2" href="#co_angular_services_CO2-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Use the <code>StockService</code> to get the list of stocks</p></dd>
+<dt><a class="co" id="callout_angular_services_CO2-3" href="#co_angular_services_CO2-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Use the <code>StockService</code> to toggle the favorite status on a stock</p></dd>
+</dl>
+
+<p>This is our first instance of injecting and using a service, so let’s walk through it step by step:</p>
+<ol>
+<li>
+<p>We can inject any service we want into our component simply by listing it in our constructor. In this case, we have declared a private instance of <code>StockService</code> with the name <code>stockService</code>. The name itself doesn’t matter; Angular uses the type definition to figure out what service to inject. For all we care, we could even call the instance of the service <code>xyz</code> (not that you should!), and it would still get injected correctly.</p>
+</li>
+<li>
+<p>We simply call the methods we want on our service through our instance (like <code>stockService.getStocks()</code> or <code>stockService.toggleFavorite()</code>) at the correct time. We initialize our list of stocks, and pass through the toggle call to the service. Note that we need to access the service through an instance variable and cannot access it directly (that is, we need to call <code>this.stockService</code>, and cannot directly use <code>stockService</code>).</p>
+</li>
+
+</ol>
+
+<p>While we don’t need to make any changes to the corresponding template, here is what the template for the <code>StockListComponent</code> looks like in case you don’t remember:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;app-stock-item</code> <code class="err">*</code><code class="na">ngFor=</code><code class="s">"let stock of stocks"</code> <code class="err">[</code><code class="na">stock</code><code class="err">]="</code><code class="na">stock</code><code class="err">"</code>
+                <code class="err">(</code><code class="na">toggleFavorite</code><code class="err">)="</code><code class="na">onToggleFavorite</code><code class="err">($</code><code class="na">event</code><code class="err">)"</code><code class="nt">&gt;</code>
+<code class="nt">&lt;/app-stock-item&gt;</code></pre>
+<div data-type="tip"><h6>Tip</h6>
+<p>We just used one of TypeScript’s features in the preceding example to both declare a parameter as well as a property simultaneously.<a data-type="indexterm" data-primary="TypeScript" data-secondary="declaring a parameter and property simultaneously" id="idm139828123143392"></a> By adding the <code>private</code> or <code>public</code> keyword in front of a constructor argument, we can make it a member property of the class with the same name.</p>
+</div>
+
+<p>With this, we need to make no more changes in our template. If we run the application at this point, we should see it running with a list of three stocks displayed at the top.<a data-type="indexterm" data-primary="message, displaying to user on stock creation" id="idm139828123140656"></a><a data-type="indexterm" data-primary="forms" data-secondary="Create Stock Form (example)" id="idm139828123139984"></a></p>
+
+<p>Let’s continue with the minor changes to the <code>CreateStockComponent</code> to finish the service integration. First, we’ll add a simple <code>message</code> to the top of the <code>CreateStockComponent</code> template, to show a message to the user if the stock was created successfully or if there was any error in creation. We will edit <em>src/app/stock/create-stock/create-stock.component.html</em> as follows:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;h2</code><code class="nt">&gt;</code><code>Create Stock Form</code><code class="nt">&lt;/h2&gt;</code><code>
+
+</code><code class="nt">&lt;div</code><code> </code><code class="err">*</code><code class="na">ngIf=</code><code class="s">"message"</code><code class="nt">&gt;</code><code>{{message}}</code><code class="nt">&lt;/div&gt;</code><code>        </code><a class="co" id="co_angular_services_CO3-1" href="#callout_angular_services_CO3-1"><img src="images/1.png" alt="1" /></a><code>
+</code><code class="nt">&lt;div</code><code> </code><code class="na">class=</code><code class="s">"form-group"</code><code class="nt">&gt;</code><code>
+  </code><code class="c">&lt;!--</code><code class="c"> Rest of the form omitted for brevity </code><code class="c">--&gt;</code><code>
+  </code><code class="c">&lt;!--</code><code class="c"> No change from the base code </code><code class="c">--&gt;</code><code>
+</code><code class="nt">&lt;/div&gt;</code><code>
+
+</code><code class="nt">&lt;h4</code><code class="nt">&gt;</code><code>Stock Name is {{stock | json}}</code><code class="nt">&lt;/h4&gt;</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_angular_services_CO3-1" href="#co_angular_services_CO3-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Display a message if it exists</p></dd>
+</dl>
+
+<p>The highlighted line is the only change in this file, which  is simply adding a <code>div</code> that shows the <code>message</code> class variable if it has a value.</p>
+
+<p>Now, we can change the component in <em>src/app/stock/create-stock/create-stock.component.ts</em> to integrate with the <code>StockService</code>:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Component</code><code class="p">,</code><code> </code><code class="nx">OnInit</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Stock</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/model/stock'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">StockService</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/services/stock.service'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">Component</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="nx">selector</code><code class="o">:</code><code> </code><code class="s1">'app-create-stock'</code><code class="p">,</code><code>
+  </code><code class="nx">templateUrl</code><code class="o">:</code><code> </code><code class="s1">'./create-stock.component.html'</code><code class="p">,</code><code>
+  </code><code class="nx">styleUrls</code><code class="o">:</code><code> </code><code class="p">[</code><code class="s1">'./create-stock.component.css'</code><code class="p">]</code><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">CreateStockComponent</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="kr">public</code><code> </code><code class="nx">stock</code><code>: </code><code class="kt">Stock</code><code class="p">;</code><code>
+  </code><code class="kr">public</code><code> </code><code class="nx">confirmed</code><code> </code><code class="o">=</code><code> </code><code class="kc">false</code><code class="p">;</code><code>
+  </code><code class="kr">public</code><code> </code><code class="nx">message</code><code> </code><code class="o">=</code><code> </code><code class="kc">null</code><code class="p">;</code><code>                               </code><a class="co" id="co_angular_services_CO4-1" href="#callout_angular_services_CO4-1"><img src="images/1.png" alt="1" /></a><code>
+  </code><code class="kr">public</code><code> </code><code class="nx">exchanges</code><code> </code><code class="o">=</code><code> </code><code class="p">[</code><code class="s1">'NYSE'</code><code class="p">,</code><code> </code><code class="s1">'NASDAQ'</code><code class="p">,</code><code> </code><code class="s1">'OTHER'</code><code class="p">]</code><code class="p">;</code><code>
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code><code> </code><code class="nx">stockService</code><code>: </code><code class="kt">StockService</code><code class="p">)</code><code> </code><code class="p">{</code><code>    </code><a class="co" id="co_angular_services_CO4-2" href="#callout_angular_services_CO4-2"><img src="images/2.png" alt="2" /></a><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code> </code><code class="o">=</code><code>  </code><code class="k">new</code><code> </code><code class="nx">Stock</code><code class="p">(</code><code class="s1">''</code><code class="p">,</code><code> </code><code class="s1">''</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="s1">'NASDAQ'</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">setStockPrice</code><code class="p">(</code><code class="nx">price</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">price</code><code> </code><code class="o">=</code><code> </code><code class="nx">price</code><code class="p">;</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">previousPrice</code><code> </code><code class="o">=</code><code> </code><code class="nx">price</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">createStock</code><code class="p">(</code><code class="nx">stockForm</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+    </code><code class="k">if</code><code> </code><code class="p">(</code><code class="nx">stockForm</code><code class="p">.</code><code class="nx">valid</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+      </code><code class="kd">let</code><code> </code><code class="nx">created</code><code> </code><code class="o">=</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">createStock</code><code class="p">(</code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">)</code><code class="p">;</code><code>   </code><a class="co" id="co_angular_services_CO4-3" href="#callout_angular_services_CO4-3"><img src="images/3.png" alt="3" /></a><code>
+      </code><code class="k">if</code><code> </code><code class="p">(</code><code class="nx">created</code><code class="p">)</code><code> </code><code class="p">{</code><code>           </code><a class="co" id="co_angular_services_CO4-4" href="#callout_angular_services_CO4-4"><img src="images/4.png" alt="4" /></a><code>
+        </code><code class="k">this</code><code class="p">.</code><code class="nx">message</code><code> </code><code class="o">=</code><code> </code><code class="s1">'Successfully created stock with stock code: '</code><code>
+            </code><code class="o">+</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">code</code><code class="p">;</code><code>
+        </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code> </code><code class="o">=</code><code>  </code><code class="k">new</code><code> </code><code class="nx">Stock</code><code class="p">(</code><code class="s1">''</code><code class="p">,</code><code> </code><code class="s1">''</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="s1">'NASDAQ'</code><code class="p">)</code><code class="p">;</code><code>
+      </code><code class="p">}</code><code> </code><code class="k">else</code><code> </code><code class="p">{</code><code>
+        </code><code class="k">this</code><code class="p">.</code><code class="nx">message</code><code> </code><code class="o">=</code><code> </code><code class="s1">'Stock with stock code: '</code><code> </code><code class="o">+</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">code</code><code>
+            </code><code class="o">+</code><code> </code><code class="s1">' already exists'</code><code class="p">;</code><code>
+      </code><code class="p">}</code><code>
+    </code><code class="p">}</code><code> </code><code class="k">else</code><code> </code><code class="p">{</code><code>
+      </code><code class="nx">console</code><code class="p">.</code><code class="nx">error</code><code class="p">(</code><code class="s1">'Stock form is in an invalid state'</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="p">}</code><code>
+  </code><code class="p">}</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_angular_services_CO4-1" href="#co_angular_services_CO4-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Add a <code>message</code> field to display success and error messages</p></dd>
+<dt><a class="co" id="callout_angular_services_CO4-2" href="#co_angular_services_CO4-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Inject <code>StockService</code> into the component</p></dd>
+<dt><a class="co" id="callout_angular_services_CO4-3" href="#co_angular_services_CO4-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Call <code>stockService.createStock</code> when the form is submitted</p></dd>
+<dt><a class="co" id="callout_angular_services_CO4-4" href="#co_angular_services_CO4-4"><img src="images/4.png" alt="4" /></a></dt>
+<dd><p>Deal with success and error scenarios while creating the stock</p></dd>
+</dl>
+
+<p>The <code>CreateStockComponent</code> has been changed slightly to integrate with the <code>Stock​Service</code> as follows:</p>
+
+<ul>
+<li>
+<p>We created a <code>message</code> field to show useful messages to the user on successful creation of stock as well as errors while creating it.</p>
+</li>
+<li>
+<p>We injected the <code>StockService</code> and then called it when the form is submitted by the user.</p>
+</li>
+<li>
+<p>We used the return value of the <code>StockService.createStock()</code> call to decide what message to show to the user in the UI.</p>
+</li>
+</ul>
+
+<p>While we are at it, we can remove some of the CSS that makes the form hard to read from <em>src/app/stock/create-stock/create-stock.component.css</em>, and just empty the file.</p>
+
+<p>Now when we run<a data-type="indexterm" data-primary="components" data-secondary="Angular service sharing data between" id="idm139828122684080"></a> this application, it should still look the same as before. The difference is that when you fill the create stock form and click Create, it should clear the form, and you should see the stock you just entered like in <a data-type="xref" href="#fig0801">Figure 8-1</a>.</p>
+
+<p>Now of course, one of the first things you might ask is “How did adding the stock to the list of stocks in the service make it appear in the <code>StockListComponent</code> magically?” It is a very valid question, and the answer to that is JavaScript! We return the reference to the stock array in the <code>getStocks()</code> method, which is what the <code>StockListComponent</code> assigns to its member variable. Thus, any addition in the service automatically makes a change in the component that is holding on to the reference of the array.</p>
+
+<p>This is still hacky in some sense, as we wouldn’t want to rely on having the same reference to update the values, but we will fix this shortly. Also, because we are using mock data that is instantiated within the service when it is initialized, you will lose any new stocks you have created when you refresh the page. This is because the service is reloaded and reinitialized when we refresh the page, as we don’t have a persistent store.</p>
+
+<p>So just to recap, this is what we accomplished:</p>
+
+<ul>
+<li>
+<p>We created a <code>StockListComponent</code> to display a list of stocks.</p>
+</li>
+<li>
+<p>We created a <code>StockService</code> that acts as the layer behind all the components, providing APIs to fetch a list of stocks as well as to create new stocks. Currently, it is working off of mock data.</p>
+</li>
+<li>
+<p>We made slight updates to all the components to integrate with this service.</p>
+</li>
+</ul>
+
+<figure class="width-75"><div id="fig0801" class="figure">
+<img src="images/auar_08in01.png" alt="Application backed by a service" />
+<h6><span class="label">Figure 8-1. </span>Angular service sharing data between components</h6>
+</div></figure>
+
+<p>We have dealt with a very basic and simple Angular service to show what an Angular service is, how it is created, and how it is hooked up and used within the context of an Angular application.</p>
+
+<p>The completed version of this code is available in <em>chapter8/simple-service</em> in the <span class="keep-together">GitHub</span> repository.<a data-type="indexterm" data-primary="Angular services" data-secondary="creating" data-tertiary="examining the code" data-startref="ix_Angsercrcde" id="idm139828123278256"></a></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="An Introduction to Dependency Injection"><div class="sect2" id="idm139828124125872">
+<h2>An Introduction to Dependency Injection</h2>
+
+<p>Before we dive deeper into services and other related topics, let’s take a step back to understand dependency injection, especially in context to Angular.<a data-type="indexterm" data-primary="Angular services" data-secondary="creating" data-tertiary="introduction to dependency injection" id="idm139828123275984"></a><a data-type="indexterm" data-primary="dependency injection" data-secondary="introduction to" id="idm139828123274720"></a></p>
+
+<p>Dependency injection started in static languages that are more common in server-side programming. In simple terms, dependency injection is the idea that any class or function should ask for its dependencies, rather than instantiating it themselves. Something else (usually called an injector) would be responsible for figuring out what is needed and how to instantiate it.</p>
+
+<p>Dependency injection has huge benefits when we practice it in our applications, as it allows us to create modular, reusable pieces while allowing us to test components and modules easily. Let’s take a simple example to demonstrate how dependency injection can make your code more modular, easier to change, and testable:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">class</code> <code class="nx">MyDummyService</code> <code class="p">{</code>
+
+    <code class="nx">getMyData() {</code>
+      <code class="kd">let</code> <code class="nx">httpService</code> <code class="o">=</code> <code class="k">new</code> <code class="nx">HttpService</code><code class="p">();</code>
+      <code class="k">return</code> <code class="nx">httpService</code><code class="p">.</code><code class="nx">get</code><code class="p">(</code><code class="s1">'my/api'</code><code class="p">);</code>
+    <code class="p">}</code>
+<code class="p">}</code>
+
+<code class="kr">class</code> <code class="nx">MyDIService</code> <code class="p">{</code>
+
+    <code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code> <code class="nx">httpService</code>: <code class="kt">HttpService</code><code class="p">)</code> <code class="p">{}</code>
+
+    <code class="nx">getMyData() {</code>
+      <code class="k">return</code> <code class="k">this</code><code class="p">.</code><code class="nx">httpService</code><code class="p">.</code><code class="nx">get</code><code class="p">(</code><code class="s1">'my/api'</code><code class="p">);</code>
+    <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>In this example, there is actually not much to differentiate between <code>MyDummyService</code> and <code>MyDIService</code>, except for the fact that one instantiates an <code>HttpService</code> before using it, while the other asks for an instance of it in the constructor.<a data-type="indexterm" data-primary="HttpService" id="idm139828122910288"></a> But this small change allows for many things, including:</p>
+
+<ul>
+<li>
+<p>It makes it more obvious what is necessary for each service to actually execute, rather than finding out at the time of execution.</p>
+</li>
+<li>
+<p>In our example, instantiating the <code>HttpService</code> was trivial, but it might not be in certain cases. In such a case, every user of <code>HttpService</code> will need to know exactly how to create it and configure it, before using it.</p>
+</li>
+<li>
+<p>In our test, we might not want to make actual HTTP calls. There, we can replace and instantiate <code>MyDIService</code> with a fake <code>HttpService</code> that does not make real calls, while there is nothing we can do for <code>MyDummyService</code>.</p>
+</li>
+</ul>
+
+<p>There are many more advantages of dependency injection in general, and the <a href="https://angular.io/guide/dependency-injection-pattern">official Angular documentation has a great article</a> that covers this in depth if you want to read further on this.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Angular and Dependency Injection"><div class="sect2" id="idm139828122526960">
+<h2>Angular and Dependency Injection</h2>
+
+<p>In the previous section, we covered dependency injection in general.<a data-type="indexterm" data-primary="Angular services" data-secondary="creating" data-tertiary="Angular and dependency injection" id="ix_AngsercrAngdi"></a><a data-type="indexterm" data-primary="dependency injection" data-secondary="Angular dependency injection system" id="ix_depinj"></a> In this section, we will dig deeper into how Angular has set up its dependency injection system, and the major things developers should be aware of. We will not go into each and every detail in this section, but cover the general aspects we expect most developers to encounter in their day-to-day work.</p>
+
+<p>We have seen Angular’s dependency injection at work already, with the very first service that we created. For very simple asks, it is enough to think about Angular’s dependency injection service as a very simple key-value store, with the ability of any component or class to ask for a key when they are getting initialized. In reality, it is much more complex than a simple key-value store. We will see how to leverage this dependency injection system in our unit tests in <a data-type="xref" href="ch10.html#chapter-10">Chapter 10</a>.</p>
+
+<p>Every service that we create needs to be registered as a provider with an injector. Then any other class can ask for the service and the injector will be responsible for providing it. However, as briefly mentioned in the previous section, Angular doesn’t have just one injector—instead, it has a whole hierarchy of injectors.</p>
+
+<p>At its root, at the application level, Angular has the root module and the root injector. When we created our service, and registered it in the <code>providers</code> section of the <code>NgModule</code>, the service was in fact registered with the root injector. This would mean that the service is a singleton for the entire application, and that any class or component in the application can ask for the service and would be handed the very same instance of the service.</p>
+
+<p>Let’s now understand Angular’s hierarchical dependency injection system by taking our example and modifying it to make the dependency injection system apparent.<a data-type="indexterm" data-primary="hierarchical dependency injection" id="idm139828122516432"></a> We can use the base code from the previous section in case you are not coding along, which is available in <em>chapter8/simple-service</em>. We will continue from there.</p>
+
+<p>Before we get into the code, let’s cover what exactly will we be trying to accomplish. We will:</p>
+
+<ul>
+<li>
+<p>Add a new service called <code>MessageService</code>. This will be used to display messages at various points in the UI, and also as a mechanism to communicate across <span class="keep-together">services</span>.</p>
+</li>
+<li>
+<p>Introduce and use the <code>MessageService</code> in both the <code>CreateStockComponent</code> as well as the <code>AppComponent</code>.</p>
+</li>
+</ul>
+
+<p>First, let’s create the <code>MessageService</code>. This time, we will use the Angular CLI to create it completely for us, including registering it with its provider in the <code>AppModule</code>.<a data-type="indexterm" data-primary="ng g service services/message --module=app command" id="idm139828122508240"></a> Just execute:</p>
+<pre data-type="programlisting"><strong>ng g service services/message --module=app</strong></pre>
+<div data-type="warning" epub:type="warning"><h6>Warning</h6>
+<p>Make sure you don’t miss the <code>--module=app</code> argument to the command. In case you do, just open the <em>app.module.ts</em> file and manually add the <code>MessageService</code> to the list of <code>providers</code> in the <code>NgModule</code>.</p>
+</div>
+
+<p>This will create a skeleton <code>MessageService</code> in the <em>services</em> folder, and register it with the <code>providers</code> section of the <code>AppModule</code>. Let’s now update the <em>src/app/services/message.service.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Injectable</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Injectable</code><code class="p">()</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">MessageService</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">message</code>: <code class="kt">string</code> <code class="o">=</code> <code class="kc">null</code><code class="p">;</code>
+
+  <code class="kr">constructor</code><code class="p">()</code> <code class="p">{</code> <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p><code>MessageService</code> is nothing but a very simple container to hold a <code>message</code> string. It is publicly available, so any class or component can simply reach out and access or change it.</p>
+
+<p>Now, let’s modify the <code>AppComponent</code> to use this service and display the current <span class="keep-together"><code>message</code></span> in the UI. Modify the <em>src/app/app.component.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code> <code class="p">{</code> <code class="nx">Component</code><code class="p">,</code> <code class="nx">OnInit</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'@angular/core'</code><code class="p">;</code>
+<code class="kr">import</code> <code class="p">{</code> <code class="nx">MessageService</code> <code class="p">}</code> <code class="nx">from</code> <code class="s1">'app/services/message.service'</code><code class="p">;</code>
+
+<code class="err">@</code><code class="nx">Component</code><code class="p">({</code>
+  <code class="nx">selector</code><code class="o">:</code> <code class="s1">'app-root'</code><code class="p">,</code>
+  <code class="nx">templateUrl</code><code class="o">:</code> <code class="s1">'./app.component.html'</code><code class="p">,</code>
+  <code class="nx">styleUrls</code><code class="o">:</code> <code class="p">[</code><code class="s1">'./app.component.css'</code><code class="p">]</code>
+<code class="p">})</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">AppComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+  <code class="nx">title</code> <code class="o">=</code> <code class="s1">'app works!'</code><code class="p">;</code>
+
+  <code class="kr">constructor</code><code class="p">(</code><code class="kr">public</code> <code class="nx">messageService</code>: <code class="kt">MessageService</code><code class="p">)</code> <code class="p">{}</code>
+
+  <code class="nx">ngOnInit</code><code class="p">()</code><code class="o">:</code> <code class="k">void</code> <code class="p">{</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">messageService</code><code class="p">.</code><code class="nx">message</code> <code class="o">=</code> <code class="s1">'Hello Message Service!'</code><code class="p">;</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>We simply injected our new <code>MessageService</code> into the <code>AppComponent</code>, and while initializing set it to some default value. Notice that we made the default access for the <code>messageService</code> <code>public</code>, so that we can use it from the template. Let’s now look at the template in <em>src/app/app.component.html</em>:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;h1&gt;</code>
+  {{title}}
+<code class="nt">&lt;/h1&gt;</code>
+<code class="nt">&lt;h3&gt;</code>App level: {{messageService.message}}<code class="nt">&lt;/h3&gt;</code>
+<code class="nt">&lt;app-stock-list&gt;&lt;/app-stock-list&gt;</code>
+<code class="nt">&lt;app-create-stock&gt;&lt;/app-create-stock&gt;</code></pre>
+
+<p>We just added one line, which is an <code>h3</code> element that shows the current value of the <code>message</code> variable in the <code>MessageService</code> that is injected into our <code>AppComponent</code>.</p>
+
+<p>Next, we’ll modify the <code>CreateStockComponent</code> to use the same service. Modify the <em>src/app/stock/create-stock/create-stock.component.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Component</code><code class="p">,</code><code> </code><code class="nx">OnInit</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Stock</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/model/stock'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">StockService</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/services/stock.service'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">MessageService</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/services/message.service'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">Component</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="nx">selector</code><code class="o">:</code><code> </code><code class="s1">'app-create-stock'</code><code class="p">,</code><code>
+  </code><code class="nx">templateUrl</code><code class="o">:</code><code> </code><code class="s1">'./create-stock.component.html'</code><code class="p">,</code><code>
+  </code><code class="nx">styleUrls</code><code class="o">:</code><code> </code><code class="p">[</code><code class="s1">'./create-stock.component.css'</code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">providers</code><code class="o">:</code><code> </code><code class="p">[</code><code class="nx">MessageService</code><code class="p">]</code><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">CreateStockComponent</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="kr">public</code><code> </code><code class="nx">stock</code><code>: </code><code class="kt">Stock</code><code class="p">;</code><code>
+  </code><code class="kr">public</code><code> </code><code class="nx">confirmed</code><code> </code><code class="o">=</code><code> </code><code class="kc">false</code><code class="p">;</code><code>
+  </code><code class="kr">public</code><code> </code><code class="nx">exchanges</code><code> </code><code class="o">=</code><code> </code><code class="p">[</code><code class="s1">'NYSE'</code><code class="p">,</code><code> </code><code class="s1">'NASDAQ'</code><code class="p">,</code><code> </code><code class="s1">'OTHER'</code><code class="p">]</code><code class="p">;</code><code>
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code><code> </code><code class="nx">stockService</code><code>: </code><code class="kt">StockService</code><code class="p">,</code><code>
+              </code><code class="kr">public</code><code> </code><code class="nx">messageService</code><code>: </code><code class="kt">MessageService</code><code class="p">)</code><code> </code><code class="p">{</code><code>   </code><a class="co" id="co_angular_services_CO5-1" href="#callout_angular_services_CO5-1"><img src="images/1.png" alt="1" /></a><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code> </code><code class="o">=</code><code>  </code><code class="k">new</code><code> </code><code class="nx">Stock</code><code class="p">(</code><code class="s1">''</code><code class="p">,</code><code> </code><code class="s1">''</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="s1">'NASDAQ'</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">setStockPrice</code><code class="p">(</code><code class="nx">price</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">price</code><code> </code><code class="o">=</code><code> </code><code class="nx">price</code><code class="p">;</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">previousPrice</code><code> </code><code class="o">=</code><code> </code><code class="nx">price</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">createStock</code><code class="p">(</code><code class="nx">stockForm</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+    </code><code class="k">if</code><code> </code><code class="p">(</code><code class="nx">stockForm</code><code class="p">.</code><code class="nx">valid</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+      </code><code class="kd">let</code><code> </code><code class="nx">created</code><code> </code><code class="o">=</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">createStock</code><code class="p">(</code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">)</code><code class="p">;</code><code>
+      </code><code class="k">if</code><code> </code><code class="p">(</code><code class="nx">created</code><code class="p">)</code><code> </code><code class="p">{</code><code>                          </code><a class="co" id="co_angular_services_CO5-2" href="#callout_angular_services_CO5-2"><img src="images/2.png" alt="2" /></a><code>
+        </code><code class="k">this</code><code class="p">.</code><code class="nx">messageService</code><code class="p">.</code><code class="nx">message</code><code> </code><code class="o">=</code><code>
+            </code><code class="s1">'Successfully created stock with stock code: '</code><code> </code><code class="o">+</code><code>
+            </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">code</code><code class="p">;</code><code>
+        </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code> </code><code class="o">=</code><code>  </code><code class="k">new</code><code> </code><code class="nx">Stock</code><code class="p">(</code><code class="s1">''</code><code class="p">,</code><code> </code><code class="s1">''</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="s1">'NASDAQ'</code><code class="p">)</code><code class="p">;</code><code>
+      </code><code class="p">}</code><code> </code><code class="k">else</code><code> </code><code class="p">{</code><code>
+        </code><code class="k">this</code><code class="p">.</code><code class="nx">messageService</code><code class="p">.</code><code class="nx">message</code><code> </code><code class="o">=</code><code> </code><code class="s1">'Stock with stock code: '</code><code> </code><code class="o">+</code><code>
+            </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">code</code><code> </code><code class="o">+</code><code> </code><code class="s1">' already exists'</code><code class="p">;</code><code>
+      </code><code class="p">}</code><code>
+    </code><code class="p">}</code><code> </code><code class="k">else</code><code> </code><code class="p">{</code><code>
+      </code><code class="nx">console</code><code class="p">.</code><code class="nx">error</code><code class="p">(</code><code class="s1">'Stock form is in an invalid state'</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="p">}</code><code>
+  </code><code class="p">}</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_angular_services_CO5-1" href="#co_angular_services_CO5-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Inject <code>MessageService</code> into the constructor</p></dd>
+<dt><a class="co" id="callout_angular_services_CO5-2" href="#co_angular_services_CO5-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Use <code>MessageService</code> in both cases of creation</p></dd>
+</dl>
+
+<p>Most of the code remains unchanged from before. We just injected our new service into the class, and then used it instead using <code>console.log</code>. We set the <code>message</code> <span class="keep-together">variable</span> in the <code>MessageService</code> when the stock is created successfully or when there is an error.</p>
+
+<p>Finally, we will use the <code>MessageService</code> in the template of the component here as well to display the same message. Let’s modify <em>src/app/stock/create-stock/create-stock.component.html</em> as follows:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;h2&gt;</code>Create Stock Form<code class="nt">&lt;/h2&gt;</code>
+
+<code class="nt">&lt;div&gt;</code>{{messageService.message}}<code class="nt">&lt;/div&gt;</code>
+<code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"form-group"</code><code class="nt">&gt;</code>
+  <code class="nt">&lt;form</code> <code class="err">(</code><code class="na">ngSubmit</code><code class="err">)="</code><code class="na">createStock</code><code class="err">(</code><code class="na">stockForm</code><code class="err">)"</code> <code class="err">#</code><code class="na">stockForm=</code><code class="s">"ngForm"</code><code class="nt">&gt;</code>
+    <code class="nt">&lt;div</code> <code class="na">class=</code><code class="s">"stock-name"</code><code class="nt">&gt;</code>
+      <code class="nt">&lt;input</code> <code class="na">type=</code><code class="s">"text"</code>
+             <code class="na">placeholder=</code><code class="s">"Stock Name"</code>
+             <code class="na">required</code>
+             <code class="na">name=</code><code class="s">"stockName"</code>
+             <code class="err">#</code><code class="na">stockName=</code><code class="s">"ngModel"</code>
+             <code class="err">[(</code><code class="na">ngModel</code><code class="err">)]="</code><code class="na">stock</code><code class="err">.</code><code class="na">name</code><code class="err">"</code><code class="nt">&gt;</code>
+    <code class="nt">&lt;/div&gt;</code>
+
+<code class="c">&lt;!-- Remaining code as before, omitting for brevity --&gt;</code></pre>
+
+<p>We have omitted most of the file, as the only change we did was add line 3, where we displayed the current value of <code>messageService.message</code> in the UI.</p>
+
+<p>Now when we run this, we should see our application, but with two new lines. One is the second line, which is part of our <code>AppComponent</code>, and one within the <code>CreateStockComponent</code>, both of which are displaying the initial value of the message in the UI. If you now fill up the form and create a stock, you will notice that both the messages change simultaneously. Hence, we are assured that there is only one instance of the <code>MessageService</code>, which is being shared across both the components.</p>
+
+<p>Now, let’s modify the <code>CreateStockComponent</code> slightly as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Component</code><code class="p">,</code><code> </code><code class="nx">OnInit</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Stock</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/model/stock'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">StockService</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/services/stock.service'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">MessageService</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/services/message.service'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">Component</code><code class="p">(</code><code class="p">{</code><code>
+  </code><code class="nx">selector</code><code class="o">:</code><code> </code><code class="s1">'app-create-stock'</code><code class="p">,</code><code>
+  </code><code class="nx">templateUrl</code><code class="o">:</code><code> </code><code class="s1">'./create-stock.component.html'</code><code class="p">,</code><code>
+  </code><code class="nx">styleUrls</code><code class="o">:</code><code> </code><code class="p">[</code><code class="s1">'./create-stock.component.css'</code><code class="p">]</code><code class="p">,</code><code>
+  </code><code class="nx">providers</code><code class="o">:</code><code> </code><code class="p">[</code><code class="nx">MessageService</code><code class="p">]</code><code>       </code><a class="co" id="co_angular_services_CO6-1" href="#callout_angular_services_CO6-1"><img src="images/1.png" alt="1" /></a><code>
+</code><code class="p">}</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">CreateStockComponent</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="kr">public</code><code> </code><code class="nx">stock</code><code>: </code><code class="kt">Stock</code><code class="p">;</code><code>
+  </code><code class="kr">public</code><code> </code><code class="nx">confirmed</code><code> </code><code class="o">=</code><code> </code><code class="kc">false</code><code class="p">;</code><code>
+  </code><code class="kr">public</code><code> </code><code class="nx">exchanges</code><code> </code><code class="o">=</code><code> </code><code class="p">[</code><code class="s1">'NYSE'</code><code class="p">,</code><code> </code><code class="s1">'NASDAQ'</code><code class="p">,</code><code> </code><code class="s1">'OTHER'</code><code class="p">]</code><code class="p">;</code><code>
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code><code> </code><code class="nx">stockService</code><code>: </code><code class="kt">StockService</code><code class="p">,</code><code>
+              </code><code class="kr">public</code><code> </code><code class="nx">messageService</code><code>: </code><code class="kt">MessageService</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code> </code><code class="o">=</code><code>  </code><code class="k">new</code><code> </code><code class="nx">Stock</code><code class="p">(</code><code class="s1">''</code><code class="p">,</code><code> </code><code class="s1">''</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="s1">'NASDAQ'</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">messageService</code><code class="p">.</code><code class="nx">message</code><code> </code><code class="o">=</code><code> </code><code class="s1">'Component Level: Hello Message Service'</code><code class="p">;</code><code>    </code><a class="co" id="co_angular_services_CO6-2" href="#callout_angular_services_CO6-2"><img src="images/2.png" alt="2" /></a><code>
+
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">setStockPrice</code><code class="p">(</code><code class="nx">price</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">price</code><code> </code><code class="o">=</code><code> </code><code class="nx">price</code><code class="p">;</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">.</code><code class="nx">previousPrice</code><code> </code><code class="o">=</code><code> </code><code class="nx">price</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">createStock</code><code class="p">(</code><code class="nx">stockForm</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+    </code><code class="cm">/* Code as before, no change */</code><code>
+    </code><code class="cm">/* Omitted for brevity */</code><code>
+  </code><code class="p">}</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_angular_services_CO6-1" href="#co_angular_services_CO6-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Adding <code>providers</code> declaration for <code>MessageService</code></p></dd>
+<dt><a class="co" id="callout_angular_services_CO6-2" href="#co_angular_services_CO6-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Adding an initial value to the <code>MessageService</code> in the component</p></dd>
+</dl>
+
+<p>We’ve made one addition to the <code>@Component</code> decorator for the <code>CreateStockComponent</code> class. We have added a <code>providers</code> declaration, and provided the <code>MessageService</code> at the component level. We also added an initial value to the <code>MessageService</code> in the constructor. We will not make any other changes. We will also leave the <code>MessageService</code> declared in the <code>providers</code> section of the main module.</p>
+
+<p>Before we talk about what happens as a result of this, it is worth executing the application and seeing it yourself. Execute and note the following:</p>
+<ol>
+<li>
+<p>See the message in the <code>AppComponent</code>, which is the default we had set.</p>
+</li>
+<li>
+<p>See the message in the <code>CreateStockComponent</code>, which will be the value we set in the component in the constructor <code>"Component Level: Hello Message Service"</code>.</p>
+</li>
+<li>
+<p>Now fill up the form and create a stock.</p>
+</li>
+<li>
+<p>Note that the message is updated only in the <code>CreateStockComponent</code>, but the <code>AppComponent</code> message does not change.</p>
+</li>
+
+</ol>
+
+<p>When you do all of this, you should see something like <a data-type="xref" href="#fig0802">Figure 8-2</a>.</p>
+
+<figure class="width-75"><div id="fig0802" class="figure">
+<img src="images/auar_08in02.png" alt="Hierarchical Dependency Injectors at play" />
+<h6><span class="label">Figure 8-2. </span>Angular application with services defined at component level</h6>
+</div></figure>
+
+<p>This is Angular’s hierarchical dependency injection at play. As mentioned before, Angular supports multiple dependency injectors within the same application. There is the root injector at the root <code>AppModule</code> level, which is where most services you <span class="keep-together">create</span> will be registered and made available. This makes the instance available across your entire application, and this was happening initially.</p>
+
+<p>Then, when we made the change to add the <code>providers</code> at the <code>CreateStockComponent</code> level, we brought the injector at the component level into play. Angular will create a chain of injectors all the way down, depending on the need and declarations. And all child components will inherit that injector, which will take precedence over the root injector. When we registered our <code>MessageService</code> provider at the <code>CreateStockComponent</code> level, it created a child injector at that level, with its own instance of the <code>MessageService</code>. What we injected into the <code>CreateStockComponent</code> is in fact this new instance, which has nothing to do with the original root-level <code>MessageService</code>. So we, in fact, have two separate instances of <code>MessageService</code> with nothing in common.</p>
+
+<p>Just like an Angular application is a tree of components, there is a parallel tree of injectors at play. For most components, these injectors might just be a reference or a proxy to the parent injector. But they may not, as we have just seen.</p>
+
+<p>Whenever a component asks for a dependency, Angular will check the closest injector in the tree to see whether it can satisfy it. If it can (like in <code>CreateStockComponent</code>), it will provide it. If not, it will check with the parent injector, all the way to the root injector.</p>
+
+<p>Now when will or can you use this? Usually, it won’t even matter and you will just register all your services at the root level. But there might be cases when you want to use this capability of the Angular injector, such as:</p>
+
+<ul>
+<li>
+<p>You want to scope services to only certain components and modules, to ensure that a change in the service doesn’t impact the entire application.</p>
+</li>
+<li>
+<p>You might want different instances of a service in different components. This might be common where you might want to override things, or have different services for different instances, and the like.</p>
+</li>
+<li>
+<p>You want to override a particular service with a more specific implementation for a section of your application. Maybe you want a cached version of your service for a certain section as opposed to the general pass-through implementation.</p>
+</li>
+</ul>
+
+<p>There is more detail in how we can instantiate a service and the various ways we can provide them. You can read up on all the details and ways in the <a href="https://angular.io/guide/dependency-injection#providers">official Angular docs</a>.</p>
+
+<p>The completed version of this code is available in <em>chapter8/di-example</em> in the GitHub repository.<a data-type="indexterm" data-primary="dependency injection" data-secondary="Angular dependency injection system" data-startref="ix_depinj" id="idm139828122011056"></a><a data-type="indexterm" data-primary="Angular services" data-secondary="creating" data-tertiary="Angular and dependency injection" data-startref="ix_AngsercrAngdi" id="idm139828122009744"></a><a data-type="indexterm" data-primary="Angular services" data-secondary="creating" data-startref="ix_Angsercr" id="idm139828122008240"></a></p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="RxJS and Observables: Moving to Asynchronous Operations"><div class="sect1" id="idm139828122006768">
+<h1>RxJS and Observables: Moving to Asynchronous Operations</h1>
+
+<p>The last change we will make before we conclude this particular chapter on services is to work with asynchronous code.<a data-type="indexterm" data-primary="asynchronous operations in services" id="ix_async"></a><a data-type="indexterm" data-primary="Angular services" data-secondary="moving to asynchronous operation" id="ix_Angserasync"></a> The data that we returned from our service in our example was hardcoded, mock data. We returned it as is, and displayed it immediately. But in a real-world application, that would not be the case, as most of the times we would be fetching the data from a server.</p>
+
+<p>Handling responses and data from a server becomes slightly different from what we have done. We might make a call to fetch the list of stocks from the server. And then at some later point in time, after our server finishes processing the request, we would be provided with a list of stocks. Thus, the stocks would not be available immediately on demand, but at a later point in time, asynchronously.</p>
+
+<p>In AngularJS, we used to handle these situations using promises. Promises were a better way to handle asynchronous behavior than callbacks, which was the traditional way, <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises">for multiple reasons</a>. That said, there are a few drawbacks that Angular tries to do away with, by switching to using <em>observables</em>.<a data-type="indexterm" data-primary="observables" id="ix_obser"></a></p>
+
+<p>Observables are a <a href="http://reactivex.io/intro.html">ReactiveX</a> concept that allows us to deal with streams which emit data. Any interested party can then be an observer on this stream, and perform operations and transformations on the events emitted by the stream.</p>
+
+<p>There are a few differences between observables and promises, primarily:</p>
+
+<ul>
+<li>
+<p>Promises operate on a single asynchronous event, while observables allow us to deal with a stream of zero or more asynchronous events.</p>
+</li>
+<li>
+<p>Unlike promises, observables can be canceled. That is, a promise’s success or error handler will eventually be called, while we can cancel a subscription and not process data if we don’t care about it.</p>
+</li>
+<li>
+<p>Observables allow us to compose and create a chain of transformations easily. The operators it provides out of the box allow for some strong and powerful compositions, and operations like retry and replay make handling some common use cases trivial. All of this while being able to reuse our subscription code.</p>
+</li>
+</ul>
+
+<p>That said, promises are good for single event cases, and are still an option when you work with Angular. An observable can be converted into a promise and then handled in Angular. But it is recommended to use observables, as Angular provides a lot of out-of-the-box support for RxJS and its extensions within its framework.</p>
+<div data-type="warning" epub:type="warning"><h1>Learning RxJS and Observables</h1>
+<p>We will touch upon the bare minimum of observables and RxJS features in this book, but this book itself is not intended to be a way to learn RxJS and reactive programming in general. There are excellent tutorials and books available, starting with the <a href="http://reactivex.io/intro.html">official documentation for ReactiveX</a>.</p>
+</div>
+
+<p>Let’s now take our example and move it step by step to using observables and make it ready for our future use cases. You can use the base codebase from <em>chapter8/simple-service</em> if you have not been coding along.</p>
+
+<p>First, we will modify our <code>StockService</code> to start returning an asynchronous observable to get us ready for the future when we start integrating with servers. Then we will modify our components to subscribe to these observables and deal with success and error cases.</p>
+
+<p>Let’s change the <em>src/app/services/stock.service.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Injectable</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'@angular/core'</code><code class="p">;</code><code>
+
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Observable</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'rxjs/Observable'</code><code class="p">;</code><code>              </code><a class="co" id="co_angular_services_CO7-1" href="#callout_angular_services_CO7-1"><img src="images/1.png" alt="1" /></a><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">_throw</code><code> </code><code class="kr">as</code><code> </code><code class="nx">ObservableThrow</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'rxjs/observable/throw'</code><code class="p">;</code><code>   </code><a class="co" id="co_angular_services_CO7-2" href="#callout_angular_services_CO7-2"><img src="images/2.png" alt="2" /></a><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">of</code><code> </code><code class="kr">as</code><code> </code><code class="nx">ObservableOf</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'rxjs/observable/of'</code><code class="p">;</code><code>
+</code><code class="kr">import</code><code> </code><code class="p">{</code><code> </code><code class="nx">Stock</code><code> </code><code class="p">}</code><code> </code><code class="nx">from</code><code> </code><code class="s1">'app/model/stock'</code><code class="p">;</code><code>
+
+</code><code class="err">@</code><code class="nx">Injectable</code><code class="p">(</code><code class="p">)</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">StockService</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="kr">private</code><code> </code><code class="nx">stocks</code><code>: </code><code class="kt">Stock</code><code class="p">[</code><code class="p">]</code><code class="p">;</code><code>
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stocks</code><code> </code><code class="o">=</code><code> </code><code class="p">[</code><code>
+      </code><code class="k">new</code><code> </code><code class="nx">Stock</code><code class="p">(</code><code class="s1">'Test Stock Company'</code><code class="p">,</code><code> </code><code class="s1">'TSC'</code><code class="p">,</code><code> </code><code class="mi">85</code><code class="p">,</code><code> </code><code class="mi">80</code><code class="p">,</code><code> </code><code class="s1">'NASDAQ'</code><code class="p">)</code><code class="p">,</code><code>
+      </code><code class="k">new</code><code> </code><code class="nx">Stock</code><code class="p">(</code><code class="s1">'Second Stock Company'</code><code class="p">,</code><code> </code><code class="s1">'SSC'</code><code class="p">,</code><code> </code><code class="mi">10</code><code class="p">,</code><code> </code><code class="mi">20</code><code class="p">,</code><code> </code><code class="s1">'NSE'</code><code class="p">)</code><code class="p">,</code><code>
+      </code><code class="k">new</code><code> </code><code class="nx">Stock</code><code class="p">(</code><code class="s1">'Last Stock Company'</code><code class="p">,</code><code> </code><code class="s1">'LSC'</code><code class="p">,</code><code> </code><code class="mi">876</code><code class="p">,</code><code> </code><code class="mi">765</code><code class="p">,</code><code> </code><code class="s1">'NYSE'</code><code class="p">)</code><code>
+    </code><code class="p">]</code><code class="p">;</code><code>
+   </code><code class="p">}</code><code>
+
+  </code><code class="nx">getStocks</code><code class="p">(</code><code class="p">)</code><code> </code><code class="o">:</code><code> </code><code class="nx">Observable</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="p">[</code><code class="p">]</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>                   </code><a class="co" id="co_angular_services_CO7-3" href="#callout_angular_services_CO7-3"><img src="images/3.png" alt="3" /></a><code>
+    </code><code class="k">return</code><code> </code><code class="nx">ObservableOf</code><code class="p">(</code><code class="k">this</code><code class="p">.</code><code class="nx">stocks</code><code class="p">)</code><code class="p">;</code><code>                   </code><a class="co" id="co_angular_services_CO7-4" href="#callout_angular_services_CO7-4"><img src="images/4.png" alt="4" /></a><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">createStock</code><code class="p">(</code><code class="nx">stock</code><code>: </code><code class="kt">Stock</code><code class="p">)</code><code class="o">:</code><code> </code><code class="nx">Observable</code><code class="o">&lt;</code><code class="nx">any</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="kd">let</code><code> </code><code class="nx">foundStock</code><code> </code><code class="o">=</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">stocks</code><code class="p">.</code><code class="nx">find</code><code class="p">(</code><code class="nx">each</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="nx">each</code><code class="p">.</code><code class="nx">code</code><code> </code><code class="o">===</code><code> </code><code class="nx">stock</code><code class="p">.</code><code class="nx">code</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="k">if</code><code> </code><code class="p">(</code><code class="nx">foundStock</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+      </code><code class="k">return</code><code> </code><code class="nx">ObservableThrow</code><code class="p">(</code><code class="p">{</code><code class="nx">msg</code><code class="o">:</code><code> </code><code class="s1">'Stock with code '</code><code> </code><code class="o">+</code><code>          </code><a class="co" id="co_angular_services_CO7-5" href="#callout_angular_services_CO7-5"><img src="images/5.png" alt="5" /></a><code>
+          </code><code class="nx">stock</code><code class="p">.</code><code class="nx">code</code><code> </code><code class="o">+</code><code> </code><code class="s1">' already exists'</code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="p">}</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stocks</code><code class="p">.</code><code class="nx">push</code><code class="p">(</code><code class="nx">stock</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="k">return</code><code> </code><code class="nx">ObservableOf</code><code class="p">(</code><code class="p">{</code><code class="nx">msg</code><code class="o">:</code><code> </code><code class="s1">'Stock with code '</code><code> </code><code class="o">+</code><code> </code><code class="nx">stock</code><code class="p">.</code><code class="nx">code</code><code> </code><code class="o">+</code><code>
+        </code><code class="s1">' successfully created'</code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">toggleFavorite</code><code class="p">(</code><code class="nx">stock</code><code>: </code><code class="kt">Stock</code><code class="p">)</code><code class="o">:</code><code> </code><code class="nx">Observable</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+    </code><code class="kd">let</code><code> </code><code class="nx">foundStock</code><code> </code><code class="o">=</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">stocks</code><code class="p">.</code><code class="nx">find</code><code class="p">(</code><code class="nx">each</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="nx">each</code><code class="p">.</code><code class="nx">code</code><code> </code><code class="o">===</code><code> </code><code class="nx">stock</code><code class="p">.</code><code class="nx">code</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="nx">foundStock</code><code class="p">.</code><code class="nx">favorite</code><code> </code><code class="o">=</code><code> </code><code class="o">!</code><code class="nx">foundStock</code><code class="p">.</code><code class="nx">favorite</code><code class="p">;</code><code>
+    </code><code class="k">return</code><code> </code><code class="nx">ObservableOf</code><code class="p">(</code><code class="nx">foundStock</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_angular_services_CO7-1" href="#co_angular_services_CO7-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Importing <code>Observable</code></p></dd>
+<dt><a class="co" id="callout_angular_services_CO7-2" href="#co_angular_services_CO7-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Import core methods from the Observable API, like <code>throw</code> and <code>of</code></p></dd>
+<dt><a class="co" id="callout_angular_services_CO7-3" href="#co_angular_services_CO7-3"><img src="images/3.png" alt="3" /></a></dt>
+<dd><p>Changing the return type of <code>getStocks</code> to an observable</p></dd>
+<dt><a class="co" id="callout_angular_services_CO7-4" href="#co_angular_services_CO7-4"><img src="images/4.png" alt="4" /></a></dt>
+<dd><p>Returning an observable for mock data</p></dd>
+<dt><a class="co" id="callout_angular_services_CO7-5" href="#co_angular_services_CO7-5"><img src="images/5.png" alt="5" /></a></dt>
+<dd><p>Throwing an exception to the observer</p></dd>
+</dl>
+
+<p>We completely overhauled the <code>StockService</code>, so let’s walk through the major changes one by one so we understand what changed and more importantly, why:</p>
+
+<ul>
+<li>
+<p>The first thing we do is import <code>Observable</code> from the RxJS library. Note that we import operators and classes individually from the respective files, rather than import the entire RxJS library.<a data-type="indexterm" data-primary="observables" data-secondary="importing from RxJS library" id="idm139828121224512"></a></p>
+</li>
+<li>
+<p>We then make sure to import and add the operators we are planning to use from RxJS to ensure we have them available in our application. In this case, we are simply planning to use the <code>of</code> and <code>throw</code> operators on the core <code>Observable</code> class.</p>
+</li>
+<li>
+<p>We then change the return type of each of the methods in the service to return an observable instead of a synchronous value. This is to ensure a consistent API interface to the user of the service. Once we make this change, we can change the implementation underneath (say, changing from mock data to making a server call) without having to change each and every component.</p>
+</li>
+<li>
+<p>For the time being, we convert our return value to an observable by using the <code>Observable.of</code> operator.<a data-type="indexterm" data-primary="Observable.of operator" id="idm139828121558448"></a> The <code>of</code> takes a value and returns an observable of that type which is triggered only once.</p>
+</li>
+<li>
+<p>In the <code>createStock</code> method, we also change the functionality to throw an exception on the observable if the stock already exists.</p>
+</li>
+</ul>
+<div data-type="tip"><h6>Tip</h6>
+<p>Instead of importing each class and operator from RxJS manually, we also have the option to import the entire RxJS library and access the classes and operators through it, like so:</p>
+
+<pre data-type="programlisting">import { Rx } from 'rxjs/Rx';</pre>
+
+<p>We would then be able to access <code>Rx.Observable</code> and so on. But this comes with a downside, which is that Angular won’t be able to optimize your build, as it would not be able to understand which parts of RxJS are being used at the time of compilation. RxJS as a library is large, and most applications would only end up using bits and pieces of it.</p>
+
+<p>Thus I would always recommend using individual imports as a general practice.</p>
+</div>
+
+<p>Now let’s change the components to integrate with the new asynchronous APIs in the service. First, we will change the <code>StockListComponent</code>, to read the list of stocks from the observable instead of reading the array directly. We will change the <em>src/app/stock/stock-list/stock-list.component.ts</em> file as follows:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** Imports skipped for brevity **/</code>
+<code class="kr">export</code> <code class="kr">class</code> <code class="nx">StockListComponent</code> <code class="kr">implements</code> <code class="nx">OnInit</code> <code class="p">{</code>
+
+  <code class="kr">public</code> <code class="nx">stocks</code>: <code class="kt">Stock</code><code class="p">[];</code>
+  <code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code> <code class="nx">stockService</code>: <code class="kt">StockService</code><code class="p">)</code> <code class="p">{</code> <code class="p">}</code>
+
+  <code class="nx">ngOnInit() {</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocks</code><code class="p">()</code>
+        <code class="p">.</code><code class="nx">subscribe</code><code class="p">(</code><code class="nx">stocks</code> <code class="o">=&gt;</code> <code class="p">{</code>
+          <code class="k">this</code><code class="p">.</code><code class="nx">stocks</code> <code class="o">=</code> <code class="nx">stocks</code><code class="p">;</code>
+    <code class="p">});</code>
+  <code class="p">}</code>
+
+  <code class="nx">onToggleFavorite</code><code class="p">(</code><code class="nx">stock</code>: <code class="kt">Stock</code><code class="p">)</code> <code class="p">{</code>
+    <code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">toggleFavorite</code><code class="p">(</code><code class="nx">stock</code><code class="p">);</code>
+  <code class="p">}</code>
+<code class="p">}</code></pre>
+
+<p>We have made one small change, which is to the <code>ngOnInit</code> block of the component. Instead of directly assigning the return value of the <code>stockService.getStocks()</code> call to the <code>stocks</code> array, we now instead subscribe to the observable that it returns. The observable gets triggered with the array of stocks once, at which point we assign the value to our local array. There is no change as such to the <code>onToggleFavorite</code>, though we should also subscribe to the observable it returns for proper handling.</p>
+
+<p>Let’s also change the <code>CreateStockComponent</code> and see how the <em>src/app/stock/create-stock/create-stock.component.ts</em> file changes:</p>
+
+<pre data-type="programlisting" data-code-language="ts" class="pagebreak-before"><code class="cm">/** Imports skipped for brevity **/</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">CreateStockComponent</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="cm">/** No changes, skipping for brevity **/</code><code>
+
+  </code><code class="nx">createStock</code><code class="p">(</code><code class="nx">stockForm</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+    </code><code class="k">if</code><code> </code><code class="p">(</code><code class="nx">stockForm</code><code class="p">.</code><code class="nx">valid</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+      </code><code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">createStock</code><code class="p">(</code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code class="p">)</code><code>
+          </code><code class="p">.</code><code class="nx">subscribe</code><code class="p">(</code><code class="p">(</code><code class="nx">result</code><code>: </code><code class="kt">any</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>    </code><a class="co" id="co_angular_services_CO8-1" href="#callout_angular_services_CO8-1"><img src="images/1.png" alt="1" /></a><code>
+            </code><code class="k">this</code><code class="p">.</code><code class="nx">message</code><code> </code><code class="o">=</code><code> </code><code class="nx">result</code><code class="p">.</code><code class="nx">msg</code><code class="p">;</code><code>
+            </code><code class="k">this</code><code class="p">.</code><code class="nx">stock</code><code> </code><code class="o">=</code><code>  </code><code class="k">new</code><code> </code><code class="nx">Stock</code><code class="p">(</code><code class="s1">''</code><code class="p">,</code><code> </code><code class="s1">''</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="mi">0</code><code class="p">,</code><code> </code><code class="s1">'NASDAQ'</code><code class="p">)</code><code class="p">;</code><code>
+          </code><code class="p">}</code><code class="p">,</code><code> </code><code class="p">(</code><code class="nx">err</code><code class="p">)</code><code> </code><code class="o">=</code><code class="o">&gt;</code><code> </code><code class="p">{</code><code>
+            </code><code class="k">this</code><code class="p">.</code><code class="nx">message</code><code> </code><code class="o">=</code><code> </code><code class="nx">err</code><code class="p">.</code><code class="nx">msg</code><code class="p">;</code><code>
+          </code><code class="p">}</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="p">}</code><code> </code><code class="k">else</code><code> </code><code class="p">{</code><code>
+      </code><code class="nx">console</code><code class="p">.</code><code class="nx">error</code><code class="p">(</code><code class="s1">'Stock form is in an invalid state'</code><code class="p">)</code><code class="p">;</code><code>
+    </code><code class="p">}</code><code>
+  </code><code class="p">}</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_angular_services_CO8-1" href="#co_angular_services_CO8-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Subscribing to the<a data-type="indexterm" data-primary="observables" data-secondary="subscribing to" id="idm139828121319088"></a> observable</p></dd>
+</dl>
+
+<p>Again, most of our changes are focused on one method, the <code>createStock</code>. Instead of handling all the work immediately after triggering the <code>stockService.createStock()</code>, we now subscribe to the observable. In the previous case, we just handled the success case, but the <code>subscribe</code> method allows us to take two functions as arguments. The first argument is called in the case of a successful call, while the second is the error handler callback.</p>
+
+<p>Both of our flows return an object with a <code>msg</code> key, so we handle it accordingly and update the <code>message</code> with the value returned.</p>
+
+<p>At this point, we can now run our application to see it working. When you run it, you shouldn’t see any difference in the functionality, but all our stocks should be visible and you should be able to add stocks.</p>
+
+<p>Let’s alter our code one final time to make it simpler and easier to read. In a lot of cases, we simply want to make a call to our server, and display the return value in our UI. We don’t need to process the data, make any transformations, or anything else. In those cases, Angular gives us a slight shortcut that we can use.</p>
+
+<p>We’ll change the <em>src/app/stock/stock-list/stock-list.component.ts</em> file first:</p>
+
+<pre data-type="programlisting" data-code-language="ts"><code class="cm">/** Imports skipped for brevity **/</code><code>
+</code><code class="kr">export</code><code> </code><code class="kr">class</code><code> </code><code class="nx">StockListComponent</code><code> </code><code class="kr">implements</code><code> </code><code class="nx">OnInit</code><code> </code><code class="p">{</code><code>
+
+  </code><code class="kr">public</code><code> </code><code class="nx">stocks$</code><code>: </code><code class="kt">Observable</code><code class="o">&lt;</code><code class="nx">Stock</code><code class="p">[</code><code class="p">]</code><code class="o">&gt;</code><code class="p">;</code><code>       </code><a class="co" id="co_angular_services_CO9-1" href="#callout_angular_services_CO9-1"><img src="images/1.png" alt="1" /></a><code>
+  </code><code class="kr">constructor</code><code class="p">(</code><code class="kr">private</code><code> </code><code class="nx">stockService</code><code>: </code><code class="kt">StockService</code><code class="p">)</code><code> </code><code class="p">{</code><code> </code><code class="p">}</code><code>
+
+  </code><code class="nx">ngOnInit() {</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stocks</code><code class="nx">$</code><code> </code><code class="o">=</code><code> </code><code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">getStocks</code><code class="p">(</code><code class="p">)</code><code class="p">;</code><code>       </code><a class="co" id="co_angular_services_CO9-2" href="#callout_angular_services_CO9-2"><img src="images/2.png" alt="2" /></a><code>
+  </code><code class="p">}</code><code>
+
+  </code><code class="nx">onToggleFavorite</code><code class="p">(</code><code class="nx">stock</code><code>: </code><code class="kt">Stock</code><code class="p">)</code><code> </code><code class="p">{</code><code>
+    </code><code class="k">this</code><code class="p">.</code><code class="nx">stockService</code><code class="p">.</code><code class="nx">toggleFavorite</code><code class="p">(</code><code class="nx">stock</code><code class="p">)</code><code class="p">;</code><code>
+  </code><code class="p">}</code><code>
+</code><code class="p">}</code></pre>
+<dl class="calloutlist">
+<dt><a class="co" id="callout_angular_services_CO9-1" href="#co_angular_services_CO9-1"><img src="images/1.png" alt="1" /></a></dt>
+<dd><p>Storing the observable as a member variable</p></dd>
+<dt><a class="co" id="callout_angular_services_CO9-2" href="#co_angular_services_CO9-2"><img src="images/2.png" alt="2" /></a></dt>
+<dd><p>Calling and directly storing the observable</p></dd>
+</dl>
+
+<p>We have made two changes to our <code>StockListComponent</code> class:</p>
+
+<ul>
+<li>
+<p>Instead of having an array of <code>stocks</code> as a member variable, we now have an <code>Observable&lt;Stock[]&gt;</code> as the member. That is, we are saving the observable that the API returns directly, instead of its underlying return value.</p>
+</li>
+<li>
+<p>In <code>ngOnInit</code>, we simply save the observable returned by our <code>stockService.getStocks()</code> call.</p>
+</li>
+</ul>
+
+<p>Given this, how do we display our array of stocks in the template? How do we handle this asynchronous behavior? Let’s look at what we can do in the template to take care of this:</p>
+
+<pre data-type="programlisting" data-code-language="html"><code class="nt">&lt;app-stock-item</code> <code class="err">*</code><code class="na">ngFor=</code><code class="s">"let stock of stocks$ | async"</code>
+                <code class="err">[</code><code class="na">stock</code><code class="err">]="</code><code class="na">stock</code><code class="err">"</code>
+                <code class="err">(</code><code class="na">toggleFavorite</code><code class="err">)="</code><code class="na">onToggleFavorite</code><code class="err">($</code><code class="na">event</code><code class="err">)"</code><code class="nt">&gt;</code>
+<code class="nt">&lt;/app-stock-item&gt;</code></pre>
+
+<p>We have made one tweak here, which is to use a <code>Pipe</code> in the <code>ngFor</code> expression.<a data-type="indexterm" data-primary="Pipe, using in ngFor expression" id="idm139828120775200"></a> Angular provides a pipe called <code>async</code>, which allows us to bind to <code>Observable</code>. Angular would then be responsible for waiting for events to be emitted on the observable and displaying the resultant value directly. It saves us that one step of having to manually subscribe to the observable.</p>
+
+<p>Again, this is useful in only a few situations where the data returned by an API call is something we can directly display. But it does save a few lines of code, leaving it to the framework to handle most of the boilerplate. Run your application to make sure that this still works, and you should see the same application running without any issues.</p>
+
+<p>The completed version of this code is available in <em>chapter8/observables</em> in the GitHub repository.<a data-type="indexterm" data-primary="asynchronous operations in services" data-startref="ix_async" id="idm139828120771792"></a><a data-type="indexterm" data-primary="observables" data-startref="ix_obser" id="idm139828120770848"></a><a data-type="indexterm" data-primary="Angular services" data-secondary="moving to asynchronous operation" data-startref="ix_Angserasync" id="idm139828120769904"></a></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" class="pagebreak-before" data-pdf-bookmark="Conclusion"><div class="sect1" id="idm139828122275824">
+<h1>Conclusion</h1>
+
+<p>In this chapter, we started understanding Angular services in more detail. We covered what Angular services are and some common uses for them, primarily:</p>
+
+<ul>
+<li>
+<p>Abstraction of the data-fetching aspects</p>
+</li>
+<li>
+<p>Encapsulation of shared application logic</p>
+</li>
+<li>
+<p>Sharing of data across components</p>
+</li>
+</ul>
+
+<p>We also discussed Angular’s dependency injection system and how its hierarchical dependency injection works with an example. Finally, we looked at how <code>Observable</code> works and how to integrate very simple observables into our application.</p>
+
+<p>In the next chapter, we will dig into how to work with and make HTTP calls and deal with their responses. We will also cover some common use cases that we have when working with servers and how to build solutions for them.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Exercise"><div class="sect1" id="idm139828120759792">
+<h1>Exercise</h1>
+
+<p>Take the finished exercise from <a data-type="xref" href="ch06.html#chapter-6">Chapter 6</a> (available in <em>chapter6/exercise/ecommerce</em>). Try to accomplish the following:</p>
+<ol>
+<li>
+<p>Create a common service backing the <code>ProductListComponent</code> and the <code>CreateProductComponent</code> called <code>ProductService</code>.</p>
+</li>
+<li>
+<p>Make the components simple and move any logic into the service. Register the service correctly at the module level (either using the CLI or manually).</p>
+</li>
+<li>
+<p>Start from the beginning with observables and make all the components deal with asynchronous APIs.</p>
+</li>
+<li>
+<p>Use the <code>async</code> pipe where possible instead of manually subscribing to the results.</p>
+</li>
+
+</ol>
+
+<p>All of this can be accomplished using concepts covered in this chapter.<a data-type="indexterm" data-primary="Angular services" data-startref="ix_Angser" id="idm139828120750720"></a> You can check out the finished solution in <em>chapter8/exercise/ecommerce</em>.</p>
+</div></section>
+
+
+
+
+
+
+
+</div></section></div>
+</body>
+</html>

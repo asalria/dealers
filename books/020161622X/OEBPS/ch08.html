@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chapter 8. Pragmatic Projects</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><p><a id="ch08"></a><a id="page_223"></a></p>
+<h2 id="title-IDADY00" class="docChapterTitle">Chapter 8<br/><br/>Pragmatic Projects</h2>
+<p class="docText">As your project gets under way, we need to move away from issues of individual philosophy and coding to talk about larger, project-sized issues. We aren't going to go into specifics of project management, but we will talk about a handful of critical areas that can make or break any project.</p>
+<p class="docText">As soon as you have more than one person working on a project, you need to establish some ground rules and delegate parts of the project accordingly. In <em>Pragmatic Teams,</em> we'll show how to do this while honoring the pragmatic philosophy.</p>
+<p class="docText">The single most important factor in making project-level activities work consistently and reliably is to automate your procedures. We'll explain why, and show some real-life examples in <em>Ubiquitous Automation.</em></p>
+<p class="docText">Earlier, we talked about testing as you code. In <em>Ruthless Testing,</em> we go to the next step of project-wide testing philosophy and tools—especially if you don't have a large QA staff at your beck and call.</p>
+<p class="docText">The only thing that developers dislike more than testing is documentation. Whether you have technical writers helping you or are doing it on your own, we'll show you how to make the chore less painful and more productive in <em>It's All Writing.</em></p>
+<p class="docText">Success is in the eye of the beholder—the sponsor of the project. The perception of success is what counts, and in <em>Great Expectations</em> we'll show you some tricks to delight every project's sponsor.</p>
+<p class="docText"><a id="page_224"></a>The last tip in the book is a direct consequence of all the rest. In <em>Pride and Prejudice,</em> we encourage you to sign your work, and to take pride in what you do.</p>
+<p class="docText"><a id="ch08lev1sec1"></a></p>
+<h3 id="title-IDAPZ00" class="docSection1Title">41. Pragmatic Teams</h3>
+<p class="blockquote"><em>At Group L, Stoffel oversees six first-rate programmers, a managerial challenge roughly comparable to herding cats.</em></p>
+<p class="attribution">• <strong><em>The Washington Post Magazine,</em></strong> <strong>June 9, 1985</strong></p>
+<p class="docText">So far in this book we've looked at pragmatic techniques that help an individual be a better programmer. Can these methods work for teams as well?</p>
+<p class="docText">The answer is a resounding "yes!" There are advantages to being a pragmatic individual, but these advantages are multiplied manyfold if the individual is working on a pragmatic team.</p>
+<p class="docText">In this section we'll look briefly at how pragmatic techniques can be applied to teams as a whole. These notes are only a start. Once you've got a group of pragmatic developers working in an enabling environment, they'll quickly develop and refine their own team dynamics that work for them.</p>
+<p class="docText">Let's recast some of the previous sections in terms of teams.</p>
+<p class="docText"><a id="ch08lev2sec1"></a></p>
+<h4 id="title-IDAO000" class="docSection2Title">No Broken Windows</h4>
+<p class="docText">Quality is a team issue. The most diligent developer placed on a team that just doesn't care will find it difficult to maintain the enthusiasm needed to fix niggling problems. The problem is further exacerbated if the team actively discourages the developer from spending time on these fixes.</p>
+<p class="docText">Teams as a whole should not tolerate broken windows—those small imperfections that no one fixes. The team <em>must</em> take responsibility for the quality of the product, supporting developers who understand the <em>no broken windows</em> philosophy we describe in <a href="ch01.html#ch01lev1sec2"><em>Software Entropy</em></a>, page <a href="ch01.html#page_4">4</a>, and encouraging those who haven't yet discovered it.</p>
+<p class="docText"><a id="page_225"></a>Some team methodologies have a <em>quality officer</em>—someone to whom the team delegates the responsibility for the quality of the deliverable. This is clearly ridiculous: quality can come only from the individual contributions of <em>all</em> team members.</p>
+<p class="docText"><a id="ch08lev2sec2"></a></p>
+<h4 id="title-IDAQ100" class="docSection2Title">Boiled Frogs</h4>
+<p class="docText">Remember the poor frog in the pan of water, back in <a href="ch01.html#ch01lev1sec3"><em>Stone Soup and Boiled Frogs</em></a>, page <a href="ch01.html#page_7">7</a>? It doesn't notice the gradual change in its environment, and ends up cooked. The same can happen to individuals who aren't vigilant. It can be difficult to keep an eye on your overall environment in the heat of project development.</p>
+<p class="docText">It's even easier for teams as a whole to get boiled. People assume that someone else is handling an issue, or that the team leader must have OK'd a change that your user is requesting. Even the best-intentioned teams can be oblivious to significant changes in their projects.</p>
+<p class="docText">Fight this. Make sure everyone actively monitors the environment for changes. Maybe appoint a <em>chief water tester.</em> Have this person check constantly for increased scope, decreased time scales, additional features, new environments—anything that wasn't in the original agreement. Keep metrics on new requirements (see page <a href="ch07.html#page_209">209</a>). The team needn't reject changes out of hand—you simply need to be aware that they're happening. Otherwise, it'll be <em>you</em> in the hot water.</p>
+<p class="docText"><a id="ch08lev2sec3"></a></p>
+<h4 id="title-IDAP200" class="docSection2Title">Communicate</h4>
+<p class="docText">It's obvious that developers in a team must talk to each other. We gave some suggestions to facilitate this in <a href="ch01.html#ch01lev1sec6"><em>Communicate!</em></a> on page <a href="ch01.html#page_18">18</a>. However, it's easy to forget that the team itself has a presence within the organization. The team as an entity needs to communicate clearly with the rest of the world.</p>
+<p class="docText">To outsiders, the worst project teams are those that appear sullen and reticent. They hold meetings with no structure, where no one wants to talk. Their documents are a mess: no two look the same, and each uses different terminology.</p>
+<p class="docText">Great project teams have a distinct personality. People look forward to meetings with them, because they know that they'll see a well-prepared <a id="page_226"></a>performance that makes everyone feel good. The documentation they produce is crisp, accurate, and consistent. The team speaks with one voice.<sup><a href="#ch08fn01">[1]</a></sup> They may even have a sense of humor.</p>
+<p class="docFootnote"><sup><a id="ch08fn01">[1]</a></sup> The team speaks with one voice—externally. Internally, we strongly encourage lively, robust debate. Good developers tend to be passionate about their work.</p>
+<p class="docText">There is a simple marketing trick that helps teams communicate as one: generate a brand. When you start a project, come up with a name for it, ideally something off-the-wall. (In the past, we've named projects after things such as killer parrots that prey on sheep, optical illusions, and mythical cities.) Spend 30 minutes coming up with a zany logo, and use it on your memos and reports. Use your team's name liberally when talking with people. It sounds silly, but it gives your team an identity to build on, and the world something memorable to associate with your work.</p>
+<p class="docText"><a id="ch08lev2sec4"></a></p>
+<h4 id="title-IDAL300" class="docSection2Title">Don't Repeat Yourself</h4>
+<p class="docText">In <a href="ch02.html#ch02lev1sec1"><em>The Evils of Duplication</em></a>, page <a href="ch02.html#page_26">26</a>, we talked about the difficulties of eliminating duplicated work between members of a team. This duplication leads to wasted effort, and can result in a maintenance nightmare. Clearly good communication can help here, but sometimes something extra is needed.</p>
+<p class="docText">Some teams appoint a member as the project librarian, responsible for coordinating documentation and code repositories. Other team members can use this person as the first port of call when they're looking for something. A good librarian will also be able to spot impending duplication by reading the material that they're handling.</p>
+<p class="docText">When the project's too big for one librarian (or when no one wants to play the role), appoint people as focal points for various functional aspects of the work. If people want to talk over date handling, they should know to talk with Mary. If there's a database schema issue, see Fred.</p>
+<p class="docText">And don't forget the value of groupware systems and local Usenet newsgroups for communicating and archiving questions and answers.</p>
+<p class="docText"><a id="ch08lev2sec5"></a><a id="page_227"></a></p>
+<h4 id="title-IDAB400" class="docSection2Title">Orthogonality</h4>
+<p class="docText">Traditional team organization is based on the old-fashioned waterfall method of software construction. Individuals are assigned roles based on their job function. You'll find business analysts, architects, designers, programmers, testers, documenters, and the like.<sup><a href="#ch08fn02">[2]</a></sup> There is an implicit hierarchy here—the closer to the user you're allowed, the more senior you are.</p>
+<p class="docFootnote"><sup><a id="ch08fn02">[2]</a></sup> In <em>The Rational Unified Process: An Introduction,</em> the author identifies 27 separate roles within a project team! [<a href="app01.html#kru98">Kru98</a>]</p>
+<p class="docText">Taking things to the extreme, some development cultures dictate strict divisions of responsibility; coders aren't allowed to talk to testers, who in turn aren't allowed to talk to the chief architect, and so on. Some organizations then compound the problem by having different subteams report through separate management chains.</p>
+<p class="docText">It is a mistake to think that the activities of a project—analysis, design, coding, and testing—can happen in isolation. They can't. These are different views of the same problem, and artificially separating them can cause a boatload of trouble. Programmers who are two or three levels removed from the actual users of their code are unlikely to be aware of the context in which their work is used. They will not be able to make informed decisions.</p>
+<p class="docNoteTitle">Tip 60</p>
+<p class="note"><a href="app03.html#id1e14167">Organize Around Functionality, Not Job Functions</a></p>
+<p class="docText">We favor splitting teams functionally. Divide your people into small teams, each responsible for a particular functional aspect of the final system. Let the teams organize themselves internally, building on individual strengths as they can. Each team has responsibilities to others in the project, as defined by their agreed-upon commitments. The exact set of commitments changes with each project, as does the allocation of people into teams.</p>
+<p class="docText">Functionality here does not necessarily mean end-user use cases. The database access layer counts, as does the help subsystem. We're looking for cohesive, largely self-contained teams of people—exactly the <a id="page_228"></a>same criteria we should be using when we modularize code. There are warning signs that the team organization is wrong—a classic example is having two subteams working on the same program module or class.</p>
+<p class="docText">How does this functional style of organization help? Organize our resources using the same techniques we use to organize code, using techniques such as contracts (<a href="ch04.html#ch04lev1sec1"><em>Design by Contract</em></a>, page <a href="ch04.html#page_109">109</a>), decoupling (<a href="ch05.html#ch05lev1sec1"><em>Decoupling and the Law of Demeter</em></a>, page <a href="ch05.html#page_138">138</a>), and orthogonality (<a href="ch02.html#ch02lev1sec2"><em>Orthogonality</em></a>, page <a href="ch02.html#page_34">34</a>), and we help isolate the team as a whole from the effects of change. If the user suddenly decides to change database vendors, only the database team should be affected. Should marketing suddenly decide to use an off-the-shelf tool for the calendar function, the calendar group takes a hit. Properly executed, this kind of group approach can dramatically reduce the number of interactions between individuals' work, reducing time scales, increasing quality, and cutting down on the number of defects. This approach can also lead to a more committed set of developers. Each team knows that they alone are responsible for a particular function, so they feel more ownership of their output.</p>
+<p class="docText">However, this approach works only with responsible developers and strong project management. Creating a pool of autonomous teams and letting them loose without leadership is a recipe for disaster. The project needs at least two "heads"—one technical, the other administrative. The technical head sets the development philosophy and style, assigns responsibilities to teams, and arbitrates the inevitable "discussions" between people. The technical head also looks constantly at the big picture, trying to find any unnecessary commonality between teams that could reduce the orthogonality of the overall effort. The administrative head, or project manager, schedules the resources that the teams need, monitors and reports on progress, and helps decide priorities in terms of business needs. The administrative head might also act as the team's ambassador when communicating with the outside world.</p>
+<p class="docText">Teams on larger projects need additional resources: a librarian who indexes and stores code and documentation, a tool builder who provides common tools and environments, operational support, and so on.</p>
+<p class="docText">This type of team organization is similar in spirit to the old chief programmer team concept, first documented in 1972 [<a href="app01.html#bak72">Bak72</a>].</p>
+<p class="docText"><a id="ch08lev2sec6"></a><a id="page_229"></a></p>
+<h4 id="title-IDA1A10" class="docSection2Title">Automation</h4>
+<p class="docText">A great way to ensure both consistency and accuracy is to automate everything the team does. Why lay code out manually when your editor can do it automatically as you type? Why complete test forms when the overnight build can run tests automatically?</p>
+<p class="docText">Automation is an essential component of every project team—important enough for us to dedicate an entire section to it, starting on the following page. To ensure that things get automated, appoint one or more team members as <em>tool builders</em> to construct and deploy the tools that automate the project drudgery. Have them produce makefiles, shell scripts, editor templates, utility programs, and the like.</p>
+<p class="docText"><a id="ch08lev2sec7"></a></p>
+<h4 id="title-IDAOB10" class="docSection2Title">Know When to Stop Adding Paint</h4>
+<p class="docText">Remember that teams are made up of individuals. Give each member the ability to shine in his or her own way. Give them just enough structure to support them and to ensure that the project delivers against its requirements. Then, like the painter in <a href="ch01.html#ch01lev1sec4"><em>Good-Enough Software</em></a>, page <a href="ch01.html#page_11">11</a>, resist the temptation to add more paint.</p>
+<p class="docText"><a id="ch08lev3sec1"></a></p>
+<h5 id="title-IDA3B10" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch01.html#ch01lev1sec2"><em>Software Entropy</em></a>, page <a href="ch01.html#page_4">4</a></li>
+<li><a href="ch01.html#ch01lev1sec3"><em>Stone Soup and Boiled Frogs</em></a>, page <a href="ch01.html#page_7">7</a></li>
+<li><a href="ch01.html#ch01lev1sec4"><em>Good-Enough Software</em></a>, page <a href="ch01.html#page_9">9</a></li>
+<li><a href="ch01.html#ch01lev1sec6"><em>Communicate!</em></a>, page <a href="ch01.html#page_18">18</a></li>
+<li><a href="ch02.html#ch02lev1sec1"><em>The Evils of Duplication</em></a>, page <a href="ch02.html#page_26">26</a></li>
+<li><a href="ch02.html#ch02lev1sec2"><em>Orthogonality</em></a>, page <a href="ch02.html#page_34">34</a></li>
+<li><a href="ch04.html#ch04lev1sec1"><em>Design by Contract</em></a>, page <a href="ch04.html#page_109">109</a></li>
+<li><a href="ch05.html#ch05lev1sec1"><em>Decoupling and the Law of Demeter</em></a>, page <a href="ch05.html#page_138">138</a></li>
+<li><a href="ch08.html#ch08lev1sec2"><em>Ubiquitous Automation</em></a>, page <a href="ch08.html#page_230">230</a></li>
+</ul>
+<p class="docText"><a id="ch08lev3sec2"></a></p>
+<h5 id="title-IDACE10" class="docSection3Title">Challenges</h5>
+<ul>
+<li>Look around for successful teams outside the area of software development. What makes them successful? Do they use any of the processes discussed in this section?</li>
+<li><a id="page_230"></a>Next time you start a project, try convincing people to brand it. Give your organization time to become used to the idea, and then do a quick audit to see what difference it made, both within the team and externally.</li>
+<li>Team Algebra: In school, we are given problems such as "If it takes 4 workers 6 hours to dig a ditch, how long would it take 8 workers?" In real life, however, what factors affect the answer to: "If it takes 4 programmers 6 months to develop an application, how long would it take 8 programmers?" In how many scenarios is the time actually reduced?</li>
+</ul>
+<p class="docText"><a id="ch08lev1sec2"></a></p>
+<h3 id="title-IDA2E10" class="docSection1Title">42. Ubiquitous Automation</h3>
+<p class="blockquote"><em>Civilization advances by extending the number of important operations we can perform without thinking.</em></p>
+<p class="attribution">• <strong>Alfred North Whitehead</strong></p>
+<p class="docText">At the dawn of the age of automobiles, the instructions for starting a Model-T Ford were more than two pages long. With modern cars, you just turn the key—the starting procedure is automatic and foolproof. A person following a list of instructions might flood the engine, but the automatic starter won't.</p>
+<p class="docText">Although computing is still an industry at the Model-T stage, we can't afford to go through two pages of instructions again and again for some common operation. Whether it is the build and release procedure, code review paperwork, or any other recurring task on the project, it has to be automatic. We may have to build the starter and fuel injector from scratch, but once it's done, we can just turn the key from then on.</p>
+<p class="docText">In addition, we want to ensure consistency and repeatability on the project. Manual procedures leave consistency up to chance; repeatability isn't guaranteed, especially if aspects of the procedure are open to interpretation by different people.</p>
+<p class="docText"><a id="ch08lev2sec8"></a><a id="page_231"></a></p>
+<h4 id="title-IDAYF10" class="docSection2Title">All on Automatic</h4>
+<p class="docText">We were once at a client site where all the developers were using the same IDE. Their system administrator gave each developer a set of instructions on installing add-on packages to the IDE. These instructions filled many pages—pages full of click here, scroll there, drag this, double-click that, and do it again.</p>
+<p class="docText">Not surprisingly, every developer's machine was loaded slightly differently. Subtle differences in the application's behavior occurred when different developers ran the same code. Bugs would appear on one machine but not on others. Tracking down version differences of any one component usually revealed a surprise.</p>
+<p class="docNoteTitle">Tip 61</p>
+<p class="note"><a href="app03.html#id1e14338">Don't Use Manual Procedures</a></p>
+<p class="docText">People just aren't as repeatable as computers are. Nor should we expect them to be. A shell script or batch file will execute the same instructions, in the same order, time after time. It can be put under source control, so you can examine changes to the procedure over time as well ("but it <em>used</em> to work...").</p>
+<p class="docText">Another favorite tool of automation is <code>cron</code> (or <code>"at"</code> on Windows NT). It allows us to schedule unattended tasks to run periodically—usually in the middle of the night. For example, the following <code>crontab</code> file specifies that a project's <code>nightly</code> command be run at five minutes past midnight every day, that the backup be run at 3:15 a.m. on weekdays, and that <code>expense_reports</code> be run at midnight on the first of the month.</p>
+<p class="progimage"><img src="images/p0231-01.jpg" alt="image" /></p>
+<p class="docText">Using <code>cron</code>, we can schedule backups, the nightly build, Web site maintenance, and anything else that needs to be done—unattended, automatically.</p>
+<p class="docText"><a id="ch08lev2sec9"></a><a id="page_232"></a></p>
+<h4 id="title-IDAZH10" class="docSection2Title">Compiling the Project</h4>
+<p class="docText">Compiling the project is a chore that should be reliable and repeatable. We generally compile projects with makefiles, even when using an IDE environment. There are several advantages in using makefiles. It is a scripted, automatic procedure. We can add in hooks to generate code for us, and run regression tests automatically. IDEs have their advantages, but with IDEs alone it can be hard to achieve the level of automation that we're looking for. We want to check out, build, test, and ship with a single command.</p>
+<p class="docText"><a id="ch08lev3sec3"></a></p>
+<h5 id="title-IDAGI10" class="docSection3Title">Generating Code</h5>
+<p class="docText">In <a href="ch02.html#ch02lev1sec1"><em>The Evils of Duplication</em></a>, page <a href="ch02.html#page_26">26</a>, we advocated generating code to derive knowledge from common sources. We can exploit <code>make</code>'s dependency analysis mechanism to make this process easy. It's a pretty simple matter to add rules to a makefile to generate a file from some other source automatically. For example, suppose we wanted to take an XML file, generate a Java file from it, and compile the result.</p>
+<p class="progimage"><img src="images/p0232-01.jpg" alt="image" /></p>
+<p class="docText">Type <code>make test.class,</code> and <code>make</code> will automatically look for a file named <code>test.xml,</code> build a <code>.java</code> file by running a Perl script, and then compile that file to produce <code>test.class.</code></p>
+<p class="docText">We can use the same sort of rules to generate source code, header files, or documentation automatically from some other form as well (see <a href="ch03.html#ch03lev1sec7"><em>Code Generators</em></a>, page <a href="ch03.html#page_102">102</a>).</p>
+<p class="docText"><a id="ch08lev3sec4"></a></p>
+<h5 id="title-IDASJ10" class="docSection3Title">Regression Tests</h5>
+<p class="docText">You can also use the makefile to run regression tests for you, either for an individual module or for an entire subsystem. You can easily test the <em>entire</em> project with just one command at the top of the source tree, or you can test an individual module by using the same command in a single directory. See <a href="ch08.html#ch08lev1sec3"><em>Ruthless Testing</em></a>, page <a href="ch08.html#page_237">237</a>, for more on regression testing.</p>
+<p class="docText"><a id="page_233"></a></p>
+<div class="sidebar1">
+<p class="docSidebarTitle">Recursive make</p>
+<p class="sidebar">Many projects set up recursive, hierarchical makefiles for project builds and testing. But be aware of some potential problems.</p>
+<p class="sidebar"><code>make</code> calculates dependencies between the various targets it has to build. But it can analyze only the dependencies that exist within one single <code>make</code> invocation. In particular, a recursive <code>make</code> has no knowledge of dependencies that other invocations of <code>make</code> may have. If you are careful and precise, you can get the proper results, but it's easy to cause extra work unnecessarily—or miss a dependency and <em>not</em> recompile when it's needed.</p>
+<p class="sidebar">In addition, build dependencies may not be the same as test dependencies, and you may need separate hierarchies.</p>
+</div>
+<p class="docText"><a id="ch08lev2sec10"></a></p>
+<h4 id="title-IDA5K10" class="docSection2Title">Build Automation</h4>
+<p class="docText">A <em>build</em> is a procedure that takes an empty directory (and a known compilation environment) and builds the project from scratch, producing whatever you hope to produce as a final deliverable—a CD-ROM master image or a self-extracting archive, for instance. Typically a project build will encompass the following steps.</p>
+<ol>
+<li>Check out the source code from the repository.</li>
+<li>Build the project from scratch, typically from a top-level makefile. Each build is marked with some form of release or version number, or perhaps a date stamp.</li>
+<li>Create a distributable image. This procedure may entail fixing file ownership and permissions, and producing all examples, documentation, README files, and anything else that will ship with the product, in the exact format that will be required when you ship.<sup><a href="#ch08fn03">[3]</a></sup><br/>
+<p class="docFootnote"><sup><a id="ch08fn03">[3]</a></sup> If you are producing a CD-ROM in ISO9660 format, for example, you would run the program that produces a bit-for-bit image of the 9660 file system. Why wait until the night before you ship to make sure it works?</p></li>
+<li>Run specified tests (<code>make test</code>).</li>
+</ol>
+<p class="docText"><a id="page_234"></a>For most projects, this level of build is run automatically every night. In this nightly build, you will typically run more complete tests than an individual might run while building some specific portion of the project. The important point is to have the full build run <em>all</em> available tests. You want to know if a regression test failed because of one of today's code changes. By identifying the problem close to the source, you stand a better chance of finding and fixing it.</p>
+<p class="docText">When you don't run tests regularly, you may discover that the application broke due to a code change made three months ago. Good luck finding that one.</p>
+<p class="docText"><a id="ch08lev3sec5"></a></p>
+<h5 id="title-IDA4M10" class="docSection3Title">Final Builds</h5>
+<p class="docText"><em>Final builds,</em> which you intend to ship as products, may have different requirements from the regular nightly build. A final build may require that the repository be locked, or tagged with the release number, that optimization and debug flags be set differently, and so on. We like to use a separate <code>make</code> target (such as <code>make final</code>) that sets all of these parameters at once.</p>
+<p class="docText">Remember that if the product is compiled differently from earlier versions, then you must test against <em>this</em> version all over again.</p>
+<p class="docText"><a id="ch08lev2sec11"></a></p>
+<h4 id="title-IDAVN10" class="docSection2Title">Automatic Administrivia</h4>
+<p class="docText">Wouldn't it be nice if programmers could actually devote all of their time to programming? Unfortunately, this is rarely the case. There is e-mail to be answered, paperwork to be filled out, documents to be posted to the Web, and so on. You may decide to create a shell script to do some of the dirty work, but you still have to remember to run the script when needed.</p>
+<p class="docText">Because memory is the second thing you lose as you age,<sup><a href="#ch08fn04">[4]</a></sup> we don't want to rely on it too heavily. We can run scripts to perform procedures for us automatically, based on the <em>content</em> of source code and documents. Our goal is to maintain an automatic, unattended, content-driven workflow.</p>
+<p class="docFootnote"><sup><a id="ch08fn04">[4]</a></sup> What's the first? I forget.</p>
+<p class="docText"><a id="ch08lev3sec6"></a><a id="page_235"></a></p>
+<h5 id="title-IDAKO10" class="docSection3Title">Web Site Generation</h5>
+<p class="docText">Many development teams use an internal Web site for project communication, and we think this is a great idea. But we don't want to spend too much time maintaining the Web site, and we don't want to let it get stale or out of date. Misleading information is worse than no information at all.</p>
+<p class="docText">Documentation that is extracted from code, requirements analyses, design documents, and any drawings, charts, or graphs all need to be published to the Web on a regular basis. We like to publish these documents automatically as part of the nightly build or as a hook into the source code check-in procedure.</p>
+<p class="docText">However it is done, Web content should be generated automatically from information in the repository and published <em>without</em> human intervention. This is really another application of the <em>DRY</em> principle: information exists in one form as checked-in code and documents. The view from the Web browser is simply that—just a view. You shouldn't have to maintain that view by hand.</p>
+<p class="docText">Any information generated by the nightly build should be accessible on the development Web site: results of the build itself (for example, the build results might be presented as a one-page summary that includes compiler warnings, errors, and current status), regression tests, performance statistics, coding metrics and any other static analysis, and so on.</p>
+<p class="docText"><a id="ch08lev3sec7"></a></p>
+<h5 id="title-IDADP10" class="docSection3Title">Approval Procedures</h5>
+<p class="docText">Some projects have various administrative workflows that must be followed. For instance, code or design reviews need to be scheduled and followed through, approvals may need to be granted, and so on. We can use automation—and especially the Web site—to help ease the paperwork burden.</p>
+<p class="docText">Suppose you wanted to automate code review scheduling and approval. You might put a special marker in each source code file:</p>
+<p class="programlisting">          <em>/* Status: needs_review */</em></p>
+<p class="docText">A simple script could go through all of the source code and look for all files that had a status of <code>needs_review</code>, indicating that they were ready to be reviewed. You could then post a list of those files as a <a id="page_236"></a>Web page, automatically send e-mail to the appropriate people, or even schedule a meeting automatically using some calendar software.</p>
+<p class="docText">You can set up a form on a Web page for the reviewers to register approval or disapproval. After the review, the status can be automatically changed to <code>reviewed</code>. Whether you have a code walk-through with all the participants is up to you; you can still do the paperwork automatically. (In an article in the April 1999 CACM, Robert Glass summarizes research that seems to indicate that, while code inspection is effective, conducting reviews in meetings is not [<a href="app01.html#gla99a">Gla99a</a>].)</p>
+<p class="docText"><a id="ch08lev2sec12"></a></p>
+<h4 id="title-IDASQ10" class="docSection2Title">The Cobbler's Children</h4>
+<p class="docText">The cobbler's children have no shoes. Often, people who develop software use the poorest tools to do the job.</p>
+<p class="docText">But we have all the raw materials we need to craft better tools. We have <code>cron</code>. We have <code>make</code>, Ant, and CruiseControl for automation (see [<a href="app01.html#Cla04">Cla04</a>]). And we have Ruby, Perl, and other high-level scripting languages for quickly developing custom tools, Web page generators, code generators, test harnesses, and so on.</p>
+<p class="docText">Let the computer do the repetitious, the mundane—it will do a better job of it than we would. We've got more important and more difficult things to do.</p>
+<p class="docText"><a id="ch08lev3sec8"></a></p>
+<h5 id="title-IDAJR10" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch01.html#ch01lev1sec1"><em>The Cat Ate My Source Code</em></a>, page <a href="ch01.html#page_2">2</a></li>
+<li><a href="ch02.html#ch02lev1sec1"><em>The Evils of Duplication</em></a>, page <a href="ch02.html#page_26">26</a></li>
+<li><a href="ch03.html#ch03lev1sec1"><em>The Power of Plain Text</em></a>, page <a href="ch03.html#page_73">73</a></li>
+<li><a href="ch03.html#ch03lev1sec2"><em>Shell Games</em></a>, page <a href="ch03.html#page_77">77</a></li>
+<li><a href="ch03.html#ch03lev1sec5"><em>Debugging</em></a>, page <a href="ch03.html#page_90">90</a></li>
+<li><a href="ch03.html#ch03lev1sec7"><em>Code Generators</em></a>, page <a href="ch03.html#page_102">102</a></li>
+<li><a href="ch08.html#ch08lev1sec1"><em>Pragmatic Teams</em></a>, page <a href="ch08.html#page_224">224</a></li>
+<li><a href="ch08.html#ch08lev1sec3"><em>Ruthless Testing</em></a>, page <a href="ch08.html#page_237">237</a></li>
+<li><a href="ch08.html#ch08lev1sec4"><em>It's All Writing</em></a>, page <a href="ch08.html#page_248">248</a></li>
+</ul>
+<p class="docText"><a id="ch08lev3sec9"></a></p>
+<h5 id="title-IDAOT10" class="docSection3Title">Challenges</h5>
+<ul>
+<li>Look at your habits throughout the workday. Do you see any repetitive tasks? Do you type the same sequence of commands over and over again?<br/><a id="page_237"></a>Try writing a few shell scripts to automate the process. Do you always click on the same sequence of icons repeatedly? Can you create a macro to do all that for you?</li>
+<li>How much of your project paperwork can be automated? Given the high expense of programming staff,<sup><a href="#ch08fn05">[5]</a></sup> determine how much of the project's budget is being wasted on administrative procedures. Can you justify the amount of time it would take to craft an automated solution based on the overall cost savings it would achieve?<br/>
+<p class="docFootnote"><sup><a id="ch08fn05">[5]</a></sup> For estimating purposes, you can figure an industry average of about US$100,000 per head—that's salary plus benefits, training, office space and overhead, and so on.</p></li>
+</ul>
+<p class="docText"><a id="ch08lev1sec3"></a></p>
+<h3 id="title-IDASU10" class="docSection1Title">43. Ruthless Testing</h3>
+<p class="docText">Most developers hate testing. They tend to test gently, subconsciously knowing where the code will break and avoiding the weak spots. Pragmatic Programmers are different. We are <em>driven</em> to find our bugs <em>now,</em> so we don't have to endure the shame of others finding our bugs later.</p>
+<p class="docText">Finding bugs is somewhat like fishing with a net. We use fine, small nets (unit tests) to catch the minnows, and big, coarse nets (integration tests) to catch the killer sharks. Sometimes the fish manage to escape, so we patch any holes that we find, in hopes of catching more and more slippery defects that are swimming about in our project pool.</p>
+<p class="docNoteTitle">Tip 62</p>
+<p class="note"><a href="app03.html#id1e14741">Test Early. Test Often. Test Automatically.</a></p>
+<p class="docText">We want to start testing as soon as we have code. Those tiny minnows have a nasty habit of becoming giant, man-eating sharks pretty fast, and catching a shark is quite a bit harder. But we don't want to have to do all that testing by hand.</p>
+<p class="docText"><a id="page_238"></a>Many teams develop elaborate test plans for their projects. Sometimes they will even use them. But we've found that teams that use automated tests have a much better chance of success. Tests that run with every build are much more effective than test plans that sit on a shelf.</p>
+<p class="docText">The earlier a bug is found, the cheaper it is to remedy. "Code a little, test a little" is a popular saying in the Smalltalk world,<sup><a href="#ch08fn06">[6]</a></sup> and we can adopt that mantra as our own by writing test code at the same time (or even before) we write the production code.</p>
+<p class="docFootnote"><sup><a id="ch08fn06">[6]</a></sup> eXtreme Programming [<a href="app01.html#app01lev3sec45">URL 45</a>] calls this concept "continuous integration, relentless testing."</p>
+<p class="docText">In fact, a good project may well have <em>more</em> test code than production code. The time it takes to produce this test code is worth the effort. It ends up being much cheaper in the long run, and you actually stand a chance of producing a product with close to zero defects.</p>
+<p class="docText">Additionally, knowing that you've passed the test gives you a high degree of confidence that a piece of code is "done."</p>
+<p class="docNoteTitle">Tip 63</p>
+<p class="note"><a href="app03.html#id1e14775">Coding Ain't Done 'Til All the Tests Run</a></p>
+<p class="docText">Just because you have finished hacking out a piece of code doesn't mean you can go tell your boss or your client that it's <em>done.</em> It's not. First of all, code is never really done. More importantly, you can't claim that it is usable by anyone until it passes all of the available tests.</p>
+<p class="docText">We need to look at three main aspects of project-wide testing: what to test, how to test, and when to test.</p>
+<p class="docText"><a id="ch08lev2sec13"></a></p>
+<h4 id="title-IDARW10" class="docSection2Title">What to Test</h4>
+<p class="docText">There are several major types of software testing that you need to perform:</p>
+<ul>
+<li>Unit testing</li>
+<li>Integration testing</li>
+<li>Validation and verification</li>
+<li><a id="page_239"></a>Resource exhaustion, errors, and recovery</li>
+<li>Performance testing</li>
+<li>Usability testing</li>
+</ul>
+<p class="docText">This list is by no means complete, and some specialized projects will require various other types of testing as well. But it gives us a good starting point.</p>
+<p class="docText"><a id="ch08lev3sec10"></a></p>
+<h5 id="title-IDAVX10" class="docSection3Title">Unit Testing</h5>
+<p class="docText">A <em>unit test</em> is code that exercises a module. We covered this topic by itself in <a href="ch06.html#ch06lev1sec4"><em>Code That's Easy to Test</em></a>, page <a href="ch06.html#page_189">189</a>. Unit testing is the foundation of all the other forms of testing that we'll discuss in this section. If the parts don't work by themselves, they probably won't work well together. All of the modules you are using must pass their own unit tests before you can proceed.</p>
+<p class="docText">Once all of the pertinent modules have passed their individual tests, you're ready for the next stage. You need to test how all the modules use and interact with each other throughout the system.</p>
+<p class="docText"><a id="ch08lev3sec11"></a></p>
+<h5 id="title-IDAMY10" class="docSection3Title">Integration Testing</h5>
+<p class="docText"><em>Integration testing</em> shows that the major subsystems that make up the project work and play well with each other. With good contracts in place and well tested, any integration issues can be detected easily. Otherwise, integration becomes a fertile breeding ground for bugs. In fact, it is often the single largest source of bugs in the system.</p>
+<p class="docText">Integration testing is really just an extension of the unit testing we've described—only now you're testing how entire subsystems honor their contracts.</p>
+<p class="docText"><a id="ch08lev3sec12"></a></p>
+<h5 id="title-IDA5Y10" class="docSection3Title">Validation and Verification</h5>
+<p class="docText">As soon as you have an executable user interface or prototype, you need to answer an all-important question: the users told you what they wanted, but is it what they need?</p>
+<p class="docText">Does it meet the functional requirements of the system? This, too, needs to be tested. A bug-free system that answers the wrong question isn't very useful. Be conscious of end-user access patterns and <a id="page_240"></a>how they differ from developer test data (for an example, see the story about brush strokes on page <a href="ch03.html#page_92">92</a>).</p>
+<p class="docText"><a id="ch08lev3sec13"></a></p>
+<h5 id="title-IDAMZ10" class="docSection3Title">Resource Exhaustion, Errors, and Recovery</h5>
+<p class="docText">Now that you have a pretty good idea that the system will behave correctly under ideal conditions, you need to discover how it will behave under <em>real-world</em> conditions. In the real world, your programs don't have limitless resources; they run out of things. A few limits your code may encounter include:</p>
+<ul>
+<li>Memory</li>
+<li>Disk space</li>
+<li>CPU bandwidth</li>
+<li>Wall-clock time</li>
+<li>Disk bandwidth</li>
+<li>Network bandwidth</li>
+<li>Color palette</li>
+<li>Video resolution</li>
+</ul>
+<p class="docText">You might actually check for disk space or memory allocation failures, but how often do you test for the others? Will your application fit on a 640 x 480 screen with 256 colors? Will it run on a 1600 x 1280 screen with 24-bit color without looking like a postage stamp? Will the batch job finish before the archive starts?</p>
+<p class="docText">You can detect environmental limitations, such as the video specifications, and adapt as appropriate. Not all failures are recoverable, however. If your code detects that memory has been exhausted, your options are limited: you may not have enough resources left to do anything except fail.</p>
+<p class="docText">When the system does fail,<sup><a href="#ch08fn07">[7]</a></sup> will it fail gracefully? Will it try, as best it can, to save its state and prevent loss of work? Or will it "GPF" or "core-dump" in the user's face?</p>
+<p class="docFootnote"><sup><a id="ch08fn07">[7]</a></sup> Our copy editor wanted us to change this sentence to "<em>If</em> the system does fail...." We resisted.</p>
+<p class="docText"><a id="ch08lev3sec14"></a><a id="page_241"></a></p>
+<h5 id="title-IDAL110" class="docSection3Title">Performance Testing</h5>
+<p class="docText">Performance testing, stress testing, or testing under load may be an important aspect of the project as well.</p>
+<p class="docText">Ask yourself if the software meets the performance requirements under real-world conditions—with the expected number of users, or connections, or transactions per second. Is it scalable?</p>
+<p class="docText">For some applications, you may need specialized testing hardware or software to simulate the load realistically.</p>
+<p class="docText"><a id="ch08lev3sec15"></a></p>
+<h5 id="title-IDA4110" class="docSection3Title">Usability Testing</h5>
+<p class="docText">Usability testing is different from the types of testing discussed so far. It is performed with real users, under real environmental conditions.</p>
+<p class="docText">Look at usability in terms of human factors. Were there any misunderstandings during requirements analysis that need to be addressed? Does the software fit the user like an extension of the hand? (Not only do we want our own tools to fit our hands, but we want the tools we create for users to fit their hands as well.)</p>
+<p class="docText">As with validation and verification, you need to perform usability testing as early as you can, while there is still time to make corrections. For larger projects, you may want to bring in human factors specialists. (If nothing else, it's fun to play with the one-way mirrors).</p>
+<p class="docText">Failure to meet usability criteria is just as big a bug as dividing by zero.</p>
+<p class="docText"><a id="ch08lev2sec14"></a></p>
+<h4 id="title-IDAQ210" class="docSection2Title">How to Test</h4>
+<p class="docText">We've looked at <em>what</em> to test. Now we'll turn our attention to <em>how</em> to test, including:</p>
+<ul>
+<li>Regression testing</li>
+<li>Test data</li>
+<li>Exercising GUI systems</li>
+<li>Testing the tests</li>
+<li>Testing thoroughly</li>
+</ul>
+<p class="docText"><a id="page_242"></a></p>
+<div class="sidebar1">
+<p class="docSidebarTitle">Design/Methodology Testing</p>
+<p class="sidebar">Can you test the design of the code itself and the methodology you used to build the software? After a fashion, yes you can. You do this by analyzing <em>metrics</em>—measurements of various aspects of the code. The simplest metric (and often the least interesting) is <em>lines of code</em>—how big is the code itself?</p>
+<p class="sidebar">There are a wide variety of other metrics you can use to examine code, including:</p>
+<ul>
+<li>McCabe Cyclomatic Complexity Metric (measures complexity of decision structures)</li>
+<li>Inheritance fan-in (number of base classes) and fan-out (number of derived modules using this one as a parent)</li>
+<li>Response set (see <a href="ch05.html#ch05lev1sec1"><em>Decoupling and the Law of Demeter</em></a>, page <a href="ch05.html#page_138">138</a>)</li>
+<li>Class coupling ratios (see [<a href="app01.html#app01lev3sec48">URL 48</a>])</li>
+</ul>
+<p class="sidebar">Some metrics are designed to give you a "passing grade," while others are useful only by comparison. That is, you calculate these metrics for every module in the system and see how a particular module relates to its brethren. Standard statistical techniques (such as mean and standard deviation) are usually used here.</p>
+<p class="sidebar">If you find a module whose metrics are markedly different from all the rest, you need to ask yourself if that is appropriate. For some modules, it may be okay to "blow the curve." But for those that <em>don't</em> have a good excuse, it can indicate potential problems.</p>
+</div>
+<p class="docText"><a id="ch08lev3sec16"></a></p>
+<h5 id="title-IDAN510" class="docSection3Title">Regression Testing</h5>
+<p class="docText">A regression test compares the output of the current test with previous (or known) values. We can ensure that bugs we fixed today didn't break things that were working yesterday. This is an important safety net, and it cuts down on unpleasant surprises.</p>
+<p class="docText">All of the tests we've mentioned so far can be run as regression tests, ensuring that we haven't lost any ground as we develop new code. We can run regressions to verify performance, contracts, validity, and so on.</p>
+<p class="docText"><a id="ch08lev3sec17"></a><a id="page_243"></a></p>
+<h5 id="title-IDA0510" class="docSection3Title">Test Data</h5>
+<p class="docText">Where do we get the data to run all these tests? There are only two kinds of data: real-world data and synthetic data. We actually need to use both, because the different natures of these kinds of data will expose different bugs in our software.</p>
+<p class="docText">Real-world data comes from some actual source. Possibly it has been collected from an existing system, a competitor's system, or a prototype of some sort. It represents typical user data. The big surprises come as you discover what <em>typical</em> means. This is most likely to reveal defects and misunderstandings in requirements analysis.</p>
+<p class="docText">Synthetic data is artificially generated, perhaps under certain statistical constraints. You may need to use synthetic data for any of the following reasons.</p>
+<ul>
+<li>You need a lot of data, possibly more than any real-world sample could provide. You might be able to use the real-world data as a seed to generate a larger sample set, and tweak certain fields that need to be unique.</li>
+<li>You need data to stress the boundary conditions. This data may be completely synthetic: date fields containing February 29, 1999, huge record sizes, or addresses with foreign postal codes.</li>
+<li>You need data that exhibits certain statistical properties. Want to see what happens if every third transaction fails? Remember the sort algorithm that slows to a crawl when handed presorted data? You can present data in random or sorted order to expose this kind of weakness.</li>
+</ul>
+<p class="docText"><a id="ch08lev3sec18"></a></p>
+<h5 id="title-IDA4A20" class="docSection3Title">Exercising GUI Systems</h5>
+<p class="docText">Testing GUI-intensive systems often requires specialized testing tools. These tools may be based on a simple event capture/playback model, or they may require specially written scripts to drive the GUI. Some systems combine elements of both.</p>
+<p class="docText">Less sophisticated tools enforce a high degree of coupling between the version of software being tested and the test script itself: if you move a dialog box or make a button smaller, the test may not be able to <a id="page_244"></a>find it, and may fail. Most modern GUI testing tools use a number of different techniques to get around this problem, and try to adjust to minor layout differences.</p>
+<p class="docText">However, you can't automate everything. Andy worked on a graphics system that allowed the user to create and display nondeterministic visual effects which simulated various natural phenomena. Unfortunately, during testing you couldn't just grab a bitmap and compare the output with a previous run, because it was designed to be different every time. For situations such as this one, you may have no choice but to rely on manual interpretation of test results.</p>
+<p class="docText">One of the many advantages of writing decoupled code (see <a href="ch05.html#ch05lev1sec1"><em>Decoupling and the Law of Demeter</em></a>, page <a href="ch05.html#page_138">138</a>) is more modular testing. For instance, for data processing applications that have a GUI front end, your design should be decoupled enough so that you can test the application logic <em>without</em> having a GUI present. This idea is similar to testing your subcomponents first. Once the application logic has been validated, it becomes easier to locate bugs that show up with the user interface in place (it's likely that the bugs were created by the user-interface code).</p>
+<p class="docText"><a id="ch08lev3sec19"></a></p>
+<h5 id="title-IDAWB20" class="docSection3Title">Testing the Tests</h5>
+<p class="docText">Because we can't write perfect software, it follows that we can't write perfect test software either. We need to test the tests.</p>
+<p class="docText">Think of our set of test suites as an elaborate security system, designed to sound the alarm when a bug shows up. How better to test a security system than to try to break in?</p>
+<p class="docText">After you have written a test to detect a particular bug, <em>cause</em> the bug deliberately and make sure the test complains. This ensures that the test will catch the bug if it happens for real.</p>
+<p class="docNoteTitle">Tip 64</p>
+<p class="note"><a href="app03.html#id1e15142">Use Saboteurs to Test Your Testing</a></p>
+<p class="docText">If you are <em>really</em> serious about testing, you might want to appoint a <em>project saboteur.</em> The saboteur's role is to take a separate copy of the <a id="page_245"></a>source tree, introduce bugs on purpose, and verify that the tests will catch them.</p>
+<p class="docText">When writing tests, make sure that alarms sound when they should.</p>
+<p class="docText"><a id="ch08lev3sec20"></a></p>
+<h5 id="title-IDAYC20" class="docSection3Title">Testing Thoroughly</h5>
+<p class="docText">Once you are confident that your tests are correct, and are finding bugs you create, how do you know if you have tested the code base thoroughly enough?</p>
+<p class="docText">The short answer is "you don't," and you never will. But there are products on the market that can help. These <em>coverage analysis</em> tools watch your code during testing and keep track of which lines of code have been executed and which haven't. These tools help give you a general feel for how comprehensive your testing is, but don't expect to see 100% coverage.</p>
+<p class="docText">Even if you do happen to hit every line of code, that's not the whole picture. What <em>is</em> important is the number of states that your program may have. States are not equivalent to lines of code. For instance, suppose you have a function that takes two integers, each of which can be a number from 0 to 999.</p>
+<p class="progimage"><img src="images/p0245-01.jpg" alt="image" /></p>
+<p class="docText">In theory, this three-line function has 1,000,000 logical states, 999,999 of which will work correctly and one that will not (when <code>a + b</code> equals zero). Simply knowing that you executed this line of code doesn't tell you that—you would need to identify all possible states of the program. Unfortunately, in general this is a <em>really hard</em> problem. Hard as in, "The sun will be a cold hard lump before you can solve it."</p>
+<p class="docNoteTitle">Tip 65</p>
+<p class="note"><a href="app03.html#id1e15205">Test State Coverage, Not Code Coverage</a></p>
+<p class="docText">Even with good code coverage, the data you use for testing still has a huge impact, and, more importantly, the <em>order</em> in which you traverse code may have the largest impact of all.</p>
+<p class="docText"><a id="ch08lev2sec15"></a><a id="page_246"></a></p>
+<h4 id="title-IDAYE20" class="docSection2Title">When to Test</h4>
+<p class="docText">Many projects tend to leave testing to the last minute—right where it will be cut against the sharp edge of a deadline.<sup><a href="#ch08fn08">[8]</a></sup> We need to start much sooner than that. As soon as any production code exists, it needs to be tested.</p>
+<p class="docFootnote"><sup><a id="ch08fn08">[8]</a></sup> <strong>dead<sup>.</sup>line</strong> \ded-l<img src="images/U012B.gif" alt="image" />n\ <em>n</em> (1864) a line drawn within or around a prison that a prisoner passes at the risk of being shot—<em>Webster's Collegiate Dictionary.</em></p>
+<p class="docText">Most testing should be done automatically. It's important to note that by "automatically" we mean that the test <em>results</em> are interpreted automatically as well. See <a href="ch08.html#ch08lev1sec2"><em>Ubiquitous Automation</em></a>, page <a href="ch08.html#page_230">230</a>, for more on this subject.</p>
+<p class="docText">We like to test as frequently as we can, and always before we check code into the source repository. Some source code control systems, such as Aegis, can do this automatically. Otherwise, we just type</p>
+<p class="programlisting">        % make test</p>
+<p class="docText">Usually, it isn't a problem to run regressions on all of the individual unit tests and integration tests as often as needed.</p>
+<p class="docText">But some tests may not be easily run on a such a frequent basis. Stress tests, for instance, may require special setup or equipment, and some hand holding. These tests may be run less often—weekly or monthly, perhaps. But it is important that they be run on a regular, scheduled basis. If it can't be done automatically, then make sure it appears on the schedule, with all the necessary resources allocated to the task.</p>
+<p class="docText"><a id="ch08lev2sec16"></a></p>
+<h4 id="title-IDAVG20" class="docSection2Title">Tightening the Net</h4>
+<p class="docText">Finally, we'd like to reveal the single most important concept in testing. It is an obvious one, and virtually every textbook says to do it this way. But for some reason, most projects still do not.</p>
+<p class="docText">If a bug slips through the net of existing tests, you need to add a new test to trap it next time.</p>
+<p class="docNoteTitle"><a id="page_247"></a>Tip 66</p>
+<p class="note"><a href="app03.html#id1e15277">Find Bugs Once</a></p>
+<p class="docText">Once a human tester finds a bug, it should be the <em>last</em> time a human tester finds that bug. The automated tests should be modified to check for that particular bug from then on, every time, with no exceptions, no matter how trivial, and no matter how much the developer complains and says, "Oh, that will never happen again."</p>
+<p class="docText">Because it will happen again. And we just don't have the time to go chasing after bugs that the automated tests could have found for us. We have to spend our time writing new code—and new bugs.</p>
+<p class="docText"><a id="ch08lev3sec21"></a></p>
+<h5 id="title-IDATH20" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch01.html#ch01lev1sec1"><em>The Cat Ate My Source Code</em></a>, page <a href="ch01.html#page_2">2</a></li>
+<li><a href="ch03.html#ch03lev1sec5"><em>Debugging</em></a>, page <a href="ch03.html#page_90">90</a></li>
+<li><a href="ch05.html#ch05lev1sec1"><em>Decoupling and the Law of Demeter</em></a>, page <a href="ch05.html#page_138">138</a></li>
+<li><a href="ch06.html#ch06lev1sec3"><em>Refactoring</em></a>, page <a href="ch06.html#page_184">184</a></li>
+<li><a href="ch06.html#ch06lev1sec4"><em>Code That's Easy to Test</em></a>, page <a href="ch06.html#page_189">189</a></li>
+<li><a href="ch08.html#ch08lev1sec2"><em>Ubiquitous Automation</em></a>, page <a href="ch08.html#page_230">230</a></li>
+</ul>
+<p class="docText"><a id="ch08lev3sec22"></a></p>
+<h5 id="title-IDAJJ20" class="docSection3Title">Challenges</h5>
+<ul>
+<li>Can you automatically test your project? Many teams are forced to answer "no." Why? Is it too hard to define the acceptable results? Won't this make it hard to prove to the sponsors that the project is "done"?<br/>Is it too hard to test the application logic independent of the GUI? What does this say about the GUI? About coupling?</li>
+</ul>
+<p class="docText"><a id="ch08lev1sec4"></a><a id="page_248"></a></p>
+<h3 id="title-IDA5J20" class="docSection1Title">44. It's All Writing</h3>
+<p class="blockquote"><em>The palest ink is better than the best memory.</em></p>
+<p class="attribution">• <strong>Chinese Proverb</strong></p>
+<p class="docText">Typically, developers don't give much thought to documentation. At best it is an unfortunate necessity; at worst it is treated as a low-priority task in the hope that management will forget about it at the end of the project.</p>
+<p class="docText">Pragmatic Programmers embrace documentation as an integral part of the overall development process. Writing documentation can be made easier by not duplicating effort or wasting time, and by keeping documentation close at hand—in the code itself, if possible.</p>
+<p class="docText">These aren't exactly original or novel thoughts; the idea of wedding code and documentation appears in Donald Knuth's work on literate programming and in Sun's JavaDoc utility, among others. We want to downplay the dichotomy between code and documentation, and instead treat them as two views of the same model (see <a href="ch05.html#ch05lev1sec4"><em>It's Just a View</em></a>, page <a href="ch05.html#page_157">157</a>). In fact, we want to go a little further and apply <em>all</em> of our pragmatic principles to documentation as well as to code.</p>
+<p class="docNoteTitle">Tip 67</p>
+<p class="note"><a href="app03.html#id1e15378">Treat English as Just Another Programming Language</a></p>
+<p class="docText">There are basically two kinds of documentation produced for a project: internal and external. Internal documentation includes source code comments, design and test documents, and so on. External documentation is anything shipped or published to the outside world, such as user manuals. But regardless of the intended audience, or the role of the writer (developer or technical writer), all documentation is a mirror of the code. If there's a discrepancy, the code is what matters—for better or worse.</p>
+<p class="docNoteTitle">Tip 68</p>
+<p class="note"><a href="app03.html#id1e15389">Build Documentation In, Don't Bolt It On</a></p>
+<p class="docText">We'll start with internal documentation.</p>
+<p class="docText"><a id="ch08lev2sec17"></a><a id="page_249"></a></p>
+<h4 id="title-IDAYL20" class="docSection2Title">Comments in Code</h4>
+<p class="docText">Producing formatted documents from the comments and declarations in source code is fairly straightforward, but first we have to ensure that we actually <em>have</em> comments in the code. Code should have comments, but too many comments can be just as bad as too few.</p>
+<p class="docText">In general, comments should discuss <em>why</em> something is done, its purpose and its goal. The code already shows <em>how</em> it is done, so commenting on this is redundant—and is a violation of the <em>DRY</em> principle.</p>
+<p class="docText">Commenting source code gives you the perfect opportunity to document those elusive bits of a project that can't be documented anywhere else: engineering trade-offs, why decisions were made, what other alternatives were discarded, and so on.</p>
+<p class="docText">We like to see a <em>simple</em> module-level header comment, comments for significant data and type declarations, and a brief per-class and per-method header, describing how the function is used and anything that it does that is not obvious.</p>
+<p class="docText">Variable names, of course, should be well chosen and meaningful. <code>foo</code>, for instance, is meaningless, as is <code>doit</code> or <code>manager</code> or <code>stuff</code>. Hungarian notation (where you encode the variable's type information in the name itself) is utterly inappropriate in object-oriented systems. Remember that you (and others after you) will be <em>reading</em> the code many hundreds of times, but only <em>writing</em> it a few times. Take the time to spell out <code>connectionPool</code> instead of <code>cp</code>.</p>
+<p class="docText">Even worse than meaningless names are <em>misleading</em> names. Have you ever had someone explain inconsistencies in legacy code such as, "The routine called <code>getData</code> really writes data to disk"? The human brain will repeatedly foul this up—it's called the <em>Stroop Effect</em> [<a href="app01.html#str35">Str35</a>]. You can try the following experiment yourself to see the effects of such interference. Get some colored pens, and use them to write down the names of colors. However, never write a color name using that color pen. You could write the word "blue" in green, the word "brown" in red, and so on. (Alternatively, we have a sample set of colors already drawn on our Web site at <a href="http://www.pragmaticprogrammer.com">www.pragmaticprogrammer.com</a>.) Once you have the color names drawn, try to say aloud the color with which each word is drawn, as fast as you can. At some point you'll trip up and start reading the names of the colors, and not the colors themselves. Names are <a id="page_250"></a>deeply meaningful to your brain, and misleading names add chaos to your code.</p>
+<p class="docText">You can document parameters, but ask yourself if it is really necessary in all cases. The level of comment suggested by the JavaDoc tool seems appropriate:</p>
+<p class="progimage"><img src="images/p0250-01.jpg" alt="image" /></p>
+<p class="docText">Here's a list of things that should <em>not</em> appear in source comments.</p>
+<ul>
+<li><a id="d1e15513"></a><strong>A list of the functions exported by code in the file.</strong> There are programs that analyze source for you. Use them, and the list is guaranteed to be up to date.</li>
+<li><a id="d1e15521"></a><strong>Revision history.</strong> This is what source code control systems are for (see <a href="ch03.html#ch03lev1sec4"><em>Source Code Control</em></a>, page <a href="ch03.html#page_86">86</a>). However, it can be useful to include information on the date of last change and the person who made it.<sup><a href="#ch08fn09">[9]</a></sup></li>
+</ul>
+<p class="docFootnote"><sup><a id="ch08fn09">[9]</a></sup> This kind of information, as well as the filename, is provided by the RCS <code>$Id$</code> tag.</p>
+<ul>
+<li><a id="d1e15539"></a><strong>A list of other files this file uses.</strong> This can be determined more accurately using automatic tools.</li>
+<li><a id="d1e15547"></a><strong>The name of the file.</strong> If it must appear in the file, don't maintain it by hand. RCS and similar systems can keep this information up to date automatically. If you move or rename the file, you don't want to have to remember to edit the header.</li>
+</ul>
+<p class="docText">One of the most important pieces of information that <em>should</em> appear in the source file is the author's name—not necessarily who edited the file last, but the owner. Attaching responsibility and accountability to source code does wonders in keeping people honest (see <a href="ch08.html#ch08lev1sec6"><em>Pride and Prejudice</em></a>, page <a href="ch08.html#page_258">258</a>).</p>
+<p class="docText"><a id="page_251"></a>The project may also require certain copyright notices or other legal boilerplate to appear in each source file. Get your editor to insert these for you automatically.</p>
+<p class="docText">With meaningful comments in place, tools such as JavaDoc [<a href="app01.html#app01lev3sec7">URL 7</a>] and DOC++ [<a href="app01.html#app01lev3sec21">URL 21</a>] can extract and format them to automatically produce API-level documentation. This is one specific example of a more general technique we use—<em>executable documents.</em></p>
+<p class="docText"><a id="ch08lev2sec18"></a></p>
+<h4 id="title-IDAZR20" class="docSection2Title">Executable Documents</h4>
+<p class="docText">Suppose we have a specification that lists the columns in a database table. We'll then have a separate set of SQL commands to create the actual table in the database, and probably some kind of programming language record structure to hold the contents of a row in the table. The same information is repeated three times. Change any one of these three sources, and the other two are immediately out of date. This is a clear violation of the <em>DRY</em> principle.</p>
+<p class="docText">To correct this problem, we need to choose the authoritative source of information. This may be the specification, it may be a database schema tool, or it may be some third source altogether. Let's choose the specification document as the source. It's now our <em>model</em> for this process. We then need to find a way to export the information it contains as different <em>views</em>—a database schema and a high-level language record, for example.<sup><a href="#ch08fn10">[10]</a></sup></p>
+<p class="docFootnote"><sup><a id="ch08fn10">[10]</a></sup> See <a href="ch05.html#ch05lev1sec4"><em>It's Just a View</em></a>, page <a href="ch05.html#page_157">157</a>, for more on models and views.</p>
+<p class="docText">If your document is stored as plain text with markup commands (using HTML, LATEX, or troff, for example), then you can use tools such as Perl to extract the schema and reformat it automatically. If your document is in a word processor's binary format, then see the box on the following page for some options.</p>
+<p class="docText">Your document is now an integral part of the project development. The only way to change the schema is to change the document. You are guaranteeing that the specification, schema, and code all agree. You minimize the amount of work you have to do for each change, and you can update the views of the change automatically.</p>
+<p class="docText"><a id="page_252"></a></p>
+<div class="sidebar1">
+<p class="docSidebarTitle">What if My Document Isn't Plain Text?</p>
+<p class="sidebar">Unfortunately, more and more project documents are now being written using word processors that store the file on disk in some proprietary format. We say "unfortunately" because this severely restricts your options to process the document automatically. However, you still have a couple of options:</p>
+<ul>
+<li><a id="d1e15622"></a><strong>Write macros.</strong> Most sophisticated word processors now have a macro language. With some effort you can program them to export tagged sections of your documents into the alternative forms you need. If programming at this level is too painful, you could always export the appropriate section into a standard format plain text file, and then use a tool such as Perl to convert this into the final forms.</li>
+<li><a id="d1e15630"></a><strong>Make the document subordinate.</strong> Rather than have the document as the definitive source, use another representation. (In the database example, you might want to use the schema as the authoritative information.) Then write a tool that exports this information into a form that the document can import. Be careful, however. You need to ensure that this information is imported every time the document is printed, rather than just once when the document is created.</li>
+</ul>
+</div>
+<p class="docText">We can generate API-level documentation from source code using tools such as JavaDoc and DOC++ in a similar fashion. The model is the source code: one view of the model can be compiled; other views are meant to be printed out or viewed on the Web. Our goal is always to work on the model—whether the model is the code itself or some other document—and have all views updated automatically (see <a href="ch08.html#ch08lev1sec2"><em>Ubiquitous Automation</em></a>, page <a href="ch08.html#page_230">230</a>, for more on automatic processes).</p>
+<p class="docText">Suddenly, documentation isn't so bad.</p>
+<p class="docText"><a id="ch08lev2sec19"></a></p>
+<h4 id="title-IDAQU20" class="docSection2Title">Technical Writers</h4>
+<p class="docText">Up until now, we've talked only about internal documentation—written by the programmers themselves. But what happens when you have professional technical writers involved in the project? All too often, programmers just throw material "over the wall" to technical writers and <a id="page_253"></a>let them fend for themselves to produce user manuals, promotional pieces, and so on.</p>
+<p class="docText">This is a mistake. Just because programmers aren't writing these documents doesn't mean that we can forsake pragmatic principles. We want the writers to embrace the same basic principles that a Pragmatic Programmer does—especially honoring the <em>DRY</em> principle, orthogonality, the model-view concept, and the use of automation and scripting.</p>
+<p class="docText"><a id="ch08lev2sec20"></a></p>
+<h4 id="title-IDAHV20" class="docSection2Title">Print It or Weave It</h4>
+<p class="docText">One problem inherent with published, paper documentation is that it can become out of date as soon as it's printed. Documentation of any form is just a snapshot.</p>
+<p class="docText">So we try to produce all documentation in a form that can be published online, on the Web, complete with hyperlinks. It's easier to keep this view of the documentation up to date than to track down every existing paper copy, burn it, and reprint and redistribute new copies. It's also a better way to address the needs of a wide audience. Remember, though, to put a date stamp or version number on each Web page. This way the reader can get a good idea of what's up to date, what's changed recently, and what hasn't.</p>
+<p class="docText">Many times you need to present the same documentation in different formats: a printed document, Web pages, online help, or perhaps a slide show. The typical solution relies heavily on cut-and-paste, creating a number of new independent documents from the original. This is a bad idea: a document's presentation should be independent of its content.</p>
+<p class="docText">If you are using a markup system, you have the flexibility to implement as many different output formats as you need. You can choose to have</p>
+<p class="programlisting">        &lt;H1&gt;<em>Chapter Title</em>&lt;/H1&gt;</p>
+<p class="docText">generate a new chapter in the report version of the document and title a new slide in the slide show. Technologies such as XSL and CSS<sup><a href="#ch08fn11">[11]</a></sup> can be used to generate multiple output formats from this one markup.</p>
+<p class="docFootnote"><sup><a id="ch08fn11">[11]</a></sup> eXtensible Style Language and Cascading Style Sheets, two technologies designed to help separate presentation from content.</p>
+<p class="docText"><a id="page_254"></a>If you are using a word processor, you'll probably have similar capabilities. If you remembered to use styles to identify different document elements, then by applying different style sheets you can drastically alter the look of the final output. Most word processors now allow you to convert your document to formats such as HTML for Web publishing.</p>
+<p class="docText"><a id="ch08lev2sec21"></a></p>
+<h4 id="title-IDAMW20" class="docSection2Title">Markup Languages</h4>
+<p class="docText">Finally, for large-scale documentation projects, we recommend looking at some of the more modern schemes for marking up documentation.</p>
+<p class="docText">Many technical authors now use DocBook to define their documents. DocBook is an SGML-based markup standard that carefully identifies every component in a document. The document can be passed through a DSSSL processor to render it into any number of different formats. The Linux documentation project uses DocBook to publish information in RTF, <img src="images/tex.gif" alt="image" />, info, PostScript, and HTML formats.</p>
+<p class="docText">As long as your original markup is rich enough to express all the concepts you need (including hyperlinks), translation to any other publishable form can be both easy and automatic. You can produce online help, published manuals, product highlights for the Web site, and even a tip-a-day calendar, all from the same source—which of course is under source control and is built along with the nightly build (see <a href="ch08.html#ch08lev1sec2"><em>Ubiquitous Automation</em></a>, page <a href="ch08.html#page_230">230</a>).</p>
+<p class="docText">Documentation and code are different views of the same underlying model, but the view is <em>all</em> that should be different. Don't let documentation become a second-class citizen, banished from the main project workflow. Treat documentation with the same care you treat code, and the users (and maintainers who follow) will sing your praises.</p>
+<p class="docText"><a id="ch08lev3sec23"></a></p>
+<h5 id="title-IDAQX20" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch02.html#ch02lev1sec1"><em>The Evils of Duplication</em></a>, page <a href="ch02.html#page_26">26</a></li>
+<li><a href="ch02.html#ch02lev1sec2"><em>Orthogonality</em></a>, page <a href="ch02.html#page_34">34</a></li>
+<li><a href="ch03.html#ch03lev1sec1"><em>The Power of Plain Text</em></a>, page <a href="ch03.html#page_73">73</a></li>
+<li><a href="ch03.html#ch03lev1sec4"><em>Source Code Control</em></a>, page <a href="ch03.html#page_86">86</a></li>
+<li><a href="ch05.html#ch05lev1sec4"><em>It's Just a View</em></a>, page <a href="ch05.html#page_157">157</a></li>
+<li><a href="ch06.html#ch06lev1sec1"><em>Programming by Coincidence</em></a>, page <a href="ch06.html#page_172">172</a></li>
+<li><a href="ch07.html#ch07lev1sec1"><em>The Requirements Pit</em></a>, page <a href="ch07.html#page_202">202</a></li>
+<li><a href="ch08.html#ch08lev1sec2"><em>Ubiquitous Automation</em></a>, page <a href="ch08.html#page_230">230</a></li>
+</ul>
+<p class="docText"><a id="ch08lev3sec24"></a><a id="page_255"></a></p>
+<h5 id="title-IDASZ20" class="docSection3Title">Challenges</h5>
+<ul>
+<li>Did you write an explanatory comment for the source code you just wrote? Why not? Pressed for time? Not sure if the code will really work—are you just trying out an idea as a prototype? You'll throw the code away afterwards, right? It won't make it into the project uncommented and experimental, will it?</li>
+<li>Sometimes it is uncomfortable to document the design of source code because the design isn't clear in your mind; it's still evolving. You don't feel that you should waste effort describing what something does until it actually does it. Does this sound like programming by coincidence (page <a href="ch06.html#page_172">172</a>)?</li>
+</ul>
+<p class="docText"><a id="ch08lev1sec5"></a></p>
+<h3 id="title-IDAN020" class="docSection1Title">45. Great Expectations</h3>
+<p class="blockquote"><em>Be astonished, O ye heavens, at this, and be horribly afraid...</em></p>
+<p class="attribution">• <strong>Jeremiah 2:12</strong></p>
+<p class="docText">A company announces record profits, and its share price drops 20%. The financial news that night explains that the company failed to meet analysts' expectations. A child opens an expensive Christmas present and bursts into tears—it wasn't the cheap doll the child was hoping for. A project team works miracles to implement a phenomenally complex application, only to have it shunned by its users because it doesn't have a help system.</p>
+<p class="docText">In an abstract sense, an application is successful if it correctly implements its specifications. Unfortunately, this pays only abstract bills.</p>
+<p class="docText">In reality, the success of a project is measured by how well it meets the <em>expectations</em> of its users. A project that falls below their expectations is deemed a failure, no matter how good the deliverable is in absolute terms. However, like the parent of the child expecting the cheap doll, go too far and you'll be a failure, too.</p>
+<p class="docNoteTitle">Tip 69</p>
+<p class="note"><a href="app03.html#id1e15818">Gently Exceed Your Users' Expectations</a></p>
+<p class="docText">However, the execution of this tip requires some work.</p>
+<p class="docText"><a id="ch08lev2sec22"></a><a id="page_256"></a></p>
+<h4 id="title-IDAY120" class="docSection2Title">Communicating Expectations</h4>
+<p class="docText">Users initially come to you with some vision of what they want. It may be incomplete, inconsistent, or technically impossible, but it is <em>theirs,</em> and, like the child at Christmas, they have some emotion invested in it. You cannot just ignore it.</p>
+<p class="docText">As your understanding of their needs develops, you'll find areas where their expectations cannot be met, or where their expectations are perhaps too conservative. Part of your role is to communicate this. Work with your users so that their understanding of what you'll be delivering is accurate. And do this throughout the development process. Never lose sight of the business problems your application is intended to solve.</p>
+<p class="docText">Some consultants call this process "managing expectations"—actively controlling what users should hope to get from their systems. We think this is a somewhat elitist position. Our role is not to control the hopes of our users. Instead, we need to work with them to come to a common understanding of the development process and the final deliverable, along with those expectations they have not yet verbalized. If the team is communicating fluently with the outside world, this process is almost automatic; everyone should understand what's expected and how it will be built.</p>
+<p class="docText">There are some important techniques that can be used to facilitate this process. Of these, <a href="ch02.html#ch02lev1sec4"><em>Tracer Bullets</em></a>, page <a href="ch02.html#page_48">48</a>, and <a href="ch02.html#ch02lev1sec5"><em>Prototypes and Post-it Notes</em></a>, page <a href="ch02.html#page_53">53</a>, are the most important. Both let the team construct something that the user can see. Both are ideal ways of communicating your understanding of their requirements. And both let you and your users practice communicating with each other.</p>
+<p class="docText"><a id="ch08lev2sec23"></a></p>
+<h4 id="title-IDAZ220" class="docSection2Title">The Extra Mile</h4>
+<p class="docText">If you work closely with your users, sharing their expectations and communicating what you're doing, then there will be few surprises when the project gets delivered.</p>
+<p class="docText">This is a <small>BAD THING</small>. Try to surprise your users. Not scare them, mind you, but <em>delight</em> them.</p>
+<p class="docText"><a id="page_257"></a>Give them that little bit more than they were expecting. The extra bit of effort it requires to add some user-oriented feature to the system will pay for itself time and time again in goodwill.</p>
+<p class="docText">Listen to your users as the project progresses for clues about what features would really delight them. Some things you can add relatively easily that look good to the average user include:</p>
+<ul>
+<li>Balloon or ToolTip help</li>
+<li>Keyboard shortcuts</li>
+<li>A quick reference guide as a supplement to the user's manual</li>
+<li>Colorization</li>
+<li>Log file analyzers</li>
+<li>Automated installation</li>
+<li>Tools for checking the integrity of the system</li>
+<li>The ability to run multiple versions of the system for training</li>
+<li>A splash screen customized for their organization</li>
+</ul>
+<p class="docText">All of these things are relatively superficial, and don't really overburden the system with feature bloat. However, each tells your users that the development team cared about producing a great system, one that was intended for real use. Just remember not to break the system adding these new features.</p>
+<p class="docText"><a id="ch08lev3sec25"></a></p>
+<h5 id="title-IDAT420" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch01.html#ch01lev1sec4"><em>Good-Enough Software</em></a>, page <a href="ch01.html#page_9">9</a></li>
+<li><a href="ch02.html#ch02lev1sec4"><em>Tracer Bullets</em></a>, page <a href="ch02.html#page_48">48</a></li>
+<li><a href="ch02.html#ch02lev1sec5"><em>Prototypes and Post-it Notes</em></a>, page <a href="ch02.html#page_53">53</a></li>
+<li><a href="ch07.html#ch07lev1sec1"><em>The Requirements Pit</em></a>, page <a href="ch07.html#page_202">202</a></li>
+</ul>
+<p class="docText"><a id="ch08lev3sec26"></a></p>
+<h5 id="title-IDA0520" class="docSection3Title">Challenges</h5>
+<ul>
+<li>Sometimes the toughest critics of a project are the people who worked on it. Have you ever experienced disappointment that your own expectations weren't met by something you produced? How could that be? Maybe there's more than logic at work here.</li>
+<li>What do your users comment on when you deliver software? Is their attention to the various areas of the application proportional to the effort you invested in each? What delights them?</li>
+</ul>
+<p class="docText"><a id="ch08lev1sec6"></a><a id="page_258"></a></p>
+<h3 id="title-IDAUA30" class="docSection1Title">46. Pride and Prejudice</h3>
+<p class="blockquote"><em>You have delighted us long enough.</em></p>
+<p class="attribution">• <strong>Jane Austen,</strong> <strong><em>Pride and Prejudice</em></strong></p>
+<p class="docText">Pragmatic Programmers don't shirk from responsibility. Instead, we rejoice in accepting challenges and in making our expertise well known. If we are responsible for a design, or a piece of code, we do a job we can be proud of.</p>
+<p class="docNoteTitle">Tip 70</p>
+<p class="note"><a href="app03.html#id1e15985">Sign Your Work</a></p>
+<p class="docText">Craftsmen of an earlier age were proud to sign their work. You should be, too.</p>
+<p class="docText">Project teams are still made up of people, however, and this rule can cause trouble. On some projects, the idea of <em>code ownership</em> can cause cooperation problems. People may become territorial, or unwilling to work on common foundation elements. The project may end up like a bunch of insular little fiefdoms. You become prejudiced in favor of your code and against your coworkers.</p>
+<p class="docText">That's not what we want. You shouldn't jealously defend your code against interlopers; by the same token, you should treat other people's code with respect. The Golden Rule ("Do unto others as you would have them do unto you") and a foundation of mutual respect among the developers is critical to make this tip work.</p>
+<p class="docText">Anonymity, especially on large projects, can provide a breeding ground for sloppiness, mistakes, sloth, and bad code. It becomes too easy to see yourself as just a cog in the wheel, producing lame excuses in endless status reports instead of good code.</p>
+<p class="docText">While code must be owned, it doesn't have to be owned by an individual. In fact, Kent Beck's successful eXtreme Programming method [<a href="app01.html#app01lev3sec45">URL 45</a>] recommends communal ownership of code (but this also requires additional practices, such as pair programming, to guard against the dangers of anonymity).</p>
+<p class="docText"><a id="page_259"></a>We want to see pride of ownership. "I wrote this, and I stand behind my work." Your signature should come to be recognized as an indicator of quality. People should see your name on a piece of code and expect it to be solid, well written, tested, and documented. A really professional job. Written by a real professional.</p>
+<p class="docText">A Pragmatic Programmer.</p>
+</div>
+</body>
+</html>

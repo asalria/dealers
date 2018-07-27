@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chapter 4. Pragmatic Paranoia</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><p><a id="ch04"></a><a id="page_107"></a></p>
+<h2 id="title-IDAIES0" class="docChapterTitle">Chapter 4<br/><br/>Pragmatic Paranoia</h2>
+<p class="docNoteTitle">Tip 30</p>
+<p class="note"><a href="app03.html#id1e6583">You Can't Write Perfect Software</a></p>
+<p class="docText">Did that hurt? It shouldn't. Accept it as an axiom of life. Embrace it. Celebrate it. Because perfect software doesn't exist. No one in the brief history of computing has ever written a piece of perfect software. It's unlikely that you'll be the first. And unless you accept this as a fact, you'll end up wasting time and energy chasing an impossible dream.</p>
+<p class="docText">So, given this depressing reality, how does a Pragmatic Programmer turn it into an advantage? That's the topic of this chapter.</p>
+<p class="docText">Everyone knows that they personally are the only good driver on Earth. The rest of the world is out there to get them, blowing through stop signs, weaving between lanes, not indicating turns, talking on the telephone, reading the paper, and just generally not living up to our standards. So we drive defensively. We look out for trouble before it happens, anticipate the unexpected, and never put ourselves into a position from which we can't extricate ourselves.</p>
+<p class="docText">The analogy with coding is pretty obvious. We are constantly interfacing with other people's code—code that might not live up to our high standards—and dealing with inputs that may or may not be valid. So we are taught to code defensively. If there's any doubt, we validate all information we're given. We use assertions to detect bad data. We check for consistency, put constraints on database columns, and generally feel pretty good about ourselves.</p>
+<p class="docText"><a id="page_108"></a>But Pragmatic Programmers take this a step further. <em>They don't trust themselves, either.</em> Knowing that no one writes perfect code, including themselves, Pragmatic Programmers code in defenses against their own mistakes. We describe the first defensive measure in <em>Design by Contract</em>: clients and suppliers must agree on rights and responsibilities.</p>
+<p class="docText">In <em>Dead Programs Tell No Lies,</em> we want to ensure that we do no damage while we're working the bugs out. So we try to check things often and terminate the program if things go awry.</p>
+<p class="docText"><em>Assertive Programming</em> describes an easy method of checking along the way—write code that actively verifies your assumptions.</p>
+<p class="docText">Exceptions, like any other technique, can cause more harm than good if not used properly. We'll discuss the issues in <em>When to Use Exceptions.</em></p>
+<p class="docText">As your programs get more dynamic, you'll find yourself juggling system resources—memory, files, devices, and the like. In <em>How to Balance Resources,</em> we'll suggest ways of ensuring that you don't drop any of the balls.</p>
+<p class="docText">In a world of imperfect systems, ridiculous time scales, laughable tools, and impossible requirements, let's play it safe.</p>
+<p class="blockquote"><em>When everybody actually</em> is <em>out to get you, paranoia is just good thinking.</em></p>
+<p class="attribution">• <strong>Woody Allen</strong></p>
+<p class="docText"><a id="ch04lev1sec1"></a><a id="page_109"></a></p>
+<h3 id="title-IDAQGS0" class="docSection1Title">21. Design by Contract</h3>
+<p class="blockquote"><em>Nothing astonishes men so much as common sense and plain dealing.</em></p>
+<p class="attribution">• <strong>Ralph Waldo Emerson,</strong> <strong><em>Essays</em></strong></p>
+<p class="docText">Dealing with computer systems is hard. Dealing with people is even harder. But as a species, we've had longer to figure out issues of human interactions. Some of the solutions we've come up with during the last few millennia can be applied to writing software as well. One of the best solutions for ensuring plain dealing is the <em>contract</em>.</p>
+<p class="docText">A contract defines your rights and responsibilities, as well as those of the other party. In addition, there is an agreement concerning repercussions if either party fails to abide by the contract.</p>
+<p class="docText">Maybe you have an employment contract that specifies the hours you'll work and the rules of conduct you must follow. In return, the company pays you a salary and other perks. Each party meets its obligations and everyone benefits.</p>
+<p class="docText">It's an idea used the world over—both formally and informally—to help humans interact. Can we use the same concept to help software modules interact? The answer is "yes."</p>
+<p class="docText"><a id="ch04lev2sec1"></a></p>
+<h4 id="title-IDAYHS0" class="docSection2Title">DBC</h4>
+<p class="docText">Bertrand Meyer [<a href="app01.html#mey97b">Mey97b</a>] developed the concept of <em>Design by Contract</em> for the language Eiffel.<sup><a href="#ch04fn01">[1]</a></sup> It is a simple yet powerful technique that focuses on documenting (and agreeing to) the rights and responsibilities of software modules to ensure program correctness. What is a correct program? One that does no more and no less than it claims to do. Documenting and verifying that claim is the heart of <em>Design by Contract</em> (DBC, for short).</p>
+<p class="docFootnote"><sup><a id="ch04fn01">[1]</a></sup> Based in part on earlier work by Dijkstra, Floyd, Hoare, Wirth, and others. For more information on Eiffel itself, see [<a href="app01.html#app01lev3sec10">URL 10</a>] and [<a href="app01.html#app01lev3sec11">URL 11</a>].</p>
+<p class="docText">Every function and method in a software system <em>does something.</em> Before it starts that <em>something,</em> the routine may have some expectation of the state of the world, and it may be able to make a statement about the state of the world when it concludes. Meyer describes these expectations and claims as follows:</p>
+<ul>
+<li><a id="page_110"></a><a id="d1e6715"></a><strong>Preconditions.</strong> What must be true in order for the routine to be called; the routine's requirements. A routine should never get called when its preconditions would be violated. It is the caller's responsibility to pass good data (see the box on page <a href="ch04.html#page_115">115</a>).</li>
+<li><a id="d1e6723"></a><strong>Postconditions.</strong> What the routine is guaranteed to do; the state of the world when the routine is done. The fact that the routine has a postcondition implies that it <em>will</em> conclude: infinite loops aren't allowed.</li>
+<li><a id="d1e6734"></a><strong>Class invariants.</strong> A class ensures that this condition is always true from the perspective of a caller. During internal processing of a routine, the invariant may not hold, but by the time the routine exits and control returns to the caller, the invariant must be true. (Note that a class cannot give unrestricted write-access to any data member that participates in the invariant.)</li>
+</ul>
+<p class="docText">Let's look at the contract for a routine that inserts a data value into a unique, ordered list. In iContract, a preprocessor for Java available from [<a href="app01.html#app01lev3sec17">URL 17</a>], you'd specify it as</p>
+<p class="progimage"><img src="images/p0110-01.jpg" alt="image" /></p>
+<p class="docText">Here we are saying that nodes in this list must always be in increasing order. When you insert a new node, it can't exist already, and we guarantee that the node will be found after you have inserted it.</p>
+<p class="docText">You write these preconditions, postconditions, and invariants in the target programming language, perhaps with some extensions. For example, iContract provides predicate logic operators—<code>forall</code>, <code>exists</code>, and <code>implies</code>—in addition to normal Java constructs. Your assertions can query the state of any object that the method can access, but be sure that the query is free from any side effects (see page <a href="ch04.html#page_124">124</a>).</p>
+<p class="docText"><a id="page_111"></a></p>
+<div class="sidebar1">
+<p class="docSidebarTitle">DBC and Constant Parameters</p>
+<p class="sidebar">Often, a postcondition will use parameters passed into a method to verify correct behavior. But if the routine is allowed to change the parameter that's passed in, you might be able to circumvent the contract. Eiffel doesn't allow this to happen, but Java does. Here, we use the Java keyword <code>final</code> to indicate our intentions that the parameter shouldn't be changed within the method. This isn't foolproof—subclasses are free to redeclare the parameter as non-final. Alternatively, you can use the iContract syntax <em><code>variable</code></em><code>@pre</code> to get the original value of the variable as it existed on entry to the method.</p>
+</div>
+<p class="docText">The contract between a routine and any potential caller can thus be read as</p>
+<p class="blockquote"><em>If all the routine's preconditions are met by the caller, the routine shall guarantee that all postconditions and invariants will be true when it completes.</em></p>
+<p class="docText">If either party fails to live up to the terms of the contract, then a remedy (which was previously agreed to) is invoked—an exception is raised, or the program terminates, for instance. Whatever happens, make no mistake that failure to live up to the contract is a bug. It is not something that should ever happen, which is why preconditions should not be used to perform things such as user-input validation.</p>
+<p class="docNoteTitle">Tip 31</p>
+<p class="note"><a href="app03.html#id1e6823">Design with Contracts</a></p>
+<p class="docText">In <a href="ch02.html#ch02lev1sec2"><em>Orthogonality</em></a>, page <a href="ch02.html#page_34">34</a>, we recommended writing "shy" code. Here, the emphasis is on "lazy" code: be strict in what you will accept before you begin, and promise as little as possible in return. Remember, if your contract indicates that you'll accept anything and promise the world in return, then you've got a lot of code to write!</p>
+<p class="docText">Inheritance and polymorphism are the cornerstones of object-oriented languages and an area where contracts can really shine. Suppose you are using inheritance to create an "is-a-kind-of" relationship, where one class "is-a-kind-of" another class. You probably want to adhere to the <em>Liskov Substitution Principle</em> [<a href="app01.html#lis88">Lis88</a>]:</p>
+<p class="blockquote"><a id="page_112"></a><em>Subclasses must be usable through the base class interface without the need for the user to know the difference.</em></p>
+<p class="docText">In other words, you want to make sure that the new subtype you have created really "is-a-kind-of" the base type—that it supports the same methods, and that the methods have the same meaning. We can do this with contracts. We need to specify a contract only once, in the base class, to have it applied to every future subclass automatically. A subclass may, optionally, accept a wider range of input, or make stronger guarantees. But it must accept at least as much, and guarantee as much, as its parent.</p>
+<p class="docText">For example, consider the Java base class <code>java.awt.Component</code>. You can treat any visual component in AWT or Swing as a <code>Component</code>, without knowing that the actual subclass is a button, a canvas, a menu, or whatever. Each individual component can provide additional, specific functionality, but it has to provide at least the basic capabilities defined by <code>Component</code>. But there's nothing to prevent you from creating a subtype of <code>Component</code> that provides correctly named methods that do the wrong thing. You can easily create a <code>paint</code> method that doesn't paint, or a <code>setFont</code> method that doesn't set the font. AWT doesn't have contracts to catch the fact that you didn't live up to the agreement.</p>
+<p class="docText">Without a contract, all the compiler can do is ensure that a subclass conforms to a particular method signature. But if we put a base class contract in place, we can now ensure that any future subclass can't alter the <em>meanings</em> of our methods. For instance, you might want to establish a contract for <code>setFont</code> such as the following, which ensures that the font you set is the font you get:</p>
+<p class="programlisting">        /**<br/>            * <em>@pre   f != null</em><br/>            * <em>@post getFont()</em> == <em>f</em><br/>            */<br/>            <strong>public void</strong> setFont(<strong>final</strong> Font f) {<br/>              // ...<br/></p>
+<p class="docText"><a id="ch04lev2sec2"></a></p>
+<h4 id="title-IDAQPS0" class="docSection2Title">Implementing DBC</h4>
+<p class="docText">The greatest benefit of using DBC may be that it forces the issue of requirements and guarantees to the forefront. Simply enumerating at design time what the input domain range is, what the boundary conditions are, and what the routine promises to deliver—or, more importantly, <a id="page_113"></a>what it <em>doesn't</em> promise to deliver—is a huge leap forward in writing better software. By not stating these things, you are back to <a href="ch06.html#ch06lev1sec1"><em>programming by coincidence</em></a> (see page <a href="ch06.html#page_172">172</a>), which is where many projects start, finish, and fail.</p>
+<p class="docText">In languages that do not support DBC in the code, this might be as far as you can go—and that's not too bad. DBC is, after all, a <em>design</em> technique. Even without automatic checking, you can put the contract in the code as comments and still get a very real benefit. If nothing else, the commented contracts give you a place to start looking when trouble strikes.</p>
+<p class="docText"><a id="ch04lev3sec1"></a></p>
+<h5 id="title-IDASQS0" class="docSection3Title">Assertions</h5>
+<p class="docText">While documenting these assumptions is a great start, you can get much greater benefit by having the compiler check your contract for you. You can partially emulate this in some languages by using <em>assertions</em> (see <a href="ch04.html#ch04lev1sec3"><em>Assertive Programming</em></a>, page <a href="ch04.html#page_122">122</a>). Why only partially? Can't you use assertions to do everything DBC can do?</p>
+<p class="docText">Unfortunately, the answer is no. To begin with, there is no support for propagating assertions down an inheritance hierarchy. This means that if you override a base class method that has a contract, the assertions that implement that contract will not be called correctly (unless you duplicate them manually in the new code). You must remember to call the class invariant (and all base class invariants) manually before you exit every method. The basic problem is that the contract is not automatically enforced.</p>
+<p class="docText">Also, there is no built-in concept of "old" values; that is, values as they existed at the entry to a method. If you're using assertions to enforce contracts, you must add code to the precondition to save any information you'll want to use in the postcondition. Compare this with iContract, where the postcondition can just reference <em>"<code>variable</code></em><code>@pre</code>," or with Eiffel, which supports "<code>old</code> <em><code>expression</code></em>."</p>
+<p class="docText">Finally, the runtime system and libraries are not designed to support contracts, so these calls are not checked. This is a big loss, because it is often at the boundary between your code and the libraries it uses that the most problems are detected (see <a href="ch04.html#ch04lev1sec2"><em>Dead Programs Tell No Lies</em></a>, page <a href="ch04.html#page_120">120</a> for a more detailed discussion).</p>
+<p class="docText"><a id="ch04lev3sec2"></a><a id="page_114"></a></p>
+<h5 id="title-IDAZRS0" class="docSection3Title">Language Support</h5>
+<p class="docText">Languages that feature built-in support of DBC (such as Eiffel and Sather [<a href="app01.html#app01lev3sec12">URL 12</a>]) check pre- and postconditions automatically in the compiler and runtime system. You get the greatest benefit in this case because <em>all</em> of the code base (libraries, too) must honor their contracts.</p>
+<p class="docText">But what about more popular languages such as C, C++, and Java? For these languages, there are preprocessors that process contracts embedded in the original source code as special comments. The preprocessor expands these comments to code that verifies the assertions.</p>
+<p class="docText">For C and C++, you may want to investigate <code>Nana</code> [<a href="app01.html#app01lev3sec18">URL 18</a>]. <code>Nana</code> doesn't handle inheritance, but it does use the debugger at runtime to monitor assertions in a novel way.</p>
+<p class="docText">For Java, there is iContract [<a href="app01.html#app01lev3sec17">URL 17</a>]. It takes comments (in JavaDoc form) and generates a new source file with the assertion logic included.</p>
+<p class="docText">Preprocessors aren't as good as a built-in facility. They can be messy to integrate into your project, and other libraries you use won't have contracts. But they can still be very helpful; when a problem is discovered this way—especially one that you would <em>never</em> have found—it's almost like magic.</p>
+<p class="docText"><a id="ch04lev2sec3"></a></p>
+<h4 id="title-IDALTS0" class="docSection2Title">DBC and Crashing Early</h4>
+<p class="docText">DBC fits in nicely with our concept of crashing early (see <a href="ch04.html#ch04lev1sec2"><em>Dead Programs Tell No Lies</em></a>, page <a href="ch04.html#page_120">120</a>). Suppose you have a method that calculates square roots (such as in the Eiffel class <code>DOUBLE</code>). It needs a precondition that restricts the domain to positive numbers. An Eiffel precondition is declared with the keyword <code>require</code>, and a postcondition is declared with <code>ensure</code>, so you could write</p>
+<p class="progimage"><img src="images/p0114-01.jpg" alt="image" /></p>
+<p class="docText"><a id="page_115"></a></p>
+<div class="sidebar1">
+<p class="docSidebarTitle">Who's Responsible?</p>
+<p class="sidebar">Who is responsible for checking the precondition, the caller or the routine being called? When implemented as part of the language, the answer is neither: the precondition is tested behind the scenes after the caller invokes the routine but before the routine itself is entered. Thus if there is any explicit checking of parameters to be done, it must be performed by the <em>caller,</em> because the routine itself will never see parameters that violate its precondition. (For languages without built-in support, you would need to bracket the <em>called</em> routine with a preamble and/or postamble that checks these assertions.)</p>
+<p class="sidebar">Consider a program that reads a number from the console, calculates its square root (by calling <code>sqrt</code>), and prints the result. The <code>sqrt</code> function has a precondition—its argument must not be negative. If the user enters a negative number at the console, it is up to the calling code to ensure that it never gets passed to <code>sqrt</code>. This calling code has many options: it could terminate, it could issue a warning and read another number, or it could make the number positive and append an <em>"i"</em> to the result returned by <code>sqrt</code>. Whatever its choice, this is definitely not <code>sqrt</code>'s problem.</p>
+<p class="sidebar">By expressing the domain of the square root function in the precondition of the <code>sqrt</code> routine, you shift the burden of correctness to the caller—where it belongs. You can then design the <code>sqrt</code> routine secure in the knowledge that its input <em>will</em> be in range.</p>
+</div>
+<p class="docText">If your algorithm for calculating the square root fails (or isn't within the specified error tolerance), you get an error message and a stack trace to show you the call chain.</p>
+<p class="docText">If you pass <code>sqrt</code> a negative parameter, the Eiffel runtime prints the error <code>"sqrt_arg_must_be_positive,"</code> along with a stack trace. This is better than the alternative in languages such as Java, C, and C++, where passing a negative number to <code>sqrt</code> returns the special value <code>NaN</code> (Not a Number). It may be some time later in the program that you attempt to do some math on <code>NaN</code>, with surprising results.</p>
+<p class="docText">It's much easier to find and diagnose the problem by crashing early, at the site of the problem.</p>
+<p class="docText"><a id="ch04lev2sec4"></a><a id="page_116"></a></p>
+<h4 id="title-IDA3WS0" class="docSection2Title">Other Uses of Invariants</h4>
+<p class="docText">So far we have discussed pre- and postconditions that apply to individual methods and invariants that apply to all methods within a class, but there are other useful ways to use invariants.</p>
+<p class="docText"><a id="ch04lev3sec3"></a></p>
+<h5 id="title-IDAHXS0" class="docSection3Title">Loop Invariants</h5>
+<p class="docText">Getting the boundary conditions right on a nontrivial loop can be problematic. Loops are subject to the banana problem (I know how to spell "banana," but I don't know when to stop), fencepost errors (not knowing whether to count the fenceposts or the spaces between them), and the ubiquitous "off by one" error [<a href="app01.html#app01lev3sec52">URL 52</a>].</p>
+<p class="docText">Invariants can help in these situations: a <em>loop invariant</em> is a statement of the eventual goal of a loop, but is generalized so that it is also valid before the loop executes and on each iteration through the loop. You can think of it as a kind of miniature contract. The classic example is a routine that finds the maximum value in an array.</p>
+<p class="progimage"><img src="images/p0116-01.jpg" alt="image" /></p>
+<p class="docText">(<em>arr[m:n]</em> is a notational convenience meaning a slice of the array from index <em>m</em> to <em>n</em>.) The invariant must be true before the loop runs, and the body of the loop must ensure that it remains true as the loop executes. In this way we know that the invariant also holds when the loop terminates, and therefore that our result is valid. Loop invariants can be coded explicitly as assertions, but they are also useful as design and documentation tools.</p>
+<p class="docText"><a id="ch04lev3sec4"></a></p>
+<h5 id="title-IDA5YS0" class="docSection3Title">Semantic Invariants</h5>
+<p class="docText">You can use <em>semantic invariants</em> to express inviolate requirements, a kind of "philosophical contract."</p>
+<p class="docText">We once wrote a debit card transaction switch. A major requirement was that the user of a debit card should never have the same transaction applied to their account twice. In other words, no matter what <a id="page_117"></a>sort of failure mode might happen, the error should be on the side of <em>not</em> processing a transaction rather than processing a duplicate transaction.</p>
+<p class="docText">This simple law, driven directly from the requirements, proved to be very helpful in sorting out complex error recovery scenarios, and guided the detailed design and implementation in many areas.</p>
+<p class="docText">Be sure not to confuse requirements that are fixed, inviolate laws with those that are merely policies that might change with a new management regime. That's why we use the term <em>semantic</em> invariants—it must be central to the very <em>meaning</em> of a thing, and not subject to the whims of policy (which is what more dynamic business rules are for).</p>
+<p class="docText">When you find a requirement that qualifies, make sure it becomes a well-known part of whatever documentation you are producing—whether it is a bulleted list in the requirements document that gets signed in triplicate or just a big note on the common whiteboard that everyone sees. Try to state it clearly and unambiguously. For example, in the debit card example, we might write</p>
+<p class="blockquote">E<small>RR IN FAVOR OF THE CONSUMER</small>.</p>
+<p class="docText">This is a clear, concise, unambiguous statement that's applicable in many different areas of the system. It is our contract with all users of the system, our guarantee of behavior.</p>
+<p class="docText"><a id="ch04lev2sec5"></a></p>
+<h4 id="title-IDAP0S0" class="docSection2Title">Dynamic Contracts and Agents</h4>
+<p class="docText">Until now, we have talked about contracts as fixed, immutable specifications. But in the landscape of autonomous agents, this doesn't need to be the case. By the definition of "autonomous," agents are free to <em>reject</em> requests that they do not want to honor. They are free to renegotiate the contract—"I can't provide that, but if you give me this, then I might provide something else."</p>
+<p class="docText">Certainly any system that relies on agent technology has a <em>critical</em> dependence on contractual arrangements—even if they are dynamically generated.</p>
+<p class="docText">Imagine: with enough components and agents that can negotiate their own contracts among themselves to achieve a goal, we might just solve the software productivity crisis by letting software solve it for us.</p>
+<p class="docText"><a id="page_118"></a>But if we can't use contracts by hand, we won't be able to use them automatically. So next time you design a piece of software, design its contract as well.</p>
+<p class="docText"><a id="ch04lev3sec5"></a></p>
+<h5 id="title-IDAL1S0" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch02.html#ch02lev1sec2"><em>Orthogonality</em></a>, page <a href="ch02.html#page_34">34</a></li>
+<li><a href="ch04.html#ch04lev1sec2"><em>Dead Programs Tell No Lies</em></a>, page <a href="ch04.html#page_120">120</a></li>
+<li><a href="ch04.html#ch04lev1sec3"><em>Assertive Programming</em></a>, page <a href="ch04.html#page_122">122</a></li>
+<li><a href="ch04.html#ch04lev1sec5"><em>How to Balance Resources</em></a>, page <a href="ch04.html#page_129">129</a></li>
+<li><a href="ch05.html#ch05lev1sec1"><em>Decoupling and the Law of Demeter</em></a>, page <a href="ch05.html#page_138">138</a></li>
+<li><a href="ch05.html#ch05lev1sec3"><em>Temporal Coupling</em></a>, page <a href="ch05.html#page_150">150</a></li>
+<li><a href="ch06.html#ch06lev1sec1"><em>Programming by Coincidence</em></a>, page <a href="ch06.html#page_172">172</a></li>
+<li><a href="ch06.html#ch06lev1sec4"><em>Code That's Easy to Test</em></a>, page <a href="ch06.html#page_189">189</a></li>
+<li><a href="ch08.html#ch08lev1sec1"><em>Pragmatic Teams</em></a>, page <a href="ch08.html#page_224">224</a></li>
+</ul>
+<p class="docText"><a id="ch04lev3sec6"></a></p>
+<h5 id="title-IDAQ3S0" class="docSection3Title">Challenges</h5>
+<ul>
+<li>Points to ponder: If DBC is so powerful, why isn't it used more widely? Is it hard to come up with the contract? Does it make you think about issues you'd rather ignore for now? Does it force you to THINK!? Clearly, this is a dangerous tool!</li>
+</ul>
+<p class="docText"><a id="ch04lev2sec6"></a></p>
+<h4 id="title-IDAD4S0" class="docSection2Title">Exercises</h4>
+<p class="docText1"><a id="ch04que01"></a><strong><a href="app02.html#ch04ans01">14</a>.</strong> What makes a good contract? Anyone can add preconditions and postconditions, but will they do you any good? Worse yet, will they actually do more harm than good? For the example below and for those in Exercises 15 and 16, decide whether the specified contract is good, bad, or ugly, and explain why.<br/>First, let's look at an Eiffel example. Here we have a routine for adding a <code>STRING</code> to a doubly linked, circular list (remember that preconditions are labeled with <code>require</code>, and postconditions with <code>ensure</code>).</p>
+<p class="progimage1"><img src="images/p0118-01.jpg" alt="image" /></p>
+<p class="docText1"><a id="page_119"></a><a id="ch04que02"></a><strong><a href="app02.html#ch04ans02">15</a>.</strong> Next, let's try an example in Java—somewhat similar to the example in Exercise 14. <code>insertNumber</code> inserts an integer into an ordered list. Pre-and postconditions are labeled as in iContract (see [<a href="app01.html#app01lev3sec17">URL 17</a>]).</p>
+<p class="progimage1"><img src="images/p0119-01.jpg" alt="image" /></p>
+<p class="docText1"><a id="ch04que03"></a><strong><a href="app02.html#ch04ans03">16</a>.</strong> Here's a fragment from a stack class in Java. Is this a good contract?</p>
+<p class="progimage1"><img src="images/p0119-02.jpg" alt="image" /></p>
+<p class="docText1"><a id="ch04que04"></a><strong><a href="app02.html#ch04ans04">17</a>.</strong> The classic examples of DBC (as in Exercises 14–16) show an implementation of an ADT (Abstract Data Type)—typically a stack or queue. But not many people really write these kinds of low-level classes.<br/>So, for this exercise, design an interface to a kitchen blender. It will eventually be a Web-based, Internet-enabled, CORBA-fied blender, but for now we just need the interface to control it. It has ten speed settings (0 means off). You can't operate it empty, and you can change the speed only one unit at a time (that is, from 0 to 1, and from 1 to 2, not from 0 to 2).<br/>Here are the methods. Add appropriate pre- and postconditions and an invariant.</p>
+<p class="progimage1"><img src="images/p0119-03.jpg" alt="image" /></p>
+<p class="docText1"><a id="ch04que05"></a><strong><a href="app02.html#ch04ans05">18</a>.</strong> How many numbers are in the series 0,5,10,15,..., 100?</p>
+<p class="docText"><a id="ch04lev1sec2"></a><a id="page_120"></a></p>
+<h3 id="title-IDAIFT0" class="docSection1Title">22. Dead Programs Tell No Lies</h3>
+<p class="docText">Have you noticed that sometimes other people can detect that things aren't well with you before you're aware of the problem yourself? It's the same with other people's code. If something is starting to go awry with one of our programs, sometimes it is a library routine that catches it first. Maybe a stray pointer has caused us to overwrite a file handle with something meaningless. The next call to <code>read</code> will catch it. Perhaps a buffer overrun has trashed a counter we're about to use to determine how much memory to allocate. Maybe we'll get a failure from <code>malloc.</code> A logic error a couple of million instructions ago means that the selector for a case statement is no longer the expected 1, 2, or 3. We'll hit the <code>default</code> case (which is one reason why each and every case/switch statement needs to have a default clause—we want to know when the "impossible" has happened).</p>
+<p class="docText">It's easy to fall into the "it can't happen" mentality. Most of us have written code that didn't check that a file closed successfully, or that a trace statement got written as we expected. And all things being equal, it's likely that we didn't need to—the code in question wouldn't fail under any normal conditions. But we're coding defensively. We're looking for rogue pointers in other parts of our program trashing the stack. We're checking that the correct versions of shared libraries were actually loaded.</p>
+<p class="docText">All errors give you information. You could convince yourself that the error can't happen, and choose to ignore it. Instead, Pragmatic Programmers tell themselves that if there is an error, something very, very bad has happened.</p>
+<p class="docNoteTitle">Tip 32</p>
+<p class="note"><a href="app03.html#id1e7536">Crash Early</a></p>
+<p class="docText"><a id="ch04lev2sec7"></a></p>
+<h4 id="title-IDALGT0" class="docSection2Title">Crash, Don't Trash</h4>
+<p class="docText">One of the benefits of detecting problems as soon as you can is that you can crash earlier. And many times, crashing your program is the best thing you can do. The alternative may be to continue, writing corrupted <a id="page_121"></a>data to some vital database or commanding the washing machine into its twentieth consecutive spin cycle.</p>
+<p class="docText">The Java language and libraries have embraced this philosophy. When something unexpected happens within the runtime system, it throws a <code>RuntimeException</code>. If not caught, this will percolate up to the top level of the program and cause it to halt, displaying a stack trace.</p>
+<p class="docText">You can do the same in other languages. If you don't have an exception mechanism, or if your libraries don't throw exceptions, then make sure you handle the errors yourself. In C, macros can be very useful for this:</p>
+<p class="progimage"><img src="images/p0121-01.jpg" alt="image" /></p>
+<p class="docText">Then you can wrap calls that should never fail using</p>
+<p class="programlisting">        CHECK(stat("/tmp", &amp;stat_buff), 0);</p>
+<p class="docText">If it should fail, you'd get a message written to <code>stderr:</code></p>
+<p class="programlisting">        source.c line 19<br/>        'stat("/tmp", &amp;stat_buff)': expected 0, got -1</p>
+<p class="docText">Clearly it is sometimes inappropriate simply to exit a running program. You may have claimed resources that might not get released, or you may need to write log messages, tidy up open transactions, or interact with other processes. The techniques we discuss in <a href="ch04.html#ch04lev1sec4"><em>When to Use Exceptions</em></a>, page <a href="ch04.html#page_125">125</a>, will help here. However, the basic principle stays the same—when your code discovers that something that was supposed to be impossible just happened, your program is no longer viable. Anything it does from this point forward becomes suspect, so terminate it as soon as possible. A dead program normally does a lot less damage than a crippled one.</p>
+<p class="docText"><a id="ch04lev3sec7"></a></p>
+<h5 id="title-IDAKJT0" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch04.html#ch04lev1sec1"><em>Design by Contract</em></a>, page <a href="ch04.html#page_109">109</a></li>
+<li><a href="ch04.html#ch04lev1sec4"><em>When to Use Exceptions</em></a>, page <a href="ch04.html#page_125">125</a></li>
+</ul>
+<p class="docText"><a id="ch04lev1sec3"></a><a id="page_122"></a></p>
+<h3 id="title-IDAHKT0" class="docSection1Title">23. Assertive Programming</h3>
+<p class="blockquote"><em>There is a luxury in self-reproach. When we blame ourselves we feel no one else has a right to blame us.</em></p>
+<p class="attribution">• <strong>Oscar Wilde,</strong> <strong><em>The Picture of Dorian Gray</em></strong></p>
+<p class="docText">It seems that there's a mantra that every programmer must memorize early in his or her career. It is a fundamental tenet of computing, a core belief that we learn to apply to requirements, designs, code, comments, just about everything we do. It goes</p>
+<p class="blockquote">T<small>HIS CAN NEVER HAPPEN</small>...</p>
+<p class="docText">"This code won't be used 30 years from now, so two-digit dates are fine." "This application will never be used abroad, so why internationalize it?" "<code>count</code> can't be negative." "This <code>printf</code> can't fail."</p>
+<p class="docText">Let's not practice this kind of self-deception, particularly when coding.</p>
+<p class="docNoteTitle">Tip 33</p>
+<p class="note"><a href="app03.html#id1e7679">If It Can't Happen, Use Assertions to Ensure That It Won't</a></p>
+<p class="docText">Whenever you find yourself thinking "but of course that could never happen," add code to check it. The easiest way to do this is with assertions. In most C and C++ implementations, you'll find some form of <code>assert</code> or <code>_assert</code> macro that checks a Boolean condition. These macros can be invaluable. If a pointer passed in to your procedure should never be <code>NULL</code>, then check for it:</p>
+<p class="programlisting">        <strong>void</strong> writeString(<strong>char</strong> *string) {<br/>                assert(string != NULL);<br/>                ...</p>
+<p class="docText">Assertions are also useful checks on an algorithm's operation. Maybe you've written a clever sort algorithm. Check that it works:</p>
+<p class="programlisting">        <strong>for</strong> (<strong>int</strong> i = 0; i &lt; num_entries-1; i++) {<br/>                assert(sorted[i] &lt;= sorted[i+1]);<br/>        }</p>
+<p class="docText">Of course, the condition passed to an assertion should not have a side effect (see the box on page <a href="ch04.html#page_124">124</a>). Also remember that assertions may be turned off at compile time—never put code that <em>must</em> be executed into an <code>assert</code>.</p>
+<p class="docText"><a id="page_123"></a>Don't use assertions in place of real error handling. Assertions check for things that should never happen: you don't want to be writing code such as</p>
+<p class="programlisting">        printf(<em>"Enter 'Y' or 'N'</em>: ");<br/>        ch = getchar();<br/>        assert((ch == 'Y') || (ch == 'N'));        <em>/* bad idea! */</em></p>
+<p class="docText">And just because the supplied <code>assert</code> macros call <code>exit</code> when an assertion fails, there's no reason why versions you write should. If you need to free resources, have an assertion failure generate an exception, <code>longjmp</code> to an exit point, or call an error handler. Just make sure the code you execute in those dying milliseconds doesn't rely on the information that triggered the assertion failure in the first place.</p>
+<p class="docText"><a id="ch04lev2sec8"></a></p>
+<h4 id="title-IDABOT0" class="docSection2Title">Leave Assertions Turned On</h4>
+<p class="docText">There is a common misunderstanding about assertions, promulgated by the people who write compilers and language environments. It goes something like this:</p>
+<p class="blockquote"><em>Assertions add some overhead to code. Because they check for things that should never happen, they'll get triggered only by a bug in the code. Once the code has been tested and shipped, they are no longer needed, and should be turned off to make the code run faster. Assertions are a debugging facility.</em></p>
+<p class="docText">There are two patently wrong assumptions here. First, they assume that testing finds all the bugs. In reality, for any complex program you are unlikely to test even a miniscule percentage of the permutations your code will be put through (see <a href="ch08.html#ch08lev1sec3"><em>Ruthless Testing</em></a>, page <a href="ch08.html#page_245">245</a>). Second, the optimists are forgetting that your program runs in a dangerous world. During testing, rats probably won't gnaw through a communications cable, someone playing a game won't exhaust memory, and log files won't fill the hard drive. These things might happen when your program runs in a production environment. Your first line of defense is checking for any possible error, and your second is using assertions to try to detect those you've missed.</p>
+<p class="docText">Turning off assertions when you deliver a program to production is like crossing a high wire without a net because you once made it across in practice. There's dramatic value, but it's hard to get life insurance.</p>
+<p class="docText">Even if you <em>do</em> have performance issues, turn off only those assertions that really hit you. The sort example above may be a critical part of <a id="page_124"></a>your application, and may need to be fast. Adding the check means another pass through the data, which might be unacceptable. Make that particular check optional,<sup><a href="#ch04fn02">[2]</a></sup> but leave the rest in.</p>
+<div class="sidebar1">
+<p class="docSidebarTitle">Assertions and Side Effects</p>
+<p class="sidebar">It is embarrassing when the code we add to detect errors actually ends up creating new errors. This can happen with assertions if evaluating the condition has side effects. For example, in Java it would be a bad idea to code something such as</p>
+<p class="programlisting1"><strong>while</strong> (iter.hasMoreElements()) {<br/>    Test.ASSERT(iter.nextElement() != <strong>null</strong>);<br/>    Object obj = iter.nextElement();<br/>    // ....<br/>}<br/></p>
+<p class="sidebar">The <code>.nextElement()</code> call in the <code>ASSERT</code> has the side effect of moving the iterator past the element being fetched, and so the loop will process only half the elements in the collection. It would be better to write</p>
+<p class="programlisting1"><strong>while</strong> (iter.hasMoreElements()) {<br/>    Object obj = iter.nextElement();<br/>    Test.ASSERT(obj != <strong>null</strong>);<br/>    // ....<br/>}<br/></p>
+<p class="sidebar">This problem is a kind of "Heisenbug"—debugging that changes the behavior of the system being debugged (see [<a href="app01.html#app01lev3sec52">URL 52</a>]).</p>
+</div>
+<p class="docFootnote"><sup><a id="ch04fn02">[2]</a></sup> In C-based languages, you can either use the preprocessor or use <code>if</code> statements to make assertions optional. Many implementations turn off code generation for the <code>assert</code> macro if a compile-time flag is set (or not set). Otherwise, you can place the code within an <code>if</code> statement with a constant condition, which many compilers (including most common Java systems) will optimize away.</p>
+<p class="docText"><a id="ch04lev3sec8"></a></p>
+<h5 id="title-IDAKRT0" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch03.html#ch03lev1sec5"><em>Debugging</em></a>, page <a href="ch03.html#page_90">90</a></li>
+<li><a href="ch04.html#ch04lev1sec1"><em>Design by Contract</em></a>, page <a href="ch04.html#page_109">109</a></li>
+<li><a href="ch04.html#ch04lev1sec5"><em>How to Balance Resources</em></a>, page <a href="ch04.html#page_129">129</a></li>
+<li><a href="ch06.html#ch06lev1sec1"><em>Programming by Coincidence</em></a>, page <a href="ch06.html#page_172">172</a></li>
+</ul>
+<p class="docText"><a id="ch04lev2sec9"></a><a id="page_125"></a></p>
+<h4 id="title-IDASST0" class="docSection2Title">Exercises</h4>
+<p class="docText1"><a id="ch04que06"></a><strong><a href="app02.html#ch04ans06">19</a>.</strong> A quick reality check. Which of these "impossible" things can happen?</p>
+<ol>
+<li>A month with fewer than 28 days</li>
+<li><code>stat(".",&amp;sb) == -1</code> (that is, can't access the current directory)</li>
+<li>In C++: <code>a = 2; b = 3;</code> <strong><code>if</code></strong> <code>(a + b != 5) exit(1);</code></li>
+<li>A triangle with an interior angle sum ≠ 180°</li>
+<li>A minute that doesn't have 60 seconds</li>
+<li>In Java: <code>(a + 1) &lt;= a</code></li>
+</ol>
+<p class="docText1"><a id="ch04que07"></a><strong><a href="app02.html#ch04ans07">20</a>.</strong> Develop a simple assertion checking class for Java.</p>
+<p class="docText"><a id="ch04lev1sec4"></a></p>
+<h3 id="title-IDAHVT0" class="docSection1Title">24. When to Use Exceptions</h3>
+<p class="docText">In <a href="ch04.html#ch04lev1sec2"><em>Dead Programs Tell No Lies</em></a>, page <a href="ch04.html#page_120">120</a>, we suggested that it is good practice to check for every possible error—particularly the unexpected ones. However, in practice this can lead to some pretty ugly code; the normal logic of your program can end up being totally obscured by error handling, particularly if you subscribe to the "a routine must have a single return statement" school of programming (we don't). We've seen code that looks something like the following:</p>
+<p class="progimage"><img src="images/p0125-01.jpg" alt="image" /></p>
+<p class="docText">Fortunately, if the programming language supports exceptions, you can rewrite this code in a far neater way:</p>
+<p class="docText"><a id="page_126"></a></p>
+<p class="progimage"><img src="images/p0126-01.jpg" alt="image" /></p>
+<p class="docText">The normal flow of control is now clear, with all the error handling moved off to a single place.</p>
+<p class="docText"><a id="ch04lev2sec10"></a></p>
+<h4 id="title-IDAZXT0" class="docSection2Title">What <em>Is</em> Exceptional?</h4>
+<p class="docText">One of the problems with exceptions is knowing when to use them. We believe that exceptions should rarely be used as part of a program's normal flow; exceptions should be reserved for unexpected events. Assume that an uncaught exception will terminate your program and ask yourself, "Will this code still run if I remove all the exception handlers?" If the answer is "no," then maybe exceptions are being used in nonexceptional circumstances.</p>
+<p class="docText">For example, if your code tries to open a file for reading and that file does not exist, should an exception be raised?</p>
+<p class="docText">Our answer is, "It depends." If the file <em>should</em> have been there, then an exception is warranted. Something unexpected happened—a file you were expecting to exist seems to have disappeared. On the other hand, if you have no idea whether the file should exist or not, then it doesn't seem exceptional if you can't find it, and an error return is appropriate.</p>
+<p class="docText">Let's look at an example of the first case. The following code opens the file <code>/etc/passwd</code>, which should exist on all Unix systems. If it fails, it passes on the <code>FileNotFoundException</code> to its caller.</p>
+<p class="progimage"><img src="images/p0126-02.jpg" alt="image" /></p>
+<p class="docText"><a id="page_127"></a>However, the second case may involve opening a file specified by the user on the command line. Here an exception isn't warranted, and the code looks different:</p>
+<p class="progimage"><img src="images/p0127-01.jpg" alt="image" /></p>
+<p class="docText">Note that the <code>FileInputStream</code> call can still generate an exception, which the routine passes on. However, the exception will be generated under only truly exceptional circumstances; simply trying to open a file that does not exist will generate a conventional error return.</p>
+<p class="docNoteTitle">Tip 34</p>
+<p class="note"><a href="app03.html#id1e8094">Use Exceptions for Exceptional Problems</a></p>
+<p class="docText">Why do we suggest this approach to exceptions? Well, an exception represents an immediate, nonlocal transfer of control—it's a kind of cascading <code>goto</code>. Programs that use exceptions as part of their normal processing suffer from all the readability and maintainability problems of classic spaghetti code. These programs break encapsulation: routines and their callers are more tightly coupled via exception handling.</p>
+<p class="docText"><a id="ch04lev2sec11"></a></p>
+<h4 id="title-IDAK1T0" class="docSection2Title">Error Handlers Are an Alternative</h4>
+<p class="docText">An error handler is a routine that is called when an error is detected. You can register a routine to handle a specific category of errors. When one of these errors occurs, the handler will be called.</p>
+<p class="docText">There are times when you may want to use error handlers, either instead of or alongside exceptions. Clearly, if you are using a language such as C, which does not support exceptions, this is one of your few other options (see the challenge on the next page). However, sometimes error handlers can be used even in languages (such as Java) that have a good exception handling scheme built in.</p>
+<p class="docText"><a id="page_128"></a>Consider the implementation of a client-server application, using Java's Remote Method Invocation (RMI) facility. Because of the way RMI is implemented, every call to a remote routine must be prepared to handle a <code>RemoteException</code>. Adding code to handle these exceptions can become tedious, and means that it is difficult to write code that works with both local and remote routines. A possible work-around is to wrap your remote objects in a class that is not remote. This class then implements an error handler interface, allowing the client code to register a routine to be called when a remote exception is detected.</p>
+<p class="docText"><a id="ch04lev3sec9"></a></p>
+<h5 id="title-IDA11T0" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch04.html#ch04lev1sec2"><em>Dead Programs Tell No Lies</em></a>, page <a href="ch04.html#page_120">120</a></li>
+</ul>
+<p class="docText"><a id="ch04lev3sec10"></a></p>
+<h5 id="title-IDAQ2T0" class="docSection3Title">Challenges</h5>
+<ul>
+<li>Languages that do not support exceptions often have some other nonlocal transfer of control mechanism (C has <code>longjmp/setjmp</code>, for example). Consider how you could implement some kind of ersatz exception mechanism using these facilities. What are the benefits and dangers? What special steps do you need to take to ensure that resources are not orphaned? Does it make sense to use this kind of solution whenever you code in C?</li>
+</ul>
+<p class="docText"><a id="ch04lev2sec12"></a></p>
+<h4 id="title-IDAG3T0" class="docSection2Title">Exercises</h4>
+<p class="docText1"><a id="ch04que08"></a><strong><a href="app02.html#ch04ans08">21</a>.</strong> While designing a new container class, you identify the following possible error conditions:</p>
+<ol>
+<li>No memory available for a new element in the add routine</li>
+<li>Requested entry not found in the <code>fetch</code> routine</li>
+<li><code>null</code> pointer passed to the <code>add</code> routine</li>
+</ol>
+<p class="docText1">How should each be handled? Should an error be generated, should an exception be raised, or should the condition be ignored?</p>
+<p class="docText"><a id="ch04lev1sec5"></a><a id="page_129"></a></p>
+<h3 id="title-IDA04T0" class="docSection1Title">25. How to Balance Resources</h3>
+<p class="blockquote"><em>"I brought you into this world," my father would say, "and I can take you out. It don't make no difference to me. I'll just make another one like you."</em></p>
+<p class="attribution">• <strong>Bill Cosby,</strong> <strong><em>Fatherhood</em></strong></p>
+<p class="docText">We all manage resources whenever we code: memory, transactions, threads, files, timers—all kinds of things with limited availability. Most of the time, resource usage follows a predictable pattern: you allocate the resource, use it, and then deallocate it.</p>
+<p class="docText">However, many developers have no consistent plan for dealing with resource allocation and deallocation. So let us suggest a simple tip:</p>
+<p class="docNoteTitle">Tip 35</p>
+<p class="note"><a href="app03.html#id1e8222">Finish What You Start</a></p>
+<p class="docText">This tip is easy to apply in most circumstances. It simply means that the routine or object that allocates a resource should be responsible for deallocating it. Let's see how it applies by looking at an example of some bad code—an application that opens a file, reads customer information from it, updates a field, and writes the result back. We've eliminated error handling to make the example clearer.</p>
+<p class="progimage"><img src="images/p0129-01.jpg" alt="image" /></p>
+<p class="docText">At first sight, the routine <code>updateCustomer</code> looks pretty good. It seems to implement the logic we require—reading a record, updating the balance, and writing the record back out. However, this tidiness hides a <a id="page_130"></a>major problem. The routines <code>readCustomer</code> and <code>writeCustomer</code> are tightly coupled<sup><a href="#ch04fn03">[3]</a></sup>—they share the global variable <code>cFile. readCustomer</code> opens the file and stores the file pointer in <code>cFile,</code> and <code>writeCustomer</code> uses that stored pointer to close the file when it finishes. This global variable doesn't even appear in the <code>updateCustomer</code> routine.</p>
+<p class="docFootnote"><sup><a id="ch04fn03">[3]</a></sup> For a discussion of the dangers of coupled code, see <a href="ch05.html#ch05lev1sec1"><em>Decoupling and the Law of Demeter</em></a>, page <a href="ch05.html#page_138">138</a>.</p>
+<p class="docText">Why is this bad? Let's consider the unfortunate maintenance programmer who is told that the specification has changed—the balance should be updated only if the new value is not negative. She goes into the source and changes <code>updateCustomer:</code></p>
+<p class="progimage"><img src="images/p0130-01.jpg" alt="image" /></p>
+<p class="docText">All seems fine during testing. However, when the code goes into production, it collapses after several hours, complaining of <em>too many open files.</em> Because <code>writeCustomer</code> is not getting called in some circumstances, the file is not getting closed.</p>
+<p class="docText">A very bad solution to this problem would be to deal with the special case in <code>updateCustomer:</code></p>
+<p class="progimage"><img src="images/p0130-02.jpg" alt="image" /></p>
+<p class="docText">This will fix the problem—the file will now get closed regardless of the new balance—but the fix now means that <em>three</em> routines are coupled through the global <code>cFile</code>. We're falling into a trap, and things are going to start going downhill rapidly if we continue on this course.</p>
+<p class="docText"><a id="page_131"></a>The <em>finish what you start</em> tip tells us that, ideally, the routine that allocates a resource should also free it. We can apply it here by refactoring the code slightly:</p>
+<p class="progimage"><img src="images/p0131-01.jpg" alt="image" /></p>
+<p class="docText">Now all the responsibility for the file is in the <code>updateCustomer</code> routine. It opens the file and (finishing what it starts) closes it before exiting. The routine balances the use of the file: the open and close are in the same place, and it is apparent that for every open there will be a corresponding close. The refactoring also removes an ugly global variable.</p>
+<p class="docText"><a id="ch04lev3sec11"></a></p>
+<h4 id="title-IDAXGU0" class="docSection2Title">Nest Allocations</h4>
+<p class="docText">The basic pattern for resource allocation can be extended for routines that need more than one resource at a time. There are just two more suggestions:</p>
+<ol>
+<li>Deallocate resources in the opposite order to that in which you allocate them. That way you won't orphan resources if one resource contains references to another.</li>
+<li>When allocating the same set of resources in different places in your code, always allocate them in the same order. This will reduce the possibility of deadlock. (If process A claims <code>resource1</code> and is about to claim <code>resource2,</code> while process B has claimed <code>resource2</code> and is trying to get <code>resource1,</code> the two processes will wait forever.)</li>
+</ol>
+<p class="docText">It doesn't matter what kind of resources we're using—transactions, memory, files, threads, windows—the basic pattern applies: whoever <a id="page_132"></a>allocates a resource should be responsible for deallocating it. However, in some languages we can develop the concept further.</p>
+<p class="docText"><a id="ch04lev2sec13"></a></p>
+<h4 id="title-IDAFIU0" class="docSection2Title">Objects and Exceptions</h4>
+<p class="docText">The equilibrium between allocations and deallocations is reminiscent of a class's constructor and destructor. The class represents a resource, the constructor gives you a particular object of that resource type, and the destructor removes it from your scope.</p>
+<p class="docText">If you are programming in an object-oriented language, you may find it useful to encapsulate resources in classes. Each time you need a particular resource type, you instantiate an object of that class. When the object goes out of scope, or is reclaimed by the garbage collector, the object's destructor then deallocates the wrapped resource.</p>
+<p class="docText">This approach has particular benefits when you're working with languages such as C++, where exceptions can interfere with resource deallocation.</p>
+<p class="docText"><a id="ch04lev2sec14"></a></p>
+<h4 id="title-IDAUIU0" class="docSection2Title">Balancing and Exceptions</h4>
+<p class="docText">Languages that support exceptions can make resource deallocation tricky. If an exception is thrown, how do you guarantee that everything allocated prior to the exception is tidied up? The answer depends to some extent on the language.</p>
+<p class="docText"><a id="ch04lev3sec12"></a></p>
+<h5 id="title-IDA4IU0" class="docSection3Title">Balancing Resources with C++ Exceptions</h5>
+<p class="docText">C++ supports a <code>try...catch</code> exception mechanism. Unfortunately, this means that there are always at least two possible paths when exiting a routine that catches and then rethrows an exception:</p>
+<p class="progimage"><img src="images/p0132-01.jpg" alt="image" /></p>
+<p class="docText"><a id="page_133"></a>Notice that the node we create is freed in two places—once in the routine's normal exit path, and once in the exception handler. This is an obvious violation of the <em>DRY</em> principle and a maintenance problem waiting to happen.</p>
+<p class="docText">However, we can use the semantics of C++ to our advantage. Local objects are automatically destroyed on exiting from their enclosing block. This gives us a couple of options. If the circumstances permit, we can change "n" from a pointer to an actual Node object on the stack:</p>
+<p class="progimage"><img src="images/p0133-01.jpg" alt="image" /></p>
+<p class="docText">Here we rely on C++ to handle the destruction of the <code>Node</code> object automatically, whether an exception is thrown or not.</p>
+<p class="docText">If the switch from a pointer is not possible, the same effect can be achieved by wrapping the resource (in this case, a <code>Node</code> pointer) within another class.</p>
+<p class="progimage"><img src="images/p0133-02.jpg" alt="image" /></p>
+<p class="docText">Now the wrapper class, <code>NodeResource</code>, ensures that when its objects are destroyed the corresponding nodes are also destroyed. For convenience, the wrapper provides a dereferencing operator <code>-&gt;</code>, so that its users can access the fields in the contained Node object directly.</p>
+<p class="docText"><a id="page_134"></a>Because this technique is so useful, the standard C++ library provides the template class <code>auto_ptr</code>, which gives you automatic wrappers for dynamically allocated objects.</p>
+<p class="progimage"><img src="images/p0134-01.jpg" alt="image" /></p>
+<p class="docText"><a id="ch04lev3sec13"></a></p>
+<h5 id="title-IDACOU0" class="docSection3Title">Balancing Resources in Java</h5>
+<p class="docText">Unlike C++, Java implements a lazy form of automatic object destruction. Unreferenced objects are considered to be candidates for garbage collection, and their <code>finalize</code> method will get called should garbage collection ever claim them. While a convenience for developers, who no longer get the blame for most memory leaks, it makes it difficult to implement resource clean-up using the C++ scheme. Fortunately, the designers of the Java language thoughtfully added a language feature to compensate, the <code>finally</code> clause. When a <code>try</code> block contains a <code>finally</code> clause, code in that clause is guaranteed to be executed if any statement in the <code>try</code> block is executed. It doesn't matter whether an exception is thrown (or even if the code in the <code>try</code> block executes a <code>return</code>)—the code in the <code>finally</code> clause will get run. This means we can balance our resource usage with code such as</p>
+<p class="progimage"><img src="images/p0134-02.jpg" alt="image" /></p>
+<p class="docText">The routine uses a temporary file, which we want to delete, regardless of how the routine exits. The <code>finally</code> block allows us to express this concisely.</p>
+<p class="docText"><a id="ch04lev2sec15"></a></p>
+<h4 id="title-IDALQU0" class="docSection2Title">When You Can't Balance Resources</h4>
+<p class="docText">There are times when the basic resource allocation pattern just isn't appropriate. Commonly this is found in programs that use dynamic <a id="page_135"></a>data structures. One routine will allocate an area of memory and link it into some larger structure, where it may stay for some time.</p>
+<p class="docText">The trick here is to establish a semantic invariant for memory allocation. You need to decide who is responsible for data in an aggregate data structure. What happens when you deallocate the top-level structure? You have three main options:</p>
+<ol>
+<li>The top-level structure is also responsible for freeing any substructures that it contains. These structures then recursively delete data they contain, and so on.</li>
+<li>The top-level structure is simply deallocated. Any structures that it pointed to (that are not referenced elsewhere) are orphaned.</li>
+<li>The top-level structure refuses to deallocate itself if it contains any substructures.</li>
+</ol>
+<p class="docText">The choice here depends on the circumstances of each individual data structure. However, you need to make it explicit for each, and implement your decision consistently. Implementing any of these options in a procedural language such as C can be a problem: data structures themselves are not active. Our preference in these circumstances is to write a module for each major structure that provides standard allocation and deallocation facilities for that structure. (This module can also provide facilities such as debug printing, serialization, deserialization, and traversal hooks.)</p>
+<p class="docText">Finally, if keeping track of resources gets tricky, you can write your own form of limited automatic garbage collection by implementing a reference counting scheme on your dynamically allocated objects. The book <em>More Effective C++</em> [<a href="app01.html#mey96">Mey96</a>] dedicates a section to this topic.</p>
+<p class="docText"><a id="ch04lev2sec16"></a></p>
+<h4 id="title-IDAURU0" class="docSection2Title">Checking the Balance</h4>
+<p class="docText">Because Pragmatic Programmers trust no one, including ourselves, we feel that it is always a good idea to build code that actually checks that resources are indeed freed appropriately. For most applications, this normally means producing wrappers for each type of resource, and using these wrappers to keep track of all allocations and deallocations. At certain points in your code, the program logic will dictate that the resources will be in a certain state: use the wrappers to check this.</p>
+<p class="docText"><a id="page_136"></a>For example, a long-running program that services requests will probably have a single point at the top of its main processing loop where it waits for the next request to arrive. This is a good place to ensure that resource usage has not increased since the last execution of the loop.</p>
+<p class="docText">At a lower, but no less useful level, you can invest in tools that (among other things) check your running programs for memory leaks. Purify (<a href="http://www.rational.com">www.rational.com</a>) and Insure++ (<a href="http://www.parasoft.com">www.parasoft.com</a>) are popular choices.</p>
+<p class="docText"><a id="ch04lev3sec14"></a></p>
+<h5 id="title-IDALSU0" class="docSection3Title">Related sections include:</h5>
+<ul>
+<li><a href="ch04.html#ch04lev1sec1"><em>Design by Contract</em></a>, page <a href="ch04.html#page_109">109</a></li>
+<li><a href="ch04.html#ch04lev1sec3"><em>Assertive Programming</em></a>, page <a href="ch04.html#page_122">122</a></li>
+<li><a href="ch05.html#ch05lev1sec1"><em>Decoupling and the Law of Demeter</em></a>, page <a href="ch05.html#page_138">138</a></li>
+</ul>
+<p class="docText"><a id="ch04lev3sec15"></a></p>
+<h5 id="title-IDAMTU0" class="docSection3Title">Challenges</h5>
+<ul>
+<li>Although there are no guaranteed ways of ensuring that you always free resources, certain design techniques, when applied consistently, will help. In the text we discussed how establishing a semantic invariant for major data structures could direct memory deallocation decisions. Consider how <a href="ch04.html#ch04lev1sec1"><em>Design by Contract</em></a>, page <a href="ch04.html#page_109">109</a>, could help refine this idea.</li>
+</ul>
+<p class="docText"><a id="ch04lev2sec17"></a></p>
+<h4 id="title-IDAEUU0" class="docSection2Title">Exercises</h4>
+<p class="docText1"><a id="ch04que09"></a><strong><a href="app02.html#ch04ans09">22</a>.</strong> Some C and C++ developers make a point of setting a pointer to <code>NULL</code> after they deallocate the memory it references. Why is this a good idea?</p>
+<p class="docText1"><a id="ch04que10"></a><strong><a href="app02.html#ch04ans10">23</a>.</strong> Some Java developers make a point of setting an object variable to <code>NULL</code> after they have finished using the object. Why is this a good idea?</p>
+</div>
+</body>
+</html>
