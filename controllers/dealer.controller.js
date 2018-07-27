@@ -76,14 +76,14 @@ module.exports.search2 = (req, res, next) => {
             }
         }
         }).then(dealers => {
-            console.log(dealers);
+          //  console.log(dealers);
             res.redirect("/");
-        })
-        .catch((err) => {
-          console.log(err);
         });
+        
+    }).catch((err) => {
+        console.log(err);
+      });
 
-    });
     
   }
   module.exports.search = (req, res, next) => {
@@ -102,7 +102,7 @@ module.exports.search2 = (req, res, next) => {
     
     Dealer.find()
     .then(routes => {
-        googleMapsClient.geocode({address: req.body.search})
+        googleMapsClient.geocode({address: req.params.search})
         .asPromise()
         .then((response) => {
           var coords = [];
@@ -114,16 +114,15 @@ module.exports.search2 = (req, res, next) => {
                     "$geometry": {
                         "type": "Point", "coordinates": coords
                     },
-                "$maxDistance": 200000/* 124.274238 miles */
+                "$maxDistance": maxDistance/* 124.274238 miles */
             
                 }
             }
         }).then(dealers => {
-            if(err){
-                console.log("ERr");
-            } else {
-                console.log("asdf");
-            }
+            global.dealers = dealers2;
+            console.log("DEALERS");
+            console.log(dealers);
+            res.render('dealers/list', { dealers: JSON.stringify(dealers) });
         });
     })
     .catch(error => next(error));
@@ -200,14 +199,16 @@ module.exports.create = (req, res, next) => {
 }
 
 module.exports.doCreate = (req, res, next) => {
+    console.log(req.body);
+
     Dealer.findOne({ email: req.body.email })
       .then(dealer => {
         if (dealer) {
+
           next(new ApiError('Dealer already registered', 400));
         } else {
         var coord0 = parseFloat(req.body.lat);
         var coord1 = parseFloat(req.body.lon);
-        console.log(req.body);
           aux = {
               name: req.body.name,
               address: req.body.address,
@@ -220,32 +221,31 @@ module.exports.doCreate = (req, res, next) => {
               phone: req.body.phone,
               phoneaux: req.body.phoneaux,
               comments: req.body.comments,
-              startPoint: {
-                  type: "Point",
-                  coordinates: [coord0,coord1]
-              }
+              startPoint: [coord0,coord1]
+
           };
 
           dealer2 = new Dealer(aux);
 
-          dealer2.save()
+          Dealer.init().then(() => {
+            dealer2.save()
             .then(() => {
               res.redirect('/list');
-            })
-            .catch(error => {
-              if (error instanceof mongoose.Error.ValidationError) {
-                next(new ApiError(error.message, 400, error.errors));
-              } else {
-                next(error);
-              }
             });
+        }).catch(error => console.log(error));
+          
+  
+         
+          
+           
         }
-      }).catch(error => next(new ApiError('Dealer already registered', 500)));
+      }).catch(error => console.log(error));
 
 }
 
 function waitForIndex() {
     return new Promise((resolve, reject) => {
+        
       Dealer.on('index', error => error ? reject(error) : resolve());
     });
   }

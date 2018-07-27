@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>7. Case Study 1: Visualizing Telemetry to Improve Software</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><section data-type="chapter" epub:type="chapter" data-pdf-bookmark="Chapter 7. Case Study 1: Visualizing Telemetry to Improve Software"><div class="chapter" id="casestudies_lync">
+<h1><span class="label">Chapter 7. </span>Case Study 1: Visualizing Telemetry to Improve Software</h1>
+
+
+<p>The previous chapters of this book explore the data counseling process: how to move from an ambiguous question to a more precise one, and how to refine a design through iteration into a final visualization.<a data-type="indexterm" data-primary="visualizing telemetry to improve software, case study" id="ix_vistel"></a><a data-type="indexterm" data-primary="case studies" data-secondary="visualizing telemetry to improve software" id="ix_cs1"></a> This description, however, has missed some of the twists and turns in the data counseling process.<a data-type="indexterm" data-primary="data counseling" id="idm140386944154240"></a> Data counseling goes through a series of iterations, each of which casts new light on the questions, but encounters dead ends. Ideas that seem insightful in a sketch turn out not to scale, or are not interpretable when used with real data. At each of these steps, the goal itself may change as new aspects come to light.<a data-type="indexterm" data-primary="Lync case study" data-see="visualizing telemetry to improve software, case study" id="idm140386944155312"></a><a data-type="indexterm" data-primary="telemetry visualization" data-see="visualizing telemetry to improve software, case study" id="idm140386944155840"></a></p>
+
+<p>To see how this process can evolve in the real world, this chapter reviews a case study from a team that Danyel worked with at Microsoft. To protect sensitive information, this study obfuscates some images and details slightly. In addition, this telling reduces some of the complexity.</p>
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Introduction"><div class="sect1" id="idm140386944149328">
+<h1>Introduction</h1>
+
+<p>One of Danyel’s roles at Microsoft is to consult with teams from the rest of the company about visualization. Jacqueline, who works on a data science team, emailed him a question: “How would we show distributions so that they pop for users?”</p>
+
+<p>It can be hard to answer such a question without more context. What sort of distributions? Are they based on data, or are they abstract functions? What aspects of them should pop out? For example, Jacqueline might want to let her users see whether a given distribution is close to an expected distribution, or whether it has outliers. The designer does not yet have enough information to figure out what sort of visualization to create.</p>
+
+<p>In some cases, hearing this sort of low-level question can be a sign that a team has reached a dead end. The goal in data counseling is to help them work back out—to discover what their real need is and then operationalize a visualization that helps with that.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Project Background"><div class="sect1" id="idm140386944146944">
+<h1>Project Background</h1>
+
+<p>Danyel and Jacqueline discussed her question in a first data counseling interview.<a data-type="indexterm" data-primary="visualizing telemetry to improve software, case study" data-secondary="project background" id="ix_vistelbkg"></a> The goal of the interview was to learn more about the real question: who is going to look at these distributions and what do they want to decide?<a data-type="indexterm" data-primary="interviews" data-secondary="in telemetry visualization case study" id="idm140386944150976"></a> In this case, Jacqueline’s team was not stuck. She had assembled a data science team with a clear notion of the problem they wanted to solve. Her team was building a tool, and they knew precisely what it was for and who would use it. Their question was instead figuring out the right way to present that information to users.</p>
+
+<p>Their tool was a backend tool meant to support product teams getting ready to ship software to end users. Those product teams are very concerned about customer satisfaction and want to ensure that they ship software their end users will find satisfying.</p>
+
+<p>The product team’s high-level goal, then, is: “As we update software versions, show whether new versions are more satisfying to users.” Customer satisfaction can be measured through surveys and interviews, and one of the most frequently cited drivers of satisfaction is the speed at which the application runs. Users complain when applications take too long to start up, and studies have shown that users stop using software that feels laggy.<a data-type="indexterm" data-primary="proxies" data-secondary="software responsiveness in telemetry visualization case study" id="idm140386944141424"></a> As a result, software responsiveness is one proxy for the desired outcome, which is customer satisfaction.</p>
+
+<p>This proxy is used throughout the build and ship process. Software developers and maintainers want to know whether their system is fast enough for end users to enjoy using. Managers want to know which features need more resources to get the product up to a quality bar.</p>
+
+<p>To address these questions, product teams instrument applications to produce telemetry, which monitors end-user actions during the beta process and logs them to the product teams’ servers. The telemetry logs show how long operations take, which can be used to figure out the responsiveness of the application.</p>
+
+<p>A product consists of dozens or hundreds of functions, each of which can be instrumented. This team uses the speed of a function as a proxy for its responsiveness.<a data-type="indexterm" data-primary="proxies" data-secondary="refining goal with, in telemetry visualization case study" id="idm140386944137248"></a></p>
+
+<p>In <a data-type="xref" href="ch02.html#operationalization">Chapter 2</a>, we suggest refining the goal with the proxies. We could rephrase it as “Show whether the responsiveness of the functions within the software improved between versions."”</p>
+
+<p>Responsiveness is not a single number. If a population of a hundred users uses a piece of software that carries out a single function, their experiences will vary; it will be faster for some than others. One user might be behind a slow network, while another might be on a computer that is having a bad day. Some users will be sitting at new computers connected to fast networks but might ask to do something that takes a lot of server time. The responsiveness of an operation is a distribution across these user experiences. The teams wanted to be able to characterize and distinguish these groups of users.</p>
+
+<p>Jacqueline’s analysis team was building tools to analyze these telemetry results.<a data-type="indexterm" data-primary="Lync (or Skype for Business)" id="idm140386944135728"></a><a data-type="indexterm" data-primary="Skype for Business" id="idm140386944135120"></a> They had a pilot customer who was releasing beta versions of Lync.<sup><a data-type="noteref" id="idm140386944132800-marker" href="ch07.html#idm140386944132800">1</a></sup> Lync is a business communications tool that lets users have one-on-one chats and multiparty voice and video calls, as well as share screens, presentations, and notes. It connects to a company directory of users, allowing users to look each other up. The Lync development team, aware that responsiveness would be important, had built in telemetry and logging features. (Some of this case study has also been discussed in another paper; see <a data-type="xref" href="#FurtherReading">“Further Reading”</a>.)</p>
+
+<p>The Lync team was measuring responsiveness for these individual features. In addition, they measured the overall performance for scenarios. A <em>scenario</em> is a sequence of logically connected features.<a data-type="indexterm" data-primary="scenarios" id="idm140386944126288"></a> For example, one scenario might be named “start session,” and would consist of features like “connect to server,” “authenticate user with server,” “check for missed calls,” and “populate list of contacts.” In this scenario, the analysts might want to be able to say things like “making a connection has improved since the last build, but ending a call is still taking too long.”</p>
+
+<p>In describing these proxies in terms of the operationalization, then, we could refine the goal a <a data-type="indexterm" data-primary="operationalization" data-secondary="in telemetry visualization case study, refining the goal" id="idm140386944122032"></a><a data-type="indexterm" data-primary="visualizing telemetry to improve software, case study" data-startref="ix_vistelbkg" id="idm140386944130960"></a>little further: For each feature and scenario, across different groups of users, is the speed in one build better than in previous builds?</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="The Data"><div class="sect1" id="idm140386944123120">
+<h1>The Data</h1>
+
+<p>The raw data is the telemetry, which comes in the form of reports.<a data-type="indexterm" data-primary="visualizing telemetry to improve software, case study" data-secondary="data" id="idm140386944128944"></a> Each logged report starts with information that applies<a data-type="indexterm" data-primary="data" data-secondary="raw data in telemetry visualization case study" id="idm140386944127424"></a> to a single user and a single session:</p>
+
+<pre data-type="programlisting">Location: Redmond
+Software Version: 123.4
+Platform: 64 bit Windows 7
+Running in the Laboratory: No
+System Memory: 16 GB
+Network Speed: 10 MBpS
+...</pre>
+
+<p>The report then logs events when a user carries out a feature and what scenario it goes with. Each of these is associated with a duration (see <a data-type="xref" href="#ch8_sample_eventlog">Table 7-1</a>).</p>
+<table id="ch8_sample_eventlog">
+<caption><span class="label">Table 7-1. </span>Sample of event log</caption>
+<thead>
+<tr>
+<th>Session ID</th>
+<th>Scenario</th>
+<th>Feature</th>
+<th>Duration (ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p><em>S1</em></p></td>
+<td><p>Startup</p></td>
+<td><p>Connect to server</p></td>
+<td><p>300</p></td>
+</tr>
+<tr>
+<td><p><em>S1</em></p></td>
+<td><p>Startup</p></td>
+<td><p>Log in</p></td>
+<td><p>250</p></td>
+</tr>
+<tr>
+<td><p><em>S1</em></p></td>
+<td><p>Startup</p></td>
+<td><p>Download contacts</p></td>
+<td><p>135</p></td>
+</tr>
+<tr>
+<td><p><em>S1</em></p></td>
+<td><p>Search for user</p></td>
+<td><p>Search entry box appears</p></td>
+<td><p>20</p></td>
+</tr>
+<tr>
+<td><p>…</p></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<p>Each row in the table represents a single record—the lowest level of the data. The goal refers to various groupings: the distribution of performance by different categories of user, different features and scenarios, and different software versions. <a data-type="indexterm" data-primary="tasks" data-secondary="breakdown of Lync team task (case study)" id="idm140386944101872"></a><a data-type="indexterm" data-primary="visualizations" data-secondary="components of" data-tertiary="breakdown in Lync case study" id="idm140386944100896"></a>Jacqueline wanted to design a system that would offer the Lync team the opportunity to aggregate across different groupings. The analyst should be able to choose to look only at users looking at low-memory systems, or those running Windows 7. <a data-type="xref" href="#lync_team_breakdown_example">Example 7-1</a> shows how we can break this goal down, following the process in <a data-type="xref" href="ch02.html#operationalization">Chapter 2</a>.</p>
+<aside data-type="sidebar" epub:type="sidebar"><div class="sidebar" id="idm140386944095872">
+<h5></h5><div id="lync_team_breakdown_example" data-type="example">
+<h5><span class="label">Example 7-1. </span>Breaking down the Lync team’s task</h5>
+
+<p><strong>Task</strong>: Compare the duration for carrying out a scenario across different builds and features</p>
+
+<p><strong>Action</strong>: Compare</p>
+
+<p><strong>Object</strong>: The set of all event records that describe a single feature or scenario</p>
+
+<p><strong>Measure</strong>: Duration</p>
+
+<p><strong>Grouping</strong>: Build, analyst-selected features</p></div>
+</div></aside>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Determining How to Compare Builds"><div class="sect1" id="idm140386944090976">
+<h1>Determining How to Compare Builds</h1>
+
+<p>This revised goal is still ambiguous: we do not yet know how to carry out a comparison between two different groups of durations.<a data-type="indexterm" data-primary="visualizing telemetry to improve software, case study" data-secondary="determining how to compare builds" id="ix_vistelcomp"></a> For two builds, there is a distribution of values representing the speed. The system should have an ability to help the user decide which distribution is better.</p>
+
+<p>Historically, the Lync product team used a dashboard of data, presented as a grid of colored lights; each row in the grid corresponded to one feature, and each feature had a desired responsiveness.<a data-type="indexterm" data-primary="dashboards" data-secondary="sample performance dashboard in Lync case study" id="idm140386944087856"></a> The grid showed the percentage of users who got the desired performance, color-coded red, yellow, or green (<a data-type="xref" href="#coloredlights">Figure 7-1</a>). For example, if starting a call should be faster than half a second, and 60% of users had a less responsive experience, then a red dashboard light would warn that starting a call is problematic.</p>
+
+<figure><div id="coloredlights" class="figure">
+<img src="images/mdvi_0701.png" alt="mdvi 0701" />
+<h6><span class="label">Figure 7-1. </span>Sample performance dashboard (sketch). Build numbers are across the top; features scroll down. Green lights indicate features and builds that have acceptable performance for a large percentage of users; red lights indicate those with a smaller percentage (danger) and yellow a middling percentage (caution).</h6>
+</div></figure>
+
+<p>The proxy metric used in this tool is the percentage of sessions that are better than the threshold. This can be problematic. It is entirely possible to make a change that makes some people’s experience a little better and others’ much worse, but that turns the light from yellow to green. It is hard to drill down into the lights: while a yellow light might show that 20% of sessions see poor performance, is this the same set of users each time or is it randomly distributed? Is it possible to identify which subpopulations are failing? These thresholds strip out much of the richness of the raw data and make it harder to interpret. The team was unsatisfied with the existing proxy: they wanted to bring that richness back in and to help communicate the data to their end users.</p>
+
+<p>This is where Jacqueline brought Danyel in. The existing presentation of the data was hiding its richness. We began to look at some responsiveness data from the telemetry logs, picking out one feature and one build.<a data-type="indexterm" data-primary="histograms" data-secondary="of performance data in Lync case study" id="idm140386944081168"></a> A histogram of that data can be seen in <a data-type="xref" href="#onehisto">Figure 7-2</a>. The thick vertical line shows the acceptable performance threshold, at 5,000 ms. The team had been exploring whether a Gaussian curve would approximate the data well, and plotted the best fit with a red curve.</p>
+
+<figure><div id="onehisto" class="figure">
+<img src="images/mdvi_0702.png" alt="mdvi 0702" />
+<h6><span class="label">Figure 7-2. </span>The gray bars are a histogram of connecting to a login server; the red curve is a best-fit Gaussian curve. The vertical black line represents 5,000 ms, the desired threshold for this scenario.</h6>
+</div></figure>
+
+<p>A number of different insights are quickly visible in this histogram.  The first is that this feature always takes at least 4,000 ms. Above that threshold, this histogram seems bimodal. A bimodal curve suggests that there are two different populations here: one group who almost all have a good experience, and a second population who have a poor one. These are the sorts of things that it might be useful to show in the tool because they give a strong cue where to look further.</p>
+
+<p>Seeing the bimodal curve might encourage a user to start figuring out what is different between these two populations, and break them down. Is there a difference between the users who see a 4,000–5,000 ms response, and those who see a 5,000–8,000 ms response?  For example, it might be that the longer time represents users who are logged in from a remote network or mobile application. Separating these populations can lead to locating bugs or fixing performance errors in the code.</p>
+
+<p>This also leads to thinking more about the goal of making the software better. Improving responsiveness could have a number of meanings—it could involve shrinking the gap between the two populations or moving the entire distribution leftward. For example, the fact that the minimum time is four seconds suggests that there might be a hardcoded timeout somewhere in the system. Is that true?</p>
+
+<p>Seeing the richness embedded in the data, as in <a data-type="xref" href="#onehisto">Figure 7-2</a>, convinced all of us that it is critical to let users see the full distribution.<a data-type="indexterm" data-primary="visualizing telemetry to improve software, case study" data-secondary="determining how to compare builds" data-startref="ix_vistelcomp" id="idm140386944075216"></a></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Comparing Distributions to Understand “Better”"><div class="sect1" id="idm140386944075984">
+<h1>Comparing Distributions to Understand “Better”</h1>
+
+<p>With this two-peaked histogram, the team now wanted to allow users to split apart the two peaks and explore different user populations. <a data-type="indexterm" data-primary="visualizing telemetry to improve software, case study" data-secondary='comparing distributions to understand "better"' id="ix_vistelcompdist"></a>There are two subtasks:</p>
+
+<ul>
+<li>
+<p>For each scenario and feature, characterize how the distribution of speed has changed since previous builds. In what ways has it improved?</p>
+</li>
+<li>
+<p>Within a single build, for a given scenario and feature, characterize the distribution of speed. If there are multiple peaks, identify the factors upon which they vary.</p>
+</li>
+</ul>
+
+<p>These comparisons both suggest grouping the data. The per-session data can help cluster users; they can be grouped by location, or by their system configuration. Similarly, sessions can be divided by software version. As such, a single distribution curve is not enough; we want to see multiple distributions at once. This, then, is where it is important to compare distributions.</p>
+
+<p>Danyel decided to produce a few data sketches to help the team think about what it would look like to compare distributions (see Figures <a data-type="xref" data-xrefstyle="select:labelnumber" href="#compare_stacked">7-3</a> and <a data-type="xref" data-xrefstyle="select:labelnumber" href="#compare_sidebyside">7-4</a>). As a starting point, he took performance information from two beta builds. These are two fairly similar datasets, enough so that putting them next to each other does not reveal obvious differences. The question was, were there visualizations that would allow analysts to pick them apart?<a data-type="indexterm" data-primary="bar charts" data-secondary="stacked and clustered bar charts comparing Lync distributions" id="idm140386944062544"></a><a data-type="indexterm" data-primary="stacked bar charts" data-secondary="comparing Lync distributions" id="idm140386944056592"></a><a data-type="indexterm" data-primary="clustered bar charts" data-secondary="comparing Lync distributions" id="idm140386944060736"></a></p>
+
+<figure><div id="compare_stacked" class="figure">
+<img src="images/mdvi_0703.png" alt="mdvi 0703" />
+<h6><span class="label">Figure 7-3. </span>A data sketch of a stacked bar chart comparing two distributions.</h6>
+</div></figure>
+
+<figure><div id="compare_sidebyside" class="figure">
+<img src="images/mdvi_0704.png" alt="mdvi 0704" />
+<h6><span class="label">Figure 7-4. </span>A data sketch of a clustered bar chart comparing two distributions.</h6>
+</div></figure>
+
+<p>Neither of these sketches was quite right. The paired bars are difficult to interpret as seeing one distribution requires reading past the other data. The stacked bars make it difficult to read the differences in the curve.</p>
+
+<p>After bringing these sketches to the team, along with several other comparisons, Danyel decided to take a look instead at a smoothed density estimate curve.<a data-type="indexterm" data-primary="smoothed histograms" data-secondary="in Lync case study, comparing distributions" id="idm140386944053248"></a> Smoothed curves highlight differences between the distributions and also take care of the fact that some distributions may have more data than others.</p>
+
+<p>The team liked the smoothed histogram because they felt that the comparison helped users see the data more directly. They decided to adopt the smoothed histogram as one of the core visuals that would appear in their final tool. As seen in <a data-type="xref" href="#compare_smoothed">Figure 7-5</a>, several features in the final tool compare smoothed histograms directly to each other.</p>
+
+<figure><div id="compare_smoothed" class="figure">
+<img src="images/mdvi_0705.png" alt="mdvi 0705" />
+<h6><span class="label">Figure 7-5. </span>A screenshot from a more finished part of the final tool. It provides  smoothed curves across different user groups, builds, or conditions.</h6>
+</div></figure>
+
+<p>The next step in the process was to work back upward. The team now had a low-level instrument for comparing sets of distributions, which they would use to compare user groups, builds, and other attributes. We now needed to resolve a broader question: how would users know which distributions were worth examining?<a data-type="indexterm" data-primary="visualizing telemetry to improve software, case study" data-secondary='comparing distributions to understand "better"' data-startref="ix_vistelcompdist" id="idm140386944045856"></a></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Multiple Scenarios"><div class="sect1" id="idm140386944090064">
+<h1>Multiple Scenarios</h1>
+
+<p>Jacqueline’s team wanted to ensure that the final tool would appeal to release managers.<a data-type="indexterm" data-primary="visualizing telemetry to improve software, case study" data-secondary="multiple scenarios" id="idm140386944042256"></a><a data-type="indexterm" data-primary="scenarios" data-secondary="multiple scenarios in Lync case study" id="idm140386944041744"></a> Release managers ensure that all features of the product are ready to ship at the same time, and are responsible for knowing which components will be ready on time. Release mangers worry about trade-offs between features: a server cache that speeds up “look up address” might slow down “confirm user is online.” How could they provide release managers with a holistic sense of the entire application?</p>
+
+<p>As Jacqueline explained, release managers have two different tasks with regard to this data:</p>
+
+<ul>
+<li>
+<p>Identify which scenarios have (or have not) improved since previous builds and which scenarios have the best (and worst) performance.</p>
+</li>
+<li>
+<p>For any given scenario, identify which features are the most problematic.</p>
+</li>
+</ul>
+
+<p>We used these two tasks to motivate the design for the final tool. It would be based on a dashboard, which would provide an overview of scenarios across multiple builds. Release managers could then zoom in on any scenario to see the constituent features.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Sketching Dashboards"><div class="sect1" id="idm140386944038944">
+<h1>Sketching Dashboards</h1>
+
+<p>We began a process of searching out and sketching interface designs in between meetings, and sharing and critiquing them during meetings.<a data-type="indexterm" data-primary="visualizing telemetry to improve software, case study" data-secondary="sketching performance dashboards" id="ix_visteldshbd"></a><a data-type="indexterm" data-primary="dashboards" data-secondary="sketching performance dashboards in Lync case study" id="ix_dshbd"></a> The goal of the process was to see what interactions and visualizations emerged from the designs and to understand what we wanted to let release managers see.</p>
+
+<p>For example, one team member brought in <a data-type="xref" href="#lync_heatmap">Figure 7-6</a> as a possible model. We looked it over as a group. The team felt that the heatmap made for a good overview. They liked the way that it shows that for a number of features (down the left side), multiple versions can be compared (across). While on the surface this is much like the lights grid (<a data-type="xref" href="#coloredlights">Figure 7-1</a>), the important part was the idea of being able to zoom in on the cells.</p>
+
+<figure><div id="lync_heatmap" class="figure">
+<img src="images/mdvi_0706.png" alt="mdvi 0706" />
+<h6><span class="label">Figure 7-6. </span>Heatmap. The team found this illustration a helpful way to think about the problem despite the fact that it shows sales data.</h6>
+</div></figure>
+
+<p>A different team member noted that there were too many features and scenarios to compare at once, and added a hierarchical component (<a data-type="xref" href="#Performance">Figure 7-7</a>). The top-level view shows scenarios but hides lower-level features. This forces the designer to choose a color for each scenario, even though a scenario is made up of multiple features. In the sketch, each scenario is colored by its worst feature.</p>
+
+<figure><div id="Performance" class="figure">
+<img src="images/mdvi_0707.png" alt="mdvi 0707" />
+<h6><span class="label">Figure 7-7. </span>A sketch for the performance dashboard. This lo-fi sketch helped us think about the hierarchy of data (categories, subcategories), the necessity for color-coding, and a possible way to bubble performance histograms to the surface.</h6>
+</div></figure>
+
+<p>The team began to iterate on the sketches. <a data-type="xref" href="#Checkerboard">Figure 7-8</a> was an attempt to show a set of metrics: whether the scenario passes or fails is mapped to color, success thresholds are drawn with a white bar, and the histogram (blue) compares scenarios across multiple builds.</p>
+
+<p><a data-type="xref" href="#Checkerboard">Figure 7-8</a> helped clarify what the group really needed. This sketch dedicates a lot of horizontal space to past versions; while it is useful to see how the current version compares to the last one or two, comparing it to more remote history is not a key task. Also, the aggregate task on the right, Scenario (All), is not quite right; there is no proxy that aggregates multiple scenarios together.</p>
+
+<figure class="width-75"><div id="Checkerboard" class="figure">
+<img src="images/mdvi_0708.png" alt="mdvi 0708" />
+<h6><span class="label">Figure 7-8. </span>A second sketch for the performance dashboard. Adding data sketches indicated the importance of scales and showing thresholds.</h6>
+</div></figure>
+
+<p>The team used these as starting points as they looked at the hierarchical interaction design for their tool.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Turning Back to the Data"><div class="sect2" id="idm140386944018704">
+<h2>Turning Back to the Data</h2>
+
+<p>Sketching is useful to clarify tasks, but it is very important to come back to the data. The team had begun to converge on a plan—the system would start with a high-level dashboard, which would lead to low-level purpose-built visualizations to compare histograms. As they began to work on incorporating the data into the dashboard, they noticed that in lots of cases, there were far more failures than working cases. In beta versions of the software, calls would sometimes not connect, servers would be disabled, and networks would be disconnected.</p>
+
+<p>Danyel drew a handful of sketches for how to handle failures in a histogram. Failed tests could be marked as taking a lot of time or could be removed from the chart. The team brought these designs back to their prospective users to try to better understand their needs. They learned that in the beta phase, failures were understood differently from responsiveness problems and would only confuse the histogram.<a data-type="indexterm" data-primary="visualizing telemetry to improve software, case study" data-secondary="sketching performance dashboards" data-startref="ix_visteldshbd" id="idm140386944017104"></a><a data-type="indexterm" data-primary="dashboards" data-secondary="sketching performance dashboards in Lync case study" data-startref="ix_dshbd" id="idm140386944006576"></a></p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Final UI for High-Level Goals"><div class="sect1" id="idm140386944033344">
+<h1>Final UI for High-Level Goals</h1>
+
+<p>We combined these ideas to create a single visualization system.<a data-type="indexterm" data-primary="visualizing telemetry to improve software, case study" data-secondary="final UI for high-level goals" id="ix_vistelUI"></a> The top-level view allowed users to pick a scenario.<a data-type="indexterm" data-primary="scenarios" data-secondary="picking in final UI for Lync case study" id="idm140386944013312"></a> Once they had selected it, they could see each of the features in <a data-type="xref" href="#overview">Figure 7-9</a>. Each gray box represents a feature; each small dot represents a number of users trying that feature.</p>
+
+<figure><div id="overview" class="figure">
+<img src="images/mdvi_0709.png" alt="mdvi 0709" />
+<h6><span class="label">Figure 7-9. </span>The final top-level overview is a scenario and feature selector. Each rectangle represents a single scenario; the colored dots below cue success rates and amount of usage. The three circles on each panel are buttons leading to detailed charts.</h6>
+</div></figure>
+
+<p>Each rectangle show a scenario or feature. The colored bar, dots, and stars all give information about success of the scenario or feature. Each box also contains three circular control buttons.<a data-type="indexterm" data-primary="detail views" data-secondary="comparing versions in final UI of Lync case study" id="idm140386944004672"></a><a data-type="indexterm" data-primary="overview+detail visualizations" data-secondary="detail views comparing versions in Lync case study" id="idm140386944003824"></a> One of the control buttons leads to the histogram for the most recent version, across different user groups (<a data-type="xref" href="#compare_smoothed">Figure 7-5</a>). Another leads to a comparison tool that allows users to compare populations across multiple builds (<a data-type="xref" href="#ThreeVersions">Figure 7-10</a>).</p>
+<figure><div id="ThreeVersions" class="figure">
+<img class="img35" src="images/mdvi_0710.png" />
+<h6><span class="label">Figure 7-10. </span>Comparing three versions of the software in a detail view, split by two countries.</h6>
+</div></figure>
+
+<p><a data-type="xref" href="#ThreeVersions">Figure 7-10</a> shows an analysis in the tool of performance in two different countries—we’ll call them Green and Blue—for three different versions of the software (the newest version is at the bottom). The service has a data center hosted in Blue; as such, most Blue customers experience consistently similar performance. Customers in Green, however, experience very different performance: some users do well, but a great many do poorly. It turns out that the support team receives many support calls from Green customers related to poor and inconsistent performance and that these graphs support their claims.</p>
+
+<p>The middle build seems to show similar curves in Green and Blue—had the team managed to fix the problems here? After studying the data in more detail, they realized that build 0710 was offered only very briefly. As a result, only people with very good network connections—in Green and in Blue—had access to the data, and so only users in Green who had good network connections got the data.</p>
+
+<p>This accidental experiment suggested that the challenge with Green’s performance was in handling poor network connections, and the development team began to work on optimizing their system for bad networks. It also made visible, however, that the visualization wasn’t showing the number of users as clearly as it should. Seeing that the number of users was way down would have clarified the issue.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Additional Visualizations"><div class="sect2" id="idm140386943990208">
+<h2>Additional Visualizations</h2>
+
+<p>The team added additional visualizations to the tool based on other sorts of comparisons.<a data-type="indexterm" data-primary="visualizing telemetry to improve software, case study" data-secondary="final UI for high-level goals" data-tertiary="additional visualizations" id="idm140386943986976"></a> For example, some release managers wanted to see how the software was evolving across many versions and a long development process.<a data-type="indexterm" data-primary="bar charts" data-secondary="notched bar chart for software evolution in Lync case study" id="idm140386943986272"></a> The notched bar chart provides both a summary of the number of users and the broad scale of the distribution. In <a data-type="xref" href="#BuildOverBuild">Figure 7-11</a>, for example, there is much more data about build 4420 than about the more recent versions, showing that performance is not obviously improving yet.</p>
+
+<p>As the release teams looked at the tool, they pointed out that geography was turning out to be a major factor for user performance.<a data-type="indexterm" data-primary="geographical visualizations" data-secondary="comparing performance by country in Lync case study" id="idm140386943991952"></a> The team added a visualization of performance by country to help guide searches (<a data-type="xref" href="#ByCountry">Figure 7-12</a>).</p>
+
+<figure class="width-75"><div id="BuildOverBuild" class="figure">
+<img src="images/mdvi_0711.png" alt="mdvi 0711" />
+<h6><span class="label">Figure 7-11. </span>A visualization to compare multiple builds. Thickness of the bars is mapped to the number of users of that version; color is mapped to other attributes of the build.</h6>
+</div></figure>
+
+<figure><div id="ByCountry" class="figure">
+<img src="images/mdvi_0712.png" alt="mdvi 0712" />
+<h6><span class="label">Figure 7-12. </span>A visualization to compare performance by geography, for one build. Countries in green see better performance for this feature and build; countries in red see worse.</h6>
+</div></figure>
+
+<p>The analytics system was internally deployed, and was wired up for four different internal online services as a core telemetry tool. Those four teams used it to guide and manage their release process. Core features from this tool were incorporated into its successors, which are now part of the next generation of internal telemetry management systems.<a data-type="indexterm" data-primary="visualizing telemetry to improve software, case study" data-secondary="final UI for high-level goals" data-startref="ix_vistelUI" id="idm140386943982448"></a></p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Conclusion"><div class="sect1" id="idm140386943980576">
+<h1>Conclusion</h1>
+
+<p>This design remained close to both the data and the customers throughout. As we worked our way through the operationalization, making our questions more and more specific, we were able to figure out what visualizations would best address the questions. Sketching data often helped clarify the questions and also helped to identify edge cases and considerations we hadn’t thought about before.</p>
+
+<p>This process used all the tools of the <a data-type="indexterm" data-primary="data counseling" data-secondary="in Lync case study" id="idm140386943978752"></a>data counseling process: interviews with users of the system to understand their interpretations of the data, sketches of ideas for interfaces, and plots of the data itself. These sketches, diagrams, and ideas enabled us to create a tool that allowed product teams to understand their deployed programs.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Acknowledgments"><div class="sect2" id="idm140386943977744">
+<h2>Acknowledgments</h2>
+
+<p>Danyel is grateful to Jacqueline Richards and Brian Bussone for helping to reconstruct the process we used, finding notes and prototypes, and their feedback on this chapter. We received additional feedback and encouragement from Ross Smith.</p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Further Reading"><div class="sect1" id="FurtherReading">
+<h1>Further Reading</h1>
+
+<p>The Lync study, including the context around the <a data-type="indexterm" data-primary="visualizing telemetry to improve software, case study" data-secondary="learning resources for" id="idm140386943973584"></a>data science aspects, is documented in Musson, Robert et al., <a href="http://bit.ly/2nFQHKP">“Leveraging the Crowd: How 48,000 Users Helped Improve Lync Performance.”</a> <em>IEEE Software</em> 30 (2013): 38–45.<a data-type="indexterm" data-primary="case studies" data-secondary="visualizing telemetry to improve software" data-startref="ix_cs1" id="idm140386943974400"></a><a data-type="indexterm" data-primary="visualizing telemetry to improve software, case study" data-startref="ix_vistel" id="idm140386943968928"></a></p>
+</div></section>
+
+
+
+
+
+
+
+<div data-type="footnotes"><p data-type="footnote" id="idm140386944132800"><sup><a href="ch07.html#idm140386944132800-marker">1</a></sup> Now known as Skype for Business.</p></div></div></section></div>
+</body>
+</html>

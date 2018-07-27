@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns="http://www.idpf.org/2007/opf"
+         version="3.0"
+         unique-identifier="BookId"
+         xmlns:dc="http://purl.org/dc/elements/1.1/"
+         xmlns:dcterms="http://purl.org/dc/terms/"
+         xml:lang="en"
+         xmlns:media="http://www.idpf.org/epub/vocab/overlays/#"
+         prefix="ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/">
+
+    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/"
+              xmlns:opf="http://www.idpf.org/2007/opf">
+
+        <dc:identifier id="BookId">9781491960493</dc:identifier>
+        <meta refines="#BookId" property="identifier-type" scheme="onix:codelist5">22</meta>
+        <meta property="dcterms:identifier" id="meta-identifier">BookId</meta>
+        <dc:title>Making Data Visual</dc:title>
+        <meta property="dcterms:title" id="meta-title">Making Data Visual</meta>
+        <dc:language>en</dc:language>
+        <meta property="dcterms:language" id="meta-language">en</meta>
+        <meta property="dcterms:modified">2018-06-03T09:44:39Z</meta>
+        <dc:creator id="creator">Danyel Fisher, Miriah Meyer</dc:creator>
+        <meta refines="#creator" property="file-as">Danyel Fisher, Miriah Meyer</meta>
+        <meta property="dcterms:publisher">O&#39;Reilly Media, Inc.</meta>
+        <dc:publisher>O&#39;Reilly Media, Inc.</dc:publisher>
+        
+        <meta property="dcterms:date">2018-6-3</meta>
+        <dc:date>2018-6-3</dc:date>
+        <meta property="dcterms:rights">All rights reserved</meta>
+        <dc:rights>Copyright &#x00A9; 2018 by O&#39;Reilly Media, Inc.</dc:rights>
+        <meta name="cover" content="image_cover"/>
+        <meta name="generator" content="epub-nicohaenggi" />
+        <meta property="ibooks:specified-fonts">true</meta>
+
+    </metadata>
+
+    <manifest>
+        <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml" />
+        <item id="css" href="style.css" media-type="text/css" />
+        
+        <item id="css" href="core.css" media-type="text/css" />
+        
+
+        <item id="image_cover" href="images/cover.jpg" media-type="image/jpg" />
+
+        
+        <item id="image_0" href="images/cover.png" media-type="image/png" />
+        <item id="image_1" href="images/mdvi_0001.png" media-type="image/png" />
+        <item id="image_2" href="images/mdvi_0101.png" media-type="image/png" />
+        <item id="image_3" href="images/mdvi_0102.png" media-type="image/png" />
+        <item id="image_4" href="images/mdvi_0201.png" media-type="image/png" />
+        <item id="image_5" href="images/mdvi_0202.png" media-type="image/png" />
+        <item id="image_6" href="images/mdvi_0203.png" media-type="image/png" />
+        <item id="image_7" href="images/mdvi_0301.png" media-type="image/png" />
+        <item id="image_8" href="images/mdvi_0302.png" media-type="image/png" />
+        <item id="image_9" href="images/mdvi_0303.png" media-type="image/png" />
+        <item id="image_10" href="images/mdvi_0501.png" media-type="image/png" />
+        <item id="image_11" href="images/mdvi_0502.png" media-type="image/png" />
+        <item id="image_12" href="images/mdvi_0503.png" media-type="image/png" />
+        <item id="image_13" href="images/mdvi_0504.png" media-type="image/png" />
+        <item id="image_14" href="images/mdvi_05in02.png" media-type="image/png" />
+        <item id="image_15" href="images/mdvi_05in03.png" media-type="image/png" />
+        <item id="image_16" href="images/mdvi_05in01.png" media-type="image/png" />
+        <item id="image_17" href="images/mdvi_05in04.png" media-type="image/png" />
+        <item id="image_18" href="images/mdvi_05in05.png" media-type="image/png" />
+        <item id="image_19" href="images/mdvi_05in07.png" media-type="image/png" />
+        <item id="image_20" href="images/mdvi_05in06.png" media-type="image/png" />
+        <item id="image_21" href="images/mdvi_05in08.png" media-type="image/png" />
+        <item id="image_22" href="images/mdvi_05in09.png" media-type="image/png" />
+        <item id="image_23" href="images/mdvi_05in10.png" media-type="image/png" />
+        <item id="image_24" href="images/mdvi_05in11.png" media-type="image/png" />
+        <item id="image_25" href="images/mdvi_05in12a.png" media-type="image/png" />
+        <item id="image_26" href="images/mdvi_05in13.png" media-type="image/png" />
+        <item id="image_27" href="images/mdvi_05in14.png" media-type="image/png" />
+        <item id="image_28" href="images/mdvi_05in15.png" media-type="image/png" />
+        <item id="image_29" href="images/mdvi_05in16.png" media-type="image/png" />
+        <item id="image_30" href="images/mdvi_0505.png" media-type="image/png" />
+        <item id="image_31" href="images/mdvi_0506.png" media-type="image/png" />
+        <item id="image_32" href="images/mdvi_0507.png" media-type="image/png" />
+        <item id="image_33" href="images/mdvi_0508.png" media-type="image/png" />
+        <item id="image_34" href="images/mdvi_0509.png" media-type="image/png" />
+        <item id="image_35" href="images/mdvi_0510.png" media-type="image/png" />
+        <item id="image_36" href="images/mdvi_0511.png" media-type="image/png" />
+        <item id="image_37" href="images/mdvi_0512.png" media-type="image/png" />
+        <item id="image_38" href="images/mdvi_0513.png" media-type="image/png" />
+        <item id="image_39" href="images/mdvi_0514.png" media-type="image/png" />
+        <item id="image_40" href="images/mdvi_0515.png" media-type="image/png" />
+        <item id="image_41" href="images/mdvi_0516.png" media-type="image/png" />
+        <item id="image_42" href="images/mdvi_0517.png" media-type="image/png" />
+        <item id="image_43" href="images/mdvi_0518.png" media-type="image/png" />
+        <item id="image_44" href="images/mdvi_0519.png" media-type="image/png" />
+        <item id="image_45" href="images/mdvi_0520.png" media-type="image/png" />
+        <item id="image_46" href="images/mdvi_0521.png" media-type="image/png" />
+        <item id="image_47" href="images/mdvi_0522.png" media-type="image/png" />
+        <item id="image_48" href="images/mdvi_0523.png" media-type="image/png" />
+        <item id="image_49" href="images/mdvi_0524.png" media-type="image/png" />
+        <item id="image_50" href="images/mdvi_0525.png" media-type="image/png" />
+        <item id="image_51" href="images/mdvi_0526.png" media-type="image/png" />
+        <item id="image_52" href="images/mdvi_0527.png" media-type="image/png" />
+        <item id="image_53" href="images/mdvi_0601.png" media-type="image/png" />
+        <item id="image_54" href="images/mdvi_0602.png" media-type="image/png" />
+        <item id="image_55" href="images/mdvi_0603.png" media-type="image/png" />
+        <item id="image_56" href="images/mdvi_0604.png" media-type="image/png" />
+        <item id="image_57" href="images/mdvi_0605.png" media-type="image/png" />
+        <item id="image_58" href="images/mdvi_0606.png" media-type="image/png" />
+        <item id="image_59" href="images/mdvi_0607.png" media-type="image/png" />
+        <item id="image_60" href="images/mdvi_0608.png" media-type="image/png" />
+        <item id="image_61" href="images/mdvi_0609.png" media-type="image/png" />
+        <item id="image_62" href="images/mdvi_0610.png" media-type="image/png" />
+        <item id="image_63" href="images/mdvi_0701.png" media-type="image/png" />
+        <item id="image_64" href="images/mdvi_0702.png" media-type="image/png" />
+        <item id="image_65" href="images/mdvi_0703.png" media-type="image/png" />
+        <item id="image_66" href="images/mdvi_0704.png" media-type="image/png" />
+        <item id="image_67" href="images/mdvi_0705.png" media-type="image/png" />
+        <item id="image_68" href="images/mdvi_0706.png" media-type="image/png" />
+        <item id="image_69" href="images/mdvi_0707.png" media-type="image/png" />
+        <item id="image_70" href="images/mdvi_0708.png" media-type="image/png" />
+        <item id="image_71" href="images/mdvi_0709.png" media-type="image/png" />
+        <item id="image_72" href="images/mdvi_0710.png" media-type="image/png" />
+        <item id="image_73" href="images/mdvi_0711.png" media-type="image/png" />
+        <item id="image_74" href="images/mdvi_0712.png" media-type="image/png" />
+        <item id="image_75" href="images/mdvi_0801.png" media-type="image/png" />
+        <item id="image_76" href="images/mdvi_0802.png" media-type="image/png" />
+        <item id="image_77" href="images/mdvi_0803.png" media-type="image/png" />
+        <item id="image_78" href="images/mdvi_0804.png" media-type="image/png" />
+        <item id="image_79" href="images/mdvi_0805.png" media-type="image/png" />
+        <item id="image_80" href="images/mdvi_08in01.png" media-type="image/png" />
+        <item id="image_81" href="images/mdvi_08in02.png" media-type="image/png" />
+        <item id="image_82" href="images/mdvi_0806.png" media-type="image/png" />
+        <item id="image_83" href="images/mdvi_0807.png" media-type="image/png" />
+
+        
+        <item id="tocxhtmlfile" href="cover.html" media-type="application/xhtml+xml" />
+        <item id="tocxhtmlfile" href="toc01.html" media-type="application/xhtml+xml" />
+        <item id="tocxhtmlfile" href="titlepage01.html" media-type="application/xhtml+xml" />
+        <item id="tocxhtmlfile" href="copyright-page01.html" media-type="application/xhtml+xml" />
+        <item id="preface-idm140386945716976" href="preface01.html" media-type="application/xhtml+xml" />
+        <item id="chapter-idm140386945716352" href="ch01.html" media-type="application/xhtml+xml" />
+        <item id="chapter-idm140386945645088" href="ch02.html" media-type="application/xhtml+xml" />
+        <item id="chapter-idm140386945514224" href="ch03.html" media-type="application/xhtml+xml" />
+        <item id="chapter-idm140386945204032" href="ch04.html" media-type="application/xhtml+xml" />
+        <item id="chapter-idm140386944851136" href="ch05.html" media-type="application/xhtml+xml" />
+        <item id="chapter-idm140386944425728" href="ch06.html" media-type="application/xhtml+xml" />
+        <item id="chapter-idm140386944366928" href="ch07.html" media-type="application/xhtml+xml" />
+        <item id="chapter-idm140386944159744" href="ch08.html" media-type="application/xhtml+xml" />
+        <item id="chapter-idm140386943967328" href="ch09.html" media-type="application/xhtml+xml" />
+        <item id="index-idm140386943816448" href="ix01.html" media-type="application/xhtml+xml" />
+        <item id="tocxhtmlfile" href="colophon01.html" media-type="application/xhtml+xml" />
+        <item id="tocxhtmlfile" href="colophon02.html" media-type="application/xhtml+xml" />
+
+    </manifest>
+
+    <spine toc="ncx">
+      
+      <itemref idref="tocxhtmlfile"/>
+      <itemref idref="tocxhtmlfile"/>
+      <itemref idref="tocxhtmlfile"/>
+      <itemref idref="tocxhtmlfile"/>
+      <itemref idref="preface-idm140386945716976"/>
+      <itemref idref="chapter-idm140386945716352"/>
+      <itemref idref="chapter-idm140386945645088"/>
+      <itemref idref="chapter-idm140386945514224"/>
+      <itemref idref="chapter-idm140386945204032"/>
+      <itemref idref="chapter-idm140386944851136"/>
+      <itemref idref="chapter-idm140386944425728"/>
+      <itemref idref="chapter-idm140386944366928"/>
+      <itemref idref="chapter-idm140386944159744"/>
+      <itemref idref="chapter-idm140386943967328"/>
+      <itemref idref="index-idm140386943816448"/>
+      <itemref idref="tocxhtmlfile"/>
+      <itemref idref="tocxhtmlfile"/>
+
+    </spine>
+    <guide>
+      
+      <reference type="text" title="Table of Content" href="cover.html"/>
+      
+    </guide>
+</package>

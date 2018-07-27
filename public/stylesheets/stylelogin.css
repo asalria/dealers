@@ -209,14 +209,12 @@ footer a:hover, footer a:focus { border-bottom: 1px dotted #19b9e7; }
 
 
 input[type="text"], 
-input[type="password"], 
-textarea, 
-textarea.form-control {
+input[type="password"],
+select.form-control{
 	height: 50px;
     margin: 0;
     padding: 0 20px;
     vertical-align: middle;
-    background: #f8f8f8;
     border: 3px solid #ddd;
     font-family: 'Roboto', sans-serif;
     font-size: 16px;
@@ -232,12 +230,7 @@ textarea.form-control {
     width: 30rem;
 }
 
-textarea, 
-textarea.form-control {
-	padding-top: 10px;
-	padding-bottom: 10px;
-	line-height: 30px;
-}
+
 
 input[type="text"]:focus, 
 input[type="password"]:focus, 

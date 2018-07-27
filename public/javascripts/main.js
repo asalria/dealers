@@ -40,8 +40,11 @@ window.onload = () => {
           }
       } 
       else {
-        //Add your javascript for small screens here 
+     
+          //Add your javascript for small screens here 
         getDealers();
+      
+        
       }
     
     
@@ -55,6 +58,18 @@ window.onload = () => {
     }
   
     function getDealers() {
+      axios.get("http://localhost:3000/show")
+      .then( response => {
+        placeDealers(response.data.dealers);
+        map.fitBounds(bounds);
+      })
+      .catch(error => {
+        next(error)
+      })
+    }
+
+    function getDealers2() {
+      var address = document.getElementById('search').value;
       axios.get("http://localhost:3000/show")
       .then( response => {
         placeDealers(response.data.dealers);

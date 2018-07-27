@@ -1,0 +1,695 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>2. From Questions to Tasks</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><section data-type="chapter" epub:type="chapter" data-pdf-bookmark="Chapter 2. From Questions to Tasks"><div class="chapter" id="operationalization">
+<h1><span class="label">Chapter 2. </span>From Questions to Tasks</h1>
+
+
+<p>All visualization begins with a question about data.<a data-type="indexterm" data-primary="operationalization" id="ix_ops"></a> An analyst wants to know something about a phenomenon in the world, or wants to share their knowledge about it with someone else. She believes the phenomenon they wish to examine is represented somehow in the data.</p>
+
+<p>The challenge in this process is that the question the analyst wishes to address can seem far from the data. The analyst might be working on a broad goal: say, “Are high-salary employees more productive than less well-paid ones?” This leads to a process of making the question measurable. What does the analyst mean by <em>high-salary</em>, and <em>productive</em>? What visualization or set of visualizations would demonstrate the relationship between these variables?</p>
+
+<p>The process of breaking down these questions into something that can actually be computed from the data is iterative, exploratory, and sometimes surprising. This chapter describes how to refine high-level questions into specific, data-driven tasks. The outcome of that process is a set of concise design requirements for a visualization tool that supports finding answers to those questions.</p>
+
+<p>The general concept of refining questions into tasks appears across all of the sciences. In many fields, the process is called <em>operationalization</em>, and refers to the process of reducing a complex set of factors to a single metric.
+The field of visualization takes on that goal more broadly: rather than attempting to identify a single metric, the analyst instead tries to look more holistically across the data to get a usable, actionable answer. Arriving at that answer might involve exploring multiple attributes, and using a number of views that allow the ideas to come together. Thus, operationalization in the context of visualization is the process of identifying tasks to be performed over the dataset that are a reasonable approximation of the high-level question of interest.</p>
+
+<p>A visualization is not the inevitable outcome of operationalization. Exploring the data might show that the goal is best achieved with a statistical analysis or with machine learning. Similarly, the outcome of the process might show that a cluster analysis across multiple attributes is more useful than a plot. We find that more often than not, visualization is a vital component of getting to a successful operationalization.</p>
+
+<p>This chapter emphasizes the data aspects of this process. The next chapter moves to the human side of the process: how to get the information necessary to effectively operationalize the high-level questions. Later chapters then look at how to translate the operationalized questions into specific visualizations.</p>
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Example: Identifying Good Movie Directors"><div class="sect1" id="idm140386945502016">
+<h1>Example: Identifying Good Movie Directors</h1>
+
+<p>To guide the process through operationalization, this chapter examines an exemplar question: “Who are the best movie directors?”</p>
+
+<p>Nonspecific questions<a data-type="indexterm" data-primary="operationalization" data-secondary="example, identifying good movie directors" id="idm140386945510128"></a> like this are how many data explorations start. Answering a question like this requires a much more specific task that can be precisely addressed with a dataset. Before we can be more specific, we first need to take a step back: who needs to know the answer to this question? The use case might be a film student trying to assert that his dissertation is about one of the most influential directors, or a hiring manager looking to hire a director for an upcoming project, or a journalist putting together a splashy article that will feature a top list.</p>
+
+<p>Each of these users needs suggests different interpretations for the notion of <em>best</em> director.  The film student is looking for a way to quantify and defend a notion of influence, whereas the hiring manager might want to limit themself to people working today who are less accomplished and thus more affordable. For this example, though, the user will be a journalist who is putting together an article about a new movie and wants to include a list of the best directors.</p>
+
+<p>The goal of operationalization is to refine and clarify the question until the analyst can forge an explicit link between the data that they <em>can</em> find and the questions they <em>would like</em> to answer. For this example, the dataset at hand contains a list of movies rated by the film-aficionado community. Each movie is associated with a director, a number of raters, and an average rating score.</p>
+<aside data-type="sidebar" epub:type="sidebar"><div class="sidebar" id="idm140386945498528">
+<h5>A Note on the Data</h5>
+<p>The dataset used for this chapter is comprised of two of IMDB’s downloadable lists, <em>directors.list</em> and <em>ratings.list.</em> There is a copy of the <a href="http://jupyter.org/">Jupyter notebook</a> that parses them into cleaner CSVs on <a href="https://resources.oreilly.com/examples/0636920041320">the book’s companion website</a>. The script cleans the data to remove entries that the database refers to as not being movies, such as video games and TV shows. The analysis and visualizations in this chapter are carried out in <a href="https://www.python.org/">Python</a> and recorded in a second Jupyter notebook available at the same site.</p>
+</div></aside>
+
+<p>With both data and a high-level question in hand, the visualization work can begin. Data alone is not enough to dictate a set of design requirements for constructing a visualization. What is missing here is a translation of the high-level question “Who are the best movie directors?” into a set of concrete tasks over the data.</p>
+
+<p>The choice of dataset<a data-type="indexterm" data-primary="datasets" data-secondary="choice of" id="idm140386945491680"></a> and operationalization is fundamentally a <em>specific perspective</em> on a problem; they stand in for what the analyst wishes to understand. In this example, there are other ways to frame the inquiry and other types of data that could be collected. This is a large part of why visualization is so important for answering questions like these: it allows an analyst’s experience and knowledge to layer directly on top of the data that is ultimately shown. The analyst’s skills and experience allow them to make inferences about the more abstract questions they are really interested in.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Making a Question Concrete"><div class="sect1" id="idm140386945579104">
+<h1>Making a Question Concrete</h1>
+
+<p>The process of operationalization winds its way from a general goal or a broad question to specific tasks, and then to visualizations that support those specific tasks based on concrete data.<a data-type="indexterm" data-primary="operationalization" data-secondary="making a question concrete" id="idm140386945490272"></a><a data-type="indexterm" data-primary="questions" data-secondary="making concrete" id="idm140386945489344"></a></p>
+
+<p>To achieve this, the analyst searches for <em>proxies</em>.<a data-type="indexterm" data-primary="proxies" id="idm140386945492576"></a> Proxies are partial and imperfect representations of the abstract thing that the analyst is really interested in. For example, <em>high movie ratings</em> may be a reasonable proxy for <em>best</em> in our movie example. Selecting and interpreting proxies requires judgment and expertise to assess how well, and with what sorts of limitations, they represent the abstract concept.</p>
+
+<p>In operationalization, there are two important types of proxies:</p>
+
+<ul>
+<li>
+<p>A proxy <em>task</em> is a lower-level task that stands in for the original.<a data-type="indexterm" data-primary="tasks" data-secondary="proxy" id="idm140386945487488"></a> The result of a proxy task reflects on the answer to the original question, but the proxy task itself is more closely related to the data; it can be accomplished with quantitative tools, such as a visualization or a statistical analysis.</p>
+</li>
+<li>
+<p>A proxy <em>value</em> is an attribute in the data that stands in for a more abstract concept.<a data-type="indexterm" data-primary="values (proxy)" id="idm140386945481392"></a> This can be an existing attribute, or it can be derived from the data.</p>
+</li>
+</ul>
+
+<p>Operationalizing a question often results in more questions, which require further articulation of proxies. One step in this process is to find places where a question is underspecified or does not directly reference the data on hand, in order to identify where proxies are necessary.</p>
+
+<p>Collaboration with stakeholders crucially informs the process of operationalizing questions.<a data-type="indexterm" data-primary="stakeholders" data-secondary="collaborating with, in operationalizing questions" id="idm140386945478000"></a> It helps to learn what data is available and how the results will be used.<a data-type="indexterm" data-primary="interviews" data-secondary="with stakeholders, on questions and goals for data" id="idm140386945478768"></a> Interviews help to identify the questions and goals of the stakeholders with respect to the data and to further understand what data is available or can be made available. Throughout the process, an analyst translates questions and goals into a description of the problem that is amenable to a data solution. Interview techniques and prototyping are discussed in more detail in <a data-type="xref" href="ch03.html#DataCounseling">Chapter 3</a>.</p>
+
+<p>In this book we advocate an approach of systematic operationalization in order to bolster explicit acknowledgment, validation, and support of the range of possible proxy decisions for a question. This systematic approach leaves open future possibilities and provides guidance for making downstream decisions.
+The start to this process is getting to understand the question and what is available in the data—and appreciating the gaps between them.</p>
+
+<p>This chapter both describes and illustrates the operationalization process. It uses the movie director example to show how to refine a question into detailed, specific tasks. It discusses the four components that we use to describe an operationalized task.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="A Concrete Movie Question"><div class="sect2" id="idm140386945476192">
+<h2>A Concrete Movie Question</h2>
+
+<p>The example started with the high-level question “Who are the best directors?” The dataset is a list of directors and a list of movies. The first task is to operationalize <em>best director</em>.<a data-type="indexterm" data-primary="questions" data-secondary="making concrete" data-tertiary="best directors question" id="idm140386945471280"></a><a data-type="indexterm" data-primary="operationalization" data-secondary="of best director question" id="idm140386945473840"></a> As a rough definition, a good director has directed many good movies. But <em>many good movies</em> is also ill-defined, and thus a proxy for <em>good movie</em> might in turn be based on its rating on IMDB.</p>
+
+<p>These decisions replaced one bit of ambiguity with three more. How many of these <em>best</em> directors need to appear in the results? What counts as <em>good</em> IMDB ratings, and what are <em>many</em> of them?  For that matter, a quick glance at the IMDB data reveals that there are short films, TV episodes, video games, and so on—so what counts as a <em>movie</em>?</p>
+
+<p>It is possible to choose the measures arbitrarily: “More than five movies with IMDB ratings greater than 9.8,” or “average movie rating higher than 8.2,” or “no movies with a rating less than 5.” While it is not uncommon to make these sorts of decisions based on rough knowledge of the data, or even based on choosing nice, round numbers, looking at the actual data is important. The top-rated items on IMDB might turn out to have very high ratings but only one review. Great directors might direct a few stinkers, so just looking at the average rating might turn out to be a poor choice. The only way to learn what the data says is to start digging into it.</p>
+
+<p>Choosing a proxy allows the analyst to sanity-check their decisions; it can be valuable to do this iteratively at each step, checking both the quality of the data and of the proxy.</p>
+
+<p>A quick glance at the first five data items in the dataset reveals non-mainstream movies (<a data-type="xref" href="#movietable_thefirst">Table 2-1</a>). The alphabetical first movie in the dataset is called <em>#1</em>, with a total of 12 raters; the second is the similarly obscure <em>#1 Serial Killer</em>. Since the scenario targets a general audience, it should probably focus on movies that most people are likely to know. A different scenario could suggest very different proxies.</p>
+<div style="page-break-after: always;"></div>
+<table id="movietable_thefirst">
+<caption><span class="label">Table 2-1. </span>A quick glance at the first data items in the movie dataset (which is sorted alphabetically) reveals that there could be movies with positive ratings that have very few raters, implying an obscure (but decent) movie.</caption>
+<thead>
+<tr>
+<th>ID</th>
+<th>Raters</th>
+<th>Score</th>
+<th>Title</th>
+<th>Director</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>0</p></td>
+<td><p>12</p></td>
+<td><p>6.4</p></td>
+<td><p>#1 (2005)</p></td>
+<td><p>Breen, James (V)</p></td>
+</tr>
+<tr>
+<td><p>1</p></td>
+<td><p>35</p></td>
+<td><p>6.0</p></td>
+<td><p>#1 Serial Killer (2013)</p></td>
+<td><p>Yung, Stanley (I)</p></td>
+</tr>
+<tr>
+<td><p>2</p></td>
+<td><p>5</p></td>
+<td><p>5.8</p></td>
+<td><p>#137 (2011)</p></td>
+<td><p>Elliott, Frances</p></td>
+</tr>
+<tr>
+<td><p>3</p></td>
+<td><p>11</p></td>
+<td><p>7.4</p></td>
+<td><p>#140Characters: A Documentary About Twitter (2…</p></td>
+<td><p>Beasley, Bryan (I)</p></td>
+</tr>
+<tr>
+<td><p>4</p></td>
+<td><p>23</p></td>
+<td><p>6.7</p></td>
+<td><p>#30 (2013)</p></td>
+<td><p>Wilde, Timothy</p></td>
+</tr>
+<tr>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+</tr>
+</tbody>
+</table>
+
+<p>The decision to stick with mainstream movies suggests a need for a proxy for <em>popularity</em>. One choice could be the number of ratings for each movie. By plotting the distribution of the number of ratings by movies (<a data-type="xref" href="#img_distribution_ratings">Figure 2-1</a>), we see that the vast majority of movies in the dataset actually have very few ratings.</p>
+
+<figure><div id="img_distribution_ratings" class="figure">
+<img src="images/mdvi_0201.png" alt="mdvi 0201" />
+<h6><span class="label">Figure 2-1. </span>Distribution of ratings. This histogram shows the count of number of ratings per film. Almost all the films have few ratings, with a very long tail.</h6>
+</div></figure>
+
+<p>This first plot shows that the number of ratings is heavily skewed. One way to make this distribution more interpretable is to plot it on a logarithmic scale. In <a data-type="xref" href="#img_distribution_ratings_log10">Figure 2-2</a>, the data has been bucketed; a film with 1,000 ratings now appears in the bucket for <em>log</em><sub>10</sub>(1000) = 3.  Taking the log of the number of ratings smooths the distribution, more effectively showing its shape.</p>
+
+<figure><div id="img_distribution_ratings_log10" class="figure">
+<img src="images/mdvi_0202.png" alt="mdvi 0202" />
+<h6><span class="label">Figure 2-2. </span>Distribution of the logarithm (base 10) of the number of ratings. The peak is under 2: most films have under 100 ratings.</h6>
+</div></figure>
+
+<p>We can also compute some basic summarizing statistics about the number of ratings: the median movie in the dataset has just 26 ratings while the 75th percentile is at 132 ratings.<sup><a data-type="noteref" id="idm140386945428592-marker" href="ch02.html#idm140386945428592">1</a></sup> By looking up the number of ratings for a sample of blockbusters, we note that movies that anyone can name offhand have tens of thousands of ratings. These are useful observations; perhaps it would be valuable to trim to a slimmer set of movies to ensure that most are ones that a reasonable number of people have seen.</p>
+
+<p>We want to choose a number, though, that’s fair to good movies, even if they are not very popular—in this case, we pick, somewhat arbitrarily, the most-rated 25% of movies. This amounts to around 70,000 films with more than 132 ratings.</p>
+
+<p>We next pivot and look at the distribution of ratings for the slimmed-down set of movies, shown in <a data-type="xref" href="#img_distribution_score">Figure 2-3</a>. This distribution shows a distinct curve with a clear peak and noticeable drop-off: ratings above 7.5 seem different from lower ratings. (This distribution has a median score of 6.6, and a 75th percentile of 7.4.)</p>
+
+<figure><div id="img_distribution_score" class="figure">
+<img src="images/mdvi_0203.png" alt="mdvi 0203" />
+<h6><span class="label">Figure 2-3. </span>Distribution of score. This histogram shows the count of ratings, by bucket. Almost all ratings are extremely low, with a very gradual tail.</h6>
+</div></figure>
+
+<p>Stepping back from our dive into the data, we can observe that we have proceeded some distance along the operationalization. We have defined a good director and decided that it is based on their movies; we have focused on movies and chosen a set that are popular enough to be part of the analysis. But there are still unanswered questions: How will we rank directors against each other? What makes for a “best” director?</p>
+
+<p>A systematic approach to operationalization allows an analyst to see the full range of decisions and helps in pulling together the set of proxies that can inform a final answer. Ultimately, an interactive visualization tool can enable exploration of multiple proxies to allow for a set of justified, and validated, answers. For our running example, we will continue with the operationalization after describing a framework for making decisions explicit throughout the process.</p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Breaking Down a Task"><div class="sect1" id="idm140386945578640">
+<h1>Breaking Down a Task</h1>
+
+<p>Throughout the operationalization, we need to identify <em>where</em> in a question or task there is a need for a more refined proxy.<a data-type="indexterm" data-primary="proxies" data-secondary="need for a more refined proxy, identifying in a question or task" id="idm140386945415360"></a><a data-type="indexterm" data-primary="tasks" data-secondary="breaking down" id="idm140386945414512"></a><a data-type="indexterm" data-primary="questions" data-secondary="refining into tasks and breaking down the tasks" id="idm140386945419456"></a> Doing so systematically can make it easier to validate those decisions, as well as to produce a road map of the process. This allows the analyst to effectively revisit decisions once a better understanding of the problem is gained.</p>
+
+<p>An analyst can refine a task by first breaking it down into four specific components. Identifying these components and how they do or do not directly reference the data becomes a template for choosing more specific tasks. The components are:</p>
+<dl>
+<dt>Objects</dt>
+<dd>
+<p>Things or events that exist in the world:<a data-type="indexterm" data-primary="objects" id="idm140386945418256"></a> in our example, a <em>director</em> and <em>a movie</em> are both objects. In other contexts, objects might be <em>a user</em> or <em>a sale of a single item</em>. When a task is specific enough, each object will be something that can be represented in or computed from, the data. Fairly often, when the task is at its most specific, an object will correspond to a single row in a database.</p>
+</dd>
+<dt>Measures</dt>
+<dd>
+<p>The outcome variables that will be <a data-type="indexterm" data-primary="measures" id="idm140386945408016"></a>measured for the objects. <em>Quality of a director</em>, <em>happiness of a user</em>, and <em>sales of a store</em> are all measures. In a sufficiently specific task, the measure is either an existing attribute in the dataset or one that can be directly computed from the data. A measure is sometimes aggregated across many items of data. In our example, a number of movies are aggregated together to get a score for a single director.</p>
+</dd>
+<dt>Groupings (or partitions)</dt>
+<dd>
+<p>Attributes or characteristics of the data that separate the data items into groups.<a data-type="indexterm" data-primary="data" data-secondary="grouping or partitions in" id="idm140386945404656"></a><a data-type="indexterm" data-primary="groupings (or partitions)" id="idm140386945402400"></a> For example, groupings might include <em>store region (western versus eastern)</em>, <em>start date of players</em>, <em>whether users have purchased an upgrade</em>, or <em>sales by year</em>. In a specific task, partitions are attributes of the objects or can be calculated directly from those attributes. When the visualization is created, partitions will often manifest as groupings, separations across charts, or filters.</p>
+</dd>
+<dt>Actions</dt>
+<dd>
+<p>Words that articulate the specific thing being done with<a data-type="indexterm" data-primary="actions" id="idm140386945398240"></a> the data, such as <em>compare</em>, <em>identify</em>, <em>characterize</em>, etc. Actions guide the process of choosing appropriate visualizations.</p>
+</dd>
+</dl>
+
+<p>The action is useful for identifying the other components. Take this task: <em>Compare the amount of money spent in-game by players who play more hours versus those who play fewer hours</em>.  The action is <em>compare</em>. What is compared? The <em>players</em> (the object). What is it about players that we want to compare? The <em>money spent</em> (the measure). Finally, there is a specific partition on the objects. They will be broken into two groups: those that play many hours and those that play few hours.</p>
+
+<p>The following components are the heart of an iterative process:</p>
+<ol>
+<li>
+<p>Refine the question into one or more <em>tasks</em> that, individually or together, address the general question.</p>
+</li>
+<li>
+<p>For each task:</p>
+<ol>
+<li>
+<p>Identify the components of the task.</p>
+</li>
+<li>
+<p>Look for ambiguous components—namely, components that are not directly addressable by the dataset.</p>
+</li>
+<li>
+<p>For each ambiguous component, define a proxy by creating a new question that addresses the component, and return to step 1 with those questions.</p>
+</li>
+<li>
+<p>If there are no ambiguous components then the task is deemed actionable, and thus can be addressed with a visualization or other computational technique.</p>
+</li>
+
+</ol>
+</li>
+
+</ol>
+
+<p>Next, we’ll explicate some of the questions from the movie example to illustrate how the components work in practice, beginning with <a data-type="xref" href="#example_movie_1">Example 2-1</a>.</p>
+<div style="page-break-after: always;"></div>
+<aside data-type="sidebar" epub:type="sidebar"><div class="sidebar" id="idm140386945385872">
+<h5></h5><div id="example_movie_1" data-type="example">
+<h5><span class="label">Example 2-1. </span>Breaking down the task to find good directors</h5>
+
+<p><strong>Task</strong>: Identify the top directors who have directed many good, popular movies</p>
+
+<p><strong>Action</strong>: Identify</p>
+
+<p><strong>Object</strong>: Director</p>
+
+<p><strong>Measure</strong>: Number of good, popular movies</p>
+
+<p><strong>Grouping</strong>: Filter out non-movies</p></div>
+</div></aside>
+
+<p>Identifying top directors implies that there’s a meaningful sort on the directors so that the top can be found (<a data-type="xref" href="#example_movie_1b">Example 2-2</a>). Thus, we can further refine the action to specify an ordering. Also, our first look at the data showed that many movies are unpopular, which implied a grouping to filter out unpopular movies.</p>
+<aside data-type="sidebar" epub:type="sidebar"><div class="sidebar" id="idm140386945377088">
+<h5></h5><div id="example_movie_1b" data-type="example">
+<h5><span class="label">Example 2-2. </span>Refined task for good directors</h5>
+
+<p><strong>Task</strong>: Rank order of directors by those who have directed many good, popular  movies</p>
+
+<p><strong>Action</strong>: Rank order</p>
+
+<p><strong>Object</strong>: Director</p>
+
+<p><strong>Measure</strong>: Number of good movies</p>
+
+<p><strong>Grouping</strong>: Filter out non-movies and unpopular movies</p></div>
+</div></aside>
+
+<p>Filtering out unpopular movies is a subtask (<a data-type="xref" href="#example_movie_subtask">Example 2-3</a>), which we addressed with a histogram of the number of ratings for movies. The visualization of the distribution allowed us to determine a good cut point for popular versus unpopular—namely, popular movies were those in the top 25% of movies with the highest number of ratings.</p>
+<div style="page-break-after: always;"></div>
+<aside data-type="sidebar" epub:type="sidebar"><div class="sidebar" id="idm140386945369904">
+<h5></h5><div id="example_movie_subtask" data-type="example">
+<h5><span class="label">Example 2-3. </span>Subtask for filtering unpopular movies</h5>
+
+<p><strong>Task</strong>: Filter out movies with significantly fewer ratings</p>
+
+<p><strong>Action</strong>: Filter</p>
+
+<p><strong>Object</strong>: Movie</p>
+
+<p><strong>Measure</strong>: Number of ratings</p>
+
+<p><strong>Grouping</strong>: Separate into most popular and least popular movies</p></div>
+</div></aside>
+
+<p>This subtask can be brought back into <a data-type="xref" href="#example_movie_1b">Example 2-2</a> as a proxy for unpopular movies.</p>
+
+<p>However, we still have some work to do on <a data-type="xref" href="#example_movie_1b">Example 2-2</a>: the measure <em>number of good movies</em> is ill-defined with respect to the data. We need to refine this component by developing a proxy for a <em>good</em> movie. Once we do that, we can then examine what it means to have <em>directed many</em> of them.</p>
+
+<p>These proxies require further elaboration. How <em>many</em> high-scoring movies are required from directors? Do low-scoring movies count against them? This process of identifying reasonable proxies is often iterative. For example, in exploring and validating a proxy with the data, it might become obvious that the effects of filtering by the number of ratings was a mistaken approach.</p>
+
+<p>At this point, we can recognize that we need a proxy measure for <em>good</em> (<a data-type="xref" href="#example_movie_2">Example 2-4</a>). There are a variety of proxies that we can try here, with various visualizations. The process continues onward.</p>
+<aside data-type="sidebar" epub:type="sidebar"><div class="sidebar" id="idm140386945353344">
+<h5></h5><div id="example_movie_2" data-type="example">
+<h5><span class="label">Example 2-4. </span>Subtask for good movies</h5>
+
+<p><strong>Task</strong>: Quantify “a good movie”</p>
+
+<p><strong>Action</strong>: Quantify</p>
+
+<p><strong>Object</strong>: Movie</p>
+
+<p><strong>Measure</strong>: Goodness</p>
+
+<p><strong>Grouping</strong>: None</p></div>
+</div></aside>
+
+<p>Breaking down a task into components helps in guiding refinement of a task into one that can be addressed with the data. The most direct way to do so is to consider the question “Are the object, measure, and grouping each directly described in the data?” For each of these three components, is it clear which aspects of the data are important or how to derive what we need from the data? If not, repeat the process of formulating a subquestion in order to derive a more specific answer.</p>
+
+<p>Let’s take a look at a very different example—this time, from a gameplay metrics scenario (<a data-type="xref" href="#example_game">Example 2-5</a>).</p>
+<aside data-type="sidebar" epub:type="sidebar"><div class="sidebar" id="idm140386945348720">
+<h5></h5><div id="example_game" data-type="example">
+<h5><span class="label">Example 2-5. </span>Exemplar task for analyzing a game</h5>
+
+<p><strong>Task</strong>: Compare the amount of money spent in-game by players who play more hours versus those who play fewer hours.</p>
+
+<p><strong>Action</strong>: Compare</p>
+
+<p><strong>Object</strong>: Players</p>
+
+<p><strong>Measure</strong>: Money spent</p>
+
+<p><strong>Grouping</strong>: Players who play many hours; players who play few hours</p></div>
+</div></aside>
+
+<p>In <a data-type="xref" href="#example_game">Example 2-5</a>, the partition divides between <em>many</em> and <em>few</em> hours. This component needs to be refined further, which leads to a new question: “In the game, how many is ‘many’ hours for a player?” The analyst might take a series of steps. They might look at the distribution of hours played, or they might choose to filter out players who have played zero hour or those who haven’t made it past the tutorial, or they might look at other metrics that are important to the game. These steps would help the analyst figure out good proxies for <em>many</em> and <em>few</em> hours.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="When Tasks Lead to New Questions"><div class="sect2" id="idm140386945341472">
+<h2>When Tasks Lead to New Questions</h2>
+
+<p>There are four broad categories of new lines of inquiry that can emerge from refining a question. <a data-type="indexterm" data-primary="tasks" data-secondary="leading to new questions" id="idm140386945334560"></a><a data-type="indexterm" data-primary="operationalization" data-secondary="tasks leading to new questions" id="idm140386945334048"></a><a data-type="indexterm" data-primary="questions" data-secondary="refining and revealing new lines of inquiry" id="idm140386945333472"></a> First, as in the movie example, the refinement process often reveals that a new analysis is needed to answer these questions.</p>
+
+<p>Second, operationalizing can also lead in new directions. In the process of exploring who the <em>best</em> directors are, the analyst might notice that some directors stick to a single genre; they might decide that this analysis might be interesting divided across multiple genres. They might also notice that both IMDB and Rotten Tomatoes have scores on movies, and want to see how these results vary based on Rotten Tomatoes scores instead of IMDB.</p>
+
+<p>Third, the data itself can lead to new questions too. <a data-type="indexterm" data-primary="data analysis" data-secondary="exploratory data analysis (EDA)" id="idm140386945330896"></a><a data-type="indexterm" data-primary="exploratory data analysis (EDA)" id="idm140386945330048"></a>In exploratory data analysis (EDA), for example, the data analyst discovers new questions based on the data. The process of looking at the data to address some of these questions generates incidental visualizations—odd patterns, outliers, or surprising correlations that are worth looking into further.</p>
+
+<p>Finally, doing some analysis often leads to doing a round of data cleaning. While data cleaning is largely out of the scope of this book, odd outliers and surprising trends are, as often as not, the result of dirty data.</p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Returning to the Example: Exploring Different Definitions"><div class="sect1" id="idm140386945331632">
+<h1>Returning to the Example: Exploring Different Definitions</h1>
+
+<p>There are several different <a data-type="indexterm" data-primary="operationalization" data-secondary="example, identifying good movie directors" data-tertiary="exploring different definitions" id="idm140386945326064"></a>possible definitions of <em>best director</em>.</p>
+
+<p>Here is one: the best director has the most movies with more than 134 ratings. <a data-type="xref" href="#top5_table">Table 2-2</a> shows the top scorers. The most prolific directors in our dataset are Chuck Jones and Fritz Feleng (who directed classic Looney Tunes animations), William Hanna (who directed <em>Tom and Jerry</em> and other classic Hanna-Barbera cartoons), and George Méliès (an early inventor of special effects and shorts).</p>
+<table id="top5_table">
+<caption><span class="label">Table 2-2. </span>Top five directors by number of films over threshold</caption>
+<thead>
+<tr>
+<th>Director</th>
+<th>Avg. raters</th>
+<th>Avg. score</th>
+<th>Count</th>
+<th>Total raters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Jones, Chuck (I)</p></td>
+<td><p>719</p></td>
+<td><p>7.4</p></td>
+<td><p>148</p></td>
+<td><p>106,397</p></td>
+</tr>
+<tr>
+<td><p>Freleng, Fritz</p></td>
+<td><p>402</p></td>
+<td><p>7.2</p></td>
+<td><p>141</p></td>
+<td><p>56,730</p></td>
+</tr>
+<tr>
+<td><p>Hanna, William (I)</p></td>
+<td><p>591</p></td>
+<td><p>7.5</p></td>
+<td><p>119</p></td>
+<td><p>70,315</p></td>
+</tr>
+<tr>
+<td><p>Méliès, Georges</p></td>
+<td><p>717</p></td>
+<td><p>6.1</p></td>
+<td><p>114</p></td>
+<td><p>81,769</p></td>
+</tr>
+<tr>
+<td><p>White, Jules (I)</p></td>
+<td><p>235</p></td>
+<td><p>7.1</p></td>
+<td><p>102</p></td>
+<td><p>23,969</p></td>
+</tr>
+</tbody>
+</table>
+
+<p>Georges Méliès has 526 films on his IMDB page; only 114, however, made it over the threshold of raters. The huge number of films is explained by the fact that the films are shorts—more familiar on television now, but once also shown in theaters. This should be an opportunity to do more data cleaning to join in another table that will tell us whether a film is a short or not, and filter those out. IMDB has a film duration data table; in a typical analysis process, the next step would be to merge in this table, adding a new proxy for what makes for a <em>short</em> film.</p>
+
+<p>We might explore other definitions of <em>best</em> directors. For example, the best directors might make the movies that people want to rate the most. <a data-type="xref" href="#top5_table_2">Table 2-3</a> is a list of the directors whose movies have, in total, the most ratings.</p>
+<table id="top5_table_2">
+<caption><span class="label">Table 2-3. </span>Top five directors by total number of ratings across all movies</caption>
+<thead>
+<tr>
+<th>Director</th>
+<th>Avg. raters</th>
+<th>Avg. score</th>
+<th>Count</th>
+<th>Total raters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Spielberg, Steven</p></td>
+<td><p>245,717</p></td>
+<td><p>7.2</p></td>
+<td><p>36</p></td>
+<td><p>8,845,795</p></td>
+</tr>
+<tr>
+<td><p>Nolan, Christopher (I)</p></td>
+<td><p>778,737</p></td>
+<td><p>8.2</p></td>
+<td><p>11</p></td>
+<td><p>8,566,104</p></td>
+</tr>
+<tr>
+<td><p>Tarantino, Quentin</p></td>
+<td><p>526,689</p></td>
+<td><p>7.8</p></td>
+<td><p>13</p></td>
+<td><p>6,846,955</p></td>
+</tr>
+<tr>
+<td><p>Jackson, Peter (I)</p></td>
+<td><p>371,219</p></td>
+<td><p>7.6</p></td>
+<td><p>16</p></td>
+<td><p>5,939,505</p></td>
+</tr>
+<tr>
+<td><p>Scorsese, Martin (I)</p></td>
+<td><p>144,823</p></td>
+<td><p>7.5</p></td>
+<td><p>41</p></td>
+<td><p>5,937,725</p></td>
+</tr>
+</tbody>
+</table>
+
+<p>This list makes sense. These are very famous names who have directed very familiar movies.</p>
+
+<p>Different proxies yield different results. Ordering by the average score for all movies by a single director might be one way to find the very best directors. As seen in <a data-type="xref" href="#top5_table_3">Table 2-4</a>, the first on this list is a director who has only one movie over the threshold: a Mongolian movie from 2016 with 624 raters and an average score of 9.7. This measure of popularity returns a very different set of results than the previous measure: ten thousand times more people rated Quentin Tarantino’s movies than Uranchimeg Urtnasan’s work.</p>
+<div style="page-break-after: always;"></div>
+<table id="top5_table_3">
+<caption><span class="label">Table 2-4. </span>Top five directors by average score</caption>
+<thead>
+<tr>
+<th>Director</th>
+<th>Avg. raters</th>
+<th>Avg. score</th>
+<th>Count</th>
+<th>Total raters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Urtnasan, Uranchimeg</p></td>
+<td><p>624</p></td>
+<td><p>9.7</p></td>
+<td><p>1</p></td>
+<td><p>624</p></td>
+</tr>
+<tr>
+<td><p>Miller, George (XXXVII)</p></td>
+<td><p>394</p></td>
+<td><p>9.6</p></td>
+<td><p>2</p></td>
+<td><p>787</p></td>
+</tr>
+<tr>
+<td><p>Chowdhury, Amitabh Reza</p></td>
+<td><p>14,628</p></td>
+<td><p>96</p></td>
+<td><p>1</p></td>
+<td><p>14,628</p></td>
+</tr>
+<tr>
+<td><p>Biebert, Aaron</p></td>
+<td><p>12,040</p></td>
+<td><p>9.6</p></td>
+<td><p>1</p></td>
+<td><p>1,204</p></td>
+</tr>
+<tr>
+<td><p>Arsyn, Ken</p></td>
+<td><p>619</p></td>
+<td><p>9.5</p></td>
+<td><p>6</p></td>
+<td><p>3,712</p></td>
+</tr>
+</tbody>
+</table>
+
+<p>But can the quality of a director be measured based on just one or two movies?  Each step of data exploration leads to another step of refining the question. Is it more important to have many raters, a high average score, or a high minimum score?</p>
+
+<p>The choice of metrics leads to very different outcomes. A slight tweak determines whether you find directors of animated cartoons, blockbuster directors, or a very diverse set of international directors.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="How Specific Does the Process Get?"><div class="sect1" id="idm140386945422352">
+<h1>How Specific Does the Process Get?</h1>
+
+<p>This process of refinement leads to a scary scenario.<a data-type="indexterm" data-primary="operationalization" data-secondary="deciding how specific the process becomes" id="idm140386945248896"></a> In Disney’s <em>Fantasia</em>, in the Sorcerer’s Apprentice sequence, Mickey Mouse attempts to stop an enchanted broom by chopping it in half and instead produces two half-size enchanted brooms. Will our analysis subtasks forever multiply?</p>
+
+<p>The operationalization process is an iterative one and the end point is not precisely defined. The answer to the question of how far to go is, simply, far enough.  The process is done when the task is directly actionable, using the data at hand. The analyst knows how to describe the objects, measures, and groupings in terms of the data—where to find it, how to compute, and how to aggregate it. At this point, they know what the question will look like and they know what they can do to get the answer.</p>
+
+<p>An <em>actionable</em> task means that it is possible to act on its result.<a data-type="indexterm" data-primary="actionable tasks" id="idm140386945237440"></a><a data-type="indexterm" data-primary="tasks" data-secondary="actionable" id="idm140386945246496"></a> That action might be to present a useful result to a decision maker or to proceed to a next step in a different result. An answer is actionable when it no longer needs further work to make sense of it.</p>
+
+<p>Low-level objects are ready to be interpreted from the data. Sometimes they can be read directly off the data table, but more often it is more indirect; the analyst may need to carry out transformations on the data, whether mathematical transformations or database joins. For instance, in the movie example, the object is the director; the proxy for the director is the result of aggregating multiple movies together. Partitions and measures at the lowest level will resolve to concrete manipulations of the objects.</p>
+
+<p>The process ends when all the tools needed to answer a question are in place—whether as a number, a visualization, or even as an interaction across multiple visualizations representing multiple proxies. The analyst might decide that the right cutoff for <em>many hours</em> of gameplay is <em>six hours</em>—a number—or <em>the hours played by the top 10% of players</em>—a formula—or <em>above the logical breakpoint</em>, which might be represented by a distribution. These results get propagated back into any other tasks that depend on them.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Making Use of Results"><div class="sect1" id="idm140386945239520">
+<h1>Making Use of Results</h1>
+
+<p>This process of propagating results back into higher-level questions is flexibile.<a data-type="indexterm" data-primary="results, making use of" id="idm140386945240976"></a><a data-type="indexterm" data-primary="operationalization" data-secondary="making use of results" id="idm140386945240592"></a> Sometimes the low-level question does not have an exact answer but instead resolves in its own visualization or interaction.<a data-type="indexterm" data-primary="visualizations" data-secondary="making use of operationalization results" id="idm140386945241488"></a> That visualization might help an analyst in making a decision, but it might also imply parameters on the data. For example, the journalist might realize that there are several possible cutoffs for defining what it means to be a good movie. Rather than simply picking a specific threshold, an analyst might instead propagate a mechanism for dynamically determining cutoffs into higher-level tasks. Seeing a variable propagated like this can be a cue that an interactive visualization—rather than a static image—might be helpful.</p>
+
+<p>Visualization<a data-type="indexterm" data-primary="visualizations" data-secondary="in support of operationalization process" id="idm140386945234224"></a> is also important for supporting the operationalization process, even if the end result is not an interactive visualization.
+In the movie example, visualization helped us to understand the nature and distribution of the data. Visualization can be more prominent with more complex analysis tasks. If the analyst wanted to compare ratings against popularity, it would be difficult to display that on a list; if they wanted to explore hypotheses about how the popularity of directors changes over time, more visual representations would help them explore the data.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Conclusion: A Well-Operationalized Task"><div class="sect1" id="idm140386945235648">
+<h1>Conclusion: A Well-Operationalized Task</h1>
+
+<p>A well-operationalized task, relative to <a data-type="indexterm" data-primary="tasks" data-secondary="well-operationalized, characteristics of" id="idm140386945224608"></a><a data-type="indexterm" data-primary="operationalization" data-secondary="well-operationalized tasks" id="idm140386945223760"></a>the underlying data, fulfills the following criteria:</p>
+
+<ul>
+<li>
+<p>Can be computed based on the data</p>
+</li>
+<li>
+<p>Makes specific reference to the attributes of the data</p>
+</li>
+<li>
+<p>Has a traceable path from the high-level abstract questions to a set of concrete, actionable tasks</p>
+</li>
+</ul>
+
+<p>A well-operationalized task is a first step toward creating a visualization. <a data-type="xref" href="ch04.html#ComponentsOfVisualization">Chapter 4</a> begins to describe the ways in which the objects, measures, and partitions can be shaped into aspects of a visualization. Chapters <a data-type="xref" data-xrefstyle="select:labelnumber" href="ch05.html#singleviews">5</a> and <a data-type="xref" data-xrefstyle="select:labelnumber" href="ch06.html#multiview">6</a> construct visualizations based on them.</p>
+
+<p>Written out in detail, this process can seem tedious, but in practice, it is abbreviated and simplified. There are two important uses for this systematization. First, the process of explicitly looking at components can help untangle knotty problems, decomposing places where the analyst has made assumptions about the data. Explaining precisely <em>why</em> the number of IMDB ratings is a proxy for popularity forces the analyst to explore whether it is a good choice—and, perhaps, to revise that choice later.</p>
+
+<p>The process <a data-type="indexterm" data-primary="interviews" data-secondary="guided by operationalization process" id="idm140386945216864"></a><a data-type="indexterm" data-primary="questions" data-secondary="guided by operationalization process" id="idm140386945216016"></a>also helps guide questions and interviews. <a data-type="xref" href="ch03.html#DataCounseling">Chapter 3</a> explains how to carry out operationalization with domain experts. Recognizing the need to make decisions about proxies helps guide these conversations.<a data-type="indexterm" data-primary="proxies" data-secondary="need to make decisions about" id="idm140386945215168"></a><a data-type="indexterm" data-primary="datasets" data-secondary="subtleties of, avoiding getting lost in" id="idm140386945214288"></a> Every dataset has subtleties; it can be far too easy to slip down rabbit holes of complications. Being systematic about the operationalization can help focus our conversations with experts, only introducing complications when needed.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Further Reading"><div class="sect1" id="idm140386945218304">
+<h1>Further Reading</h1>
+
+<p>The process outlined here is similar—and in many ways parallel—to the <em>Goal, Question, Metric</em> (GQM) process found in the software engineering space. GQM refines from a general goal to a specific metric, usually oriented around process improvement so that the consumer can have a single number that helps them know whether they are succeeding in improving that process.</p>
+
+<p>Our process is more exploratory and often comes earlier in the cycle. A GQM analysis might choose a goal like “improve user retention.” In contrast, exploratory operationalization might start with a question like “Do users come back to our site?” with the awareness that the problem is multifaceted and complex, and might require a variety of different metrics to describe. For more on GQM, see:</p>
+
+<ul class="references">
+<li>
+<p>Basili, Victor, Gianluigi Caldiera, and Dieter Rombach. “The Goal Question Metric Approach.” Encyclopedia of Software Engineering. New York: Wiley, 1994.</p>
+</li>
+</ul>
+
+<p>The data visualization field has spent a great deal of effort trying to understand the tasks that can be accomplished in a visualization.<a data-type="indexterm" data-primary="tasks" data-secondary="in data visualization, resources for learning" id="idm140386945206720"></a> Amar and Stasko, for example, explore a low-level analysis of tasks carried out on a specific visualization. At the other end of the spectrum, Brehmer and Munzner explore high-level tasks for visualization, starting with comparing presentation and exploration:</p>
+
+<ul>
+<li>
+<p>Amar, Robert and John Stasko. “A Knowledge Task-Based Framework for the Design and Evaluation of Information Visualizations.” Proceedings of the IEEE Symposium on Information Visualization (2004): 143–150.</p>
+</li>
+<li>
+<p>Brehmer, Mathew and Tamara Munzner. “A Multi-Level Typology of Abstract Visualization Tasks.” <em>IEEE Transactions on Visualization and Computer Graphics</em> 19 (2013): 2376–2385.<a data-type="indexterm" data-primary="operationalization" data-startref="ix_ops" id="idm140386945205136"></a></p>
+</li>
+</ul>
+</div></section>
+
+
+
+
+
+
+
+<div data-type="footnotes"><p data-type="footnote" id="idm140386945428592"><sup><a href="ch02.html#idm140386945428592-marker">1</a></sup> Median and percentile are ways of characterizing a distribution of numbers. If one were to sort the numbers, the 75th percentile would be 75% of the way down in the list. The median would be at the halfway point.</p></div></div></section></div>
+</body>
+</html>

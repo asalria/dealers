@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>3. Data Counseling, Exploration, and Prototyping</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><section data-type="chapter" epub:type="chapter" data-pdf-bookmark="Chapter 3. Data Counseling, Exploration, and Prototyping"><div class="chapter" id="DataCounseling">
+<h1><span class="label">Chapter 3. </span>Data Counseling, Exploration, <span class="keep-together">and Prototyping</span></h1>
+
+
+<p>The previous chapter outlined a way to analyze a real-world question and transform it into an actionable, operationalized task.<a data-type="indexterm" data-primary="data counseling" id="idm140386945200736"></a> This analysis involves many steps that require decisions along the way: identifying specific tasks that address the broad question; decomposing each task into specific objects, measures, and groupings; and finally building visualizations that validate and support these tasks. Carrying out this process effectively requires sophisticated domain expertise, knowledge of the data and the problem space, and a sense of what would be a good answer to the question. This chapter discusses a variety of techniques that support gaining this understanding through working with stakeholders and iterating on visualization prototypes.<a data-type="indexterm" data-primary="prototypes" data-seealso="rapid prototyping" id="idm140386945198720"></a></p>
+
+<p>We call this collaborative process <em>data counseling</em>.  We chose this name because working with stakeholders is a back-and-forth process of conducting interviews; of diving deeply into a user’s intents around data; and of understanding the stories of <a data-type="indexterm" data-primary="stakeholders" data-secondary="data counseling with" id="idm140386945194544"></a>where the data comes from, what problems are associated with it, and what it can mean.<sup><a data-type="noteref" id="idm140386945196224-marker" href="ch03.html#idm140386945196224">1</a></sup> Data counseling is interwoven with exploring data, developing visualization prototypes, and collecting feedback on these preliminary results. This chapter describes techniques for these steps as well.</p>
+
+<p>A major visualization project can require multiple interviews and rounds of prototypes in an intensively collaborative process. Recognizing the ecosystem of stakeholders involved in a project can help uncover needs and increase the impact of the data analysis results. A smaller project might entail just one or two informal interviews and putting the data into a graphing program like Tableau.</p>
+
+<p>Sometimes an analyst needs to make sense of data without a team around them. The strategies in this chapter still apply to prototyping and refining visualization solutions in such conditions. These techniques are applicable at all scales.</p>
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Technique 1: Data Counseling"><div class="sect1" id="idm140386945193936">
+<h1>Technique 1: Data Counseling</h1>
+
+<p>Data counseling is a technique that brings domain expertise into the operationalization process to help inform decisions <a data-type="indexterm" data-primary="data counseling" data-secondary="defined" id="idm140386945194864"></a><a data-type="indexterm" data-primary="domain expertise, bringing into the operationalization process" id="idm140386945192672"></a>about good proxies as well as to uncover insights using the resulting visualizations. This expertise is uncovered through interviews with a variety of stakeholders in a project. The goal of these interviews is to gain an understanding of the questions and data, as well as to get feedback on proxies, explorations, and visualization designs.<a data-type="indexterm" data-primary="feedback" data-secondary="getting on proxies, explorations, and visualization designs" id="idm140386945190832"></a></p>
+
+<p>Arguably, the hardest part of data counseling is figuring out <em>who</em> the stakeholders are and <em>what</em> questions to ask them. The rest of this section describes some of the types of stakeholders that can be encountered during this process and provides guidance for conducting interviews.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Identifying Stakeholders"><div class="sect2" id="idm140386945187920">
+<h2>Identifying Stakeholders</h2>
+
+<p>When it comes to tackling a problem, who is invested in the results? Who will use the results, and who will they present those results to?<a data-type="indexterm" data-primary="stakeholders" data-secondary="identifying" id="idm140386945182464"></a><a data-type="indexterm" data-primary="data counseling" data-secondary="identifying stakeholders" id="idm140386945184944"></a> If the visualization produces valuable insights who will act on those insights, and what will they do with them? There is likely a whole ecosystem of people that have been, are, or would like to be involved with the data and the problem—the people who produce and store the data, the people who want to consume it, and those who will make decisions based on it.</p>
+
+<p>All the people who are invested in the problem in some way, shape, or form are the <em>stakeholders</em>. Identifying these stakeholders is crucial for data counseling. Different stakeholders can give different perspectives on the data and the problem, and potentially provide unanticipated paths to insight. The process of interviewing and examining the data itself may uncover new stakeholders who can provide fresh perspectives.</p>
+
+<p>There are a number of recurring types of stakeholders. This list is by no means complete, but it can work as guidance for identifying some of the important people in the ecosystem of a problem.<a data-type="indexterm" data-primary="stakeholders" data-secondary="identifying" data-tertiary="recurring types of stakeholders" id="idm140386945178784"></a> A single person could embody one, some, or all of these roles:</p>
+<dl>
+<dt>Analyst</dt>
+<dd>
+<p>A person who works directly with the data, searching and exploring to make discoveries.<a data-type="indexterm" data-primary="analysts" id="idm140386945179488"></a> These stakeholders are the people most likely to use  visualizations designed for the problem.</p>
+</dd>
+<dt>Data producer</dt>
+<dd>
+<p>A person who collects, creates, and curates the data.<a data-type="indexterm" data-primary="data producers" id="idm140386945173376"></a> Data producers can often shed light on the nuances and quirks of how the data was attained and can be invaluable during the data cleaning process.</p>
+</dd>
+<dt>Gatekeeper</dt>
+<dd>
+<p>A person with the power to approve or block the project, including authorizing people to spend time talking about the data and problem.<a data-type="indexterm" data-primary="gatekeepers" id="idm140386945170560"></a> The gatekeeper’s perspective can be useful for understanding the high-level goals and potential impact of the project. In some settings, a gatekeeper may require a proposal to carry out an analysis.</p>
+</dd>
+<dt>Decision maker</dt>
+<dd>
+<p>A person who wants to use the insights gleaned from the data to execute on a decision. <a data-type="indexterm" data-primary="decision makers" id="idm140386945168432"></a>Decision makers are often one step removed from analysts, and act as the analysts’ customers. They often have a different interpretation of goals and questions than those who are closer to the data.</p>
+</dd>
+<dt>Connector</dt>
+<dd>
+<p>A person who may not be directly involved with the data or the question but can identify other people to talk with.<a data-type="indexterm" data-primary="connectors" id="idm140386945167408"></a> Connectors can help fit together diverse perspectives on a problem and figure out what analysis needs to happen. In our experience, good connectors are worth their weight in gold.</p>
+</dd>
+</dl>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Conducting Interviews"><div class="sect2" id="idm140386945187504">
+<h2>Conducting Interviews</h2>
+
+<p>The operationalization process proceeds through information gleaned from interviews; later rounds of interviews provide feedback on intermediate results and final designs.<a data-type="indexterm" data-primary="interviews" data-secondary="conducting in data counseling" id="idm140386945168752"></a><a data-type="indexterm" data-primary="data counseling" data-secondary="conducting interviews" id="idm140386945161616"></a> The role of the interviewer is to ask questions that will guide the stakeholders toward elucidating the information necessary for working through an operationalization and designing visualizations.</p>
+
+<p>Interviewing can be very challenging, but it can also one of the best parts of the work—how many jobs allow you, even <em>require</em> you, to talk to experts about the deepest, most interesting parts of their problems? Interviewing is not easy, though, and requires practice and experience. The necessary skills include how to keep a conversation moving along and on track, how to elicit meaningful responses, how to revise questions based on responses, and how to interpret both subtle cues and detailed responses. While this section provides several strategies to help with these tasks, gaining competency in these skills is a matter of practice.</p>
+
+<p>In conducting an interview, there is a sweet spot with regard to the amount of structure in the conversation.<a data-type="indexterm" data-primary="unstructured interviews" id="idm140386945163232"></a> Unstructured interviews, on the one hand, resemble casual conversations—the interviewer goes in with little expectation of where the conversation will go and does little to guide it in any one direction. This style of interview can uncover unknown needs and goals, but it can take a significant amount of time to get to anything useful. <a data-type="indexterm" data-primary="structured interviews" id="idm140386945162848"></a>On the other hand, formally structured interviews are like giving a stakeholder a verbal survey, where the interview is completely scripted and strictly guided. While efficient, this type of interview leaves little room for discovering new insights.</p>
+
+<p>The most effective data counseling sessions aim for a spot in the middle: <em>semistructured interviews</em>.<a data-type="indexterm" data-primary="interviews" data-secondary="semistructured" id="idm140386945154048"></a><a data-type="indexterm" data-primary="semistructured interviews" id="idm140386945153312"></a> The interviewer does some preparation in developing initial questions. The rest of the interview is then open to exploring ideas that come up during the conversation. Be prepared, but also be open.</p>
+
+<p>The initial set of questions for an interview should be open-ended and address the problem, data, and context in order to help understand where the interviewee sits: their perspective on the problem, how they see the scope of the problem, and how they expect to interact with it.<a data-type="indexterm" data-primary="interviews" data-secondary="sample questions" id="idm140386945152704"></a><a data-type="indexterm" data-primary="questions" data-secondary="interview questions for data counseling" id="idm140386945151792"></a></p>
+
+<p>Some useful interview questions might include:</p>
+
+<ul>
+<li>
+<p>What are the goals of the project? How do those goals fit with the organizational needs?</p>
+</li>
+<li>
+<p>Who would act on the insights and results of this analysis? What decisions are they looking to make?</p>
+</li>
+<li>
+<p>What questions can be answered with this data?</p>
+</li>
+<li>
+<p>What do you already know from the data, and what else do you expect to find?</p>
+</li>
+<li>
+<p>What do you want to do with the data that is not currently possible? If you could do that, what else would you want to do next?</p>
+</li>
+</ul>
+
+<p>These general questions are meant to get a conversation going and to help in establishing the start of the analysis process. They lead to more specific questions that help clarify understanding of the problem and the data, confront assumptions on the part of the stakeholder and the analyst, and shape the description of the problem into something that a visualization can solve.</p>
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="Interviews often start in the wrong place"><div class="sect3" id="idm140386945145984">
+<h3>Interviews often start in the wrong place</h3>
+
+<p>It is easy to begin this analysis in the wrong place.<a data-type="indexterm" data-primary="interviews" data-secondary="starting in the wrong place" id="idm140386945143536"></a><a data-type="indexterm" data-primary="data counseling" data-secondary="conducting interviews" data-tertiary="starting interviews in the wrong place" id="idm140386945142688"></a> When people come to us with visualization questions, they often start with very specific questions: “How do I tie together two scatterplots with a gradient color pattern?” These types of questions tend to be the result of people struggling to force their data into the visualizations that they know best and finding that those either don’t fully support the extent of the data they have or don’t really support an insightful analysis.</p>
+
+<p>The conversation searches out the more abstract question and often finds that the question the person really wants to solve has a very different visualization solution.</p>
+
+<p>Librarians know this challenge well. When someone asks for, say, an issue of a news magazine, librarians are trained to gently probe for the underlying information need. What does the reader really want to know? Sometimes the question might be better solved with an entirely different source: if the reader who wants the latest <em>Time</em> magazine is hoping it will contain a map of Somalia, an atlas would fulfill their need better.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="What would it look like in the data?"><div class="sect3" id="idm140386945137888">
+<h3>What would it look like in the data?</h3>
+
+<p>The process of data counseling often entails chasing down particular meanings of unclear words and identifying good proxies.<a data-type="indexterm" data-primary="data counseling" data-secondary="conducting interviews" data-tertiary="asking what the concept looks like in data" id="idm140386945137440"></a><a data-type="indexterm" data-primary="interviews" data-secondary="looking at the data" id="idm140386945141136"></a> The question  “What would this look like in the data?” can lead to illuminating results. For example, if a journalist were trying to find “good movies” in the database, in the interview we might ask questions like “What would the data show for <em>good</em> movies?” and “What would <em>bad</em> movies look like?” This can help interviewees nail down specifics.</p>
+
+<p>Fairly often, the interviewee will not be sure what a “good movie” would look like. The process of articulating a list of possibilities, as outlined in <a data-type="xref" href="ch02.html#operationalization">Chapter 2</a>, can be highly informative in itself.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="Making questions specific"><div class="sect3" id="idm140386945136544">
+<h3>Making questions specific</h3>
+
+<p>Low-level questions arise when trying to make general tasks more concrete and actionable, such as defining what a specific dimension means or how the objects that appear in a task actually look in the data.<a data-type="indexterm" data-primary="questions" data-secondary="making specific, in data counseling interviews" id="idm140386945135584"></a><a data-type="indexterm" data-primary="data counseling" data-secondary="conducting interviews" data-tertiary="making questions specific" id="idm140386945129600"></a> Finding these poorly defined terms in the interview is a cue to ask more questions to clarify those concepts more concretely. It can be useful to ask stakeholders what these terms mean within their workflow or to show an aspect of the data by pulling it up in a spreadsheet.</p>
+
+<p>Certain action terms are also useful cues during these interviews: the verbs a stakeholder uses when discussing data can help inform the visualization.<a data-type="indexterm" data-primary="actions" data-secondary="verbs stakeholders use when discussing data" id="idm140386945128128"></a> For example, interviewees might talk about <em>comparing</em> data items in describing a task.  This invites a follow-up  question: “Would you like to compare one item to another, or group many items together?” Similarly, words such as <em>select</em>, <em>identify</em>, or <em>group</em> can translate directly into tasks that can be supported with a visualization.<a data-type="indexterm" data-primary="tasks" data-secondary="deriving from verbs used in discussing data" id="idm140386945122672"></a></p>
+
+<p>Other words, like <em>shape</em>, <em>structure</em>, and <em>size</em>, can help in deciding what kinds of visual encodings to use<a data-type="indexterm" data-primary="visual encodings, deriving from interviews discussing data" id="idm140386945120080"></a> or what characteristics of the data the stakeholder is most interested in seeing. The visualization types described in Chapters <a data-type="xref" data-xrefstyle="select:labelnumber" href="ch05.html#singleviews">5</a> and <a data-type="xref" data-xrefstyle="select:labelnumber" href="ch06.html#multiview">6</a> will help you recognize and know what to do with visualization keywords like these during interviews.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="Breaking out of dead ends"><div class="sect3" id="idm140386945117488">
+<h3>Breaking out of dead ends</h3>
+
+<p>Interviews can reach a point that feels like a dead end: the stakeholder has answered the planned question but the problem still seems inscrutable.<a data-type="indexterm" data-primary="interviews" data-secondary="breaking out of dead ends" id="idm140386945116320"></a><a data-type="indexterm" data-primary="data counseling" data-secondary="conducting interviews" data-tertiary="breaking out of dead ends" id="idm140386945115184"></a><a data-type="indexterm" data-primary="dead ends, breaking out of when conducting interviews" id="idm140386945114000"></a> There are a couple of strategies that can be used here:</p>
+
+<ul>
+<li>
+<p>Try to rephrase the stakeholder’s response back to them. This strategy allows the stakeholder to correct any misinterpretations and it also can prompt the stakeholder to explain their ideas in a more familiar terms.</p>
+</li>
+<li>
+<p>Try to ask the same or similar questions in different ways. Often a specific phrase or choice of words will click with the stakeholder and cause them to respond in a way that makes more sense.</p>
+</li>
+<li>
+<p>Try exploring a different conversational topic. It’s not unusual that another topic will illuminate this one.</p>
+</li>
+</ul>
+
+<p>One of the most important things you can do in interviews is to keep the stakeholders talking. The more they talk, the more likely it is that they will share a response that clarifies a topic or opens up a new avenue of inquiry.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect3" data-pdf-bookmark="The interviewer’s toolbox"><div class="sect3" id="idm140386945110400">
+<h3>The interviewer’s toolbox</h3>
+
+<p>There are several tools that are a part of the interview toolkit. <a data-type="indexterm" data-primary="interviews" data-secondary="interviewer’s toolbox" id="idm140386945105920"></a><a data-type="indexterm" data-primary="data counseling" data-secondary="conducting interviews" data-tertiary="interviewer’s toolbox" id="idm140386945105040"></a>Commonly used interviewing tools include pen and paper, voice recorder, camera, and video recorder.<a data-type="indexterm" data-primary="voice recording of interviews" id="idm140386945102160"></a>  We advocate for voice recording of interviews, in large part because it is difficult to take detailed notes while also trying to think of follow-up questions based on what is being said. We try to transcribe an interview shortly after it is conducted to ensure the context is fresh in our minds.  We rarely transcribe an interview word for word, but instead transcribe the most important or complex details. Transcribing is useful for analyzing the interview results, as well as for making it easy to refer back to the conversation later in the design process.</p>
+</div></section>
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Conducting Contextual Interviews"><div class="sect2" id="idm140386945165376">
+<h2>Conducting Contextual Interviews</h2>
+
+<p>In general, a first interview does not get into detailed analysis; it can be useful to get a general overview of the problem, identify stakeholders, and establish the stakeholders’ expertise. It is in follow-up interviews where details begin to emerge.<a data-type="indexterm" data-primary="data counseling" data-secondary="conducting interviews" data-tertiary="contextual interviews" id="idm140386945097952"></a><a data-type="indexterm" data-primary="interviews" data-secondary="conducting contextual interviews" id="idm140386945096496"></a><a data-type="indexterm" data-primary="contextual interviews, conducting" id="idm140386945095584"></a></p>
+
+<p>There is often a big difference between talking to someone in a conference room as opposed to sitting at their desk. In a conference room, people will often tell a very general story; at their desks, they will more likely show their processes in very specific ways. For follow-up interviews, the <em>contextual interview</em> is a particularly useful tool. Contextual interviews take place in the stakeholder’s work environment and consist of demonstrations of the tools and data inspection methods that the stakeholder currently uses. These types of interviews can bring to light aspects of a problem that might not have come up in a strictly verbal interview. They help show how the data works in practice: what happens with current capabilities and how users handle and understand the data they see.</p>
+
+<p>A contextual interview often starts by asking the stakeholder to either walk through a specific analysis task they have already performed or conduct some of their work for that day with the interviewer present. The stakeholder talks through each step they are taking; the interviewer can interrupt with clarifying questions or use these as launching points for further explorations. The following starting questions can help the interviewer understand what works, what does not work, and what does not yet exist:</p>
+
+<ul>
+<li>
+<p>What is the work process you currently use? What tools are involved?</p>
+</li>
+<li>
+<p>What challenges do you have in analyzing the data?</p>
+</li>
+<li>
+<p>Are there limitations within the system? If so, how do you work around them?</p>
+</li>
+<li>
+<p>Do you understand what the system is doing to the data and any algorithms that are being applied, or is this a black box?</p>
+</li>
+</ul>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Technique 2: Exploring the Data"><div class="sect1" id="idm140386945091408">
+<h1>Technique 2: Exploring the Data</h1>
+
+<p>While talking with stakeholders can be very informative, there is no substitute for reaching deep into the data.<a data-type="indexterm" data-primary="data exploration" id="idm140386945090224"></a> We like to start exploring the data as early as possible, for a few reasons. First, it is useful to understand how it is structured and what data is available. Second, each operationalization needs to be checked against the data, and third, it helps to start addressing fine-grained tasks.<a data-type="indexterm" data-primary="exploring data" data-see="data exploration" id="idm140386945101632"></a></p>
+
+<p>In <a data-type="xref" href="ch02.html#operationalization">Chapter 2</a>, for example, exploring the data helped us determine which fields were available in trying to evaluate what would make for a good director. It also helped us choose appropriate cutoffs in trying to define terms like <em>highly rated movie</em>.</p>
+
+<p>Working through the analysis, then, brings forward a variety of visualization tools to explore the data.<a data-type="indexterm" data-primary="visualization tools" data-secondary="to explore data" id="idm140386945099360"></a> Tools like Excel and Tableau, or R and <a href="http://pandas.pydata.org/">Pandas</a>, make it easy to rapidly generate visualizations that can highlight distributions of data, its major dimensions, and the values within.<a data-type="indexterm" data-primary="Excel" id="idm140386945085232"></a><a data-type="indexterm" data-primary="Tableau" id="idm140386945098592"></a><a data-type="indexterm" data-primary="R" id="idm140386945082000"></a><a data-type="indexterm" data-primary="Pandas" id="idm140386945081328"></a> These tools also make it easy to check whether a dataset makes sense—for example, to confirm that a hierarchy really is layered appropriately or to ensure that there are only a small number of categories for a specific dimension of the data.</p>
+
+<p>Sometimes it becomes clear that the problem is so specialized that it needs a bespoke visualization tool created from scratch. <a data-type="indexterm" data-primary="visualization tools" data-secondary="creating your own" id="idm140386945076048"></a><a data-type="indexterm" data-primary="Hotmap" id="idm140386945077776"></a>This happens when the data to be explored is not amenable to an off-the-shelf tool. Both Hotmap, described in the <a data-type="xref" href="preface01.html#chapter_introduction">Preface</a>, and the case study in <a data-type="xref" href="ch08.html#casestudies_fruitfly">Chapter 8</a> are examples of situations in which it was necessary to explore complex data with novel visuals. These bespoke tools can be created using visualization-specific languages like <a href="https://vega.github.io/vega/">Vega</a>, <a href="https://d3js.org/">D3</a>, or <a href="https://processing.org/">Processing</a>.<a data-type="indexterm" data-primary="D3" id="idm140386945073568"></a><a data-type="indexterm" data-primary="Processing" id="idm140386945072960"></a><a data-type="indexterm" data-primary="Vega" id="idm140386945072016"></a><a data-type="indexterm" data-primary="visualization-specific languages" id="idm140386945071408"></a></p>
+
+<p>These<a data-type="indexterm" data-primary="prototypes" data-secondary="fast-and-loose, getting ideas going with" id="idm140386945070416"></a> can be fast-and-loose data prototypes: the goal is to get ideas up and going as quickly as possible, as opposed to carefully considering software architecture for long-term use and reusability.<a data-type="indexterm" data-primary="data prototypes" data-secondary="creating" id="idm140386945069440"></a> Rapidly discarding bad prototypes is as much a critical part of visualization as it is of other design areas.</p>
+
+<p>Making the decision to create a custom data exploration tool requires weighing the development time against the significance of the analysis—if it is possible to get 80% of the way to a good decision using Excel, then it may not be worth spending three months to develop a custom solution. Bespoke exploration visualization tools instead come into play later, when an operationalization is well established and verified, and the focus is on going back and answering the high-level question.</p>
+
+<p>If the high-level goals of a project can often be met with off-the-shelf tools then it is great to be considered a hero for quickly resolving the problem! Custom tools, in contrast, can be great ways to better understand what is lacking in the current ecosystem of visualizations. These insights are invaluable when designing a custom visualization tool.</p>
+
+<p>One challenge is knowing when, and how, to start digging into the data. Oftentimes the stakeholders already have some way of analyzing or visualizing the data that they find to be insufficient for their question. This is usually good place to start. For example, are they looking at many static visualizations? Add interactivity to support exploration. Are they using only one kind of visualization? Take a different perspective on the data and visualize it in a different way using another type of visualization. Use these early data explorations for a deeper conversation about what works and what doesn’t, and why. This process also provides a chance to better understand the stakeholders’ perspectives on the data. <a data-type="xref" href="ch08.html#casestudies_fruitfly">Chapter 8</a> discusses a case study where scientists had a pre-existing set of technologies; adding interactivity and new representations helped reveal that there were entirely new questions to ask, too.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Technique 3: Rapid Prototyping for Design"><div class="sect1" id="idm140386945067456">
+<h1>Technique 3: Rapid Prototyping for Design</h1>
+
+<p>Even from fairly early stages in the process, prototypes of the final tool can be a helpful model.<a data-type="indexterm" data-primary="data prototypes" data-secondary="rapid prototyping for design" id="idm140386945059376"></a> The intention behind prototypes is to explore the visualization <em>design space</em>, as opposed to the <em>data space</em>.<a data-type="indexterm" data-primary="design spaces versus data space" id="idm140386945058528"></a><a data-type="indexterm" data-primary="data space versus design space" id="idm140386945052400"></a>  A typical project usually entails a series of prototypes; each is a tool to gather feedback from stakeholders and help explore different ways to most effectively support the higher-level questions that they have. The repeated feedback also helps validate the operationalization along the way.</p>
+
+<p><em>Rapid prototyping</em> is a process of trying<a data-type="indexterm" data-primary="rapid prototyping" id="idm140386945064928"></a> out many visualization ideas as quickly as possible and getting feedback from stakeholders on their efficacy. Throughout the data counseling process, multiple rounds of rapid prototyping can help in understanding how the problem is formulated. In early phases, sketches on a whiteboard can help to better understand what types of visualizations to use and how stakeholders might interact with them. Later on, higher-fidelity techniques can explore the space of possible visualization designs. The design concept of “failing fast” informs this: by exploring many different possible visual representations, it quickly becomes clear which tasks are supported by which techniques.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="The Range of Prototypes"><div class="sect2" id="idm140386945046640">
+<h2>The Range of Prototypes</h2>
+
+<p>The term <em>prototypes</em> refers to a broad range of techniques and tools, from paper to programming.<a data-type="indexterm" data-primary="rapid prototyping" data-secondary="range of prototypes" id="idm140386945062096"></a><a data-type="indexterm" data-primary="prototypes" data-secondary="range of" id="idm140386945057360"></a><a data-type="indexterm" data-primary="data prototypes" data-secondary="range of prototypes" id="idm140386945056416"></a> The fidelity of these prototypes, as well as the time and energy required to create them, lives on a spectrum (<a data-type="xref" href="#RangeOfPrototypes">Figure 3-1</a>).</p>
+
+<figure><div id="RangeOfPrototypes" class="figure">
+<img src="images/mdvi_0301.png" alt="mdvi 0301" />
+<h6><span class="label">Figure 3-1. </span>Prototypes range from low-fidelity sketches to high-fidelity working models.</h6>
+</div></figure>
+
+<p>One end of the spectrum is characterized by <em>low-fidelity</em> (or <em>lo-fi</em>) prototypes.<a data-type="indexterm" data-primary="low-fidelity (lo-fi) prototypes" id="idm140386945049104"></a> These include mock-ups quickly sketched on paper or a whiteboard with impressions of what the data might look like, and fast, digital mock-ups that may include some controls for explaining interaction ideas, such as slide jumps in PowerPoint or Keynote. <a data-type="xref" href="#LowFi">Figure 3-2</a> is an example of a quick interface mock-up made during the design process. Lo-fi digital mock-ups can also incorporate charts generated in a tool like Excel or Tableau with fake or sampled data to explore possible visualization representation ideas. These lo-fi prototypes are great for communicating the gist of an idea in an interview, or for recording high-level ideas when planning out how to explore the data. Lo-fi prototypes are, by nature, fast and easy to produce.</p>
+
+<p>Lo-fi sketches play a critical role in interviews. Creating these prototypes can help us to understand what the implications of the data might be, and clarify the usefulness of different proxies. If a diagram is confusing to explain and design on a whiteboard, it may require too much detail to fit on a screen.</p>
+
+<p>Communicating ideas with lo-fi prototypes can rapidly help establish whether the visualization designer is on the same page as the stakeholders. Drawing pictures of possible interfaces can start new conversations about the problem and its constraints. <a data-type="xref" href="#LowFi">Figure 3-2</a> shows one instance: a stakeholder was discussing relational data, and drawing this data on the whiteboard allowed the stakeholder to see what it might feel like to visualize the data as a network. The multiple colored lines allowed the stakeholder to start thinking about how to view multiple modalities of the data; the directed edges were actually built from a sample of the data. Drawing this prototype helped the client realize that there was more structure to the data then they had been communicating: every node in the graph represented by a box actually occurred at a specific time, and it was important in the analysis to expose the temporal dimension of the data.</p>
+
+<figure class="width-50"><div id="LowFi" class="figure">
+<img src="images/mdvi_0302.png" alt="mdvi 0302" />
+<h6><span class="label">Figure 3-2. </span>A lo-fi prototype exploring the idea of a weighted, directed graph layout. This sketch was hand-drawn on a whiteboard during an interview session, based on sample data, by manually looking at the spreadsheet and drawing out the relationships.</h6>
+</div></figure>
+
+<p>Lo-fi <em>slideware</em> can help ensure that designs will make sense to users, especially  when incorporating interactive features into the design.<a data-type="indexterm" data-primary="low-fidelity (lo-fi) prototypes" data-secondary="lo-fi slideware" id="idm140386945042464"></a><a data-type="indexterm" data-primary="slideware" id="idm140386945041616"></a> The slideware in <a data-type="xref" href="#Slideware">Figure 3-3</a> shows one step in the feedback cycle, illustrating the result of a specific interaction mechanism. This image was manually assembled in a variety of different tools. The prototype sketch is meant to help the user understand how the final interaction will work.</p>
+
+<figure><div id="Slideware" class="figure">
+<img src="images/mdvi_0303.png" alt="mdvi 0303" />
+<h6><span class="label">Figure 3-3. </span>This slideware image of a design stage shows iteration from a previous version. The images were created in a variety of different tools.</h6>
+</div></figure>
+
+<p>On the other end of the prototype spectrum are <em>high-fidelity</em> (or <em>hi-fi</em>) custom visualizations which must be created from scratch.<a data-type="indexterm" data-primary="high-fidelity (hi-fi) prototypes" id="idm140386945032544"></a> These hi-fi prototypes are meant to largely contain the core functionality of an envisioned visualization tool, including all necessary visualizations of the data and interaction mechanisms. They will often, however, gloss over many backend issues such as smooth integration with existing workflows or fully fleshed out features for saving and loading. Just as for bespoke visualizations created for our own data exploration, languages like D3 or Processing can help in creating hi-fi prototypes rapidly.</p>
+
+<p>Hi-fi prototypes are meant to be thrown away. In our experience, however, hi-fi prototypes are often the tools that get deployed and adopted by some users, particularly to those frantic to get into their data. Regardless, the point is not to worry about the code other than to confirm that ideas can work.</p>
+<div style="page-break-after: always;"></div>
+<aside data-type="sidebar" epub:type="sidebar"><div class="sidebar" id="idm140386945024048">
+<h5>Using a Data Management Pipeline</h5>
+<p>Using a data analytics engine to handle data management can allow an analyst to rapidly iterate through different ways of looking at the data.<a data-type="indexterm" data-primary="data management pipeline, using" id="idm140386945029328"></a> Many off-the-shelf data visualization systems provide both a data pipeline, which consists of database connectors and data cleaning and shaping facilities, and a visualization system. Until recently, however, doing this prototyping meant that analysts were constrained to the visual mappings available in the system.</p>
+
+<p>A few tools have begun to allow developers to incorporate their own custom visuals: Google Sheets, Microsoft Excel, and Microsoft <a href="https://powerbi.microsoft.com/en-us/">PowerBI</a> all have custom add-in mechanisms. PowerBI also provides dashboard tools like cross-filtering between custom add-ins.<a data-type="indexterm" data-primary="visualization tools" data-secondary="allowing incorporation of custom visuals" id="idm140386945027760"></a><a data-type="indexterm" data-primary="Google Sheets" id="idm140386945022592"></a><a data-type="indexterm" data-primary="Microsoft Excel" data-see="Excel" id="idm140386945022208"></a><a data-type="indexterm" data-primary="Excel" id="idm140386945021696"></a><a data-type="indexterm" data-primary="Microsoft PowerBI" data-see="PowerBI" id="idm140386945026944"></a><a data-type="indexterm" data-primary="PowerBI" id="idm140386945020016"></a></p>
+</div></aside>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Eliciting Feedback"><div class="sect2" id="idm140386945046016">
+<h2>Eliciting Feedback</h2>
+
+<p>Identifying stakeholders during data counseling is useful not only to help with the operationalization, but also to garner feedback on prototypes.<a data-type="indexterm" data-primary="rapid prototyping" data-secondary="eliciting feedback on prototypes" id="idm140386945018176"></a><a data-type="indexterm" data-primary="feedback" data-secondary="eliciting on prototypes" id="idm140386945017328"></a><a data-type="indexterm" data-primary="data prototypes" data-secondary="getting feedback on" id="idm140386945016448"></a><a data-type="indexterm" data-primary="stakeholders" data-secondary="eliciting feedback from on prototypes" id="idm140386945015200"></a> With rapid prototyping as a strategy, we go back to our stakeholders early and often with our visualizations to ensure that the operationalization has directed an effective visualization.</p>
+
+<p>Eliciting useful feedback, however, goes beyond asking stakeholders if they like what they see—approval is necessary, but not sufficient. Part of the problem with seeking approval is that interviewees (sometimes unconsciously) wish to give positive feedback to an interviewer; this can be particularly problematic within a friendly team. A stakeholder might say they like a visualization that is not informative but looks nice.</p>
+
+<p>We like to focus instead on what the visualization can and cannot do. A contextual interview where the stakeholder<a data-type="indexterm" data-primary="contextual interviews, conducting" data-secondary="to get feedback on prototypes" id="idm140386945013376"></a> uses the visualization can be particularly insightful for uncovering weaknesses in the design or problems with the operationalization. Keeping questions focused on aspects of the data that are being shown forces the stakeholder to more directly confirm or refute the efficacy of what they are seeing.</p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="And, Repeat"><div class="sect1" id="idm140386945011808">
+<h1>And, Repeat</h1>
+
+<p>It is very difficult to get a good (or even adequate) operationalization of a problem the first time around.<a data-type="indexterm" data-primary="operationalization" data-secondary="repeating" id="idm140386945012320"></a> Getting this right often requires multiple interviews with stakeholders, interspersed with some data exploration and rapid prototyping.<a data-type="indexterm" data-primary="rapid prototyping" data-secondary="repeating" id="idm140386945006416"></a><a data-type="indexterm" data-primary="data exploration" data-secondary="repeating" id="idm140386945008832"></a></p>
+
+<p>For example, consider an operationalization that leads to a distribution of values in a histogram. That distribution helps show that there are outliers at one end of the range that had not been in the original problem description; stakeholders may then realize the outliers are actually quite interesting, which leads to a new task and a new representation.</p>
+
+<p>The process is often a very iterative one. Talk with some stakeholders, try some ideas with the data, share those ideas with the stakeholders. And, repeat.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Conclusion"><div class="sect1" id="idm140386945001552">
+<h1>Conclusion</h1>
+
+<p>This chapter looked at several core techniques<a data-type="indexterm" data-primary="operationalization" data-secondary="techniques for supporting" id="idm140386944999808"></a> for supporting operationalization: data counseling, data exploration, and rapid prototyping. These techniques bring a variety of different perspectives on the problem and the data in order to build, refine, and support an operationalization of a problem. All of these techniques are useful on their own, but using them in combination provides a powerful suite of tools.</p>
+
+<p><a data-type="xref" href="ch04.html#ComponentsOfVisualization">Chapter 4</a> looks at the nature of the data itself. Understanding the types of data, and the tasks that can be carried out with it, leads to <a data-type="xref" href="ch05.html#singleviews">Chapter 5</a> and a look at the core visualizations for basic data types.</p>
+</div></section>
+
+
+
+
+
+
+
+<div data-type="footnotes"><p data-type="footnote" id="idm140386945196224"><sup><a href="ch03.html#idm140386945196224-marker">1</a></sup> This process is closely related to <em>task analysis</em> in interface design. The distinction is that task analysis is typically oriented towards creating interfaces; this process, instead, works with data, which warrants a unique set of considerations on the part of the designer.</p></div></div></section></div>
+</body>
+</html>

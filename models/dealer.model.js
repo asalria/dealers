@@ -78,7 +78,7 @@ const dealerSchema = new mongoose.Schema({
     comments: {
         type: String
     },
-    startPoint: { 
+    startPoint: {
         type: Object,
         properties: {
           type: {
@@ -98,14 +98,14 @@ dealerSchema.index({startPoint:"2dsphere"});
 
 dealerSchema.pre('save', function save(next) {
     console.log(this.startPoint);
-    const route = this;
-    route.startPoint = {
+    const dealer = this;
+    dealer.startPoint = {
         type: "Point",
-        coordinates: this.startPoint.coordinates
+        coordinates: this.startPoint
     };
     
-    route.img = "https://maps.googleapis.com/maps/api/staticmap?center=" + route.startPoint.coordinates[0] + "," + route.startPoint.coordinates[1] +
-    "&markers=color:red%7Clabel:C%7C"+ route.startPoint.coordinates[0] + "," + route.startPoint.coordinates[1]+"&size=600x300&zoom=15&key=" + process.env.GOOGLE_MAPS_API_IMG;
+    dealer.img = "https://maps.googleapis.com/maps/api/staticmap?center=" + dealer.startPoint.coordinates[0] + "," + dealer.startPoint.coordinates[1] +
+    "&markers=color:red%7Clabel:C%7C"+ dealer.startPoint.coordinates[0] + "," + dealer.startPoint.coordinates[1]+"&size=600x300&zoom=15&key=" + process.env.GOOGLE_MAPS_API_IMG;
     return next();
   });
 

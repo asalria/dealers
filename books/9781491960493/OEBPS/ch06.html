@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>6. Multiple and Coordinated Views</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><section data-type="chapter" epub:type="chapter" data-pdf-bookmark="Chapter 6. Multiple and Coordinated Views"><div class="chapter" id="multiview">
+<h1><span class="label">Chapter 6. </span>Multiple and Coordinated Views</h1>
+
+
+<p>The previous chapter provided a gallery of single-chart visualizations. This chapter brings those views together into interactive, connected visuals called <em>multiple linked views</em> (MLVs).<a data-type="indexterm" data-primary="multiple linked views (MLVs)" id="ix_MLV"></a>  An MLV leverages multiple visualizations by linking the information shown in each view to the others through user interactions.</p>
+
+<p>MLVs are vital to understanding large and complex data. They allow many different attributes to be viewed at once by splitting them up across a set of views and partitioning the data items to find interesting trends. They can be designed to help guide a user toward the most interesting data items, to show multiple perspectives on data, or to allow the user to dive more deeply into a dataset. In an MLV system, a dataset is shown in multiple simple visualizations, with the data items shown in the different charts corresponding to each other. The charts in each visualization can be used to highlight, control, or filter the data items shown in the others.</p>
+
+<p>There are a number of well-defined MLV design patterns, each of which supports a different set of analysis tasks.<a data-type="indexterm" data-primary="multiple linked views (MLVs)" data-secondary="design patterns" id="idm140386944364176"></a> This chapter covers five of the best-known patterns: small multiples, scatterplot matrices (SPLOMs), overview+detail, multiform views and dashboards, and overlays.<a data-type="indexterm" data-primary="overview+detail visualizations" id="idm140386944363664"></a><a data-type="indexterm" data-primary="small multiples" id="idm140386944361312"></a><a data-type="indexterm" data-primary="scatterplot matrices" id="idm140386944360416"></a> Small multiples and SPLOMs are series of small visualizations that use the same view but show different parts of the data. Overview+detail pairs two views, one as an overview of the complete dataset and the other as a detailed view of a subset of the data.<a data-type="indexterm" data-primary="multiform views" id="idm140386944359808"></a><a data-type="indexterm" data-primary="dashboards" id="idm140386944359200"></a> Multiform views and dashboards use different types of visualizations with each view optimized for a subset of attributes.<a data-type="indexterm" data-primary="overlays" id="idm140386944352736"></a> Lastly, overlays are multiple visualizations drawn on a common, shared axis.</p>
+
+<p>This chapter discusses appropriate tasks and provides examples for each of these. There are characteristic interactions that go with most of these design pattern. The chapter describes the ways that users might interact with these visualizations. <a data-type="xref" href="#DSMLV_table">Table 6-1</a> provides an overview.</p>
+<table id="DSMLV_table">
+<caption><span class="label">Table 6-1. </span>The design space of multiple linked views</caption>
+<thead>
+<tr>
+<th>MLV type</th>
+<th>Supported task</th>
+<th>Data</th>
+<th>Interaction</th>
+<th>What is shared</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Small multiples</p></td>
+<td><p>Understand and identify differences between subsets or measures of the data</p></td>
+<td><p>Each view shows a partitioned subset, or a different measure, of the data</p></td>
+<td><p>Usually static</p></td>
+<td><p>Different data, same attributes, same view; or, same data, different attributes, same view</p></td>
+</tr>
+<tr>
+<td><p>SPLOM</p></td>
+<td><p>Understand relationships and correlation between the attributes</p></td>
+<td><p>Each scatterplot shows all of the data items for every pair of attributes</p></td>
+<td><p>Brushing and linking highlights the same data items in different views</p></td>
+<td><p>Same data, different attributes, same view</p></td>
+</tr>
+<tr>
+<td><p>Multiform views and dashboards</p></td>
+<td><p>Understand relationships and correlation between the attributes</p></td>
+<td><p>Each view shows all of the data items, but different attributes</p></td>
+<td><p>Brushing and linking highlights the same data items in different views</p></td>
+<td><p>Same data, different attributes, different views</p></td>
+</tr>
+<tr>
+<td><p>Overview+detail</p></td>
+<td><p>Find interesting data items and understand those in detail</p></td>
+<td><p>Large datasets where all data items and attributes cannot easily be shown at once</p></td>
+<td><p>Selection in overview; navigation in detail</p></td>
+<td><p>Same data, different attributes, different views</p></td>
+</tr>
+<tr>
+<td><p>Overlay</p></td>
+<td><p>Compare two datasets that share a common attribute</p></td>
+<td><p>Different, but joinable, datasets</p></td>
+<td><p>Usually static</p></td>
+<td><p>Different data, shared attribute, shared axis</p></td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Small Multiples"><div class="sect1" id="idm140386944331616">
+<h1>Small Multiples</h1>
+
+<p>The small multiples <a data-type="indexterm" data-primary="small multiples" id="ix_smallmul"></a>design pattern—sometimes also called a <em>trellis chart</em>—focuses on showing subsets of a dataset, meaningfully partitioned.<a data-type="indexterm" data-primary="multiple linked views (MLVs)" data-secondary="small multiples" id="ix_MLVsmall"></a><a data-type="indexterm" data-primary="trellis charts" id="idm140386944326608"></a> The pattern allows an analyst to quickly look across these subsets and compare them in order to find trends, patterns, and outliers.</p>
+
+<p>This pattern is common in everyday interfaces. In online shopping sites, a search query is presented as a grid. In this grid, the results are partitioned based on specific products, and each individual view in the grid gives quick information about what the product looks like, its price, and its rating. Similarly, weather forecasts typically show forecasts for several days with small multiples. Here, the forecast data is partitioned by day; each individual view shows information about the day’s temperatures, cloud cover, and precipitation. The layout supports quick skims down the views to get a sense of how the weather will change over the course of the days.</p>
+
+<p>The views in a small multiple must maintain <em>consistency</em>, so it is easy to read down or across each individual view to directly compare the data subsets across each attribute.<a data-type="indexterm" data-primary="small multiples" data-secondary="consistency, maintaining in views" id="idm140386944325104"></a> Maintaining the same view of the data while varying the data items is a hallmark of small multiples.</p>
+
+<p>A small-multiples display shows the same visualization repeated across a row, column, or grid of views. Small multiples come in two variants: they can be split by dimension, or they can show differing measures. When a visualization has been split by dimension, each individual view is a visualization of the same attributes, but the views show different subsets of the data, split along a partitioning attribute. The partitioning attribute is typically an ordinal or categorical value—as in <a data-type="xref" href="#small-multiples">Figure 6-1</a>—a binned continuous value.</p>
+
+<p>When a visualization shows multiple measures, each individual view shows most of the same attributes for all the data. Each individual view varies one dimension or measure from its neighbors. In <a data-type="xref" href="#small-multiple-hetero">Figure 6-9</a>, the three views all show the same dimensions, but vary on the measure: population, engineers, and hurricanes per state.</p>
+
+<p>Small multiples are particularly good for supporting <em>comparison</em> of subsets of the data <em>across</em> several attributes of interest—words such as these in an operationalized task point to a small multiples design pattern.<a data-type="indexterm" data-primary="small multiples" data-secondary="comparison of subsets of data across attributes" id="idm140386944318000"></a><a data-type="indexterm" data-primary="attributes" data-secondary="comparison of subsets of data across, in small multiples" id="idm140386944318528"></a> For example, the small multiples of choropleth maps in <a data-type="xref" href="#small-multiples">Figure 6-1</a> support comparison of the percentage of the population in states in the US across different salary ranges.<a data-type="indexterm" data-primary="maps" data-secondary="choropleth, small multiples of" id="idm140386944317008"></a><a data-type="indexterm" data-primary="choropleths" data-secondary="small multiples of" id="idm140386944315904"></a></p>
+
+<figure><div id="small-multiples" class="figure">
+<img src="images/mdvi_0601.png" alt="mdvi 0601" />
+<h6><span class="label">Figure 6-1. </span>Small multiples of choropleths. In each choropleth, the percentages of the states’ populations for a specific salary range are shown—the small multiple views are partitioned over the set of salary ranges.</h6>
+</div></figure>
+
+<p>In <a data-type="xref" href="#small-multiples">Figure 6-1</a>, percentage and geographic location are shown in each view, and the data is partitioned by salary range. Each individual view in the small multiples display supports statements like “The state of Alaska has a comparatively lower percentage of residents in the lowest salary range.” The full display supports statements like “California and Virginia stand out for their unusual distribution of salary at both the lowest and highest ranges.”</p>
+
+<p>One virtue of a small multiples view that is split by dimension is that all the views share the same spatial placement and the same color scale.<a data-type="indexterm" data-primary="color" data-secondary="shared color scale in small multiple choropleth" id="idm140386944309360"></a> The shared color scale is useful here because the multiple visualizations have the same meaning. The reader learns to interpret that <em>yellow</em> means a high percentage while <em>purple</em> is low, and can then effectively look across the charts to compare a specific color, pattern, or spatial location.</p>
+
+<p>Often it is not obvious from a task which attributes should partition versus define the views, and trying different combinations can be useful. It is often fruitful to explore different small multiples during the early EDA stages to not only help in understanding the data, but also enable further refinement of the operationalization.</p>
+<aside data-type="sidebar" epub:type="sidebar"><div class="sidebar" id="idm140386944311008">
+<h5>Conditioning and Generative Grammars</h5>
+<p>The concept of <em>conditioning</em> on a variable cuts across many visualization types. <a data-type="indexterm" data-primary="conditioning" id="idm140386944304688"></a>This is the statistical term for partitioning one attribute by another. Any single-view visualization can be changed into a small multiples view by conditioning on one or two dimensions; many visualizations can be overlaid by choosing another color to represent conditioning on a second dimension.</p>
+
+<p>A bar chart is a small multiple of single bars, partitioned on an attribute.<a data-type="indexterm" data-primary="bar charts" id="idm140386944299440"></a><a data-type="indexterm" data-primary="clustered bar charts" id="idm140386944297600"></a> A clustered bar chart is a hierarchy of small multiples within a small multiples display.<a data-type="indexterm" data-primary="The Grammar of Graphics" data-primary-sortas="Grammar of Graphics" id="idm140386944302720"></a> This sort of logic drives <em>The Grammar of Graphics</em>, which reduces every point on a visualization to a mark drawn in a particular way as described by the data; tools like <em>ggplot</em> and <a data-type="indexterm" data-primary="ggplot" id="idm140386944303408"></a><a data-type="indexterm" data-primary="Vega" id="idm140386944296448"></a><a data-type="indexterm" data-primary="multiple linked views (MLVs)" data-secondary="small multiples" data-startref="ix_MLVsmall" id="idm140386944302048"></a><a data-type="indexterm" data-primary="small multiples" data-startref="ix_smallmul" id="idm140386944295344"></a>Vega explore this philosophy further. See <a data-type="xref" href="ch05.html#FurtherReadingSingleview">“Further Reading”</a>.</p>
+</div></aside>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Scatterplot Matrices"><div class="sect1" id="idm140386944330688">
+<h1>Scatterplot Matrices</h1>
+
+<p>Scatterplot matrices (SPLOMs) are related to small multiples in that they use the same visualization—a scatterplot—across a matrix layout.<a data-type="indexterm" data-primary="scatterplot matrices" id="idm140386944292528"></a><a data-type="indexterm" data-primary="multiple linked views (MLVs)" data-secondary="scatterplot matrices" id="idm140386944290016"></a> Instead of showing subsets of data items across a few choice attributes, as in a small multiples display, they instead show the <em>complete</em> dataset in a matrix of scatterplots.<a data-type="indexterm" data-primary="SPLOMs" data-see="scatterplot matrices" id="idm140386944288336"></a><a data-type="indexterm" data-primary="attributes" data-secondary="comparison in scatterplot matrices" id="idm140386944291296"></a> More specifically, a SPLOM pairs each (usually) continuous numeric attribute against every other attribute in a (diagonally symmetric) matrix layout of scatterplots (<a data-type="xref" href="#splom">Figure 6-2</a>). As with other scatterplots, as discussed in <a data-type="xref" href="ch05.html#singleviews">Chapter 5</a>, items in the scatterplot may also be colored and sized by additional attributes.</p>
+
+<figure><div id="splom" class="figure">
+<img src="images/mdvi_0602.png" alt="mdvi 0602" />
+<h6><span class="label">Figure 6-2. </span>A SPLOM comparing attributes of cars in the scatterplots, with a color encoding indicating whether the cars are all-, rear-, or front-wheel drive. This chart helps show, for example, that rear- and front-wheel-drive cars can be separated by their curb weight in conjunction with city-mpg or highway-mpg more than by their width and length.</h6>
+</div></figure>
+
+<p>A SPLOM is primarily useful for characterizing relations between attributes in the earliest stages of EDA. Finding these relationships can help in narrowing down which attributes may be of most interest for further study during later EDA stages.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Overview+Detail"><div class="sect1" id="idm140386944278800">
+<h1>Overview+Detail</h1>
+
+<p>The overview+detail design pattern is essential for navigating and exploring large datasets in order to find interesting data items. <a data-type="indexterm" data-primary="multiple linked views (MLVs)" data-secondary="overview+detail" id="idm140386944282480"></a><a data-type="indexterm" data-primary="overview+detail visualizations" id="idm140386944281888"></a>It applies to any dataset that is too big—in terms of the number of data items, the number of attributes, or both—to show all at once. This design pattern includes an <em>overview</em> visualization that helps in finding interesting subsets of the data, and a linked <em>detail view</em> that shows the low-level attribute values associated with the selected subsets.<a data-type="indexterm" data-primary="detail views" id="idm140386944276528"></a> Words in a task such as <em>locate</em> and <em>find</em> may indicate an overview+detail design pattern.</p>
+
+<p>This design pattern is common in email clients, which provide an overview of the inbox showing the sender, subject, and date for all emails. Selection of an email in this overview then triggers a detailed email view to show the complete contents of the message. This is a flexible, user-driven process that supports a number of tasks: reading new emails,  finding emails sent last night, or going back to a specific topic from yesterday, to name a few. The overview pane gives just enough information to make the selection, which is then shown in its entirety in the detail view. This detail view updates with each new selection.</p>
+
+<p>Overview+detail is also frequently used as a navigation aid to provide context for movement around virtual spaces, such as maps, video games, or images. For example, <a data-type="xref" href="#overviewdetail">Figure 6-3</a> is a screenshot from a photo viewing application. The overview is a small, contextual view that supports panning and zooming; the detail view shows a zoomed, detailed portion of the photo.</p>
+
+<figure><div id="overviewdetail" class="figure">
+<img src="images/mdvi_0603.png" alt="mdvi 0603" />
+<h6><span class="label">Figure 6-3. </span>Some photo-viewing apps support overview+detail for panning and zooming an image. Here, the overview in the bottom-right corner indicates which part of the image is being shown in the larger detail view.</h6>
+</div></figure>
+
+<p>The overview+detail design pattern supports guided navigation to help find interesting subsets of the data.<a data-type="indexterm" data-primary="interestingness" id="idm140386944269472"></a> This pattern looks across many data items, using either one or several attributes as a measure of <em>interestingness</em>. The overview may use an attribute that is shown in other views, or a new, summarizing metric created from the underlying data. A selection in the overview triggers an update in the detail view to show the underlying details about the selected subset. This is typically a one-way interaction where selection in the overview drives what is shown in the detail view, but not vice versa.</p>
+
+<p>What makes for <em>interestingness</em>? It is any attribute that helps figure out what subsets are worth looking at in the dataset. If the analyst is looking for places where data has extreme values, for example, it might be the count of items in that area, the maximum value of an attribute, or the average. It might be a synthetic value, such as an anomaly score. The case study in <a data-type="xref" href="ch08.html#casestudies_fruitfly">Chapter 8</a> has an overview that uses a distance function to help guide users to the most interesting bits of detail.</p>
+
+<p><a data-type="xref" href="#mizbee_small">Figure 6-4</a> shows a dataset of genes located within a chromosome.<sup><a data-type="noteref" id="idm140386944263152-marker" href="ch06.html#idm140386944263152">1</a></sup> There are thousands of genes, far too many to reasonably show in a single view.<a data-type="indexterm" data-primary="regions of interest" id="idm140386944266128"></a><a data-type="indexterm" data-primary="genetic data" data-secondary="exploring in overview+detail" id="idm140386944265520"></a> Instead, the overview on the left shows <em>regions of interest</em>, each of which contains a set of related genes, shown as colored bars along the chromosome. These bars can be selected, triggering the detail view on the right. This detail view shows the individual genes within the selected region.</p>
+
+<figure class="width-50"><div id="mizbee_small" class="figure">
+<img src="images/mdvi_0604.png" alt="mdvi 0604" />
+<h6><span class="label">Figure 6-4. </span>Overview+detail views in a tool for exploring genetic data. The overview on the left shows regions of interest, color-coded based on a similarity function. Selecting a region of interest triggers the detail view on the right to show the location of individual genes within the selected region.</h6>
+</div></figure>
+
+<p>Overviews and details can nest for larger and more complex datasets. <a data-type="xref" href="#mizbee_small">Figure 6-4</a> is actually part of a larger system that has two levels of overview to support looking across complete genomes—this system is shown in <a data-type="xref" href="#mizbee_full">Figure 6-5</a>. This visualization tool, called MizBee, supports selection of chromosomes of interest in the left view, regions of interest in the middle view, and detailed analysis of genes in the right view. A video of this system in action can be found on <a href="https://resources.oreilly.com/examples/0636920041320">the book’s website</a>.</p>
+
+<figure><div id="mizbee_full" class="figure">
+<img src="images/mdvi_0605.png" alt="mdvi 0605" />
+<h6><span class="label">Figure 6-5. </span>This tool for visualizing comparative genomics data has two levels of overview. Selecting a chromosome in the overview on the left triggers a more detailed overview of the selected chromosome in the middle view. In this middle view, regions of interest are selected to then trigger low-level details about individual genes in the detail view on the right.</h6>
+</div></figure>
+
+<p>Overview+detail supports open-ended exploration across the complete dataset and is useful for helping a user build a mental model of what is interesting within a dataset and what more detailed relationships should be explored. Choosing a good proxy for interestingness is essential to an effective overview+detail—oftentimes, the overview is designed to support a range of metrics that the user can switch between dynamically. It is often later in the process that a good understanding of what is interesting emerges. Furthermore, developing overview+detail tools typically requires some significant programming, making them somewhat heavyweight for early EDA. These tools are often developed later in the process, and often serve as the final visualization design.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Multiform Views and Dashboards"><div class="sect1" id="idm140386944283152">
+<h1>Multiform Views and Dashboards</h1>
+
+<p>A single view can usually only effectively show three or four attributes.<a data-type="indexterm" data-primary="multiple linked views (MLVs)" data-secondary="multiform views and dashboards" id="idm140386944238224"></a><a data-type="indexterm" data-primary="multiform views" id="idm140386944250384"></a> When trying to determine how multiple attributes are related to each other, then, a multiform linked visualization can show the connections between multiple attributes. A multiform visualization shows attributes across multiple visualizations, each tailored to most effectively show a small subset of the attributes. In this design pattern, no one view is best or primary and any one view by itself is insufficient.</p>
+
+<p>Each view shows all of the data items, but just a portion of the data attributes. The views themselves are each designed to be most effective for showing one or a few of the attributes, and many views can be shown at once to support finding patterns, trends, and correlations across many attributes. Instead of primarily supporting characterization of patterns in the <em>data items</em>, like a small multiples visualization, a multiform visualization supports characterization of patterns in the <em>attributes</em>.</p>
+
+<p>This design pattern uses an interaction technique <a data-type="indexterm" data-primary="multiform views" data-secondary="interaction in" id="idm140386944239360"></a>called <em>brushing and linking</em>, where selecting data items in one view triggers highlighting of those selected items in the other views, supporting fine-scale analysis of relationships across the attributes.<a data-type="indexterm" data-primary="brushing and linking (interaction technique)" id="idm140386944240576"></a></p>
+
+<p>For example, in <a data-type="xref" href="#multiform-multeesum">Figure 6-6</a> the view on the left is showing 2D spatial locations for each data item, with a metric encoded at each point, using color. We know from <a data-type="xref" href="ch05.html#singleviews">Chapter 5</a> that color is relatively ineffective for precisely comparing quantitative values; thus, the linked bar chart view on the right shows the metric for each data point using spatial encoding (height). The views are linked such that when the mouse hovers over a data item in the left view, the corresponding bar is highlighted in the right view—the interaction can be viewed in the video on <a href="https://resources.oreilly.com/examples/0636920041320">the book’s website</a>.</p>
+
+<figure><div id="multiform-multeesum" class="figure">
+<img src="images/mdvi_0606.png" alt="mdvi 0606" />
+<h6><span class="label">Figure 6-6. </span>In this multiform visualization, both views are showing the same attribute across all the data items. On the left, that attribute is encoded with color, along with the spatial location of each data item. To overcome the perceptual challenges of making fine-scale comparisons of the attribute values using color, the linked view on the right encodes the attribute using a bar chart. The two views are linked together with brushing.</h6>
+</div></figure>
+
+<p>A multiform visualization such as this can give users access to a broad set of attributes across the complete dataset, making it particularly useful in the middle of the data counseling process.<a data-type="indexterm" data-primary="multiform views" data-secondary="dashboards" id="idm140386944236416"></a></p>
+
+<p><em>Dashboards</em> are a type of multiform visualization used to summarize and monitor data.<a data-type="indexterm" data-primary="dashboards" id="idm140386944229936"></a> These are most useful when proxies have been well validated and the task is well understood. This design pattern brings a number of carefully selected attributes together for fast, and often continuous, monitoring—dashboards are often linked to updating data streams. While many allow interactivity for further investigation, they typically do not depend on it. Dashboards are often used for presenting and monitoring data and are typically designed for at-a-glance analysis rather than deep exploration and analysis. An example of a business dashboard is shown in <a data-type="xref" href="#dashboard">Figure 6-7</a>.</p>
+
+<figure><div id="dashboard" class="figure">
+<img src="images/mdvi_0607.png" alt="mdvi 0607" />
+<h6><span class="label">Figure 6-7. </span>This sample business intelligence dashboard represents a number of different measures and dimensions of a dataset: single numbers summarize important features; scatterplots, bar charts, line charts, and maps address specific tasks. The cells are linked together: choosing a specific element in one panel acts as a filter or highlight against the others.</h6>
+</div></figure>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Overlays"><div class="sect1" id="idm140386944223376">
+<h1>Overlays</h1>
+
+<p>A final MLV design pattern, overlays, uses a shared coordinate system to orient views together—these views are similar in that they share a common coordinate system, but could be different in the visualization type they use.<a data-type="indexterm" data-primary="overlays" id="idm140386944233296"></a><a data-type="indexterm" data-primary="multiple linked views (MLVs)" data-secondary="overlays" id="idm140386944232944"></a><a data-type="indexterm" data-primary="attributes" data-secondary="comparing in overlays" id="idm140386944225568"></a> This variation makes it easy to find patterns and trends among a small number of attributes along a common attribute, such as time or space. This form often occurs with geospatial and temporal data; the weather map in <a data-type="xref" href="#overlay">Figure 6-8</a>  is an example.<a data-type="indexterm" data-primary="weather maps" id="idm140386944221392"></a><a data-type="indexterm" data-primary="geospatial and temporal data" id="idm140386944228192"></a><a data-type="indexterm" data-primary="temporal data" data-secondary="in overlays" id="idm140386944227584"></a> In this visualization, three different attributes are layered in the same view: temperature using color, pressure using isolines (contours), and wind speed and direction using wind-barb icons. All three attributes are using the same coordinate system, namely geospatial location over the continental United States. By visualizing these three attributes together, it is easier to make inferences about relationships between them.</p>
+
+<figure><div id="overlay" class="figure">
+<img src="images/mdvi_0608.png" alt="mdvi 0608" />
+<h6><span class="label">Figure 6-8. </span>Overlays are often seen using a geospatial attribute as a common axis. In this weather map, temperature, pressure, and wind speed are overlaid on a map of the United States.</h6>
+</div></figure>
+
+<p>Besides comparing attributes, overlays are also good for saving pixels and presenting more information in a single display more compactly. On the other hand, they can add more visual complexity. Making detailed judgments about the weather attributes in <a data-type="xref" href="#overlay">Figure 6-8</a> requires a fair amount of attention—too much detail in an overlay can overwhelm a user quickly. Interaction can help with visual clutter, such as highlighting a specific layer of the overlay when a label in the legend is rolled over. In general, overlays are a great option when your analysis requires a small set of attributes to compare and the shared coordinate system is familiar.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Axis Alignment and Scale Consistency"><div class="sect1" id="idm140386944217424">
+<h1>Axis Alignment and Scale Consistency</h1>
+
+<p>One important aspect of all of these forms of multiple visualizations is finding and aligning shared axes.<a data-type="indexterm" data-primary="axes, alignment in multiple visualizations" id="idm140386944210432"></a><a data-type="indexterm" data-primary="multiple linked views (MLVs)" data-secondary="axis alignment and scale consistency" id="idm140386944219552"></a><a data-type="indexterm" data-primary="scale, consistency in multiple visualizations" id="idm140386944219040"></a> In general, if two different parts of a visualization are meant to show the same scale, they should be aligned and sized the same way. In a small multiple view of histograms, for example, ensuring that the bins are consistent among the histograms makes it far easier for the user to compare bins to each other. Similarly, when overlaying several series with different ranges, it is worth considering whether the percentage change is most important, which would allow for a common y-axis.</p>
+
+<p>The principles of alignment and consistency play into <a data-type="xref" href="#small-multiple-hetero">Figure 6-9</a>, which illustrates the value of maintaining consistent axes while showing independent color scales. The three maps show very different data—the population, percentage of the population that are engineers, and number of hurricanes.<a data-type="indexterm" data-primary="choropleths" data-secondary="demonstrting axis alignment and scale consistency" id="idm140386944218656"></a> The shared coordinate system and aligned axes help the reader compare the maps; the different color palettes emphasize that the attributes, scales, and meaning are very different between the three charts.</p>
+
+<figure class="width-75"><div id="small-multiple-hetero" class="figure">
+<img src="images/mdvi_0609.png" alt="mdvi 0609" />
+<h6><span class="label">Figure 6-9. </span>These three choropleths illustrate the value of aligning scales and maintaining coordinate systems. The maps show the population of each state, the percentage of the population that are engineers, and the number of hurricanes. (The very different map styles suggest that engineers do not cause hurricanes.)</h6>
+</div></figure>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Interacting with Multiple Linked Views"><div class="sect1" id="idm140386944202464">
+<h1>Interacting with Multiple Linked Views</h1>
+
+<p>Many of these MLV design patterns support the concept of linking views by interacting with the data.<a data-type="indexterm" data-primary="interactions, linked-view" id="idm140386944204448"></a><a data-type="indexterm" data-primary="multiple linked views (MLVs)" data-secondary="interacting with" id="idm140386944204064"></a> The role of linked-view interactions is to select data in one view that is then reflected in another view, using the data as a selector.<a data-type="indexterm" data-primary="brushing and linking (interaction technique)" id="idm140386944208768"></a> This is broadly referred to as <em>brushing and linking</em>.</p>
+
+<p>The concept of brushing and linking brings together two subtly different types of interaction intentions: cross-highlighting and cross-filtering. <a data-type="indexterm" data-primary="cross-highlighting" id="idm140386944200896"></a>For example, in a SPLOM it is common to select data items in one of the scatterplots to see how they are reflected in others; this is known as <em>cross-highlighting</em>. Cross-highlighting can be implemented when individual data points correspond in multiple charts.</p>
+
+<p><em>Cross-filtering</em> means that the selection on one chart removes data items from other charts.<a data-type="indexterm" data-primary="cross-filtering" id="idm140386944198912"></a> It might make sense, instead, to cross-filter on ranges or values of attributes—for example, by dragging along an attribute to mean “all data items with these values along this attribute.”</p>
+
+<p>Interestingly, there’s little consensus on the exact specification of these two different intentions. Selecting a region can mean filtering to only a set of data items, or it can mean highlighting those points.</p>
+
+<p><a data-type="xref" href="#multiview_crossfilter">Figure 6-10</a> shows a cross-selection tool in action. The dataset (from World Bank Development Data) shows a series of countries, listed by the percentage of their population aged 15–64, and the percentage over 64. A scatterplot on the right side plots these two numbers against each other. The user has made a selection within the scatterplot; this highlights the corresponding data in both the lists.<a data-type="indexterm" data-primary="bar charts" data-secondary="in multiple linked views, interaction techniques" id="idm140386944193792"></a><a data-type="indexterm" data-primary="scatterplots" data-secondary="in multiple linked views, interaction techniques" id="idm140386944199536"></a></p>
+
+<figure class="width-75"><div id="multiview_crossfilter" class="figure">
+<img src="images/mdvi_0610.png" alt="mdvi 0610" />
+<h6><span class="label">Figure 6-10. </span>Cross-selection. The three views—two sorted bar charts and a scatterplot—are linked together. The user has selected a region of the scatterplot (grey box, orange dots), and the selected values correspondingly light up on the bar charts. This is based on the World Bank dataset.</h6>
+</div></figure>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="MLVs and the Operationalization Process"><div class="sect1" id="idm140386944190192">
+<h1>MLVs and the Operationalization Process</h1>
+
+<p>The different types of MLVs tend to be useful at different stages in the operationalization process.<a data-type="indexterm" data-primary="multiple linked views (MLVs)" data-secondary="and the operationalization process" id="idm140386944187280"></a><a data-type="indexterm" data-primary="operationalization" data-secondary="multiple linked views and" id="idm140386944186768"></a></p>
+
+<p>The SPLOM tends<a data-type="indexterm" data-primary="scatterplot matrices" data-secondary="in the operationalization process" id="idm140386944187680"></a> to be used early. It is designed to help an analyst dig around in an unfamiliar dataset, or to look at lots of different attributes and see whether there are any interesting correlations between them. SPLOMs are usually an exploratory tool, used when a user can’t yet decide which dimensions will make good partitions or measures. It can help clarify the nature of the data and identify which dimensions will be interesting to visualize and explore.</p>
+
+<p>Similarly, small multiples are a good way to rapidly scan how subsets of the data items compare to each other across several attributes.<a data-type="indexterm" data-primary="small multiples" data-secondary="in the operationalization process" id="idm140386944185808"></a> They are often useful at the early stages but continue to be useful later, when the final task is to compare aspects of the data by a partition.</p>
+
+<p>Interactive multiform views often occur in the middle parts of the operationalization process.<a data-type="indexterm" data-primary="interactions, linked-view" id="idm140386944183184"></a><a data-type="indexterm" data-primary="multiform views" data-secondary="use in the the operationalization process" id="idm140386944181008"></a> Brushing and linking between two views can help identify the parts of the data where interesting phenomena occur.<a data-type="indexterm" data-primary="overview+detail visualizations" data-secondary="in the operationalization process" id="idm140386944184656"></a> The middle part of analysis is also where overview+detail visualizations are helpful—when you know enough about the data to be able to identify an <em>interestingness</em> measure and can use it to more richly explore the details of individual data items.<a data-type="indexterm" data-primary="interestingness" id="idm140386944183824"></a> Overlays are great here too, when it is known which few attributes are likely to be most important.</p>
+
+<p>At the end of the operationalization, a dashboard is often the result of relentless pruning of ideas for proxies.<a data-type="indexterm" data-primary="dashboards" data-secondary="in the operationalization process" id="idm140386944176784"></a> Having examined the attributes and their interactions, the user now knows which proxies are useful for answering questions, and which attributes are most important. It begins to make sense to create multiple visualizations for different tasks. Each highly curated visualization helps to answer a definite and specific question.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Conclusion"><div class="sect1" id="idm140386944178864">
+<h1>Conclusion</h1>
+
+<p>Multiple linked views are design patterns that provide important support for making sense of complex and large datasets. Breaking up the data across multiple views avoids overwhelming a user with extremely dense visualizations, and also allows for optimization of each view based on the characteristics of the underlying data and task.</p>
+
+<p>These design patterns are often used in conjunction with each other. <a data-type="xref" href="ch07.html#casestudies_lync">Chapter 7</a> uses a variety of different visuals, with interactive linking between an overview-and-detail and a series of overlays. Similarly, <a data-type="xref" href="ch08.html#casestudies_fruitfly">Chapter 8</a> illustrates an example of an MLV system that combines an overview+detail with small multiples, small multiples with overlays, and a two-level overview flow.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Further Reading"><div class="sect1" id="FurtherReadingMultiview">
+<h1>Further Reading</h1>
+
+<p>Meyer, Miriah, Tamara Munzner, and Pfister Hanspeter. “MizBee: A Multiscale Synteny Browser.” <em>IEEE Transactions on Visualization and Computer Graphics</em> 15 (2009): 897–904.
+  This paper describes the MizBee system, which combines the overview+detail pattern with small multiples, overlays, and multiform views in a single tool to address a series of tasks in biology.<a data-type="indexterm" data-primary="multiple linked views (MLVs)" data-secondary="learning resources for" id="idm140386944174192"></a></p>
+<div style="page-break-after: always;"></div>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Datasets"><div class="sect2" id="idm140386944173504">
+<h2>Datasets</h2>
+
+<p>In addition to the <a data-type="indexterm" data-primary="datasets" data-secondary="used in multiple linked views (MLVs)" id="idm140386944167008"></a>datasets in <a data-type="xref" href="ch05.html#singleviews">Chapter 5</a>, this chapter also uses:</p>
+<dl>
+<dt>World Bank development data</dt>
+<dd>
+<p>Data from the World Bank about development indicators of countries, compiled from <a href="http://bit.ly/2B0VD2k">officially recognized international sources’ World Statistics eXplorer</a>.<a data-type="indexterm" data-primary="multiple linked views (MLVs)" data-startref="ix_MLV" id="idm140386944160496"></a></p>
+</dd>
+</dl>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+<div data-type="footnotes"><p data-type="footnote" id="idm140386944263152"><sup><a href="ch06.html#idm140386944263152-marker">1</a></sup> This visualization tool is discussed in <a href="http://doi.ieeecomputersociety.org/10.1109/TVCG.2009.167">“MizBee: A Multiscale Synteny Browser.”</a> See <a data-type="xref" href="#FurtherReadingMultiview">“Further Reading”</a>.</p></div></div></section></div>
+</body>
+</html>

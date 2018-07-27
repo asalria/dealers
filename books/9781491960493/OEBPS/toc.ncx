@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
+    <head>
+        <meta name="dtb:uid" content="9781491960493" />
+        <meta name="dtb:generator" content="epub-nicohaenggi"/>
+        <meta name="dtb:depth" content="1"/>
+        <meta name="dtb:totalPageCount" content="0"/>
+        <meta name="dtb:maxPageNumber" content="0"/>
+    </head>
+    <docTitle>
+        <text>Making Data Visual</text>
+    </docTitle>
+    <docAuthor>
+        <text>Danyel Fisher, Miriah Meyer</text>
+    </docAuthor>
+    <navMap>
+        
+                <navPoint id="tocxhtmlfile" playOrder="0" class="chapter">
+                    <navLabel>
+                        <text>Cover</text>
+                    </navLabel>
+                    <content src="cover.html"/>
+                </navPoint>
+        
+                <navPoint id="tocxhtmlfile" playOrder="0" class="chapter">
+                    <navLabel>
+                        <text>nav</text>
+                    </navLabel>
+                    <content src="toc01.html"/>
+                </navPoint>
+        
+                <navPoint id="tocxhtmlfile" playOrder="0" class="chapter">
+                    <navLabel>
+                        <text>Making Data Visual</text>
+                    </navLabel>
+                    <content src="titlepage01.html"/>
+                </navPoint>
+        
+                <navPoint id="tocxhtmlfile" playOrder="0" class="chapter">
+                    <navLabel>
+                        <text>Making Data Visual</text>
+                    </navLabel>
+                    <content src="copyright-page01.html"/>
+                </navPoint>
+        
+                <navPoint id="preface-idm140386945716976" playOrder="1" class="chapter">
+                    <navLabel>
+                        <text>Preface</text>
+                    </navLabel>
+                    <content src="preface01.html"/>
+                </navPoint>
+        
+                <navPoint id="chapter-idm140386945716352" playOrder="8" class="chapter">
+                    <navLabel>
+                        <text>1. Getting to an Effective Visualization</text>
+                    </navLabel>
+                    <content src="ch01.html"/>
+                </navPoint>
+        
+                <navPoint id="chapter-idm140386945645088" playOrder="13" class="chapter">
+                    <navLabel>
+                        <text>2. From Questions to Tasks</text>
+                    </navLabel>
+                    <content src="ch02.html"/>
+                </navPoint>
+        
+                <navPoint id="chapter-idm140386945514224" playOrder="24" class="chapter">
+                    <navLabel>
+                        <text>3. Data Counseling, Exploration, and Prototyping</text>
+                    </navLabel>
+                    <content src="ch03.html"/>
+                </navPoint>
+        
+                <navPoint id="chapter-idm140386945204032" playOrder="35" class="chapter">
+                    <navLabel>
+                        <text>4. Components of a Visualization</text>
+                    </navLabel>
+                    <content src="ch04.html"/>
+                </navPoint>
+        
+                <navPoint id="chapter-idm140386944851136" playOrder="43" class="chapter">
+                    <navLabel>
+                        <text>5. Single Views</text>
+                    </navLabel>
+                    <content src="ch05.html"/>
+                </navPoint>
+        
+                <navPoint id="chapter-idm140386944425728" playOrder="72" class="chapter">
+                    <navLabel>
+                        <text>6. Multiple and Coordinated Views</text>
+                    </navLabel>
+                    <content src="ch06.html"/>
+                </navPoint>
+        
+                <navPoint id="chapter-idm140386944366928" playOrder="84" class="chapter">
+                    <navLabel>
+                        <text>7. Case Study 1: Visualizing Telemetry to Improve Software</text>
+                    </navLabel>
+                    <content src="ch07.html"/>
+                </navPoint>
+        
+                <navPoint id="chapter-idm140386944159744" playOrder="98" class="chapter">
+                    <navLabel>
+                        <text>8. Case Study 2: Visualizing Biological Data</text>
+                    </navLabel>
+                    <content src="ch08.html"/>
+                </navPoint>
+        
+                <navPoint id="chapter-idm140386943967328" playOrder="107" class="chapter">
+                    <navLabel>
+                        <text>9. Conclusions</text>
+                    </navLabel>
+                    <content src="ch09.html"/>
+                </navPoint>
+        
+                <navPoint id="index-idm140386943816448" playOrder="108" class="chapter">
+                    <navLabel>
+                        <text>Index</text>
+                    </navLabel>
+                    <content src="ix01.html"/>
+                </navPoint>
+        
+                <navPoint id="tocxhtmlfile" playOrder="0" class="chapter">
+                    <navLabel>
+                        <text>About the Authors</text>
+                    </navLabel>
+                    <content src="colophon01.html"/>
+                </navPoint>
+        
+                <navPoint id="tocxhtmlfile" playOrder="0" class="chapter">
+                    <navLabel>
+                        <text>Colophon</text>
+                    </navLabel>
+                    <content src="colophon02.html"/>
+                </navPoint>
+        
+    </navMap>
+</ncx>

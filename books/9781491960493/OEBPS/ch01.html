@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>1. Getting to an Effective Visualization</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><section data-type="chapter" epub:type="chapter" class="pagenumrestart" data-pdf-bookmark="Chapter 1. Getting to an Effective Visualization"><div class="chapter" id="chapter_overview">
+<h1><span class="label">Chapter 1. </span>Getting to an Effective Visualization</h1>
+
+
+<p>Choosing or designing a good visualization is rarely a straightforward process. It is tempting to believe that there is one beautiful visualization that will show all the critical aspects of a dataset. <a data-type="indexterm" data-primary="designing effective visualizations" id="ix_effvis"></a>That the <em>right</em> visual representation will reveal hidden insights. That a perfect, simple, and elegant visualization—perhaps just a line chart or a well-chosen scatterplot—will show precisely what the important variable was and how it varied in precisely the way to illustrate a critical lesson.</p>
+
+<p>This is often the impression that we, at least, are left with after reading data science case studies. But in our experience, this does not match the reality of visual data analysis. <a data-type="indexterm" data-primary="insight, getting to" id="idm140386945642112"></a>It takes hard work, and trial and error, to get to an insightful visualization. We start by thinking about what we want to know, and we refine fuzzy questions into actionable, concrete tasks. We clean, reshape, and restructure the data into forms that we can put into a visualization. We work around limitations in the data, and we try to understand what the user wants to learn. We have to consider which visual representations to use and what interaction mechanisms to support. Along the way, we find other variables that tell us more about the dataset and that help clarify our thinking. And no single visualization is ever quite able to show all of the important aspects of our data at once—there just are not enough visual encoding channels.</p>
+
+<p>Designing effective visualizations presents a paradox. On the one hand, visualizations are intended to help users learn about parts of their data that they don’t know about. On the other hand, the more we know about the users’ needs and the context of their data, the better we can design a visualization to serve them. The process described in this book embraces this paradox: it leverages the knowledge users have of their datasets, the context the data lives in, and the ways it was collected—including its likely flaws, challenges, and errors—in order to figure out the aspects of it that matter.</p>
+
+<p>Put another way, this book is about the path from “I have some data…” to “We know this because of these clear, concise, and insightful visualizations.” We believe that creating effective visualizations is itself a process of exploration and discovery. A good visualization design requires a deep understanding of the problem, data, and users.</p>
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Getting to Insight"><div class="sect1" id="idm140386945627584">
+<h1>Getting to Insight</h1>
+
+<p>We most often work with other people that have a dataset they are trying to make sense of.<a data-type="indexterm" data-primary="insight, getting to" id="idm140386945625664"></a> The process of designing a visualization usually starts when people walk into our office.</p>
+<blockquote>
+<p>CLIENT: I have some data that I’d like to visualize. How should I draw it?</p></blockquote>
+
+<p>The client seems to expect us to pull a visualization off the shelf, to sculpt that perfect visualization. We almost always frustrate them by asking what they hope to see.</p>
+<blockquote>
+<p>Q: What is it about the data that you would like to visualize?</p>
+
+<p>CLIENT: I want to see how profitable our stores are.</p>
+
+<p>Q: What in your data indicates a store being profitable?</p>
+
+<p>CLIENT: It means that the store has lots of sales of high-profit items.</p>
+
+<p>Q: How does profit vary by store?</p></blockquote>
+
+<p>And so on.</p>
+
+<p>By the end of this process, we often find that the clients do not have a visualization problem, but an operationalization one. Their struggles to choose a visualization stem from a lack of clarity about which attributes of the data are most important and how those attributes relate to one another. Once they can describe how the data attributes relate to the question they are trying to answer, finding an appropriate visualization becomes much easier.</p>
+
+<p>We have learned over the years that designing effective visualizations to make sense of data <a data-type="indexterm" data-primary="designing effective visualizations" data-secondary="process of" id="idm140386945622352"></a>is not an art—it is a systematic and repeatable process. We have systematized this process into what we believe are reproducible and clear steps.</p>
+
+<p>This process tracks our understanding of four components:</p>
+<dl>
+<dt><em>Data</em></dt>
+<dd>
+<p>What data is available, and what does it mean? What does the data look like, and what are its important aspects?  Where did it come from, and why was it originally collected?<a data-type="indexterm" data-primary="data" data-secondary="understanding" id="idm140386945629968"></a></p>
+</dd>
+<dt><em>Tasks</em></dt>
+<dd>
+<p>What needs to happen with the data? What are the low-level questions and tasks that will support high-level goals?<a data-type="indexterm" data-primary="tasks" id="idm140386945628592"></a></p>
+</dd>
+<dt><em>Stakeholders</em></dt>
+<dd>
+<p>Who is involved with the data, the problem, and the goals?<a data-type="indexterm" data-primary="stakeholders" data-secondary="understanding" id="idm140386945618848"></a> What can they say about the problem to help design an effective visualization? Who will view the final visualization, and what sorts of things do we expect them to learn from it? What domain knowledge do they bring to the table? What answers would they find satisfying?</p>
+</dd>
+<dt><em>Visualization</em></dt>
+<dd>
+<p>How does the understanding of data, tasks, and stakeholders come together? What representations of this data will fulfill the tasks for the users?<a data-type="indexterm" data-primary="visualizations" data-secondary="understanding" id="idm140386945614192"></a></p>
+</dd>
+</dl>
+
+<p>Regardless of the visualization outcome, this process will almost certainly lead to new discoveries and insights. These discoveries  help to inform the operationalization, but they will also likely steer the process down new and unexpected paths. The guidance and framework in this book are meant to help identify opportunities for discovering new knowledge and to make an otherwise messy process a bit more structured.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Hotmap: Making Decisions with Data"><div class="sect1" id="idm140386945637488">
+<h1>Hotmap: Making Decisions with Data</h1>
+
+<p>As an example of how visualizations can help you to better understand a problem, and help an organization make decisions, we can look back to 2006.<a data-type="indexterm" data-primary="Hotmap" id="idm140386945615584"></a><a data-type="indexterm" data-primary="designing effective visualizations" data-secondary="Hotmap, making decisions with data" id="idm140386945611168"></a><a data-type="indexterm" data-primary="data" data-secondary="using to make decisions, Hotmap tool" id="idm140386945612560"></a> Microsoft was rolling out its new mapping tool, Virtual Earth, a zoomable world map.<a data-type="indexterm" data-primary="Virtual Earth" id="idm140386945609456"></a> The team behind Virtual Earth had lots of questions about how their users were using this new tool, so they collected usage data.</p>
+
+<p>The usage data was based on traditional telemetry: it had great information on what cities were most viewed, how many viewers were in “street” mode versus “photograph” mode, and even information about viewers’ displays. They  instrumented search and navigation, and they collected counts for the number of times that users looked at certain sentinel regions. And because Virtual Earth was built on top of a set of progressively higher-resolution image tiles, the team was also archiving server logs that tracked how often individual tiles were downloaded.</p>
+
+<p>Interviews with team members suggested that they did not have an intuitive notion of how their tool was being used. In conversation, one team member argued that people were likely to look at their own homes; another thought that the overhead photography would mostly be used over mountains. The goals were varied: they included seeing whether the user experience was well balanced across user needs and deciding how and where to invest in future rounds of photography.</p>
+
+<p>We addressed these questions with a visualization tool called Hotmap. <a data-type="xref" href="#hotmap_centralUS">Figure 1-1</a> shows a screen capture from the visualization tool, focusing on the central United States. Hotmap uses a <em>heatmap</em> encoding of the tile access values.<a data-type="indexterm" data-primary="heatmaps" id="idm140386945608160"></a> This is a visualization technique that uses a colormap to encode the access values at the geospatial locations of the tiles. Colored spots on the map are places where more users have accessed image tiles. The colormap is a logarithmic color scale, so bright spots have many more accesses than dim ones.</p>
+
+<figure><div id="hotmap_centralUS" class="figure">
+<img src="images/mdvi_0101.png" alt="mdvi 0101" />
+<h6><span class="label">Figure 1-1. </span>Hotmap, looking at the central United States. The white box surrounds an anomaly in South Dakota.</h6>
+</div></figure>
+
+<p>Some of the brightest areas correspond to major population centers—Chicago and Minneapolis on the right, Denver and Salt Lake City in the middle, and West Coast cities on the left. Near the center, though, is an anomalous shape: a bright spot where no big city exists. There is a star shape around the bright spot, and an arc of bright colors nearby. The spot is in a sparsely populated bit of South Dakota—there was no obvious reason to the team why users might zoom in there.</p>
+
+<p>That point is, however, very close to the center of a map of the continental US. In fact, the team learned that the center of the star corresponds to the center of the default placement of the map in many browsers. The bright spot with the star most likely corresponds to users sliding around after inadvertently zooming in, trying to figure out where they’ve landed; the arc seems to correspond to variations in monitor proportions.<a data-type="indexterm" data-primary="zoom sliders" id="idm140386945599648"></a></p>
+
+<p>As a result of this usability challenge, many mapping tools—including Bing Maps (the successor product to Virtual Earth)—no longer offer a zoom slider, which keeps users from accidentally zooming all the way in on a single click.<a data-type="indexterm" data-primary="Bing Maps" id="idm140386945597264"></a></p>
+
+<p>A second screen capture, shown in <a data-type="xref" href="#hotmap_null_island">Figure 1-2</a>, reveals a bright spot off the coast of Ghana. This spot exhibits the same star pattern created by users scrolling around to try to figure out what part of the map they are viewing. This spot is likely only bright because it is at 0 degrees latitude, 0 degrees longitude, a point that GIS tools run into often. While computers might find (0,0) appealing, it is unlikely that there is much there for the typical Virtual Earth user to find interesting.<sup><a data-type="noteref" id="idm140386945604656-marker" href="ch01.html#idm140386945604656">1</a></sup></p>
+
+<figure><div id="hotmap_null_island" class="figure">
+<img src="images/mdvi_0102.png" alt="Null Island" />
+<h6><span class="label">Figure 1-2. </span>Hotmap, looking at the map origin (0,0).</h6>
+</div></figure>
+
+<p>This second bright spot inspired a hunt for bugs. The team rapidly learned that Virtual Earth’s search facility would sometimes fail, and instead of returning an error message, typos and erroneous searches would sometimes redirect the user to (0,0). Interestingly, the bug had been on the backlog for some time because the team had decided that it was not likely to surface often. Seeing this image made it clear that some users really <em>were</em> being confused by the error, so the team prioritized the bug.</p>
+
+<p>Although the Virtual Earth team started out using the Hotmap visualization expecting to find out about how users interacted with maps, they gleaned much more than just a characterization of usage patterns. Like many—dare we say most?—new visualizations, the most interesting insights were those that the viewers were not anticipating to find.<sup><a data-type="noteref" id="idm140386945604016-marker" href="ch01.html#idm140386945604016">2</a></sup></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Where Visualization Is Useful"><div class="sect1" id="idm140386945616528">
+<h1>Where Visualization Is Useful</h1>
+
+<p>Is visualization the silver bullet to help us make sense of data?<a data-type="indexterm" data-primary="designing effective visualizations" data-secondary="deciding where visualization is  useful" id="idm140386945602000"></a> Not always.<a data-type="indexterm" data-primary="data analysis" data-secondary="deciding whether visualization is useful" id="idm140386945602608"></a> There are two questions to consider to help you decide if your data analysis problem is a good candidate for a visualization solution.</p>
+
+<p>First, <em>could the analysis tasks be supported with an algorithm</em>? A crisp task such as “I want to know the total number of users who looked at Seattle” suggests that an algorithm, statistical test, or even a table of numbers might be the best way to answer the question. On the other hand, “How do users explore the map?” is much fuzzier. Fuzzy tasks are great candidates for a visualization solution because they require you to look at the data from different angles and perspectives, and to be able to make decisions and inferences based on your own knowledge and understanding.</p>
+
+<p>The second question to consider is “Is all the necessary information contained in the dataset?” If there is information about the problem that is not in the dataset which requires an expert to interpret the data that is there, then visualization is a great solution. Going back to our fuzzy question about exploring a map, we can imagine that it is unlikely that there will be an explicit attribute in the data that classifies a user’s exploration style. Instead, answering this question requires someone to interpret other aspects of the data to bring knowledge to bear about what aspects of the data imply an exploration style. Again, visualization enables this sort of flexible and user-centric analysis.</p>
+
+<p>For all but the crispest questions about explicitly measured phenomena, visualization is probably a good tool to throw at a problem. In our experience, we have almost never come up against a problem that cannot benefit from some amount of visualization.</p>
+<div style="page-break-after: always;"></div>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Further Reading"><div class="sect1" id="further_reading_1">
+<h1>Further Reading</h1>
+
+<p>The Hotmap project is discussed in:</p>
+
+<ul>
+<li>
+<p>Fisher, Danyel. "<a href="http://ieeexplore.ieee.org/document/4376139/">Hotmap: Looking at Geographic Attention</a>.” IEEE Transactions on Visualization and Computer Graphics 13 (2007): 1184–1191.</p>
+</li>
+<li>
+<p>Fisher, <a data-type="indexterm" data-primary="designing effective visualizations" data-startref="ix_effvis" id="idm140386945576496"></a>Danyel. "<a href="https://www.microsoft.com/en-us/research/publication/the-impact-of-hotmap/">The Impact of Hotmap</a>.” The Infovis 2009 Discovery Exhibition. Redmond, WA: Microsoft, 2009.</p>
+</li>
+</ul>
+</div></section>
+
+
+
+
+
+
+
+<div data-type="footnotes"><p data-type="footnote" id="idm140386945604656"><sup><a href="ch01.html#idm140386945604656-marker">1</a></sup> So many datasets have references to (0,0) that GIS practitioners refer to that location as “null island.”</p><p data-type="footnote" id="idm140386945604016"><sup><a href="ch01.html#idm140386945604016-marker">2</a></sup> See <a data-type="xref" href="#further_reading_1">“Further Reading”</a> for other stories of how Hotmap has been used.</p></div></div></section></div>
+</body>
+</html>

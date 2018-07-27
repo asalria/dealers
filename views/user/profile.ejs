@@ -1,21 +1,25 @@
-  
-  <div class="row">
-      <img src="http://www.consumersdigest.com/images/sized/images/uploads/news/Wingfoot-240x208.jpg" alt="Profile pic">
-          <h3>User email:</h3>
-          <%= user.email %>
-      <br><br>
-      <div class="row">
-            <a href="/list"><button class="btn2 btn-warning">List dealers</button></a>
-            <a href="/create"><button class="btn2 btn-success">Create dealer</button></a>
-          <% if (user.role === 'ADMIN') { %>
-          <br><br>
-          <a href="/signup"><button class="btn2 btn-success">Create user</button></a>
-          <% } %>
-      </div>
+
+<div class="container justify-content-md-center border">
+    
+    <img src="/images/gy.png" alt="Profile pic">
+    <div class="row">
+            <h3>User email:</h3>
+            <%= user.email %>
+    </div>
+    <div class="row">
+        <a href="/list"><button class="btn2 btn-warning">List dealers</button></a>
+        <a href="/create"><button class="btn2 btn-success">Create dealer</button></a>
     </div>
     <br>
-    <div>
-            <a href="/logout"><button class="btn2 btn-danger">Logout</button></a>
+    <div class="row justify-content-md-center">
+            <% if (user.role === 'ADMIN') { %>
+                <br>
+                <a href="/signup"><button class="btn2 btn-success">Create user</button></a>
+            <% } %>
     </div>
+    <div class="row">
+        <br>
+        <a href="/logout"><button class="btn2 btn-danger">Logout</button></a>
+    </div>
+    
 </div>
-

@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>8. Case Study 2: Visualizing Biological Data</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><section data-type="chapter" epub:type="chapter" data-pdf-bookmark="Chapter 8. Case Study 2: Visualizing Biological Data"><div class="chapter" id="casestudies_fruitfly">
+<h1><span class="label">Chapter 8. </span>Case Study 2: Visualizing Biological Data</h1>
+
+
+<p><a data-type="xref" href="ch07.html#casestudies_lync">Chapter 7</a> described a fairly straightforward case of a business intelligence challenge.<a data-type="indexterm" data-primary="case studies" data-secondary="visualizing biological data" id="ix_cs2"></a><a data-type="indexterm" data-primary="visualizing biological data, case study" id="ix_visbio"></a> This chapter chooses a somewhat more complex example from a very different domain. The question in this scenario was a challenge to operationalize: it required substantial scientific background. The complex scientific data meant that both the meaning and use of the data required more technical context and collaboration to operationalize.<a data-type="indexterm" data-primary="biological data, visualizing" data-see="visualizing biological data, case study" id="idm140386943965360"></a><a data-type="indexterm" data-primary="fruitfly case study" data-see="visualizing biological data, case study" id="idm140386943964480"></a></p>
+
+<p>This project was a collaboration with a team of biologists, led by Prof. Angela DePace at the Harvard Medical School. Miriah and her colleagues worked with this group for two years. During that time Miriah carried out a series of data counseling interviews, getting to know the ways that the biologists approached their data. In the process she developed a series of visualization prototypes, and the scientists used the prototypes to progressively refine their operationalization. These prototypes initially helped Miriah to understand the problem, then later to help shape the biologists’ analysis. The final version became a vital component of the group’s analysis pipeline.</p>
+
+<p>This chapter illustrates how the techniques presented in <a data-type="xref" href="ch06.html#multiview">Chapter 6</a> allowed the scientists to organize their data and to make sense of how a multitude of attributes relate to each other. The result used various design patterns (overview+detail, small multiples, interactive multiform views, and overlays) to give the scientists a detailed, intensive understanding of their data. In the course of building prototypes, the scientists realized that there were more ways to analyze their data than they had expected. The visualization tool allowed them not only to learn new things about their data but to think about their analysis differently.</p>
+
+<p>This chapter simplifies the process, and leaves out some of the data counseling iterations in order to make the case study reasonable in length and scope. A fuller description can be found in an academic paper about the project (see <a data-type="xref" href="#fruitfly_further_reading">“Further Reading”</a>).</p>
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Background"><div class="sect1" id="idm140386943960816">
+<h1>Background</h1>
+
+<p>The DePace Lab focuses on developmental biology, and is particularly interested in understanding how genes influence the physical features of animals.<a data-type="indexterm" data-primary="visualizing biological data, case study" data-secondary="project background" id="idm140386943956864"></a> The scientists there are studying a set of fundamental <em>toolkit</em> genes—genes that are shared across many species, from flies to cats to apes to humans, and control the development of body parts in developing embryos.<a data-type="indexterm" data-primary="genetic data" data-secondary="visualizing" data-seealso="visualizing biological data, case study" id="idm140386943959408"></a><a data-type="indexterm" data-primary="toolkit genes, study of" id="idm140386943955808"></a> What is remarkable about these genes is that they are nearly the same in many species, and yet these species are physically very different. For example, the genes that control the development of eyes are very similar across a wide range of species even though a human’s eyes are different from a cat’s eyes, or a fly’s.</p>
+
+<p>A grand challenge in biology is understanding how these sets of similar genes produce such different results. Biologists know that differences between species are related to when and where these genes are turned on and off in developing embryos. What they do not yet understand is how these differences relate to physical traits or how these differences are encoded in the genome. Shedding light on these questions is the focus of the DePace Lab.</p>
+
+<p>The scientists at the DePace Lab tackle these questions by studying fruit flies. They measure which genes are turned on or off, or more specifically, <em>how much</em> genes are on or off—called gene expression— in developing fruit fly embryos. Their data consists of gene expression measurements for about 50 genes, measured at 6 time points for every cell in an embryo. They are collecting this data for multiple different species of flies. By comparing the data across the different species, the lab hopes to link differences in gene expression to differences in physical features.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Setting the Context"><div class="sect1" id="idm140386943940800">
+<h1>Setting the Context</h1>
+
+<p>The project began when a mutual colleague connected Miriah and Angela DePace. Angela was in the process of running experiments and collecting data, and was looking for new ways to analyze and compare datasets.<a data-type="indexterm" data-primary="visualizing biological data, case study" data-secondary="setting the context" id="idm140386943954192"></a> A lunch meeting turned into a tour of the DePace Lab, followed by a series of informal interviews with members of the lab that included walkthroughs of their data analysis pipeline.</p>
+
+<p>The group were already creating static visualizations in MATLAB to examine their data.<a data-type="indexterm" data-primary="MATLAB, visualizations in" id="idm140386943942688"></a> They were overwhelmed with those first plots: dozens of variations of parameters looking at multiple types of data. There were too many different plots to understand, and they hoped Miriah could help them organize the way they thought about the data. Miriah rolled up her sleeves and took a look.</p>
+
+<p>The researchers were comparing datasets—the gene expression measurements for different<a data-type="indexterm" data-primary="datasets" data-secondary="comparison in fruit flies, case study" id="idm140386943952032"></a> embryos—by trying to find cells in one embryo that had significantly different gene expression from cells in another embryo.<a data-type="indexterm" data-primary="outlier cells" id="idm140386943940192"></a> They had developed an algorithm for finding these so-called <em>outlier cells</em>.</p>
+
+<p>To analyze where the resulting outliers turned up in a particular embryo, the group visualized the data using a flattened, 2D representation of the embryo. The representation was created by mapping each cell in the football-shaped embryo to a 2D map where the head cells are on the left, tails cells on the right, and the back down the middle with the belly split along the top and bottom.<a data-type="indexterm" data-primary="3D data" data-secondary="visualization in fruit flies case study" id="idm140386943952816"></a></p>
+
+<p>While the most natural representation of the data might seem to be a 3D view, the group preferred these 2D views because it was easier to quickly get a gist of the data than it was with a 3D representation that required interaction to spin the embryo around to see all sides. <a data-type="xref" href="#parameterization">Figure 8-1</a> shows the cells represented as a 3D embryo at the top, and the flattened, 2D representation is at the bottom.<a data-type="indexterm" data-primary="outlier cells" data-secondary="visualizations in 2D and 3D" id="idm140386943938208"></a></p>
+
+<figure class="width-75"><div id="parameterization" class="figure">
+<img src="images/mdvi_0801.png" alt="mdvi 0801" />
+<h6><span class="label">Figure 8-1. </span>The top image shows the locations of cells in an embryo in a 3D view. The cells are colored here according an associated gene expression value. The bottom image shows the same embryo as a flattened, 2D view: head at the left, tail on the right; the belly wraps on the top and bottom edges. The images were generated using the <a href="http://bit.ly/2j2Rns8">PointCloudXplore</a> visualization software.</h6>
+</div></figure>
+
+<p>In <a data-type="xref" href="#TwoDEmbryoOutliers">Figure 8-2</a>, the locations of the outliers from one embryo are shown using the 2D representation. The first thing to notice is that the outliers appear to cluster in regions as opposed to being scattered randomly. This was interesting to the biologists because cells that are spatially near each other are likely to have similar gene expression—a clustering algorithm found this to be true. The clusters are visually encoded using shape and color: all the pink triangle outliers are similar to each other, the blue circles are similar, and so on. The implication of this similarity is that whole groups of cells in one embryo could be significantly different from cells in another embryo.</p>
+
+<figure class="width-75"><div id="TwoDEmbryoOutliers" class="figure">
+<img src="images/mdvi_0802.png" alt="mdvi 0802" />
+<h6><span class="label">Figure 8-2. </span>A visualization of outlier cells in an embryo using the 2D representation. Each point—either black or encoded with color+shape—is a single outlier cell.  Each combination of color+shape is a clustered group, so all the <em>teal circles</em> or the <em>pink triangles</em> are in one group. Image courtesy of Angela DePace.</h6>
+</div></figure>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Zooming in a Level"><div class="sect2" id="idm140386943930304">
+<h2>Zooming in a Level</h2>
+
+<p>Next, the biologists wanted to understand more specifically which genes were different in the outlier cells.<a data-type="indexterm" data-primary="data counseling" data-secondary="in fruit flies case study" id="ix_dcouns"></a><a data-type="indexterm" data-primary="visualizing biological data, case study" data-secondary="zooming in on the data" id="idm140386943928960"></a><a data-type="indexterm" data-primary="outlier cells" data-secondary="understanding more specifically genetic differences in" id="idm140386943928448"></a> In this project, a cell is characterized by a number of genes, which are measured at a number of different time points.</p>
+
+<p>They created heatmap visualizations like the one shown in <a data-type="xref" href="#heatmap">Figure 8-3</a> to examine the gene expression data of the outliers. The heatmap encodes gene expression values using color.<a data-type="indexterm" data-primary="heatmaps" data-secondary="of outlier cells’ gene expressions in fruit flies case study" id="idm140386943922272"></a> Each column corresponds to a single cell, and the rows are time points and genes. Grouped columns correspond to the clusters of cells in the outlier cell plot in <a data-type="xref" href="#TwoDEmbryoOutliers">Figure 8-2</a>, such as the pink triangles and teal circles. This visualization allowed the biologists to characterize the clusters of cells based on the patterns of gene expression. For example, all cells in group <em>bx</em>—the third column, which corresponds to the blue x’s—are expressed fairly strongly at every time point for the <em>fkh</em> gene.</p>
+
+<figure class="width-50"><div id="heatmap" class="figure">
+<img src="images/mdvi_0803.png" alt="mdvi 0803" />
+<h6><span class="label">Figure 8-3. </span>Small-multiples display of the outlier cells’ gene expression measurements partitioned by the cluster groups. Clusters of cells are the columns; genes + time points are the rows. This view is linked to <a data-type="xref" href="#TwoDEmbryoOutliers">Figure 8-2</a> through labels: the blue circles correspond to the column <em>bo</em> and the blue x’s to the column bx. Image courtesy of Angela DePace.</h6>
+</div></figure>
+
+<p>Characterizing the gene expression of each cluster was just one part of the solution; however, the biologists also needed to be able to characterize how this gene expression is <em>different</em> from the corresponding cells in another embryo. For each cell in the heatmap, they would create a corresponding heatmap, visualizing the gene expression data for the most similar cells in the other embryo. The result was hundreds of heatmaps. The group was overwhelmed and had trouble making sense of the pile of data.</p>
+<aside data-type="sidebar" epub:type="sidebar"><div class="sidebar" id="idm140386943913008">
+<h5>Starting from Existing Material</h5>
+<p>It is common for groups to have created visualizations that address some of the challenges they face.<a data-type="indexterm" data-primary="visualizations" data-secondary="starting from existing material" id="idm140386943908336"></a> Understanding why these existing artifacts were created and where their limitations are can be an invaluable part of the data counseling process. In this case, the fact that the team was hitting a wall in organizing the mass of visualizations they had created was a good indication that a more nuanced, bespoke solution was in order.<a data-type="indexterm" data-primary="data counseling" data-secondary="in fruit flies case study" data-startref="ix_dcouns" id="idm140386943908784"></a></p>
+</div></aside>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Improving the Existing Approach"><div class="sect1" id="idm140386943943408">
+<h1>Improving the Existing Approach</h1>
+
+<p>We spent some time watching the scientists working with their visualizations and trying to understand what made this process difficult.<a data-type="indexterm" data-primary="visualizing biological data, case study" data-secondary="improving the existing approach" id="ix_visbioimprexis"></a> We designed our first prototype to overcome the challenge of having to compare hundreds of heatmaps.</p>
+
+<p>We observed that the scientists would use the 2D outlier cell view to ground their analysis of the heatmaps. For each cluster of cells in the 2D view, they would examine the corresponding set of heatmaps. This would entail flipping between the sheets of paper that represented the different heatmaps. This task of orientation—“what point in visualization 2 corresponds to this point in visualization 1?”—suggests an MLV design pattern that links two views together via user interaction.<a data-type="indexterm" data-primary="multiple linked views (MLVs)" data-secondary="indication of need for, in fruit flies case study" id="idm140386943905776"></a> We wanted to reduce the feeling of being overwhelmed by the sheer volume of comparisons they were doing, which suggested an overview+detail design pattern that allows a user to get details on demand. The fact that the scientists would refer back to the 2D view (<a data-type="xref" href="#TwoDEmbryoOutliers">Figure 8-2</a>) suggested that this visualization would make a great overview.</p>
+
+<p>We built our first software prototype in <a href="https://www.processing.org">Processing</a>.<a data-type="indexterm" data-primary="overview+detail visualizations" data-secondary="in software prototype for fruit flies case study" id="idm140386943898928"></a> This prototype, shown in <a data-type="xref" href="#MulteeSum_v1">Figure 8-4</a>, is an MLV system consisting of both a multiform component and an overview+detail component. The left two views represent different views of the overall data. The leftmost is a heatmap that shows the gene expression values for all of the outlier cells, again partitioned based on the clustered sets of outliers; the middle view shows the spatial position in 2D of the outlier cells within the context of the complete set of embryo cells. Selecting a cluster in the heatmap highlights the associated cells in the spatial view. The middle view also serves as an overview of the data, where individual cells can be selected, causing expression profile details about those cells to be shown in the rightmost detail view. This detail view additionally shows a heatmap of the corresponding cells against which the selected cell was compared.</p>
+
+<figure><div id="MulteeSum_v1" class="figure">
+<img src="images/mdvi_0804.png" alt="mdvi 0804" />
+<h6><span class="label">Figure 8-4. </span>Screenshot of the first interactive software prototype we created. This tool used both the multiform and overview+detail design patterns for linked views. A video of this prototype in action can be found at <a href="http://bit.ly/2jMnZm5">the book’s website</a>.</h6>
+</div></figure>
+
+<p>In short, the prototype used the group’s existing visualizations but replaced the manual look-ups between multiple sheets of paper with interactivity in software.</p>
+
+<p>We deployed this prototype to the group. Three of the lab members integrated it into their data analysis workflow, replacing their use of the static plots with the new tool. After a week of use, we went back and conducted several contextual interviews with the group to understand how the interactivity impacted their analysis and understanding. The interviews revealed that the tool allowed them study individual outlier cells in detail and easily compare an outlier to the set of corresponding cells in order to understand what differences in the gene expression patterns exist. These capabilities led the group to come to the conclusion that the outlier detection algorithm was too restrictive, resulting in a rethinking of their computational approach.<a data-type="indexterm" data-primary="visualizing biological data, case study" data-secondary="improving the existing approach" data-startref="ix_visbioimprexis" id="idm140386943891600"></a></p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Similarity, Not Outliers"><div class="sect1" id="idm140386943883648">
+<h1>Similarity, Not Outliers</h1>
+
+<p>We had to revisit the operationalization. Instead of using an outlier detection algorithm to understand how the embryos differed, the group decided on a looser approach that simply characterized how similar each cell in one embryo was compared to corresponding cells in the other embryo.<a data-type="indexterm" data-primary="visualizing biological data, case study" data-secondary="identifying similarity of embryonic cells, not outliers" id="idm140386943890624"></a><a data-type="indexterm" data-primary="outlier cells" data-secondary="identifying similarity of cells instead of outliers" id="idm140386943889776"></a> The task then became finding cells with low similarity. We updated the overview in the middle of the prototype to show a measure of similarity (our interestingness measure) for every cell in the embryo—an example of this view is shown in <a data-type="xref" href="#all_cells_similarity">Figure 8-5</a>. This similarity was computed from comparisons with the set of corresponding cells in the comparison embryo. This color-coding helped the group to locate the cells that were most different and to view the details of those cells on demand.</p>
+
+<figure class="width-50"><div id="all_cells_similarity" class="figure">
+<img src="images/mdvi_0805.png" alt="mdvi 0805" />
+<h6><span class="label">Figure 8-5. </span>An updated 2D view of all the cells in an embryo; each cell is now color-coded by how similar it is to the most similar nearby cell in the other embryo. This visualization shows patterns of similarity and dissimilarity across the embryo.</h6>
+</div></figure>
+
+<p>The refined prototype let the group quickly explore many more different cells than the first version, and led them to make some interesting biological observations. Their exploration also highlighted that the experimental measurements from one of the species was plagued with low-level noise, causing the biologists to go back and modify their experimental procedures and recapture the data.</p>
+<aside data-type="sidebar" epub:type="sidebar"><div class="sidebar" id="idm140386943881536">
+<h5>Visualization for Debugging Data</h5>
+<p>The situation described here is not unusual. Almost every experience we have had with visualization has involved discovering challenges<a data-type="indexterm" data-primary="visualizations" data-secondary="for debugging data" id="idm140386943878624"></a><a data-type="indexterm" data-primary="debugging data, visualizations for" id="idm140386943886432"></a> in the data available and errors in the data collection and cleaning process, and forcing us to reconsider the operationalization. This is a healthy process—and a strong argument for getting to the data as soon as possible.</p>
+</div></aside>
+
+<p>Using this prototype, the group began asking new questions of their data: what would a different similarity metric reveal? Could a different measure other than gene expression similarity help find cells of interest? How would their understanding change if they were to compare across multiple embryos?</p>
+
+<p>In short, the interactive visualization caused the biologists to brainstorm about many new types of questions. The design of the tool, namely the overview+detail components, guided the group’s framing of these questions in terms of using a metric to guide the investigation into a set of cells of interest.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="A Final Version"><div class="sect1" id="idm140386943871776">
+<h1>A Final Version</h1>
+
+<p>We now knew that we would want to let the biologists play with different ways to compute similarity.<a data-type="indexterm" data-primary="visualizing biological data, case study" data-secondary="final version" id="idm140386943878224"></a> We wanted to increase the flexibility of the tool and to allow the group to continue to expand the questions they wanted to answer.</p>
+
+<p>We also wanted to revisit the visualizations themselves and apply good visualization design principles. One of the first changes we proposed to the group was to move away from using color to encode the gene expression measurements. Instead, we suggested using a specific temporal visualization to express the six time points for each gene.</p>
+<div style="page-break-after: always;"></div>
+
+<p>Thus, we moved away from a heatmap view for a single cell’s gene expression measurements:</p>
+
+<figure><div id="single_cell_heatmap" class="figure">
+<img src="images/mdvi_08in01.png" alt="mdvi 08in01" />
+<h6></h6>
+</div></figure>
+
+<p>And instead, visualized it using<a data-type="indexterm" data-primary="line plots" id="idm140386943869296"></a> line plots:</p>
+
+<figure><div id="single_cell_curvemap" class="figure">
+<img src="images/mdvi_08in02.png" alt="mdvi 08in02" />
+<h6></h6>
+</div></figure>
+
+<p>To compare gene expression across multiple cells, we created a small-multiples visualization<a data-type="indexterm" data-primary="small multiples" data-secondary="curvemap visualization in fruit flies case study" id="idm140386943864528"></a> of the line plots, which we call a <em>curvemap</em>.<a data-type="indexterm" data-primary="curvemaps" id="idm140386943866208"></a> In the curvemap shown in <a data-type="xref" href="#curvemap">Figure 8-6</a>, we partitioned the data by gene along the columns, and by cells along the rows. This small-multiples view allowed us to stack up a set of line plots for user-selected cells that a user can quickly scan down, for each gene, to look for detailed differences between the cells.</p>
+
+<figure><div id="curvemap" class="figure">
+<img src="images/mdvi_0806.png" alt="images/fruitfly/curvemap.png" />
+<h6><span class="label">Figure 8-6. </span>A curvemap of data, where the rows are cells and the columns are genes. The topmost row is a user-selected cell of interest, with the rest of the rows showing data for comparison cells. Scanning down the columns shows that the gt gene values are noticeably different over time in the comparison cells, while the ftz gene looks much more similar.</h6>
+</div></figure>
+
+<p>This visualization was a big change. The group initially resisted the new way of looking at the gene expression values; they were accustomed to the color-based heatmap. Once we showed them mock-ups of the new visualization using the group’s <em>actual data</em>, however, they agreed that the new representation was easier to interpret.</p>
+
+<p>It is important to sketch and prototype with actual data whenever possible in order to get buy-in from stakeholders, as well as to ensure that the real data does not break the design.</p>
+
+<p>The new prototype again uses the overview+detail display from the original prototype to allow users to<a data-type="indexterm" data-primary="overview+detail visualizations" data-secondary="in fruit flies case study" id="idm140386943857184"></a> navigate to the cells they are most interested in studying in detail—only this time, the detail view is a curvemap (<a data-type="xref" href="#MulteeSum_v2">Figure 8-7</a>). In this new tool, the scientist would select a cell in the 2D cell view; the system would then update the detailed view on the right to show that cell’s gene expression <a data-type="indexterm" data-primary="multiple linked views (MLVs)" data-secondary="in final version of software for fruit flies case study" id="idm140386943854224"></a>along with the set of cells it corresponds to in the comparison embryo. A video of the tool in action can be found at <a href="http://bit.ly/2BxP0kE">the book’s website</a>.</p>
+
+<figure><div id="MulteeSum_v2" class="figure">
+<img src="images/mdvi_0807.png" alt="images/fruitfly/MulteeSum_v2.png" />
+<h6><span class="label">Figure 8-7. </span>The final tool designed for the lab—MulteeSum—uses a variety of MLV patterns: overview+detail, small multiples, overlays, and multiform views. The tool also supports flexible upstream computations of metrics that compare cells. A video of the tool in action can be found on <a href="http://bit.ly/2BxP0kE">the book’s website</a>.</h6>
+</div></figure>
+
+<p>It turned out to be difficult to scan through a vertical column of <em>many</em> line charts. In response to feedback from the biologists, we augmented the small multiples display with overlay plots at the bottom of each column. These overlays support direct comparison of the time curves and make it easy to see differences. For example, the <em>hb</em> gene curve expresses very differently in the test cell (shown in red) from  its most similar neighbors (shown in black). These overlays are important in the characterization of differences in when and where genes are expressed, which get back to the lab’s high-level task.</p>
+
+<p>This system supports the biologists in experimenting with different similarity metrics. The biologists can compute a variety of similarity metrics offline and load them all into the visualization tool. The tool takes in the multiple metrics and supports their investigation with another layer of overview that lets the biologist select a specific metric—this overview, in the upper left of the tool, is itself another small multiples display of available similarity metrics.</p>
+
+<p>We created this <a data-type="indexterm" data-primary="Processing" data-secondary="interactive prototype for fruit flies study" id="idm140386943850256"></a>interactive prototype in Processing and deployed it, along with a specification for a generic file format to support the upstream similarity computations, to the group. We followed up with the lab several weeks after deployment. The resulting tool supported a much broader set of analysis goals than we had initially imagined at the start of the collaboration, and is now one of the primary tools used by the DePace Lab as they analyze their data and continue their biological analysis.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Conclusion"><div class="sect1" id="idm140386943885632">
+<h1>Conclusion</h1>
+
+<p>The success of this project can be traced to several strategies. First, we needed to acquire a relatively deep understanding of the problem domain of the lab before we could actually understand how to build better tools. Interviews and observations got us part of the way there, but actually digging into the data by building a prototype helped in solidifying our understanding of the tasks the group were doing, and needed to do.</p>
+
+<p>Second, we were able to get started by beginning with the existing visualization approach and searching for places where it ran into challenges. In this case, we took the existing views the group were creating and made them interactive.</p>
+
+<p>The process of visualization taught the biologists more about the work they were carrying out than simply making sense of the data at hand. Only after we had built a visualization centered on outliers did they realize that outliers were an insufficiently general proxy to help them address their questions. Seeing their data in a new way led to a reformulation of the questions they were asking in the first place. It also identified significant errors in the data that they went back and corrected through new experimental procedures.</p>
+
+<p>There is always a tension between the desire to maintain familiar visual patterns and the possibility that rejecting them will illuminate new issues. Our design maintained the 2D layout of cells, for example. On the other hand, changing from a heatmap to a curvemap helped clarify the different gene patterns and allowed the biologists to visually cluster genes together.</p>
+
+<p>And finally, although not explicitly covered in this summary of the project, we iterated with the lab with many lo-fi prototypes, from sketches to mock-ups in Illustrator.<a data-type="indexterm" data-primary="low-fidelity (lo-fi) prototypes" data-secondary="in fruit flies case study" id="idm140386943840000"></a> The software prototypes were also developed with a throwaway mentality that let us avoid getting bogged down in implementation details and instead focus on getting our ideas into the hands of our users quickly. We found that it was important to present new ideas to the group with their own data, such as the shift from heatmaps to curvemaps. This allowed the group to engage with ideas as they would in their daily workflow, as well as allowing us to ensure that the real data would not break our design ideas. Watching the videos of our first interactive version and the final one, available at <a href="http://bit.ly/2BxP0kE">the book’s website</a>, gives a sense of how the technology changed over the course of the collaboration.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Further Reading"><div class="sect1" id="fruitfly_further_reading">
+<h1>Further Reading</h1>
+
+<p>Figures <a data-type="xref" data-xrefstyle="select:labelnumber" href="#TwoDEmbryoOutliers">8-2</a> and <a data-type="xref" data-xrefstyle="select:labelnumber" href="#heatmap">8-3</a> courtesy of Angela DePace.</p>
+
+<p>The <a href="http://www.cs.utah.edu/~miriah/multeesum/">tool discussed in this chapter</a> <a data-type="indexterm" data-primary="visualizing biological data, case study" data-secondary="learning resources for" id="idm140386943833632"></a>is described in an academic paper: see Meyer, Miriah et al., “MulteeSum: A Tool for Comparative Spatial and Temporal Gene Expression Data.” <em>IEEE Transactions on Visualization and Computer Graphics</em> 16 (2010): 908–917.<a data-type="indexterm" data-primary="genetic data" data-secondary="visualizing" data-tertiary="learning resoures for" id="idm140386943830992"></a></p>
+
+<p>The biologists’ research is described in Fowlkes, Charless et al., “A Conserved Developmental Patterning Network Produces Quantitatively Different Output in Multiple Species of Drosphila.” <em>PLoS Genetics</em> 7 (2011): e1002346.<a data-type="indexterm" data-primary="case studies" data-secondary="visualizing biological data" data-startref="ix_cs2" id="idm140386943827136"></a><a data-type="indexterm" data-primary="visualizing biological data, case study" data-startref="ix_visbio" id="idm140386943825856"></a></p>
+</div></section>
+
+
+
+
+
+
+
+</div></section></div>
+</body>
+</html>

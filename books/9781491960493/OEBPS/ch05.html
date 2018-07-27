@@ -1,0 +1,1090 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>5. Single Views</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><section data-type="chapter" epub:type="chapter" data-pdf-bookmark="Chapter 5. Single Views"><div class="chapter" id="singleviews">
+<h1><span class="label">Chapter 5. </span>Single Views</h1>
+
+
+<p>It does not necessarily take a sophisticated visual representation to make a compelling point or understand a complex dataset.<a data-type="indexterm" data-primary="single views" id="ix_sinvi"></a> Many of the most discussed, most viral, and most interesting visualizations are based on basic chart types. In this chapter, we’ll take a look at some of the familiar core chart types. This is well-trodden territory—a sample of some different approaches can be found in <a data-type="xref" href="#FurtherReadingSingleview">“Further Reading”</a>, including attempts to taxonomize the space in different ways.</p>
+
+<p>This chapter takes a somewhat different approach to organizing core chart types. It is organized around the things that the analyst knows, and wants to know, about the data. This follows from the process of operationalizing the data (<a data-type="xref" href="ch02.html#operationalization">Chapter 2</a>), interviewing users (<a data-type="xref" href="ch03.html#DataCounseling">Chapter 3</a>), and understanding the data’s shape and the actions we can take with it (<a data-type="xref" href="ch04.html#ComponentsOfVisualization">Chapter 4</a>). The operationalization has helped reveal something about <em>how the data is structured</em> and <em>what questions there are about it.</em>  This knowledge can be used to select chart types based on specific data questions.</p>
+
+<p>Depending on the analyst’s task and question, visualizations can emphasize different results from the same dataset. For example, the United States Consumer Financial Protection Bureau (CFPB) has released information about consumer complaints and how they were resolved across a number of different financial products. Among other columns, the data describes the class of financial products to which a complaint applies and the type of relief that the complaint received. The examples in the following figures aggregate that data to just three dimensions: the product, the number of claims that had some form of relief, and the number of claims that did not.</p>
+<aside data-type="sidebar" epub:type="sidebar"><div class="sidebar" id="idm140386944813552">
+<h5>Data Sources and Demos</h5>
+<p>The data sources used in this chapter were collected from publicly available repositories.<a data-type="indexterm" data-primary="data sources (for this book)" id="idm140386944809648"></a> The raw data is cited in <a data-type="xref" href="#FurtherReadingDatasets">“Datasets”</a> and on <a href="https://resources.oreilly.com/examples/0636920041320">the book’s website</a>. These examples are not meant to be used to draw broad conclusions; in many cases, the data is simplified for illustrative purposes.<a data-type="indexterm" data-primary="website for this book" id="idm140386944807296"></a></p>
+
+<p>Interactive Vega and VegaLite code to create most of the visualizations in this chapter and in <a data-type="xref" href="ch06.html#multiview">Chapter 6</a> can also be found on the book’s website.</p>
+</div></aside>
+
+<p>Different chart types support different types of questions.<a data-type="indexterm" data-primary="charts" data-secondary="different types supporting different questions" id="idm140386944806240"></a><a data-type="indexterm" data-primary="scatterplots" id="idm140386944803968"></a> If the analyst wants to see how two different groups compare relative to each other, a scatterplot (<a data-type="xref" href="#ch6_img1">Figure 5-1</a>) might be an appropriate choice. If the numbers are components of a larger value, they can be added together to get a stacked bar chart (<a data-type="xref" href="#ch6_img2">Figure 5-2</a>).<a data-type="indexterm" data-primary="clustered bar charts" id="idm140386944808016"></a> Conversely, to compare the numbers to <em>each other</em>, the analyst might choose a clustered bar chart (Figures <a data-type="xref" data-xrefstyle="select:labelnumber" href="#ch6_img3">5-3</a> and <a data-type="xref" data-xrefstyle="select:labelnumber" href="#ch6_img4">5-4</a>).</p>
+
+<figure><div id="ch6_img1" class="figure">
+<img src="images/mdvi_0501.png" alt="mdvi 0501" />
+<h6><span class="label">Figure 5-1. </span>A scatterplot emphasizes the relationship between cases that received relief and those that did not for five different products.</h6>
+</div></figure>
+
+<p>​</p>
+
+<figure class="width-75"><div id="ch6_img2" class="figure">
+<img src="images/mdvi_0502.png" alt="mdvi 0502" />
+<h6><span class="label">Figure 5-2. </span>A stacked bar chart emphasizes the total number of complaints.</h6>
+</div></figure>
+
+<figure class="width-75"><div id="ch6_img3" class="figure">
+<img src="images/mdvi_0503.png" alt="mdvi 0503" />
+<h6><span class="label">Figure 5-3. </span>A clustered bar chart emphasizes the contrast between the number of people who requested relief and those who attained it.</h6>
+</div></figure>
+
+<figure class="width-75"><div id="ch6_img4" class="figure">
+<img src="images/mdvi_0504.png" alt="mdvi 0504" />
+<h6><span class="label">Figure 5-4. </span>A different clustering emphasizes the different sizes of the populations who didn’t receive relief (and the similarity of those who did).</h6>
+</div></figure>
+
+<p>The list of visuals in this section can never be exhaustive, and new chart types are being created all the time. <a data-type="indexterm" data-primary="stacked bar charts" id="idm140386944787952"></a>This set, however, addresses many of the major categories and the vast majority of charts found in the wild. The list of charts is arranged by a set of common data questions according to which they are most effective at supporting.</p>
+
+<p>This chapter first gives a quick primer of perceptual concepts that underlie the construction of these basic charts. After that, the charts are organized by data question. An overview of that organization is shown in <a data-type="xref" href="#overviewtable">Table 5-1</a>. The language here is intentionally informal because it is meant to work as a reference for helping to map an operationalization to visualization solutions.</p>
+
+<p><a data-type="xref" href="#overviewtable">Table 5-1</a> uses the data types from <a data-type="xref" href="ch04.html#types_of_data">“Types of Data”</a>. <em>C</em> is for categorical, <em>Q</em> for continuous (quantitative), and <em>O</em> for ordinal data. <em>V</em> represents any data type that can be mapped to a drawing attribute, like color or line thickness. <a data-type="indexterm" data-primary="data" data-secondary="types of" id="idm140386944778688"></a><a data-type="indexterm" data-primary="quantitative data" data-seealso="continuous data" id="idm140386944778176"></a><a data-type="indexterm" data-primary="categorical data" id="idm140386944777664"></a><a data-type="indexterm" data-primary="continuous data" id="idm140386944777280"></a><a data-type="indexterm" data-primary="ordinal data" id="idm140386944776896"></a>If a drawing supports <em>Q×Q</em>, that means it supports a dataset with two continuous columns.<a data-type="indexterm" data-primary="visualizations" data-secondary="questions and corresponding visualizations" id="idm140386944775120"></a></p>
+<table id="overviewtable" style="width: 100%">
+<caption><span class="label">Table 5-1. </span>Questions and their corresponding visualizations in this chapter</caption>
+<thead>
+<tr>
+<th>Section</th>
+<th>Chart and data types</th>
+<th>Figure thumbnail(s)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p><a data-type="xref" href="#TaskHowDistributed">“Question: How Is a Measure Distributed?”</a></p></td>
+<td><p>Histograms and joint distributions
+</p><p><em>C, Q, Q×Q, Q×C, C×C</em></p></td>
+<td><div>
+<figure><div class="figure">
+<img src="images/mdvi_05in02.png" alt="mdvi 05in02" />
+<h6></h6>
+</div></figure>
+
+<figure><div class="figure">
+<img src="images/mdvi_05in03.png" alt="mdvi 05in03" />
+<h6></h6>
+</div></figure>
+
+<figure><div class="figure">
+<img src="images/mdvi_05in01.png" alt="mdvi 05in01" />
+<h6></h6>
+</div></figure></div></td>
+</tr>
+<tr>
+<td><p><a data-type="xref" href="#TaskHowDiffer">“Question: How Do Groups Differ from Each Other?”</a></p></td>
+<td><p>Bar charts, pie charts
+</p><p><em>C×Q, C×O, C×C×O</em></p></td>
+<td><div>
+<figure><div class="figure">
+<img src="images/mdvi_05in04.png" alt="mdvi 05in04" />
+<h6></h6>
+</div></figure>
+
+<figure><div class="figure">
+<img src="images/mdvi_05in05.png" alt="mdvi 05in05" />
+<h6></h6>
+</div></figure></div></td>
+</tr>
+<tr>
+<td><p><a data-type="xref" href="#TaskFallIntoGroups">“Question: Do Individual Items Fall into Groups? Is There a Relationship Between Attributes of Items?”</a></p></td>
+<td><p>Scatterplots and heatmaps
+</p><p><em>Q×Q, Q×Q×V(×V…)</em></p></td>
+<td><div>
+<figure><div class="figure">
+<img src="images/mdvi_05in07.png" alt="mdvi 05in07" />
+<h6></h6>
+</div></figure>
+
+<figure><div class="figure">
+<img src="images/mdvi_05in06.png" alt="mdvi 05in06" />
+<h6></h6>
+</div></figure></div></td>
+</tr>
+<tr>
+<td><p><a data-type="xref" href="#TaskHowVary">“Question: How Does an Attribute Vary Continuously?”</a></p></td>
+<td><p>Line charts
+</p><p><em>Q×O, Q×C×O</em></p></td>
+<td><div>
+<figure><div class="figure">
+<img src="images/mdvi_05in08.png" alt="mdvi 05in08" />
+<h6></h6>
+</div></figure>
+
+<figure><div class="figure">
+<img src="images/mdvi_05in09.png" alt="mdvi 05in09" />
+<h6></h6>
+</div></figure></div></td>
+</tr>
+<tr>
+<td><p><a data-type="xref" href="#TaskNetwork">“Question: How Are Objects Related to Each Other in a Network or Hierarchy?”</a></p></td>
+<td><p>Network visualizations
+</p><p><em>Network (×V…) on nodes and edges</em></p></td>
+<td><div>
+<figure><div class="figure">
+<img src="images/mdvi_05in10.png" alt="mdvi 05in10" />
+<h6></h6>
+</div></figure>
+
+<figure><div class="figure">
+<img src="images/mdvi_05in11.png" alt="mdvi 05in11" />
+<h6></h6>
+</div></figure></div></td>
+</tr>
+<tr>
+<td></td>
+<td><p>Tree visualizations
+</p><p><em>Network (×V…) on nodes and edges; Network×Q×V on nodes</em></p></td>
+<td><div>
+<figure><div class="figure">
+<img src="images/mdvi_05in12a.png" alt="mdvi 05in12a" />
+<h6></h6>
+</div></figure>
+
+<figure><div class="figure">
+<img src="images/mdvi_05in13.png" alt="mdvi 05in13" />
+<h6></h6>
+</div></figure></div></td>
+</tr>
+<tr>
+<td><p><a data-type="xref" href="#TaskMap">“Question: Where Are Objects Located?”</a></p></td>
+<td><p>Map visualizations
+</p><p><em>Map×V; Locations×V(×V…)</em></p></td>
+<td><div>
+<figure><div class="figure">
+<img src="images/mdvi_05in14.png" alt="mdvi 05in14" />
+<h6></h6>
+</div></figure>
+
+<figure><div class="figure">
+<img src="images/mdvi_05in15.png" alt="mdvi 05in15" />
+<h6></h6>
+</div></figure></div></td>
+</tr>
+<tr>
+<td><p><a data-type="xref" href="#TaskText">“Question: What Is in This Text?”</a></p></td>
+<td><p>Text visualizations, including word clouds</p></td>
+<td><div>
+<figure><div class="figure">
+<img src="images/mdvi_05in16.png" alt="mdvi 05in16" />
+<h6></h6>
+</div></figure></div></td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Overall Perceptual Concerns"><div class="sect1" id="idm140386944721840">
+<h1>Overall Perceptual Concerns</h1>
+
+<p>The strengths and weaknesses of human perception drive much of the design of visualizations.<a data-type="indexterm" data-primary="perceptual concepts" id="idm140386944718656"></a><a data-type="indexterm" data-primary="single views" data-secondary="perceptual concerns" id="idm140386944718272"></a> Basic perceptual concepts apply across all visualization types. The term <em>encoding channel</em> refers to the ways that an attribute is represented in the visualization.<a data-type="indexterm" data-primary="encoding channels" id="idm140386944716896"></a> In a bar chart, for example, bar length encodes a value, whereas the textual bar caption encodes the category.  Different channels have very different perceptual properties, which can be described in terms of how quickly and accurately a reader can interpret them as well as how much they stand out from each other.</p>
+
+<p>There is a well-known hierarchy of accuracy: overall, readers are faster and more accurate when comparing lengths or positions than area (see <a data-type="xref" href="#perception_comparison">Figure 5-5</a>).<a data-type="indexterm" data-primary="perceptual concepts" data-secondary="hierarchy of accuracy in comparisons" id="idm140386944716288"></a> Roughly, the hierarchy runs from length to arc angle, to area to color hue and intensity (<a data-type="xref" href="#perception_comparison">Figure 5-5</a>). All else being equal, then, bar charts (which use length) are likely to be preferable to treemaps, which use area. (To read more on this topic, see the article by Cleveland and McGill cited under <a data-type="xref" href="#relevant_articles_6">“Relevant Articles”</a>.)</p>
+
+<figure><div id="perception_comparison" class="figure">
+<img src="images/mdvi_0505.png" alt="mdvi 0505" />
+<h6><span class="label">Figure 5-5. </span>Difficulty in comparison increases roughly from left to right: comparing length with a shared baseline and with different baselines, comparing angles, comparing square areas or circular areas, and comparing color. Each of these shows three values in the proportion 5:1:3.</h6>
+</div></figure>
+
+<p>Color is difficult to use effectively. A small number of well-chosen colors can be highly distinguishable, particularly for categorical data, but it can be difficult for users to distinguish between more than a handful of colors in a visualization.<a data-type="indexterm" data-primary="perceptual concepts" data-secondary="colors in visualizations" id="idm140386944705728"></a><a data-type="indexterm" data-primary="color" data-secondary="in visualizations" id="idm140386944706432"></a> Nonetheless, color is an invaluable tool in the visualization toolbox because it is a channel that can carry a great deal of meaning and be overlaid on other dimensions. A number of the visualizations described in this chapter use a color scale, such as heatmaps and choropleths. There are a variety of perceptual effects, such as simultaneous contrast and color deficiencies, that make precise numerical judgments about a color scale difficult, if not impossible. As such, it is vital to choose color palettes with care.</p>
+
+<p>There are other important conventions.<a data-type="indexterm" data-primary="perceptual concepts" data-secondary="lines in visualizations" id="idm140386944709360"></a><a data-type="indexterm" data-primary="lines (in visualizations)" id="idm140386944707680"></a> Lines should connect things that go together, and in most cases, it should be meaningful to look halfway along a line.<a data-type="indexterm" data-primary="objects" data-secondary="in visualizations, perception of" id="idm140386944709008"></a> Objects in visualizations that are stacked atop each other are typically read as to be summed together: their total area is the sum of the areas of their components (<a data-type="xref" href="#ch6_img2">Figure 5-2</a>).<a data-type="indexterm" data-primary="stacked bar charts" id="idm140386944702384"></a><a data-type="indexterm" data-primary="treemaps" id="idm140386944703488"></a> This is as true in a stacked bar chart as it is in a treemap. Conversely, when areas are discontinuous—two different bars side by side—the analyst expects the viewer to compare them. <a data-type="indexterm" data-primary="clustered bar charts" id="idm140386944699552"></a>Closer-together things are easier to compare than further-apart things; thus, a clustered bar chart suggests that the bars in each cluster should be considered in relation to each other, and then the clusters themselves in relation to one another (Figures <a data-type="xref" data-xrefstyle="select:labelnumber" href="#ch6_img3">5-3</a> versus <a data-type="xref" data-xrefstyle="select:labelnumber" href="#ch6_img4">5-4</a>).</p>
+
+<p>None of the data visualizations in this chapter use a three-dimensional perspective.<a data-type="indexterm" data-primary="3D data" id="idm140386944695552"></a><a data-type="indexterm" data-primary="perceptual concepts" data-secondary="three-dimensional data" id="idm140386944695056"></a> There is an entire research area dedicated to 3D data—physical structures, bodies, weather systems—and many tools meant to visualize things that truly have three spatial dimensions. In our experience and in the experience of many others, using three dimensions tends to lead to challenges in perception: points in space occlude each other; perspective makes it hard to compare sizes; the extra dimension of depth tends to obscure information. Thus, visualization design principles tend to reserve 3D visualization techniques to tasks that are meant to explore the 3D shape of spatial data.</p>
+
+<p>There are a number of excellent resources on the topic of perception for visualization; see <a data-type="xref" href="#FurtherReadingSingleview">“Further Reading”</a>.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Question: How Is a Measure Distributed?"><div class="sect1" id="TaskHowDistributed">
+<h1>Question: How Is a Measure Distributed?</h1>
+
+<p>In this section, we start with a single variable and look at ways to examine how it is distributed.<a data-type="indexterm" data-primary="single views" data-secondary="how a measure is distributed" id="ix_sinvimesdist"></a><a data-type="indexterm" data-primary="measures" data-secondary="how a measure is distributed" id="ix_measdist"></a> There are a group of subquestions around distributions. Are there some values that recur? Are there outliers? This first class of visualizations is meant to help us understand the distribution of one or two data columns.<a data-type="indexterm" data-primary="categorical data" data-secondary="histogram of" id="idm140386944687888"></a><a data-type="indexterm" data-primary="histograms" data-secondary="categorical" id="idm140386944692464"></a></p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Histogram (Categorical)"><div class="sect2" id="idm140386944686320">
+<h2>Histogram (Categorical)</h2>
+
+<figure class="width-75"><div id="cat_histo" class="figure">
+<img src="images/mdvi_0506.png" alt="mdvi 0506" />
+<h6><span class="label">Figure 5-6. </span>Categorical histogram. One categorical variable. This chart shows the distribution of car styles in the <em>cars</em> dataset.</h6>
+</div></figure>
+<dl>
+<dt>Description</dt>
+<dd>
+<p>This is a Categorical × Ratio chart, which can be drawn as a bar chart. Given a list of categorical data, each bar represents the frequency of items in a particular category. Subquestions center around comparing bars: What category has the most, or the fewest, items? Does some category stand out from the others?</p>
+</dd>
+</dl>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Histogram (Quantitative)"><div class="sect2" id="idm140386944675360">
+<h2>Histogram (Quantitative)</h2>
+
+<figure class="width-50"><div id="quant_histo" class="figure">
+<img src="images/mdvi_0507.png" alt="mdvi 0507" />
+<h6><span class="label">Figure 5-7. </span>Quantitative Histogram. One quantitative variable. This chart shows the distribution of car ratings for the city-mpg field.</h6>
+</div></figure>
+<dl>
+<dt>Description</dt>
+<dd>
+<p>A quantitative histogram shows the distribution of a continuous or ordinal variable.<a data-type="indexterm" data-primary="histograms" data-secondary="quantitative" id="idm140386944673440"></a><a data-type="indexterm" data-primary="continuous data" data-secondary="quantitative histogram of" id="idm140386944672592"></a> It can help identify whether the data is skewed in one direction or another—that is, whether the data is top-heavy or bottom-heavy, or whether there are gaps in the middle of the range or outliers at the end. If there is a small enough number of discrete values, they can be treated as categories.<a data-type="indexterm" data-primary="binning" data-secondary="in quantitative histogram" id="idm140386944676256"></a> Otherwise, the data is binned into ranges and each range gets its own bar. It is valid for a bin to have no items.</p>
+
+<p>This chart is not really different from the categorical histogram. Fundamentally, it follows the instructions in <a data-type="xref" href="ch04.html#TBDT_sec">“Transforming Between Dimension Types”</a> to transform a continuous variable into an ordinal one by binning, then aggregating on the count within the bins.<a data-type="indexterm" data-primary="ordinal data" data-secondary="transforming continous data into, using binning" id="idm140386944670016"></a></p>
+</dd>
+<dt>Limitations</dt>
+<dd>
+<p>The effectiveness of the histogram is based on the effectiveness of the binning. Different choices of bins—varying where the bins start or the bin size—can produce very different-looking results for the same data.</p>
+</dd>
+</dl>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Smoothed Histogram"><div class="sect2" id="idm140386944666624">
+<h2>Smoothed Histogram</h2>
+
+<figure><div id="quant_histo_smooth" class="figure">
+<img src="images/mdvi_0508.png" alt="mdvi 0508" />
+<h6><span class="label">Figure 5-8. </span>Smoothed histogram. One quantitative variable. This plot shows a kernel density estimate of the city-mpg field of the cars dataset. Smoothed with a narrow bandwidth, the dataset shows sharp peaks. Smoothed with a wider bandwidth, the dataset shows a gaussian-like distribution.</h6>
+</div></figure>
+<dl>
+<dt>Description</dt>
+<dd>
+<p>A histogram can be smoothed into a continuous curve, known as a <em>probability distribution function</em>.<a data-type="indexterm" data-primary="histograms" data-secondary="smoothed" id="idm140386944662448"></a><a data-type="indexterm" data-primary="probability distribution function" id="idm140386944660784"></a><a data-type="indexterm" data-primary="smoothed histograms" id="idm140386944660176"></a> Applying a smoothing function implicitly suggests that the underlying data is smooth, and that the data points are a sample drawn from a broader set of possibilities. Like binning functions, smoothing functions are extremely sensitive to parameters and algorithms.<a data-type="indexterm" data-primary="smoothing functions" id="idm140386944659568"></a></p>
+</dd>
+<dt>Limitations</dt>
+<dd>
+<p>The smoothed histogram entirely hides the underlying values, and the y-axis can be difficult for users to interpret. Contrast Figures <a data-type="xref" data-xrefstyle="select:labelnumber" href="#quant_histo">5-7</a> and <a data-type="xref" data-xrefstyle="select:labelnumber" href="#quant_histo_smooth">5-8</a>, which are drawn with the same data.</p>
+</dd>
+</dl>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Box Plot"><div class="sect2" id="idm140386944653168">
+<h2>Box Plot</h2>
+
+<figure><div id="box_plot" class="figure">
+<img src="images/mdvi_0509.png" alt="mdvi 0509" />
+<h6><span class="label">Figure 5-9. </span>Box plot. One continuous variable, conditioned on one or more categorical variables; this chart shows the variation of the city-mpg field, this time across multiple car body styles.</h6>
+</div></figure>
+<dl>
+<dt>Description</dt>
+<dd>
+<p>A box plot shows a less detailed summary of a single distribution.<a data-type="indexterm" data-primary="box plots" id="idm140386944647296"></a> At the cost of detail, users can more easily glance at how distributions differ. The box plot family allows you to compare multiple distributions against each other. It can identify such features as the average, standard deviation, and outliers for multiple distributions. <a data-type="xref" href="#box_plot">Figure 5-9</a> shows a common use of box plots: to compare one measure across multiple dimensions.</p>
+
+<p>A box plot is computed by choosing series of aggregate values over the distribution—usually the median and the quartiles—for the continuous variable. Other implementations choose instead to render the mean and standard deviations of a distribution.</p>
+</dd>
+<dt>Limitations</dt>
+<dd>
+<p>A box plot cannot show multiple peaks or other features of the distribution; it also hides the underlying number of entries. Some box plots can render outliers, although this does not scale to large numbers of points.<a data-type="indexterm" data-primary="whisker plots" id="idm140386944645568"></a><a data-type="indexterm" data-primary="bean plots" id="idm140386944640912"></a><a data-type="indexterm" data-primary="violin plots" id="idm140386944644480"></a> Other variants, such as the <em>whisker</em>, <em>bean</em>, and <em>violin</em> plots add additional richness to the box plot (see <a data-type="xref" href="#FurtherReadingSingleview">“Further Reading”</a>).</p>
+</dd>
+</dl>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Density Plot for Two Dimensions"><div class="sect2" id="idm140386944641440">
+<h2>Density Plot for Two Dimensions</h2>
+
+<figure><div id="catdensity_plot" class="figure">
+<img src="images/mdvi_0510.png" alt="mdvi 0510" />
+<h6><span class="label">Figure 5-10. </span>Categorical density plot. Two categorical variables. This chart shows the number of cars, grouping body style by make.</h6>
+</div></figure>
+
+<figure><div id="contdensity_plot" class="figure">
+<img src="images/mdvi_0511.png" alt="mdvi 0511" />
+<h6><span class="label">Figure 5-11. </span>Continuous density plot. Two continuous variables. This chart shows the joint distribution of efficiency, as measured in MPG, against the weight of the car.</h6>
+</div></figure>
+<dl>
+<dt>Description</dt>
+<dd>
+<p>The density plot shows how two variables change together. Darker spots show places where lots of points occur; lighter spots show places where there are fewer points.<a data-type="indexterm" data-primary="density plots" data-secondary="for two dimensions" id="idm140386944633008"></a> Density plots can be used to compare <em>relative</em> distributions between two different variables, as well as to find outliers. In the categorical version, it can be used to find how often different pairs of variables go together.</p>
+
+<p>As in a histogram, continuous variables are bucketed. Each cell contains the number of items in which a pair of values co-occur. A density plot may also plot a continuous versus a categorical variable.</p>
+</dd>
+<dt>Notes</dt>
+<dd>
+<p>The density plot is a first cousin to the more familiar scatterplot. Where a scatterplot shows individual points, however, a density shows regions.<a data-type="indexterm" data-primary="scatterplots" data-secondary="density plots vs." id="idm140386944626224"></a><a data-type="indexterm" data-primary="density plots" data-secondary="scatterplots vs." id="idm140386944629552"></a> As a result, density plots are far more scalable than scatterplots. At a large number of points, a scatterplot can become a black blob, whereas a density plot can be tuned. Density plots come in many variants, including ones that highlight individual outliers, ones that use smooth curves to show density, and ones that choose non-square binning algorithms (see <a data-type="xref" href="#FurtherReadingSingleview">“Further Reading”</a>).<a data-type="indexterm" data-primary="single views" data-secondary="how a measure is distributed" data-startref="ix_sinvimesdist" id="idm140386944625776"></a><a data-type="indexterm" data-primary="measures" data-secondary="how a measure is distributed" data-startref="ix_measdist" id="idm140386944624688"></a></p>
+</dd>
+</dl>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Question: How Do Groups Differ from Each Other?"><div class="sect1" id="TaskHowDiffer">
+<h1>Question: How Do Groups Differ from Each Other?</h1>
+
+<p>The second major group of questions are those that <a data-type="indexterm" data-primary="single views" data-secondary="how groups differ from each other" id="ix_sinvigr"></a><a data-type="indexterm" data-primary="groups" data-secondary="comparing multiple groups" id="ix_grcomp"></a>compare multiple groups. <em>Are boys taller than girls? Do people buy more chips or soda?</em> When data values are broken out by categories, the visualizations in this section can show how the values of those categories compare.<a data-type="indexterm" data-primary="bar charts" data-secondary="comparing multiple groups" id="idm140386944621728"></a></p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Bar Chart"><div class="sect2" id="idm140386944616864">
+<h2>Bar Chart</h2>
+
+<figure class="width-75"><div id="barchart" class="figure">
+<img src="images/mdvi_0512.png" alt="mdvi 0512" />
+<h6><span class="label">Figure 5-12. </span>Bar chart. One categorical variable, one ordinal. Bar length shows the average efficiency by body style using the same data as in <a data-type="xref" href="#box_plot">Figure 5-9</a>.</h6>
+</div></figure>
+
+<figure class="width-75"><div id="paired_barchart" class="figure">
+<img src="images/mdvi_0513.png" alt="mdvi 0513" />
+<h6><span class="label">Figure 5-13. </span>Paired (or multiple) series bar chart. One ordinal, two categorical variables. Efficiency by body style is now divided into diesel versus gas cars.</h6>
+</div></figure>
+<dl>
+<dt>Description</dt>
+<dd>
+<p>A bar or column chart is a common choice for comparing a single measure per group. A clustered bar chart provides two categories: a major one and a minor one. The task, then, can be more complex: users might compare bars within a cluster or between clusters, or compare the overall shapes of clusters to each other.</p>
+
+<p>The bar chart is useful for comparing values across categories. Users are very good at tasks like mentally sorting bars, identifying extremes, and estimating the average and variance across bars.</p>
+</dd>
+<dt>Notes</dt>
+<dd>
+<p>Bars should be ordered in some reasonable order. If the categorical value is based on ordinal data—such as years—then they should be in that order. Otherwise, bars can be ordered from highest to lowest value. In a multiple-view or clustered bar chart, the order should remain consistent.</p>
+
+<p>When a dataset is separated across a categorical variable, each category is sometimes referred to as a <em>series</em>; in a multiline chart or a clustered bar chart, each line or bar represents a series.<a data-type="indexterm" data-primary="series" id="idm140386944600256"></a></p>
+</dd>
+<dt>Limitations</dt>
+<dd>
+<p>A bar chart begins to be incomprehensible when there are too many categories, except in the case where the bar chart is showing individual values of bucketed, sequential data.  If the task is to cluster pairs of bars into groups based on their relative size, then a scatterplot (<a data-type="xref" href="#scatterplot">Figure 5-16</a>) might be a more appropriate tool.</p>
+</dd>
+</dl>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Pie Chart"><div class="sect2" id="idm140386944598416">
+<h2>Pie Chart</h2>
+
+<figure><div id="piechart" class="figure">
+<img src="images/mdvi_0514.png" alt="mdvi 0514" />
+<h6><span class="label">Figure 5-14. </span>Pie (or doughnut) chart. One continuous, one categorical variable. The CFPB data shows the ways that complaints have been closed.</h6>
+</div></figure>
+<dl>
+<dt>Description</dt>
+<dd>
+<p>A pie (or doughnut) chart <a data-type="indexterm" data-primary="pie charts" id="idm140386944596112"></a>is a variant on a bar chart: it maps wedge angle instead of height to a value. By filling a full 360 degrees around, the pie connotes <em>parts of a whole.</em><a data-type="indexterm" data-primary="parts of a whole, demonstrating in pie charts" id="idm140386944594880"></a> Pies can be effective for showing certain aspects of the data: <em>this takes up more than half</em>, for example. It can be difficult, however, to accurately compare pie wedges to each other unless they are very different in size.</p>
+</dd>
+</dl>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Heatmap"><div class="sect2" id="idm140386944593424">
+<h2>Heatmap</h2>
+
+<figure><div id="heatmap_chapter_six" class="figure">
+<img src="images/mdvi_0515.png" alt="mdvi 0515" />
+<h6><span class="label">Figure 5-15. </span>Heatmap. Two categorical or continuous variables result in a color variable. The CFPB data shows the number of complaints over time, by product. The data is broken out by month and year.</h6>
+</div></figure>
+<dl>
+<dt>Description</dt>
+<dd>
+<p>A heatmap is a two-dimensional analogue to a bar chart: it visualizes the aggregation or value that sits in each bucket.<a data-type="indexterm" data-primary="heatmaps" id="idm140386944586400"></a> Just as a bar chart is a general mechanism that can be used to render a histogram, the density plot shown in <a data-type="xref" href="#heatmap_chapter_six">Figure 5-15</a> is rendered with a heatmap. Many tasks that are carried out with a heatmap might also be fulfilled with a clustered bar chart.</p>
+
+<p>A heatmap allows the user to look across or down the dimensions, looking for commonalities or differences. For example, in <a data-type="xref" href="#heatmap_chapter_six">Figure 5-15</a>, the user can look across to see patterns in how products are similar or vary, and up to see how company responses vary.</p>
+</dd>
+<dt>Notes</dt>
+<dd>
+<p>A heatmap is a first cousin of a density plot, except rather than using merely the count of items, it shows a measure. The term <em>heatmap</em> gets used in many contexts; this use is common, but not exclusive. The term can also refer to density plots, for example, and occasionally to treemaps.<a data-type="indexterm" data-primary="density plots" data-secondary="heatmaps and" id="idm140386944587792"></a><a data-type="indexterm" data-primary="treemaps" data-secondary="heatmaps and" id="idm140386944580208"></a></p>
+</dd>
+<dt>Limitations</dt>
+<dd>
+<p>When a heatmap has many rows or columns, it becomes important to order them to show patterns and trends. <a data-type="indexterm" data-primary="heatmaps" data-secondary="limitations of" id="idm140386944579088"></a>Furthermore, dense heatmaps suffer from a host of perceptual problems associated with color, making accurate judgments of individual values sometimes impossible.<a data-type="indexterm" data-primary="groups" data-secondary="comparing multiple groups" data-startref="ix_grcomp" id="idm140386944578576"></a><a data-type="indexterm" data-primary="single views" data-secondary="how groups differ from each other" data-startref="ix_sinvigr" id="idm140386944577392"></a></p>
+</dd>
+</dl>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Question: Do Individual Items Fall into Groups? Is There a Relationship Between Attributes of Items?"><div class="sect1" id="TaskFallIntoGroups">
+<h1>Question: Do Individual Items Fall into Groups? Is There a Relationship Between Attributes of Items?</h1>
+
+<p><a data-type="indexterm" data-primary="single views" data-secondary="examining individual items and groups and attributes of items" id="idm140386944573584"></a>Scatterplots fulfill two sets of closely related tasks.<a data-type="indexterm" data-primary="groups" data-secondary="individual items in, visualizing with scatterplots" id="idm140386944571376"></a><a data-type="indexterm" data-primary="scatterplots" id="idm140386944570528"></a><a data-type="indexterm" data-primary="attributes" data-secondary="of items, examining relationship between" id="idm140386944569920"></a> By visualizing items by their attributes, they can help us look at relationships between those attributes or at groupings in the items themselves. <em>Is there a relationship between height and weight? Do mobile users differ from desktop users with regard to session length or click-through rate?</em></p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Scatterplot"><div class="sect2" id="idm140386944572736">
+<h2>Scatterplot</h2>
+
+<figure><div id="scatterplot" class="figure">
+<img src="images/mdvi_0516.png" alt="mdvi 0516" />
+<h6><span class="label">Figure 5-16. </span>Scatterplot. Two continuous variables. Additional continuous, ordinal, or categorical variables can be added for size, color, and shape. This shows the relation between curb weight and MPG for five different styles of car.</h6>
+</div></figure>
+<div style="page-break-after: always;"></div>
+<dl>
+<dt>Description</dt>
+<dd>
+<p>A scatterplot places data points on perpendicular axes. The two major axes are used to lay out the points spatially; additional attributes can be used for color, size, or shape.</p>
+
+<p>Scatterplots encourage the user to look at groupings in space. They can identify outliers or groups, such as the points that are in each cluster or the points that are along a main trendline. If the points are colored with an additional categorical variable, then they can address questions about whether different categories behave differently from each other.</p>
+</dd>
+<dt>Notes</dt>
+<dd>
+<p>Too many simultaneous encodings will be overwhelming to the reader; colors must be easily distinguishable, and of a small enough number that the reader can interpret them.<a data-type="indexterm" data-primary="color" data-secondary="in scatterplots" id="idm140386944558832"></a></p>
+
+<p>Many users find scatterplots difficult to interpret with their two abstract axes. In an infographic, some designers help guide users by highlighting and annotating regions with comments like “People who had high math scores but low written ones,” or individual points with comments like “This drink costs $0.50 and has 150 calories.”</p>
+</dd>
+<dt>Limitations</dt>
+<dd>
+<p>When encoding a third dimension with color or shape, occlusion can get in the way: a user cannot see that a red dot and a blue dot have been drawn in the same place.<a data-type="indexterm" data-primary="scatterplots" data-secondary="limitations of" id="idm140386944556912"></a> Also, some tools will draw all of one set of points before they draw any of the next; the reader can be misled by this unintentional bias.</p>
+</dd>
+</dl>
+<div style="page-break-after: always;"></div>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Question: How Does an Attribute Vary Continuously?"><div class="sect1" id="TaskHowVary">
+<h1>Question: How Does an Attribute Vary Continuously?</h1>
+
+<p>Temporal data occurs in almost every context,<a data-type="indexterm" data-primary="single views" data-secondary="how an attribute varies continuously" id="idm140386944562272"></a><a data-type="indexterm" data-primary="attributes" data-secondary="examining how an attribute varies continuously" id="idm140386944551776"></a> so line charts are some of the most common forms of charts. <em>How is a stock, a heart rate, or Twitter traffic doing compared to last month? Is the trend periodic, trending, or noisy?</em></p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Line and Area Charts"><div class="sect2" id="idm140386944562800">
+<h2>Line and Area Charts</h2>
+
+<figure><div id="linechart" class="figure">
+<img src="images/mdvi_0517.png" alt="mdvi 0517" />
+<h6><span class="label">Figure 5-17. </span>Line chart. One ordinal, one continuous variable. This chart shows a count of consumer complaints by year and month for the CFPB data.</h6>
+</div></figure>
+
+<figure><div id="stackedarea" class="figure">
+<img src="images/mdvi_0518.png" alt="mdvi 0518" />
+<h6><span class="label">Figure 5-18. </span>Stacked area chart. One ordinal, one continuous, and one categorical variable. This chart shows the count of consumer complaints, like <a data-type="xref" href="#linechart">Figure 5-17</a>, but broken out by product. Mortgages stabilized while credit reporting grew (this shows the same data as <a data-type="xref" href="#heatmap_chapter_six">Figure 5-15</a>).</h6>
+</div></figure>
+<dl>
+<dt>Description</dt>
+<dd>
+<p>The line chart<a data-type="indexterm" data-primary="line charts" id="idm140386944541888"></a><a data-type="indexterm" data-primary="area charts" id="idm140386944541280"></a> family draws a value for each point along a continuous axis. The independent axis is often time, but it can be anything that varies continuously, such as distance. For points that are not in the dataset, the chart shows an interpolated value; a core assumption of a line chart is that the points in between are meaningful and well defined.</p>
+
+<p>A line chart shows change over a continuous variable. That might be a trend (<em>Profits went up!</em>) or a repeating pattern (<em>People read our web page on weekends! This bike ride is hilly!</em>). Use multiple lines sharing one set of axes to see how multiple sets covary.</p>
+
+<p>A stacked line chart lays multiple lines over each other with the top of one acting as the baseline of the next.<a data-type="indexterm" data-primary="stacked line charts" id="idm140386944538624"></a></p>
+</dd>
+<dt>Limitations</dt>
+<dd>
+<p>In any stacked chart, it can be difficult to see how much the upper layers have changed. In <a data-type="xref" href="#stackedarea">Figure 5-18</a>, for example, the spike in the bottom green layer in January 2013 makes it appear that all categories spiked.</p>
+</dd>
+</dl>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Question: How Are Objects Related to Each Other in a Network or Hierarchy?"><div class="sect1" id="TaskNetwork">
+<h1>Question: How Are Objects Related to Each Other in a Network or Hierarchy?</h1>
+
+<p>Networks and hierarchies help track the connections<a data-type="indexterm" data-primary="hierarchies" data-seealso="networks or hierarchies" id="idm140386944531616"></a><a data-type="indexterm" data-primary="networks or hierarchies" data-secondary="relationships of objects in" id="ix_nethierobj"></a><a data-type="indexterm" data-primary="objects" data-secondary="relationships in a network or hierarchy" id="ix_objrel"></a><a data-type="indexterm" data-primary="single views" data-secondary="how objects are related in a network or hierarchy" id="ix_sinviobjrel"></a> between items. <em>Is this person connected to that one? Does this online group have an internal structure? How many people are in this reporting structure? Which product line is selling best?</em></p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Node-Link View"><div class="sect2" id="idm140386944527344">
+<h2>Node-Link View</h2>
+<figure><div id="network_view_chapter_six" class="figure">
+<img class="img35" src="images/mdvi_0519.png" />
+<h6><span class="label">Figure 5-19. </span>Node-link view. A relational variable, in which pairs of data values are linked to each other, plus additional metadata on the nodes and edges. This data from the Les Miserables dataset shows coappearance in the novel between characters. The network has been truncated to 40 nodes for legibility.</h6>
+</div></figure>
+
+<figure class="width-75"><div id="circular_network_layout" class="figure">
+<img src="images/mdvi_0520.png" alt="mdvi 0520" />
+<h6><span class="label">Figure 5-20. </span>Circular network layout. A relational variable, in which pairs of data items are linked to each other, plus additional metadata on the nodes and edges. This shows the same data as <a data-type="xref" href="#network_view_chapter_six">Figure 5-19</a>.</h6>
+</div></figure>
+<dl>
+<dt>Description</dt>
+<dd>
+<p>A node-link view <a data-type="indexterm" data-primary="node-link views" id="idm140386944520688"></a>draws nodes representing data items, and lines representing links between them. In a force-directed layout such as <a data-type="xref" href="#network_view_chapter_six">Figure 5-19</a>, nodes and lines are placed so that connected nodes are nearer each other, while nodes that are not directly connected are further apart; these views help users identify clusters of interconnected nodes. A circular layout like <a data-type="xref" href="#circular_network_layout">Figure 5-20</a> maintains an ordering between nodes.</p>
+
+<p>Node-link diagrams are good for understanding connection. A user may be able to pick out well-connected nodes, as well as identify clusters of nodes and isolates. In an ordered circular layout, it is easier to see similar nodes have similar patterns of connection. When an additional dimension is shown using color or shape, tracking <em>homophily</em>—whether well-connected nodes are similar with respect to the additional dimension—becomes possible</p>
+</dd>
+<dt>Limitations</dt>
+<dd>
+<p>Node-link views are effective for showing only small networks. Researchers have found that the most successful node-link diagrams showed small networks with no more than 10–50 nodes and 20–100 links. At this scale, node-link diagrams are good at showing the overall structure of a sparse graph, although density has a strong impact on readability—a highly connected graph can lead to what’s known as a <em>hairball</em>.<a data-type="indexterm" data-primary="hairballs" id="idm140386944513136"></a> A very few, far larger networks visualized using node-link views have been successful in presenting the general shape of the network. (See <a data-type="xref" href="#FurtherReadingSingleview">“Further Reading”</a>.)</p>
+
+<p>Rendering node-link view layouts is a research field in its own right, based on what types of tasks will be supported by the visualization. Consider aggregating groups of nodes together to see relationships between them, or providing a drilldown into regions.</p>
+</dd>
+</dl>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Adjacency Matrix"><div class="sect2" id="idm140386944511648">
+<h2>Adjacency Matrix</h2>
+<figure><div id="adjacency_matrix" class="figure">
+<img class="img70" src="images/mdvi_0521.png" />
+<h6><span class="label">Figure 5-21. </span>Adjacency matrix. A relational variable, in which pairs of data items are linked to each other, plus an additional metadata field mapped to color for the edges. This chart shows the same data as Figures <a data-type="xref" data-xrefstyle="select:labelnumber" href="#network_view_chapter_six">5-19</a> and <a data-type="xref" data-xrefstyle="select:labelnumber" href="#circular_network_layout">5-20</a></h6>
+</div></figure>
+<dl>
+<dt>Description</dt>
+<dd>
+<p>An adjacency matrix shows the connections<a data-type="indexterm" data-primary="adjacency matrices" id="idm140386944501376"></a> between data items in a heatmap, where the measure is whether a pair of items are connected.</p>
+
+<p>The adjacency matrix shows connection between pairs directly; each cell represents an edge. Identifying whether a pair of items is connected is a straightforward task, but pathfinding is more difficult. In addition, with an appropriate ordering, cliques and near-cliques become visible.</p>
+</dd>
+<dt>Notes</dt>
+<dd>
+<p>An adjacency matrix can be more difficult for novices to understand than a node-link diagram. For smaller and sparser networks, a node-link diagram is almost always better. Detecting patterns is very order-dependent; much research has been done on ordering the cells in a matrix in order to bring out patterns.</p>
+
+<p>Adjacency matrices are not a particularly compact representation; the fairly small matrix in <a data-type="xref" href="#adjacency_matrix">Figure 5-21</a> still takes up a large amount of space.</p>
+</dd>
+</dl>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Tree View"><div class="sect2" id="idm140386944499456">
+<h2>Tree View</h2>
+<figure><div id="tree_view" class="figure">
+<img class="img90" src="images/mdvi_0522.png" />
+<h6><span class="label">Figure 5-22. </span>Tree view. One hierarchical set of dimensions, perhaps coded with one or two other dimensions (both nodes and edges can be colored and sized). This is a hierarchy of the types of complaints to the CFPB and the percentage of them that received relief. The second layer of the tree corresponds to the values in Figures <a data-type="xref" data-xrefstyle="select:labelnumber" href="#ch6_img1">5-1</a> through <a data-type="xref" data-xrefstyle="select:labelnumber" href="#ch6_img4">5-4</a>.</h6>
+</div></figure>
+<dl>
+<dt>Description</dt>
+<dd>
+<p>A tree view uses a node-link diagram to draw a hierarchy.<a data-type="indexterm" data-primary="hierarchies" data-secondary="depiction in tree views" id="idm140386944488576"></a><a data-type="indexterm" data-primary="tree views" id="idm140386944487728"></a> The color of nodes and edges, as well as the thickness of edges, can be mapped to additional dimensions of the dataset. As such, a tree view is good for looking for individual items buried in a hierarchy that are unusual in size or color.</p>
+</dd>
+<dt>Notes</dt>
+<dd>
+<p>When trees get large, it can be difficult to pick out individual nodes. In interactive systems, it can be convenient to collapse subtrees together into abstracted nodes, and to elide nodes toward the roof. This sort of <em>level of detail</em> interaction allows users to more easily navigate the tree.<a data-type="indexterm" data-primary="treemaps" id="idm140386944486464"></a></p>
+</dd>
+</dl>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Treemap and Sunburst"><div class="sect2" id="idm140386944483088">
+<h2>Treemap and Sunburst</h2>
+<figure><div id="treemap" class="figure">
+<img class="img90" src="images/mdvi_0523.png" />
+<h6><span class="label">Figure 5-23. </span>Treemap. A hierarchical value, associated with a size and a color for each leaf node. Non-leaf nodes do not get their own colors. This represents the same data as <a data-type="xref" href="#tree_view">Figure 5-22</a> but adds a second dimension for size: the number of complaints.</h6>
+</div></figure>
+<figure><div id="sunburst" class="figure">
+<img class="img90" src="images/mdvi_0524.png" />
+<h6><span class="label">Figure 5-24. </span>Sunburst plot. A hierarchical value, associated with a size and color for each node, including both leaf and internal nodes. This chart shows the same data and mapping as <a data-type="xref" href="#treemap">Figure 5-23</a>.</h6>
+</div></figure>
+<dl>
+<dt>Description</dt>
+<dd>
+<p>Treemaps and sunburst plots look at relative sizes of things<a data-type="indexterm" data-primary="sunburst plots" id="idm140386944474256"></a> in a hierarchy.<a data-type="indexterm" data-primary="hierarchies" data-secondary="relative sizes of objects in, examining with treemaps and sunburst plots" id="idm140386944475664"></a> For example, a hard drive has folders that each take up space, subfolders take up fractions of their space, and so on. Similarly, a company might organize its products in a hierarchy (categories of products, divided into individual products, divided into editions). Each node is associated with both a size and a color. As with the tree view, color can be mapped to a value or category, but it is far easier to read the total area than with a tree view.</p>
+
+<p>A sunburst plot can make it harder to compare the size of areas, especially between layers, but easier to compare the depth.</p>
+</dd>
+<dt>Limitations</dt>
+<dd>
+<p>It can be difficult to accurately compare relative area in these visualizations, especially for oddly shaped pieces or between different layers.<a data-type="indexterm" data-primary="networks or hierarchies" data-secondary="relationships of objects in" data-startref="ix_nethierobj" id="idm140386944469600"></a><a data-type="indexterm" data-primary="objects" data-secondary="relationships in a network or hierarchy" data-startref="ix_objrel" id="idm140386944470112"></a><a data-type="indexterm" data-primary="single views" data-secondary="how objects are related in a network or hierarchy" data-startref="ix_sinviobjrel" id="idm140386944471136"></a></p>
+</dd>
+</dl>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Question: Where Are Objects Located?"><div class="sect1" id="TaskMap">
+<h1>Question: Where Are Objects Located?</h1>
+
+<p>Maps are perhaps the most familiar visualizations: many children grow up playing with map puzzles many years before they encounter their first bar chart.<a data-type="indexterm" data-primary="objects" data-secondary="location of, in geographical visualizations" id="ix_objloc"></a><a data-type="indexterm" data-primary="maps" id="idm140386944463920"></a> As such, they make familiar reference points to place data. <em>Which state has the most millionaires?</em> <em>Where are the stores that have sold the most snow shovels?</em></p>
+<div style="page-break-after: always;"></div>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Geographical Map"><div class="sect2" id="idm140386944461392">
+<h2>Geographical Map</h2>
+<figure><div id="choropleth_map" class="figure">
+<img class="img90" src="images/mdvi_0525.png" />
+<h6><span class="label">Figure 5-25. </span>Choropleth. Values correspond to regions, such as states or counties. This chart uses census data to look at the percentage of the population with income over $200,000.</h6>
+</div></figure>
+<figure><div id="dotplot_map" class="figure">
+<img class="img90" src="images/mdvi_0526.png" />
+<h6><span class="label">Figure 5-26. </span>Dotplot map. A scatterplot, where the x- and y-axes are geographical (or a list of geographical points); additional dimensions for size, color, or shape. Dots are located at the centroid of each zip code; the first digit encodes color.</h6>
+</div></figure>
+<dl>
+<dt>Description</dt>
+<dd>
+<p>Geographical visualizations are an entire field in themselves.<a data-type="indexterm" data-primary="dotplot maps" id="idm140386944453056"></a><a data-type="indexterm" data-primary="geographical visualizations" id="idm140386944452448"></a><a data-type="indexterm" data-primary="choropleths" id="idm140386944451568"></a> The choice of choropleth and dotplot here represents just two classic charts from an extremely rich history. Choropleths fill in regions; dotplots place data at points of interest.</p>
+
+<p>Maps can be used for understanding how places vary or are similar, for understanding regional differences, and more.</p>
+</dd>
+<dt>Notes</dt>
+<dd>
+<p>One great virtue of maps is that if the audience is reasonably familiar with the area, there is no actual need to label what the space means. Neither Figure <a data-type="xref" data-xrefstyle="select:labelnumber" href="#choropleth_map">5-25</a> nor <a data-type="xref" data-xrefstyle="select:labelnumber" href="#dotplot_map">5-26</a> has a legend or labels on the states, which is a reasonable omission for people familiar with the geography of the United States.</p>
+</dd>
+<dt>Limitations</dt>
+<dd>
+<p>In a choropleth, a great deal of emphasis is given to land area even though size and population are unrelated—a high value in US states like Alaska or Montana (which have a very large area but a low population) might seem more significant than a high value in tiny Rhode Island (which has approximately the same population as Montana, but 1/145 of the land mass).</p>
+
+<p>The spatial distribution of dots in a dotplot is the same, regardless of the dimension being shown with color. For example, most dotplot maps of the United States look somewhat the same: a lot of points on the East Coast, fewer on the West Coast, and fewer still in the center. This is true whether measuring number of millionaires, voters, or sinks sold.</p>
+
+<p>Maps also have the disadvantage that they consume the most powerful encoding channels in the visualization toolbox—position and size—on an aspect that is held constant. This leaves less effective encoding channels like color for showing the dimension of interest.<a data-type="indexterm" data-primary="objects" data-secondary="location of, in geographical visualizations" data-startref="ix_objloc" id="idm140386944445648"></a></p>
+</dd>
+</dl>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Question: What Is in This Text?"><div class="sect1" id="TaskText">
+<h1>Question: What Is in This Text?</h1>
+
+<p>Visualizing textual data is a common user need. Unfortunately, there is no definitive technique for resolving it.<a data-type="indexterm" data-primary="single views" data-secondary="visualizing textual data" id="idm140386944441584"></a><a data-type="indexterm" data-primary="textual data, visualizing" id="idm140386944441072"></a> Most approaches fall into the same patterns that are discussed throughout this chapter. They can be found by operationalizing the question further: what is it that the analyst needs to know from the text? Some popular approaches start with counting patterns and frequencies of words or phrases and visualizing these patterns in line charts, bar charts, networks, and so on. There are many subtleties with regard to recognizing word roots and stemming, choosing what aspects to visualize, and handling a set of words with a very high cardinality.<a data-type="indexterm" data-primary="word clouds" id="idm140386944440688"></a></p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Word Cloud"><div class="sect2" id="idm140386944439920">
+<h2>Word Cloud</h2>
+
+<figure><div id="wordcloud" class="figure">
+<img src="images/mdvi_0527.png" alt="mdvi 0527" />
+<h6><span class="label">Figure 5-27. </span>Word cloud. This is a word cloud of the text of the <a data-type="xref" href="preface01.html#chapter_introduction">Preface</a> to this book. Color in this chart is arbitrary.</h6>
+</div></figure>
+<dl>
+<dt>Description</dt>
+<dd>
+<p>One popular choice for visualizing text is a word cloud. A word cloud is, at heart, something like a bar chart: entities are sized to their counts. It relaxes constraints on position and color, which then get assigned with fairly arbitrary layout algorithms. A word cloud allows the reader to understand the relative frequency of words, and roughly identifies the top handful of words.</p>
+</dd>
+<dt>Limitations</dt>
+<dd>
+<p>Perceptually, a word cloud can be challenging: long words, and letters with ascenders and descenders, can make size difficult to estimate. It might be more effective—if less visually interesting—to simply print a bar chart of word frequency.</p>
+</dd>
+</dl>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Conclusion"><div class="sect1" id="idm140386944428912">
+<h1>Conclusion</h1>
+
+<p>This chapter has examined several major classes of visualizations.<a data-type="indexterm" data-primary="encoding channels" data-secondary="shared, in major visualization types" id="idm140386944427072"></a> There are a set of shared encoding channels: the placement of items (spatial), color, size. There are also a number of perceptual rules used to help enhance the degree to which visualizations bring out distinctions in questions.</p>
+
+<p>This ties back to the process of operationalization by linking the question to user needs.<a data-type="indexterm" data-primary="operationalization" data-secondary="linking the question to user need" id="idm140386944423952"></a> For example, imagine an analyst who wishes to create a visualization showing that stores in region A are more likely to sell blue jeans than stores in region B. The question that the data counseling process suggests to ask is, “What would it look like to show this?”</p>
+
+<p>The analyst might decide to group stores together by region and show the sum of jeans sold, or the proportion of products. They might decide to plot them on a map. In the former case, they lose granularity (data on individual stores) at the gain of seeing overall trends. Plotting has the opposite effect: it may be hard to see trends against bigger population patterns.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Further Reading"><div class="sect1" id="FurtherReadingSingleview">
+<h1>Further Reading</h1>
+
+<p>The basic chart types are one of the most well-studied and explored areas of data visualization.<a data-type="indexterm" data-primary="bar charts" data-secondary="learning resources for" id="idm140386944421104"></a> This section highlights a (very) few core books:</p>
+
+<p>Bertin, Jacques. <em role="citetitle">Semiology of Graphics: Diagrams, Graphs, Maps,</em> trans. William J. Berg (Redlands, CA: ESRI Press, 2010).</p>
+
+<ul>
+<li>
+<p>Jacques Bertin’s seminal volume is a dense and challenging read (and the English translation is imperfect). However, the work is a treasure trove. Bertin lays out the principles of good information design based on cartography, typography, color theory, and perception. He then walks through, in great detail, the advantages and disadvantages of different chart representations of datasets with qualitative, quantitative, and spatial data types.</p>
+</li>
+</ul>
+
+<p>Few, Stephen. <em role="citetitle">Information Dashboard Design: Displaying Data for At-a-Glance Monitoring</em> (Sebastopol, CA: O’Reilly, 2006).</p>
+
+<ul>
+<li>
+<p>Stephen Few takes an opinionated approach to creating information dashboards. In this book, he lays out basic principles of what makes for a good information dashboard. His notes apply both to the individual charts discussed in this chapter and the multiple views in <a data-type="xref" href="ch06.html#multiview">Chapter 6</a>.</p>
+</li>
+</ul>
+
+<p>Wilkinson, Leland. <em role="citetitle">The Grammar of Graphics</em> (Mew York: Springer, 1999).</p>
+
+<ul>
+<li>
+<p>This book expresses a particular sequence of creating visuals by mapping from data through geometric primitives and placing them on scales. These core insights make it easy to generalize many visualization techniques and have influenced visualization systems from Tableau, to the <em>ggplot</em> package in R, to Vega.</p>
+</li>
+</ul>
+
+<p>Meirelles, Isabel. <em role="citetitle">Design for Information.</em> (Beverly, MA: Rockport Publishers, 2013).</p>
+
+<ul>
+<li>
+<p>Trained as a designer, Isabel Meirelles presents the history and best practices for understanding, critiquing, and creating visualizations from a design perspective.</p>
+</li>
+</ul>
+
+<p>Steele, Julie and Noah Illinski. <em role="citetitle">Designing Data Visualizations</em> (Sebastopol, CA: O’Reilly, 2011).</p>
+
+<ul>
+<li>
+<p>This is a useful guide to core visualizations, with a stronger emphasis on how to design and present visualizations.</p>
+</li>
+</ul>
+
+<p>Munzner, Tamara. <em role="citetitle">Visualization Analysis and Design</em> (Natick, MA: AK Peters/CRC Press, 2014).</p>
+
+<ul>
+<li>
+<p>This textbook is an overview of the state of the art of the data visualization field. It covers data abstraction, provides perceptual guidelines, and discusses faceting into multiple views. Many topics in this book were influenced by Munzner’s approach.</p>
+</li>
+</ul>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Relevant Articles"><div class="sect2" id="relevant_articles_6">
+<h2>Relevant Articles</h2>
+
+<p>Cleveland, William S. and Robert McGill. “Graphical Perception: Theory, Experimentation, and Application to the Development of Graphical Methods.” <em>Journal of the American Statistical Association</em> 79 (1984): 531–554.</p>
+
+<ul>
+<li>
+<p>This brief and readable journal article builds a hierarchy of core perceptual tasks in visualization. Its insight is that comparing length is the core perceptual task of a bar chart, whereas comparing angle is core to a pie chart. Comparing these two perceptual tasks can help evaluate the difficulty of understanding a visualization.</p>
+</li>
+</ul>
+
+<p>Wickham, Hadley and Lisa Stryjewski. "<em>40 Years of Boxplots</em>,” technical report from had.co.nz (2012)</p>
+
+<ul>
+<li>
+<p><a href="http://vita.had.co.nz/papers/boxplots.html">This paper</a> provides an invaluable overview of different box plot variants, including the bean and violin plots, as well as 2D analogues.<a data-type="indexterm" data-primary="scatterplots" data-secondary="learning resources for" id="idm140386944392576"></a></p>
+</li>
+</ul>
+
+<p>Sarikaya, Alper and Michael Gleicher. “Scatterplots: Tasks, Data, and Designs.” <em>IEEE Transactions on Visualization and Computer Graphics</em> 28 (2018).</p>
+
+<ul>
+<li>
+<p><a href="https://alper.datav.is/publications/scatterplots">This paper</a> discusses several major variants of scatterplots and density plots.</p>
+</li>
+</ul>
+
+<p>Ghoniem, Mohammed, Jean-Daniel Fekete, and Philippe Castagliola, “On the Readability of Graphs Using Node-Link and Matrix-Based Representations: a Controlled Experiment and Statistical Analysis.” <em>Information Visualization</em> 4 (2005): 114–135.</p>
+
+<ul>
+<li>
+<p>This paper explores the readability challenges around large and high-density node-link diagrams for low-level tasks like finding nodes, edges, and paths between nodes.<a data-type="indexterm" data-primary="node-link views" data-secondary="learning resources for" id="idm140386944386400"></a></p>
+</li>
+</ul>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Datasets"><div class="sect2" id="FurtherReadingDatasets">
+<h2>Datasets</h2>
+
+<p>Copies of the data used in this chapter (in both pre-processed and raw form), along with Vega and VegaLite code to create the visualizations in this chapter and in <a data-type="xref" href="ch06.html#multiview">Chapter 6</a>, can <a data-type="indexterm" data-primary="single views" data-secondary="datasets used for" id="idm140386944384448"></a><a data-type="indexterm" data-primary="datasets" data-secondary="for single view visualizations" id="idm140386944383600"></a>be found on <a href="https://resources.oreilly.com/examples/0636920041320">the book’s website</a>. The datasets used are:</p>
+<dl>
+<dt>CFPB</dt>
+<dd>
+<p>The <a href="https://catalog.data.gov/dataset/consumer-complaint-database">CFPB Consumer Complaint Data</a> about financial products and services. The dataset is made available on Data.gov, with data as of September 26, 2015.</p>
+</dd>
+<dt>Cars</dt>
+<dd>
+<p>The <a href="https://archive.ics.uci.edu/ml/datasets/Automobile">Automobile dataset</a> is based on the 1985 Ward’s Automotive Yearbook, courtesy of the <a href="http://archive.ics.uci.edu/ml/index.php">UCI Machine Learning Repository</a>.</p>
+</dd>
+<dt>Les Miserables</dt>
+<dd>
+<p>This dataset, showing character coappearance in Victor Hugo’s <em role="citetitle">Les Miserables</em>, first appeared in Donald E. Knuth’s <em role="citetitle">The Stanford GraphBase: A Platform for Combinatorial Computing</em>  (Addison-Wesley, 1993). It is available from <a href="http://bit.ly/2AE1QyI">the UCI Network Data Repository</a>.</p>
+</dd>
+<dt>Zip code</dt>
+<dd>
+<p>The zip code dataset was composed from US Census Bureau data by CivicSpace Labs, and is available for download from <a href="https://boutell.com/zipcodes/">Tom Boutell’s website</a>.</p>
+</dd>
+<dt>Census</dt>
+<dd>
+<p><a href="http://bit.ly/2A0SZWI">The census data</a>, aggregated at the state level and examining total household income, is available from American FactFinder (US Census).<a data-type="indexterm" data-primary="single views" data-startref="ix_sinvi" id="idm140386944368096"></a></p>
+</dd>
+</dl>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+</div></section></div>
+</body>
+</html>

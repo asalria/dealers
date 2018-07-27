@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:pls="http://www.w3.org/2005/01/pronunciation-lexicon" xmlns:ssml="http://www.w3.org/2001/10/synthesis" xmlns:svg="http://www.w3.org/2000/svg">
+<head>
+  <meta charset="UTF-8" />
+  <title>4. Components of a Visualization</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="core.css" />
+</head>
+<body>
+  <div id="sbo-rt-content"><section data-type="chapter" epub:type="chapter" data-pdf-bookmark="Chapter 4. Components of a Visualization"><div class="chapter" id="ComponentsOfVisualization">
+<h1><span class="label">Chapter 4. </span>Components of a Visualization</h1>
+
+
+<p>The previous two chapters outlined<a data-type="indexterm" data-primary="visualizations" data-secondary="components of" id="ix_viscomp"></a> the process of refining a question into tasks. <a data-type="xref" href="ch02.html#operationalization">Chapter 2</a> broke each task down into components: <em>actions</em>, <em>objects</em>, <em>measures</em>, and <em>partitions</em>. These terms help identify where and how to turn fuzzy tasks into specific, actionable ones. Then, <a data-type="xref" href="ch03.html#DataCounseling">Chapter 3</a> discussed in more detail how to solicit the use scenarios and user stories that motivate the decisions made about proxies during operationalization.</p>
+
+<p>The process in <a data-type="xref" href="ch02.html#operationalization">Chapter 2</a> concluded with a well-operationalized task and promised that this can lead to a visualization. But it did not discuss <em>how</em> to translate an operationalized task into a visualization.
+There is one step left before we can start doing visualization: we must understand the data..</p>
+
+<p>This chapter takes the first step to translating these descriptions into visualizations. Understanding the characteristics of the data will make it easier to select an appropriate visualization.  <a data-type="xref" href="ch05.html#singleviews">Chapter 5</a> then describes specific visualizations to match the data characteristics outlined here—more specifically, its dimensions and measures, how it is grouped and aggregated. In <a data-type="xref" href="ch06.html#multiview">Chapter 6</a>, we’ll look at how views can be combined to support rich, dynamic analysis of complex tasks and data.</p>
+<div style="page-break-after: always;"></div>
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Dimensions and Measures"><div class="sect1" id="idm140386944988864">
+<h1>Dimensions and Measures</h1>
+
+<p>The attributes of the data serve particular roles in a task. A <em>dimension</em> is an attribute that groups, separates, or filters data items. <a data-type="indexterm" data-primary="visualizations" data-secondary="components of" data-tertiary="dimensions and measures" id="ix_viscompmeas"></a><a data-type="indexterm" data-primary="dimensions and measures" id="ix_dimmea"></a><a data-type="indexterm" data-primary="measures" data-secondary="dimensions and measures" id="ix_measdim"></a>A <em>measure</em> is an attribute that addresses the question of interest and that the analyst expects to vary across the dimensions. Both the measures and the dimensions might be attributes directly found in the dataset or derived attributes calculated from the existing data.</p>
+
+<p>In different fields, these terms get somewhat different names. <a data-type="indexterm" data-primary="independent and dependent variables" id="idm140386944979520"></a> In the sciences, it’s more common to talk about <em>independent variables</em> (those that the experimenter manipulates) and <em>dependent variables</em> (the outcomes of the experiment). <a data-type="indexterm" data-primary="dependent variables" id="idm140386944978096"></a>The intuition is the same for task operationalization, although in many business intelligence scenarios, for example, the data analyst cannot actually control who walks into the store or visits the website.</p>
+
+<p>The term <em>metric</em> is <a data-type="indexterm" data-primary="metrics" data-seealso="measures" id="idm140386944976864"></a>sometimes used to describe a measure that stands as a proxy for a desired value.<sup><a data-type="noteref" id="idm140386944974224-marker" href="ch04.html#idm140386944974224">1</a></sup> One virtue of a visualization approach is the ability to handle multiple metrics at once. Rather than trying to reduce everything to a single number, the analyst can look at several different measures. For example, it is reasonable to say “The fastest route is getting faster, and that’s good, but the variance is really brutal.” <a data-type="xref" href="ch06.html#multiview">Chapter 6</a> discusses several techniques to visualize multiple metrics.</p>
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Example: International Towing &amp; Ice Cream"><div class="sect2" id="idm140386944967584">
+<h2>Example: International Towing &amp; Ice Cream</h2>
+
+<p>This section discusses different data types with a motivating example. <a data-type="indexterm" data-primary="dimensions and measures" data-secondary="example, International Towing &amp; Ice Cream (ITIC)" id="idm140386944971040"></a><a data-type="indexterm" data-primary="International Towing &amp; Ice Cream (ITIC) example" id="idm140386944970192"></a><a data-type="indexterm" data-primary="measures" data-secondary="dimensions and measures" data-tertiary="International Towing &amp; Ice Cream (ITIC) example" id="idm140386944969552"></a>Sue is a data analyst for International Towing &amp; Ice Cream (ITIC), a fictional company that provides a variety of important roadside services. ITIC’s products and services are purchased on the road, so their location is important—and, as in any ice cream delivery service, so is the temperature (<a data-type="xref" href="#ITIC_sample_metrics">Table 4-1</a>).</p>
+<div style="page-break-after: always;"></div>
+<table id="ITIC_sample_metrics">
+<caption><span class="label">Table 4-1. </span>Sample metrics</caption>
+<thead>
+<tr>
+<th>Time</th>
+<th>Customer</th>
+<th>Sales location (lat)</th>
+<th>Sales location (lon)</th>
+<th>Product category</th>
+<th>Product</th>
+<th>Temperature</th>
+<th>Revenue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>June 17, <span class="keep-together">10:30 am</span></p></td>
+<td><p>0121</p></td>
+<td><p>47.6062</p></td>
+<td><p>-122.332</p></td>
+<td><p>Roadside</p></td>
+<td><p>Towing</p></td>
+<td><p>84</p></td>
+<td><p>$100</p></td>
+</tr>
+<tr>
+<td><p>June 17, 10:35 am</p></td>
+<td><p>0232</p></td>
+<td><p>33.26</p></td>
+<td><p>-112.04</p></td>
+<td><p>Roadside</p></td>
+<td><p>Flat</p></td>
+<td><p>96</p></td>
+<td><p>$50</p></td>
+</tr>
+<tr>
+<td><p>June 17, 10:37 am</p></td>
+<td><p>0304</p></td>
+<td><p>37.52</p></td>
+<td><p>-122.16</p></td>
+<td><p>Delivery</p></td>
+<td><p>Ice cream</p></td>
+<td><p>103</p></td>
+<td><p>$10</p></td>
+</tr>
+</tbody>
+</table>
+
+<p>The operationalization and data counseling process helped Sue realize that she wants to display sales grouped by product categories. Because product purchases vary over time—on a daily cycle, a weekly rhythm, and by season—she will want to look at sales, divided among categories, over time and locations.
+For example, Sue might look at the total revenue by product; in this case, the product is the dimension, while the revenue is a measure.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Dimensions"><div class="sect2" id="idm140386944935872">
+<h2>Dimensions</h2>
+
+<p>The <em>dimensions</em> of the data are the ways in which the data varies. <a data-type="xref" href="ch02.html#operationalization">Chapter 2</a> discussed partitions on the data; these partitions can be seen as dimensions.<a data-type="indexterm" data-primary="measures" data-secondary="dimensions and measures" data-tertiary="dimensions in ITIC example" id="idm140386944940288"></a><a data-type="indexterm" data-primary="dimensions and measures" data-secondary="dimensions in ITIC example" id="idm140386944939200"></a></p>
+
+<p>In the ITIC example, there are a number of dimensions:</p>
+
+<ul>
+<li>
+<p>Temperature</p>
+</li>
+<li>
+<p>Time</p>
+</li>
+<li>
+<p>Product</p>
+</li>
+<li>
+<p>Location</p>
+</li>
+</ul>
+
+<p>There are several different <em>types</em> of data here.<a data-type="indexterm" data-primary="temperature (in ITIC data)" id="idm140386944932352"></a><a data-type="indexterm" data-primary="time (in ITIC data)" id="idm140386944931456"></a><a data-type="indexterm" data-primary="product (in ITIC data)" id="idm140386944930848"></a><a data-type="indexterm" data-primary="location (in ITIC data)" id="idm140386944930240"></a> When choosing good visualizations to explore data, it is important to recognize the type, as different charts are designed to optimize different data types.<a data-type="indexterm" data-primary="charts" data-secondary="different charts to optimize different data types" id="idm140386944929632"></a> For example, a visualization that works well for showing time of day may not be effective for showing geospatial location.</p>
+
+<p>The next section looks at the types of data used in visualizations; the  visualizations in <a data-type="xref" href="ch05.html#singleviews">Chapter 5</a> are indexed on these data types. A user may have data that needs to be changed into a different representation. The following section describes a selection of ways to transform between data types.</p>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Types of Data"><div class="sect2" id="types_of_data">
+<h2>Types of Data</h2>
+
+<p><a data-type="xref" href="ch05.html#singleviews">Chapter 5</a> examines a variety of charts. The charts are indexed to the user task and can be selected based on the types of dimensions and measures.<a data-type="indexterm" data-primary="dimensions and measures" data-secondary="types of data" id="idm140386944924400"></a><a data-type="indexterm" data-primary="data" data-secondary="types of" id="idm140386944923088"></a></p>
+
+<p>Data attributes can be divided into three principal types:</p>
+<dl>
+<dt>Continuous (interval and ratio) data</dt>
+<dd>
+<p>Consists of ordered, equally and meaningfully spaced values.<a data-type="indexterm" data-primary="continuous data" id="idm140386944918208"></a><a data-type="indexterm" data-primary="ratio data" id="idm140386944917600"></a> Ratio data has a meaningful zero point, and so can be added or subtracted: 10 feet plus 20 feet adds to 30 feet. <a data-type="indexterm" data-primary="interval data" id="idm140386944919616"></a>Interval values, on the other hand, lack a meaningful zero point. As such, differences between interval values can be computed, but two interval values cannot be added together: values like dates, pH readings, and oven temperatures are interval data. In the ITIC example, the temperature and time of day are both continuous data. In many scenarios, ratio data is a likely measure: revenue and sales amount are examples of ratio data.</p>
+</dd>
+<dt>Ordinal data</dt>
+<dd>
+<p>Consists of discrete values that are ordered, but that cannot be meaningfully added or subtracted.<a data-type="indexterm" data-primary="ordinal data" id="idm140386944913696"></a><a data-type="indexterm" data-primary="rankings" id="idm140386944913312"></a> Rankings are a good example of ordinal data: if a runner comes in first in one race and ninth in another, they did not come in a total of tenth, and it is not clear how to compare them to the runner who came in fifth twice.</p>
+</dd>
+<dt>Categorical data</dt>
+<dd>
+<p>Consists of discrete values; every item falls into a single category.<a data-type="indexterm" data-primary="categorical data" id="idm140386944911696"></a> Categorical data has no particular ordering—<em>north</em> does not logically come before or after <em>west</em>. In visualization, knowing something about the cardinality—the number of distinct values—of categorical data is important. In using categorical data for an axis or a color scale, there should be few enough categories that it makes sense to group the data into them and for the list of categories to be readable and comparable.</p>
+</dd>
+</dl>
+
+<p>In addition, there are three specialized forms of data that are worth discussing on their own as they have specific mappings to visualization chart types:</p>
+<dl>
+<dt>Temporal data</dt>
+<dd>
+<p>This is a form of interval data that has a time component.<a data-type="indexterm" data-primary="time" data-seealso="temporal data" id="idm140386944906848"></a><a data-type="indexterm" data-primary="temporal data" id="idm140386944905680"></a> While a single timestamp refers to a single time (e.g., “November 20, 2010, 8:01 am”), it can be interpreted in a broad variety of ways.</p>
+
+<p>Temporal data is often interpreted cyclically and hierarchically. Time comes in cycles (e.g., “every day at 8:00 am,” or “weekdays from 8 to 9 am”). Time may be grouped into ranges (e.g., “November 2010”), and can be placed against a number of calendars (e.g., fiscal years, calendar years, workdays).<a data-type="indexterm" data-primary="durations" id="idm140386944907840"></a> Times can be subtracted to get a <em>duration</em>, which is ratio data. Visualization toolkits often offer powerful tools for organizing temporal data.</p>
+</dd>
+<dt>Geographical data</dt>
+<dd>
+<p>Refers to places; it is inherently two-dimensional (or three-dimensional, in some cases). It may come in the form of positions, outlines of shapes, or names of places. It can often be grouped into categorical data with the help of an atlas to assign zip codes, city names, or other relevant groupings.</p>
+</dd>
+<dt>Relational data</dt>
+<dd>
+<p>This is data that connects two other points: this might be from a <em>hierarchy</em> or a <em>network</em>.<a data-type="indexterm" data-primary="relational data" id="idm140386944900528"></a><a data-type="indexterm" data-primary="networks or hierarchies" data-secondary="data from" id="idm140386944898944"></a> For example, the fact that some number of commuters go from one place to another is relational data; so is the fact that one person reports to another. When data items are categorized, they sometimes are represented as relational; the relation is between the data item and its category.</p>
+</dd>
+</dl>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Transforming Between Dimension Types"><div class="sect2" id="TBDT_sec">
+<h2>Transforming Between Dimension Types</h2>
+
+<p>Different data types can be difficult to fit into particular visualization types. Often, transforming between data types may help simplify the data into a form that can be processed more easily.<a data-type="indexterm" data-primary="dimensions and measures" data-secondary="transforming between dimension types" id="idm140386944892304"></a><a data-type="indexterm" data-primary="measures" data-secondary="dimensions and measures" data-tertiary="transforming between dimension types" id="idm140386944895232"></a> This section highlights a few of the most common and useful transformations:</p>
+<dl>
+<dt>Categorical-to-ordinal and ordinal-to-categorical</dt>
+<dd>
+<p>Categorical data almost always has to <a data-type="indexterm" data-primary="categorical data" data-secondary="transformations between ordinal data and" id="idm140386944890384"></a><a data-type="indexterm" data-primary="ordinal data" data-secondary="transformations between categorical data and" id="idm140386944889536"></a>be interpreted in some order or another. Conversely, many visualizations are marked as taking categorical data when the user has ordinal data. Each type may be interpreted as the other, as needed, ensuring that the order in ordinal data is always preserved.</p>
+</dd>
+<dt>Continuous to ordinal</dt>
+<dd>
+<p>Continuous data can be difficult to deal with as a dimension so it is sometimes transformed into ordinal data.<a data-type="indexterm" data-primary="continuous data" data-secondary="transformations between ordinal data and" id="idm140386944887376"></a><a data-type="indexterm" data-primary="ordinal data" data-secondary="transformations between continuous data and" id="idm140386944886864"></a> In the ITIC example, the analyst might group a number of entries together into <em>hot</em> and <em>cool</em> temperatures, or might separate <em>mornings</em> and <em>afternoons.</em> This process makes analysis far more tractable—it is useful to make statements like “We sold twice as much ice cream on hot days as we did on cool days.” Unfortunately, this imposes a hard line on otherwise smooth data:  if 80 degrees and above is considered hot, then a day when it’s one degree cooler (–79 degrees) is now a qualitatively different sort of day than an 80-degree day.<a data-type="indexterm" data-primary="binning" id="idm140386944882784"></a> When a continuous measure is broken into ordered groups, it is referred to as <em>binning</em>.</p>
+</dd>
+<dt>Ordinal to continuous</dt>
+<dd>
+<p>While ordinal values cannot be directly added, they can be assigned point values. This is familiar from sporting events, like the Olympics, where top scores tend to be very similar. As such, the rank is a more useful measure then the actual value. To assign overall winners across multiple rounds, though, each rank is transformed into points. The points can then be added and ranked.</p>
+</dd>
+<dt>Reducing cardinality for categorical data</dt>
+<dd>
+<p>Categorical data refers to the data column within its context.<a data-type="indexterm" data-primary="categorical data" data-secondary="reducing cardinality for" id="idm140386944873664"></a><a data-type="indexterm" data-primary="cardinality, reducing for categorical data" id="idm140386944879024"></a> A company’s entire product catalog probably has too many items to be analyzed with categorical techniques unless the analyst is looking specifically at a particular subproduct. Rolling together smaller categories into an <em>other</em> category, for example, can reduce cardinality; so can finding implicit or explicit hierarchies in the data.</p>
+</dd>
+<dt>Drilldowns</dt>
+<dd>
+<p>The drilldown is a common interactive technique <a data-type="indexterm" data-primary="drilldowns" id="idm140386944878224"></a>between several hierarchical dimensions. <em>Drilling down</em> merely means moving the focus of attention from a higher-level dimension to a single, lower-level component: an analyst might drill down from a view that shows multiple years to focus on the year 2012, and then look at the months within it. Drilling from nation to region to state to city is common, or from business units to teams, or feature areas in telemetry data to features to specific events.</p>
+</dd>
+<dt>Rollups</dt>
+<dd>
+<p>The rollup is the logical opposite of the drilldown: grouping items that share a hierarchical level and shifting the focus up a level.<a data-type="indexterm" data-primary="rollups" id="idm140386944871312"></a></p>
+</dd>
+<dt>Pivoting data</dt>
+<dd>
+<p>The pivot operation summarizes items that have been grouped together.<a data-type="indexterm" data-primary="pivoting data" id="idm140386944868128"></a> For example, in the ITIC example, communicating total revenue by product category would require that the data be pivoted along that column. (Roadside total revenue would then add to $150; total delivery to $10.)</p>
+</dd>
+</dl>
+<aside data-type="sidebar" epub:type="sidebar"><div class="sidebar" id="idm140386944893312">
+<h5>Pivoting in Tools</h5>
+<p>Pivoting can be initially confusing to many data analysts, despite its tremendous power. Microsoft Excel does not <a data-type="indexterm" data-primary="Excel" data-secondary="no pivoting data with" id="idm140386944867520"></a>pivot data by default: given a table of numbers, Excel plots the first column on the x-axis and the second on the y-axis. This can be difficult to work with if you have raw data.<a data-type="indexterm" data-primary="pivot tables" id="idm140386944864112"></a><a data-type="indexterm" data-primary="visualization tools" data-secondary="pivoting data in" id="idm140386944866576"></a> Tools like Excel’s Pivot Tables, Tableau, and Microsoft PowerBI all work instead on pivoted data.<a data-type="indexterm" data-primary="Tableau" id="idm140386944860960"></a><a data-type="indexterm" data-primary="PowerBI" id="idm140386944860576"></a> In R, the pivot operation is supported with the plyr package; conveniently, Pandas calls the operation “pivot.”<a data-type="indexterm" data-primary="R" id="idm140386944861520"></a><a data-type="indexterm" data-primary="Pandas" id="idm140386944862928"></a></p>
+</div></aside>
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect2" data-pdf-bookmark="Dimensionality Reduction and Clustering"><div class="sect2" id="idm140386944862416">
+<h2>Dimensionality Reduction and Clustering</h2>
+
+<p>In the machine learning work that is increasingly important for dealing with large datasets, some core techniques fall under the umbrellas of dimensionality reduction and clustering.<a data-type="indexterm" data-primary="dimensions and measures" data-secondary="dimensionality reduction and clustering" id="idm140386944858464"></a><a data-type="indexterm" data-primary="measures" data-secondary="dimensions and measures" data-tertiary="dimensionality reduction and clustering" id="idm140386944857728"></a> Although it is far outside the scope of this book to discuss how these techniques work, it is worth briefly considering what these techniques do to data for consideration in an operationalization.</p>
+
+<p><em>Dimensionality reduction</em> is a way of reducing a large number of different measures into a smaller set of metrics. The intent is that the reduced metrics are a simpler description of the complex space that retains most of the meaning. For example, a movie recommendation service might keep hundreds of individual dimensions about a user, such as the set of movies that she has reviewed and watched. These dimensions are both difficult to interpret alone and far too sparse to be useful: most movies have been watched by comparatively few users. Dimensionality reduction attempts to reduce these to a smaller set of useful dimensions, such as “likes horror movies,” which can be more directly analyzed and inspected. The outcome dimensions are usually continuous; depending on the technique, they may even produce ratio data, so that one movie is <em>twice</em> as much a horror film as another.</p>
+
+<p>Clustering techniques are similarly useful for reducing a large number of items into a smaller set of groups.<a data-type="indexterm" data-primary="clustering" id="idm140386944854672"></a> A <em>clustering</em> technique finds groups of items that are logically near each other and gathers them together. For example, the movie recommender service might cluster users into groups. Analysts can then carry out analyses on individual groups.<a data-type="indexterm" data-primary="measures" data-secondary="dimensions and measures" data-startref="ix_measdim" id="idm140386944852448"></a><a data-type="indexterm" data-primary="dimensions and measures" data-startref="ix_dimmea" id="idm140386944853856"></a><a data-type="indexterm" data-primary="visualizations" data-secondary="components of" data-tertiary="dimensions and measures" data-startref="ix_viscompmeas" id="idm140386944842128"></a></p>
+</div></section>
+
+
+
+
+
+</div></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section data-type="sect1" data-pdf-bookmark="Examining Actions"><div class="sect1" id="idm140386944851712">
+<h1>Examining Actions</h1>
+
+<p><a data-type="xref" href="ch02.html#operationalization">Chapter 2</a> discussed some of the core <em>actions</em> in tasks,<a data-type="indexterm" data-primary="visualizations" data-secondary="components of" data-tertiary="examining actions" id="ix_viscompact"></a><a data-type="indexterm" data-primary="actions" id="ix_action"></a> but left the concept rather broad. The action helps identify candidate visualizations and encodings.<a data-type="indexterm" data-primary="single views" data-secondary="actions and" id="idm140386944844688"></a> Some single visualizations can address multiple actions: a bar chart can allow a user to find a specific value, identify the largest or smallest value, roughly guess an average, or compare two or more bars to each other. On the other hand, some tasks are particularly well-supported by one visualization or another; for example, a node-link diagram can be great for tracing paths through a network.</p>
+
+<p>Some of the actions <a data-type="indexterm" data-primary="actions" data-secondary="frequently encountered" id="idm140386944846368"></a>that often come up describe:</p>
+
+<ul>
+<li>
+<p>Finding and reading individual values in the data</p>
+</li>
+<li>
+<p>Characterizing the distribution of a dimension: minimum, maximum, outliers, central tendency, sort order, etc.</p>
+</li>
+<li>
+<p>Identifying the trend of a metric over time (or some other dimension)</p>
+</li>
+</ul>
+
+<p>There are also more complex actions:</p>
+
+<ul>
+<li>
+<p>Comparing a value across a category (“dollars from store A versus store B”)</p>
+</li>
+<li>
+<p>Comparing a metric to another metric (“height versus weight of subjects” or “salary distribution of men versus women”)</p>
+</li>
+<li>
+<p>Contrasting a metric with many others (“Seattle versus other cities”)</p>
+</li>
+<li>
+<p>Clustering values (“divide consumers into market segments”)</p>
+</li>
+</ul>
+
+<p>Many of these actions look like statistical tasks<a data-type="indexterm" data-primary="statistical tasks" id="idm140386944829536"></a> (e.g., “I want to know if men or women spend, on average, more money at our store”),  Indeed, if an analyst needs only one or two of these tasks—“I want to know if men or women spend an average of more money at our store”—then a visualization probably is not necessary.</p>
+
+<p>Multiple tasks, however, are often linked: an analyst may want to be able to explore the distribution to find reasonable cutoffs, or explore subdivisions of the data across a range of different dimensions. For example, an analyst may want to see how a distribution of product sales looks when the data is partitioned by store, or product, or even by the display aisle, or an analyst may want to switch from making comparisons of older women versus younger women to older women versus older men. A visualization tool can often support this more open-ended exploration better than statistical tests.</p>
+
+<p>Action keywords can cue which visualization to use.<a data-type="indexterm" data-primary="actions" data-secondary="action keywords cueing which visualization to use" id="idm140386944826816"></a> Tasks like “Compare one object to another across multiple dimensions” are a cue that the analyst might want to compare multiple series. In contrast, “How is this item different?” suggests that the analyst might want to pull out a single item to compare to a background set of items. “Are any items different?” is a cue to look for visualizations that help show outliers.</p>
+
+<p>The next two chapters look at how to choose a visualization based on the operationalization and the concepts described here.<a data-type="indexterm" data-primary="actions" data-startref="ix_action" id="idm140386944826480"></a><a data-type="indexterm" data-primary="visualizations" data-secondary="components of" data-tertiary="examining actions" data-startref="ix_viscompact" id="idm140386944827968"></a><a data-type="indexterm" data-primary="visualizations" data-secondary="components of" data-startref="ix_viscomp" id="idm140386944826064"></a></p>
+</div></section>
+
+
+
+
+
+
+
+<div data-type="footnotes"><p data-type="footnote" id="idm140386944974224"><sup><a href="ch04.html#idm140386944974224-marker">1</a></sup> Though the distinction between a <em>metric</em> and a <em>measure</em> makes for entertaining online debates, this book sees the two as effectively synonymous.</p></div></div></section></div>
+</body>
+</html>
